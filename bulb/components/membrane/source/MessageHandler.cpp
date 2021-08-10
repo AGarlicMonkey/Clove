@@ -10,7 +10,8 @@ namespace garlic::membrane {
     generic<class MessageType> 
     void MessageHandler::bindToMessage(MessageSentHandler<MessageType> ^ handler) {
         MessageDelegateWrapper<MessageType> ^wrapper{ gcnew MessageDelegateWrapper<MessageType> };
-        wrapper->handler = handler;
+        wrapper->target = gcnew System::WeakReference{ handler->Target };
+        wrapper->method = handler->Method;
 
         delegates->Add(wrapper);
     }
@@ -33,20 +34,40 @@ namespace garlic::membrane {
         //All messages are dispatched from the engine thread so we need to lock the editor thread incase it sends a message while we're flushing
         msclr::lock scopedLock{ editorLock };
 
+        System::Collections::Generic::List<IMessageDelegateWrapper ^> ^invalidDelegates{ gcnew System::Collections::Generic::List<IMessageDelegateWrapper^> };
+
         for each(EditorMessage ^message in editorMessages) {
             for each(IMessageDelegateWrapper^ wrapper in delegates){
-                wrapper->tryInvoke(message);
+                if (wrapper->isAlive()){
+                    wrapper->tryInvoke(message);
+                } else{
+                    invalidDelegates->Add(wrapper);
+                }
             }
+        }
+
+        for each(IMessageDelegateWrapper^ wrapper in invalidDelegates){
+            delegates->Remove(wrapper);
         }
 
         editorMessages->Clear();
     }
 
     void MessageHandler::flushEngine(System::Windows::Threading::Dispatcher ^editorDispatcher) {
+        System::Collections::Generic::List<IMessageDelegateWrapper ^> ^invalidDelegates{ gcnew System::Collections::Generic::List<IMessageDelegateWrapper^> };
+
         for each(EngineMessage ^message in engineMessages) {            
             for each(IMessageDelegateWrapper^ wrapper in delegates){
-                wrapper->tryInvoke(message, editorDispatcher);
+                if (wrapper->isAlive()){
+                    wrapper->tryInvoke(message, editorDispatcher);
+                } else{
+                    invalidDelegates->Add(wrapper);
+                }
             }
+        }
+
+        for each(IMessageDelegateWrapper^ wrapper in invalidDelegates){
+            delegates->Remove(wrapper);
         }
 
         engineMessages->Clear();

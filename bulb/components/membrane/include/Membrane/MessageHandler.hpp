@@ -13,19 +13,29 @@ namespace garlic::membrane {
     public:
         virtual void tryInvoke(EditorMessage ^message) = 0;
         virtual void tryInvoke(EngineMessage ^message, System::Windows::Threading::Dispatcher ^editorDispatcher) = 0;
+
+        virtual bool isAlive() = 0;
     };
 
     generic<class MessageType> 
     private ref class MessageDelegateWrapper : public IMessageDelegateWrapper {
         //VARIABLES
     public:
-        MessageSentHandler<MessageType> ^ handler;
+        System::WeakReference ^target;
+        System::Reflection::MethodInfo ^method;
 
         //FUNCTIONS
     public:
         virtual void tryInvoke(EditorMessage ^message) {
             if (message->GetType() == MessageType::typeid) {
-                handler->Invoke((MessageType)message);
+                System::Object ^invokeTarget{ target->Target }; //Storing the target here prevents a race condition (instead of doing WeakReference::IsAlive then accessing)
+                array<System::Object ^> ^parameters = gcnew array<System::Object ^>{1};
+
+                parameters[0] = (MessageType)message;
+
+                if (invokeTarget != nullptr){
+                    method->Invoke(invokeTarget, parameters);
+                }
             }
         }
 
@@ -36,9 +46,20 @@ namespace garlic::membrane {
             }
         }
 
+        virtual bool isAlive() {
+            return target->IsAlive;
+        }
+
     private:
         void invokeEditorMessage(EngineMessage ^message) {
-            handler->Invoke((MessageType)message);
+            System::Object ^invokeTarget{ target->Target }; //Storing the target here prevents a race condition (instead of doing WeakReference::IsAlive then accessing)
+            array<System::Object ^> ^parameters = gcnew array<System::Object ^>{1};
+
+            parameters[0] = (MessageType)message;
+
+            if (invokeTarget != nullptr){
+                method->Invoke(invokeTarget, parameters);
+            }
         }
     };
 
