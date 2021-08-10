@@ -71,9 +71,9 @@ namespace garlic::membrane {
         }
 
         void updateStaticModel(Editor_UpdateStaticModel ^ message){
-            System::String ^meshPath{ message->meshPath };
-            System::String ^diffusePath{ message->diffusePath };
-            System::String ^specularPath{ message->specularPath };
+            System::String ^meshPath{ message->meshPath != nullptr ? message->meshPath : "" };
+            System::String ^diffusePath{ message->diffusePath != nullptr ? message->diffusePath : ""};
+            System::String ^specularPath{ message->specularPath != nullptr ? message->specularPath : ""};
             layer->updateStaticModel(message->entity, msclr::interop::marshal_as<std::string>(meshPath), msclr::interop::marshal_as<std::string>(diffusePath), msclr::interop::marshal_as<std::string>(specularPath));
         }
 
