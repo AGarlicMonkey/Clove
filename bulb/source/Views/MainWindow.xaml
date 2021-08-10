@@ -87,7 +87,8 @@
 
 				<ListBox x:Name="EntityListBox"
 						 ItemsSource="{Binding Scene.Entities}"
-						 BorderThickness="0 2">
+						 BorderThickness="0 2"
+						 KeyUp="EntityListBox_KeyUp">
 					<ListBox.ItemTemplate>
 						<DataTemplate>
 							<Grid Background="Transparent"

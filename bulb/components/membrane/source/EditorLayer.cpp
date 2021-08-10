@@ -34,6 +34,7 @@ namespace garlic::membrane {
         EditorLayerMessageProxy(EditorLayer *layer)
             : layer{ layer } {
             MessageHandler::bindToMessage(gcnew MessageSentHandler<Editor_CreateEntity ^>(this, &EditorLayerMessageProxy::createEntity));
+            MessageHandler::bindToMessage(gcnew MessageSentHandler<Editor_DeleteEntity ^>(this, &EditorLayerMessageProxy::deleteEntity));
             MessageHandler::bindToMessage(gcnew MessageSentHandler<Editor_CreateComponent ^>(this, &EditorLayerMessageProxy::createComponent));
 
             MessageHandler::bindToMessage(gcnew MessageSentHandler<Editor_UpdateTransform ^>(this, &EditorLayerMessageProxy::updateTransform));
@@ -50,6 +51,11 @@ namespace garlic::membrane {
     private:
         void createEntity(Editor_CreateEntity ^ message) {
             layer->createEntity();
+        }
+
+        void deleteEntity(Editor_DeleteEntity ^ message) {
+            clove::Entity const entity{ message->entity };
+            layer->deleteEntity(entity);
         }
 
         void createComponent(Editor_CreateComponent ^ message){
@@ -306,6 +312,14 @@ namespace garlic::membrane {
         MessageHandler::sendMessage(message);
 
         return entity;
+    }
+
+    void EditorLayer::deleteEntity(clove::Entity entity) {
+        currentScene.deleteEntity(entity);
+
+        Engine_OnEntityDeleted ^ message { gcnew Engine_OnEntityDeleted };
+        message->entity = entity;
+        MessageHandler::sendMessage(message);
     }
 
     void EditorLayer::createComponent(clove::Entity entity, ComponentType componentType) {

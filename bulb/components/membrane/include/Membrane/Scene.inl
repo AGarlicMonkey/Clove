@@ -5,6 +5,11 @@ namespace garlic::membrane {
         return entity;
     }
 
+    void Scene::deleteEntity(clove::Entity entity){
+        manager->destroy(entity);
+        knownEntities.erase(std::remove(knownEntities.begin(), knownEntities.end(), entity), knownEntities.end());
+    }
+
     std::vector<clove::Entity> Scene::getKnownEntities() const {
         return knownEntities;
     }
@@ -28,5 +33,6 @@ namespace garlic::membrane {
         for(auto entity : knownEntities) {
             manager->destroy(entity);
         }
+        knownEntities.clear();
     }
 }

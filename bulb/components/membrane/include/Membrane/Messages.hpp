@@ -18,6 +18,10 @@ namespace garlic::membrane {
 
     //Messages sent from Bulb
     public ref class Editor_CreateEntity : public EditorMessage {};
+    public ref class Editor_DeleteEntity : public EditorMessage {
+    public:
+        System::UInt32 entity;
+    };
     public ref class Editor_CreateComponent : public EditorMessage {
     public:
         System::UInt32 entity;
@@ -94,6 +98,10 @@ namespace garlic::membrane {
     public:
         System::UInt32 entity;
         System::String ^name;
+    };
+    public ref class Engine_OnEntityDeleted : public EngineMessage {
+    public:
+        System::UInt32 entity;
     };
     public ref class Engine_OnComponentCreated : public EngineMessage {
     public:

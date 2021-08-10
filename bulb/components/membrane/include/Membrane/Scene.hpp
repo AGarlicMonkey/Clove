@@ -31,6 +31,8 @@ namespace garlic::membrane {
         void load();
 
         inline clove::Entity createEntity();
+        inline void deleteEntity(clove::Entity);
+
         inline std::vector<clove::Entity> getKnownEntities() const;
 
         template<typename ComponentType, typename... ConstructArgs>

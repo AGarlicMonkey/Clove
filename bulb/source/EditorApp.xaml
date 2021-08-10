@@ -352,11 +352,11 @@
 		</Style>
 		
 		<!-- Menu -->
-		<Style TargetType="Menu">
+		<Style TargetType="{x:Type Menu}">
 			<Setter Property="Background"
 					Value="Transparent"/>
 		</Style>
-
+		
 		<!-- MenuItem -->
 		<Style TargetType="{x:Type MenuItem}">
 			<Style.Triggers>

@@ -51,7 +51,7 @@ namespace Garlic.Bulb {
 
         private void EditorViewport_Key(object sender, KeyEventArgs e) {
             //Ignore key events to toggle editor elements
-            if(IsToggleElementsPressed(e.Key) || IsToggleContentPressed(e.Key)) {
+            if (IsToggleElementsPressed(e.Key) || IsToggleContentPressed(e.Key)) {
                 e.Handled = false;
                 return;
             }
@@ -86,20 +86,33 @@ namespace Garlic.Bulb {
             var listBox = sender as ListBox;
             var entityVm = listBox.SelectedItem as EntityViewModel;
 
-            entityVm.SelectedCommand.Execute(null);
+            if(entityVm != null) {
+                entityVm.SelectedCommand.Execute(null);
+            }
+        }
+
+        private void EntityListBox_KeyUp(object sender, KeyEventArgs e) {
+            if (e.Key == Key.Delete) {
+                var listBox = sender as ListBox;
+                var entityVm = listBox.SelectedItem as EntityViewModel;
+
+                if (entityVm != null) {
+                    (DataContext as EditorSessionViewModel).Scene.DeleteEntityCommand.Execute(entityVm.EntityId);
+                }
+            }
         }
 
         private void EntityListItem_MouseDown(object sender, MouseButtonEventArgs e) {
-            if(e.ClickCount != 2) {
+            if (e.ClickCount != 2) {
                 return;
             }
 
             var grid = sender as Grid;
 
             int childCount = VisualTreeHelper.GetChildrenCount(grid);
-            for(int i = 0; i < childCount; i++) {
+            for (int i = 0; i < childCount; i++) {
                 var child = VisualTreeHelper.GetChild(grid, i) as FrameworkElement;
-                if(child.Name == "EditTextBox") {
+                if (child.Name == "EditTextBox") {
                     child.Visibility = Visibility.Visible;
                     child.LostFocus += EditTextBoxLostFocus;
                     child.Focus();
@@ -130,7 +143,7 @@ namespace Garlic.Bulb {
         }
 
         private void MoveRectangle_MouseDown(object sender, MouseButtonEventArgs e) {
-            if(e.LeftButton == MouseButtonState.Pressed) {
+            if (e.LeftButton == MouseButtonState.Pressed) {
                 DragMove();
             }
         }
