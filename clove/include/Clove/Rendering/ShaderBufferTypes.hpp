@@ -47,8 +47,8 @@ namespace garlic::clove {
     };
 
     struct LightCount {
-        int32_t numDirectional{ 0 };
-        int32_t numPoint{ 0 };
+        uint32_t numDirectional{ 0 };
+        uint32_t numPoint{ 0 };
     };
 
     //Lighting data needed shadows

@@ -38,8 +38,8 @@ layout(std140, set = 2, binding = 0) uniform Lights{
 	PointLightData pointLights[MAX_LIGHTS];
 };
 layout(std140, set = 2, binding = 1) uniform NumLights{
-	int numDirLights;
-	int numPointLights;
+	uint numDirLights;
+	uint numPointLights;
 };
 
 layout(std140, set = 0, binding = 4) uniform Colour{
