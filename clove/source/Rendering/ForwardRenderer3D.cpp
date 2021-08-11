@@ -171,14 +171,14 @@ namespace garlic::clove {
     }
 
     void ForwardRenderer3D::submitLight(DirectionalLight const &light) {
-        uint32_t const lightIndex = currentFrameData.bufferData.numLights.numDirectional++;
+        uint32_t const lightIndex{ currentFrameData.bufferData.numLights.numDirectional++ };
 
         currentFrameData.bufferData.lights.directionalLights[lightIndex]    = light.data;
         currentFrameData.bufferData.directionalShadowTransforms[lightIndex] = light.shadowTransform;
     }
 
     void ForwardRenderer3D::submitLight(PointLight const &light) {
-        uint32_t const lightIndex = currentFrameData.bufferData.numLights.numPoint++;
+        uint32_t const lightIndex{ currentFrameData.bufferData.numLights.numPoint++ };
 
         currentFrameData.bufferData.lights.pointLights[lightIndex] = light.data;
         currentFrameData.pointShadowTransforms[lightIndex]         = light.shadowTransforms;
@@ -229,10 +229,6 @@ namespace garlic::clove {
 
         //We can just write the struct straight in as all the mappings are based off of it's layout
         currentImageData.frameDataBuffer->write(&currentFrameData, 0, sizeof(currentFrameData));
-
-        //Map any non-UBO pieces of data (such as textures / shadow maps)
-        currentImageData.lightingDescriptorSet->map(*currentImageData.shadowMapViews, GhaImage::Layout::ShaderReadOnlyOptimal, 3);
-        currentImageData.lightingDescriptorSet->map(*currentImageData.cubeShadowMapViews, GhaImage::Layout::ShaderReadOnlyOptimal, 4);
 
         //Allocate a descriptor set for each mesh to be drawn
         std::vector<std::shared_ptr<GhaDescriptorSet>> meshSets;
@@ -504,7 +500,7 @@ namespace garlic::clove {
         createDepthBuffer();
         createRenderTargetFrameBuffers();
 
-        size_t const imageCount{ std::size(frameBuffers) };
+        size_t const imageCount{ frameBuffers.size() };
 
         inFlightImageData.resize(imageCount);
 
@@ -533,22 +529,7 @@ namespace garlic::clove {
                 .memoryType  = MemoryType::SystemMemory,
             });
 
-            //Allocate frame scope descriptor Sets
-            imageData.frameDescriptorPool = createDescriptorPool(bindingCounts, totalSets);
-
-            imageData.viewDescriptorSet     = imageData.frameDescriptorPool->allocateDescriptorSets(descriptorSetLayouts[DescriptorSetSlots::View]);
-            imageData.lightingDescriptorSet = imageData.frameDescriptorPool->allocateDescriptorSets(descriptorSetLayouts[DescriptorSetSlots::Lighting]);
-
-            //As we only have one UBO per frame for every GhaDescriptorSet we can map the buffer into them straight away
-            imageData.viewDescriptorSet->map(*imageData.frameDataBuffer, offsetof(FrameData::BufferData, viewData), sizeof(currentFrameData.bufferData.viewData), DescriptorType::UniformBuffer, 0);
-            imageData.viewDescriptorSet->map(*imageData.frameDataBuffer, offsetof(FrameData::BufferData, viewPosition), sizeof(currentFrameData.bufferData.viewPosition), DescriptorType::UniformBuffer, 1);
-
-            imageData.lightingDescriptorSet->map(*imageData.frameDataBuffer, offsetof(FrameData::BufferData, lights), sizeof(currentFrameData.bufferData.lights), DescriptorType::UniformBuffer, 0);
-            imageData.lightingDescriptorSet->map(*imageData.frameDataBuffer, offsetof(FrameData::BufferData, numLights), sizeof(currentFrameData.bufferData.numLights), DescriptorType::UniformBuffer, 1);
-            imageData.lightingDescriptorSet->map(*imageData.frameDataBuffer, offsetof(FrameData::BufferData, directionalShadowTransforms), sizeof(currentFrameData.bufferData.directionalShadowTransforms), DescriptorType::UniformBuffer, 2);
-            imageData.lightingDescriptorSet->map(*shadowSampler, 5); //NOLINT
-
-            //Create the shadow maps for each frame
+            //Create the shadow maps
             //Directional
             imageData.shadowMaps     = *ghaFactory->createImage(GhaImage::Descriptor{
                 .type        = GhaImage::Type::_2D,
@@ -596,7 +577,7 @@ namespace garlic::clove {
                 for(size_t j = 0; j < cubeMapLayerCount; ++j) {
                     imageData.cubeShadowMapFaceViews[i][j] = imageData.cubeShadowMaps->createView(GhaImageView::Descriptor{
                         .type       = GhaImageView::Type::_2D,
-                        .layer      = static_cast<uint32_t>(j),
+                        .layer      = static_cast<uint32_t>((i * cubeMapLayerCount) + j),
                         .layerCount = 1,
                     });
 
@@ -608,6 +589,23 @@ namespace garlic::clove {
                     });
                 }
             }
+
+            //Allocate frame scope descriptor Sets
+            imageData.frameDescriptorPool = createDescriptorPool(bindingCounts, totalSets);
+
+            imageData.viewDescriptorSet     = imageData.frameDescriptorPool->allocateDescriptorSets(descriptorSetLayouts[DescriptorSetSlots::View]);
+            imageData.lightingDescriptorSet = imageData.frameDescriptorPool->allocateDescriptorSets(descriptorSetLayouts[DescriptorSetSlots::Lighting]);
+
+            //As we only have one UBO per frame for every GhaDescriptorSet we can map the buffer into them straight away
+            imageData.viewDescriptorSet->map(*imageData.frameDataBuffer, offsetof(FrameData::BufferData, viewData), sizeof(currentFrameData.bufferData.viewData), DescriptorType::UniformBuffer, 0);
+            imageData.viewDescriptorSet->map(*imageData.frameDataBuffer, offsetof(FrameData::BufferData, viewPosition), sizeof(currentFrameData.bufferData.viewPosition), DescriptorType::UniformBuffer, 1);
+
+            imageData.lightingDescriptorSet->map(*imageData.frameDataBuffer, offsetof(FrameData::BufferData, lights), sizeof(currentFrameData.bufferData.lights), DescriptorType::UniformBuffer, 0);
+            imageData.lightingDescriptorSet->map(*imageData.frameDataBuffer, offsetof(FrameData::BufferData, numLights), sizeof(currentFrameData.bufferData.numLights), DescriptorType::UniformBuffer, 1);
+            imageData.lightingDescriptorSet->map(*imageData.frameDataBuffer, offsetof(FrameData::BufferData, directionalShadowTransforms), sizeof(currentFrameData.bufferData.directionalShadowTransforms), DescriptorType::UniformBuffer, 2);
+            imageData.lightingDescriptorSet->map(*imageData.shadowMapViews, GhaImage::Layout::ShaderReadOnlyOptimal, 3);
+            imageData.lightingDescriptorSet->map(*imageData.cubeShadowMapViews, GhaImage::Layout::ShaderReadOnlyOptimal, 4);
+            imageData.lightingDescriptorSet->map(*shadowSampler, 5); //NOLINT
         }
     }
 
