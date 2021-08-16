@@ -35,7 +35,8 @@ namespace garlic::membrane {
             : layer{ layer } {
             MessageHandler::bindToMessage(gcnew MessageSentHandler<Editor_CreateEntity ^>(this, &EditorLayerMessageProxy::createEntity));
             MessageHandler::bindToMessage(gcnew MessageSentHandler<Editor_DeleteEntity ^>(this, &EditorLayerMessageProxy::deleteEntity));
-            MessageHandler::bindToMessage(gcnew MessageSentHandler<Editor_CreateComponent ^>(this, &EditorLayerMessageProxy::createComponent));
+            MessageHandler::bindToMessage(gcnew MessageSentHandler<Editor_AddComponent ^>(this, &EditorLayerMessageProxy::addComponent));
+            MessageHandler::bindToMessage(gcnew MessageSentHandler<Editor_RemoveComponent ^>(this, &EditorLayerMessageProxy::removeComponent));
 
             MessageHandler::bindToMessage(gcnew MessageSentHandler<Editor_UpdateTransform ^>(this, &EditorLayerMessageProxy::updateTransform));
             MessageHandler::bindToMessage(gcnew MessageSentHandler<Editor_UpdateStaticModel ^>(this, &EditorLayerMessageProxy::updateStaticModel));
@@ -58,8 +59,12 @@ namespace garlic::membrane {
             layer->deleteEntity(entity);
         }
 
-        void createComponent(Editor_CreateComponent ^ message){
-            layer->createComponent(message->entity, message->componentType);
+        void addComponent(Editor_AddComponent ^ message){
+            layer->addComponent(message->entity, message->componentType);
+        }
+
+        void removeComponent(Editor_RemoveComponent ^ message){
+            layer->removeComponent(message->entity, message->componentType);
         }
 
         void updateTransform(Editor_UpdateTransform ^ message){
@@ -322,7 +327,7 @@ namespace garlic::membrane {
         MessageHandler::sendMessage(message);
     }
 
-    void EditorLayer::createComponent(clove::Entity entity, ComponentType componentType) {
+    void EditorLayer::addComponent(clove::Entity entity, ComponentType componentType) {
         bool added{ false };
         System::Object ^ initData;
 
@@ -378,12 +383,37 @@ namespace garlic::membrane {
         }
 
         if(added) {
-            Engine_OnComponentCreated ^ message { gcnew Engine_OnComponentCreated };
+            Engine_OnComponentAdded ^ message { gcnew Engine_OnComponentAdded };
             message->entity        = entity;
             message->componentType = componentType;
             message->data          = initData;
             MessageHandler::sendMessage(message);
         }
+    }
+
+    void EditorLayer::removeComponent(clove::Entity entity, ComponentType componentType) {
+        switch(componentType) {
+            case ComponentType::Transform:
+                currentScene.removeComponent<clove::TransformComponent>(entity);
+                break;
+            case ComponentType::StaticModel:
+                currentScene.removeComponent<clove::StaticModelComponent>(entity);
+                break;
+            case ComponentType::PointLight:
+                currentScene.removeComponent<clove::PointLightComponent>(entity);
+                break;
+            case ComponentType::RigidBody:
+                currentScene.removeComponent<clove::RigidBodyComponent>(entity);
+                break;
+            case ComponentType::CollisionShape:
+                currentScene.removeComponent<clove::CollisionShapeComponent>(entity);
+                break;
+        }
+
+        Engine_OnComponentRemoved ^ message { gcnew Engine_OnComponentRemoved };
+        message->entity        = entity;
+        message->componentType = componentType;
+        MessageHandler::sendMessage(message);
     }
 
     void EditorLayer::updateTransform(clove::Entity entity, clove::vec3f position, clove::vec3f rotation, clove::vec3f scale) {

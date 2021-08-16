@@ -49,7 +49,8 @@ namespace garlic::membrane {
         clove::Entity createEntity(std::string_view name = "New Entity");
         void deleteEntity(clove::Entity entity);
 
-        void createComponent(clove::Entity entity, ComponentType componentType);
+        void addComponent(clove::Entity entity, ComponentType componentType);
+        void removeComponent(clove::Entity entity, ComponentType componentType);
 
         void updateTransform(clove::Entity entity, clove::vec3f position, clove::vec3f rotation, clove::vec3f scale);
         void updateStaticModel(clove::Entity entity, std::string meshPath, std::string diffusePath, std::string specularPath);

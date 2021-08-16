@@ -27,16 +27,36 @@
                 <Style TargetType="{x:Type TextBlock}"
 					   x:Key="Header"
 					   BasedOn="{StaticResource {x:Type TextBlock}}">
-                    <Setter Property="FontWeight"
+					<Setter Property="Background"
+							Value="Transparent"/>
+					<Setter Property="FontWeight"
 							Value="Bold"/>
-                    <Setter Property="Background"
-							Value="{StaticResource Background3}"/>
-                </Style>
+				</Style>
 
-                <DataTemplate DataType="{x:Type local:TransformComponentViewModel}">
+				<Style TargetType="{x:Type Button}"
+					   x:Key="RemoveButton"
+					   BasedOn="{StaticResource {x:Type Button}}">
+					<Setter Property="Background"
+							Value="{StaticResource Error}"/>
+				</Style>
+
+				<DataTemplate DataType="{x:Type local:TransformComponentViewModel}">
                     <StackPanel>
-                        <TextBlock Text="{Binding Name}"
-								   Style="{StaticResource Header}"/>
+						<Grid Background="{StaticResource Background3}">
+							<Grid.ColumnDefinitions>
+								<ColumnDefinition Width="1*"/>
+								<ColumnDefinition Width="Auto"/>
+							</Grid.ColumnDefinitions>
+							
+							<TextBlock Text="{Binding Name}"
+									   Style="{StaticResource Header}"
+									   Grid.Column="0"/>
+							<Button Content="X"
+									Command="{Binding RemoveComponentCommand}"
+									Style="{StaticResource RemoveButton}"
+									Grid.Column="1"/>
+						</Grid>
+                        
                         <StackPanel Margin="10 0 0 0">
                             <local:Vector3Box Label="Position" 
 											  LeftFieldText="X" 
@@ -65,9 +85,22 @@
 
                 <DataTemplate DataType="{x:Type local:RigidBodyComponentViewModel}">
                     <StackPanel>
-                        <TextBlock Text="{Binding Name}"
-								   Style="{StaticResource Header}"/>
-                        <Grid Grid.Column="0" 
+						<Grid Background="{StaticResource Background3}">
+							<Grid.ColumnDefinitions>
+								<ColumnDefinition Width="1*"/>
+								<ColumnDefinition Width="Auto"/>
+							</Grid.ColumnDefinitions>
+
+							<TextBlock Text="{Binding Name}"
+									   Style="{StaticResource Header}"
+									   Grid.Column="0"/>
+							<Button Content="X"
+									Command="{Binding RemoveComponentCommand}"
+									Style="{StaticResource RemoveButton}"
+									Grid.Column="1"/>
+						</Grid>
+						
+						<Grid Grid.Column="0" 
 							  Margin="10 0 0 0">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="1*"/>
@@ -84,9 +117,22 @@
 
                 <DataTemplate DataType="{x:Type local:CollisionShapeComponentViewModel}">
                     <StackPanel>
-                        <TextBlock Text="{Binding Name}"
-								   Style="{StaticResource Header}"/>
-                        <Menu HorizontalAlignment="Left">
+						<Grid Background="{StaticResource Background3}">
+							<Grid.ColumnDefinitions>
+								<ColumnDefinition Width="1*"/>
+								<ColumnDefinition Width="Auto"/>
+							</Grid.ColumnDefinitions>
+
+							<TextBlock Text="{Binding Name}"
+									   Style="{StaticResource Header}"
+									   Grid.Column="0"/>
+							<Button Content="X"
+									Command="{Binding RemoveComponentCommand}"
+									Style="{StaticResource RemoveButton}"
+									Grid.Column="1"/>
+						</Grid>
+						
+						<Menu HorizontalAlignment="Left">
                             <MenuItem Header="{Binding CurrentShapeType}" 
 									  ItemsSource="{Binding AvailableShapes}">
                                 <!--Doing a regular DataTemplate here will cause a MenuItem within a MenuItem. So manually set up the container style ourselves-->
@@ -110,9 +156,22 @@
 
                 <DataTemplate DataType="{x:Type local:StaticModelComponentViewModel}">
                     <StackPanel>
-                        <TextBlock Text="{Binding Name}"
-								   Style="{StaticResource Header}"/>
-                        <Grid Margin="10, 0, 0, 0">
+						<Grid Background="{StaticResource Background3}">
+							<Grid.ColumnDefinitions>
+								<ColumnDefinition Width="1*"/>
+								<ColumnDefinition Width="Auto"/>
+							</Grid.ColumnDefinitions>
+
+							<TextBlock Text="{Binding Name}"
+									   Style="{StaticResource Header}"
+									   Grid.Column="0"/>
+							<Button Content="X"
+									Command="{Binding RemoveComponentCommand}"
+									Style="{StaticResource RemoveButton}"
+									Grid.Column="1"/>
+						</Grid>
+						
+						<Grid Margin="10, 0, 0, 0">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="Auto"/>
                                 <ColumnDefinition/>
@@ -177,11 +236,22 @@
                     </StackPanel>
                 </DataTemplate>
 
-                <DataTemplate DataType="{x:Type local:ComponentViewModel}">
-                    <TextBlock Text="{Binding Name}"
-							   Style="{StaticResource Header}"
-							   HorizontalAlignment="Stretch"/>
-                </DataTemplate>
+				<DataTemplate DataType="{x:Type local:ComponentViewModel}">
+					<Grid Background="{StaticResource Background3}">
+						<Grid.ColumnDefinitions>
+							<ColumnDefinition Width="1*"/>
+							<ColumnDefinition Width="Auto"/>
+						</Grid.ColumnDefinitions>
+
+						<TextBlock Text="{Binding Name}"
+								   Style="{StaticResource Header}"
+								   Grid.Column="0"/>
+						<Button Content="X"
+								Command="{Binding RemoveComponentCommand}"
+								Style="{StaticResource RemoveButton}"
+								Grid.Column="1"/>
+					</Grid>
+				</DataTemplate>
             </ListBox.Resources>
         </ListBox>
 

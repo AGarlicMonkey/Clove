@@ -22,7 +22,12 @@ namespace garlic::membrane {
     public:
         System::UInt32 entity;
     };
-    public ref class Editor_CreateComponent : public EditorMessage {
+    public ref class Editor_AddComponent : public EditorMessage {
+    public:
+        System::UInt32 entity;
+        ComponentType componentType;
+    };
+    public ref class Editor_RemoveComponent : public EditorMessage {
     public:
         System::UInt32 entity;
         ComponentType componentType;
@@ -103,11 +108,16 @@ namespace garlic::membrane {
     public:
         System::UInt32 entity;
     };
-    public ref class Engine_OnComponentCreated : public EngineMessage {
+    public ref class Engine_OnComponentAdded : public EngineMessage {
     public:
         System::UInt32 entity;
         ComponentType componentType;
         System::Object ^data;
+    };
+    public ref class Engine_OnComponentRemoved : public EngineMessage {
+    public:
+        System::UInt32 entity;
+        ComponentType componentType;
     };
     public ref class Engine_OnTransformChanged : public EngineMessage {
     public:

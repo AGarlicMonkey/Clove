@@ -41,6 +41,8 @@ namespace garlic::membrane {
         ComponentType &getComponent(clove::Entity entity);
         template<typename ComponentType>
         bool hasComponent(clove::Entity entity);
+        template<typename ComponentType>
+        void removeComponent(clove::Entity entity);
 
         inline void destroyAllEntities();
     };

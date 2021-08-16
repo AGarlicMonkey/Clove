@@ -25,6 +25,11 @@ namespace garlic::membrane {
     }
 
     template<typename ComponentType>
+    void Scene::removeComponent(clove::Entity entity) {
+        manager->removeComponent<ComponentType>(entity);
+    }
+
+    template<typename ComponentType>
     bool Scene::hasComponent(clove::Entity entity) {
         return manager->hasComponent<ComponentType>(entity);
     }
