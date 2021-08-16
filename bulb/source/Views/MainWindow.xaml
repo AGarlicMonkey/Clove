@@ -113,7 +113,7 @@
 							  DockPanel.Dock="Right"
 							  Width="{Binding Converter={StaticResource SizePercentageConverter}, ElementName=Dock, Path=ActualWidth, ConverterParameter=0.15}"
 							  HorizontalAlignment="Right"
-							  DataContext="{Binding Scene}"/>
+							  DataContext="{Binding Scene.SelectedEntity}"/>
 
 			<TextBlock x:Name="ToggleContentHint"
 					   Text="ctrl+space"

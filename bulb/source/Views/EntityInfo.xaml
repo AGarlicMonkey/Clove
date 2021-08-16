@@ -6,7 +6,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
 			 xmlns:local="clr-namespace:Garlic.Bulb"
              mc:Ignorable="d" d:DesignWidth="267.396" d:DesignHeight="155.156">
-    <StackPanel Visibility="{Binding EntityViewVisibility}">
+    <StackPanel>
         <TextBlock Text="Inspector"
 				   FontWeight="Bold"
 				   HorizontalAlignment="Center"
@@ -18,8 +18,8 @@
 				</TransformGroup>
 			</Separator.RenderTransform>
 		</Separator>
-        <TextBox Text="{Binding SelectedEntity.Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
-        <ListBox ItemsSource="{Binding SelectedEntity.Components}"
+        <TextBox Text="{Binding Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+        <ListBox ItemsSource="{Binding Components}"
 				 HorizontalContentAlignment="Stretch"
 				 ScrollViewer.HorizontalScrollBarVisibility="Disabled"
 				 BorderThickness="0 0 0 2">
