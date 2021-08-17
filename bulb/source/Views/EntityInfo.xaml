@@ -6,85 +6,246 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
 			 xmlns:local="clr-namespace:Garlic.Bulb"
              mc:Ignorable="d" d:DesignWidth="267.396" d:DesignHeight="155.156">
-    <StackPanel>
-        <TextBlock Text="Inspector"
+	<StackPanel>
+		<TextBlock Text="Inspector"
 				   FontWeight="Bold"
 				   HorizontalAlignment="Center"
 				   Margin="0 0 0 5"/>
-        <Separator RenderTransformOrigin="0.5,0.5">
-			<Separator.RenderTransform>
-				<TransformGroup>
-					<ScaleTransform ScaleY="2"/>
-				</TransformGroup>
-			</Separator.RenderTransform>
-		</Separator>
-        <TextBox Text="{Binding Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
-        <ListBox ItemsSource="{Binding Components}"
-				 HorizontalContentAlignment="Stretch"
-				 ScrollViewer.HorizontalScrollBarVisibility="Disabled"
-				 BorderThickness="0 0 0 2">
-            <ListBox.Resources>
-                <Style TargetType="{x:Type TextBlock}"
-					   x:Key="Header"
-					   BasedOn="{StaticResource {x:Type TextBlock}}">
-					<Setter Property="Background"
-							Value="Transparent"/>
-					<Setter Property="FontWeight"
-							Value="Bold"/>
-				</Style>
+		<StackPanel x:Name="InfoStackPanel">
+			<Separator RenderTransformOrigin="0.5,0.5">
+				<Separator.RenderTransform>
+					<TransformGroup>
+						<ScaleTransform ScaleY="2"/>
+					</TransformGroup>
+				</Separator.RenderTransform>
+			</Separator>
+			<TextBox Text="{Binding Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+			<ListBox ItemsSource="{Binding Components}"
+					 HorizontalContentAlignment="Stretch"
+					 ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+					 BorderThickness="0 0 0 2">
+				<ListBox.Resources>
+					<Style TargetType="{x:Type TextBlock}"
+						   x:Key="Header"
+						   BasedOn="{StaticResource {x:Type TextBlock}}">
+						<Setter Property="Background"
+								Value="Transparent"/>
+						<Setter Property="FontWeight"
+								Value="Bold"/>
+					</Style>
 
-				<Style TargetType="{x:Type Button}"
-					   x:Key="RemoveButton"
-					   BasedOn="{StaticResource {x:Type Button}}">
-					<Setter Property="Background"
-							Value="{StaticResource Error}"/>
-				</Style>
+					<Style TargetType="{x:Type Button}"
+						   x:Key="RemoveButton"
+						   BasedOn="{StaticResource {x:Type Button}}">
+						<Setter Property="Background"
+								Value="{StaticResource Error}"/>
+					</Style>
 
-				<DataTemplate DataType="{x:Type local:TransformComponentViewModel}">
-                    <StackPanel>
-						<Grid Background="{StaticResource Background3}">
-							<Grid.ColumnDefinitions>
-								<ColumnDefinition Width="1*"/>
-								<ColumnDefinition Width="Auto"/>
-							</Grid.ColumnDefinitions>
-							
-							<TextBlock Text="{Binding Name}"
-									   Style="{StaticResource Header}"
-									   Grid.Column="0"/>
-							<Button Content="X"
-									Command="{Binding RemoveComponentCommand}"
-									Style="{StaticResource RemoveButton}"
-									Grid.Column="1"/>
-						</Grid>
-                        
-                        <StackPanel Margin="10 0 0 0">
-                            <local:Vector3Box Label="Position" 
-											  LeftFieldText="X" 
-											  LeftFieldValue="{Binding PositionXValue, Mode=TwoWay}" 
-											  CenterFieldText="Y" 
-											  CenterFieldValue="{Binding PositionYValue, Mode=TwoWay}"
-											  RightFieldText="Z" 
-											  RightFieldValue="{Binding PositionZValue, Mode=TwoWay}"/>
-                            <local:Vector3Box Label="Rotation" 
-											  LeftFieldText="X" 
-											  LeftFieldValue="{Binding RotationXValue, Mode=TwoWay}" 
-											  CenterFieldText="Y" 
-											  CenterFieldValue="{Binding RotationYValue, Mode=TwoWay}" 
-											  RightFieldText="Z" 
-											  RightFieldValue="{Binding RotationZValue, Mode=TwoWay}"/>
-                            <local:Vector3Box Label="Scale" 
+					<DataTemplate DataType="{x:Type local:TransformComponentViewModel}">
+						<StackPanel>
+							<Grid Background="{StaticResource Background3}">
+								<Grid.ColumnDefinitions>
+									<ColumnDefinition Width="1*"/>
+									<ColumnDefinition Width="Auto"/>
+								</Grid.ColumnDefinitions>
+
+								<TextBlock Text="{Binding Name}"
+										   Style="{StaticResource Header}"
+										   Grid.Column="0"/>
+								<Button Content="X"
+										Command="{Binding RemoveComponentCommand}"
+										Style="{StaticResource RemoveButton}"
+										Grid.Column="1"/>
+							</Grid>
+
+							<StackPanel Margin="10 0 0 0">
+								<local:Vector3Box Label="Position" 
+												  LeftFieldText="X"
+												  LeftFieldValue="{Binding PositionXValue, Mode=TwoWay}"
+												  CenterFieldText="Y"
+												  CenterFieldValue="{Binding PositionYValue, Mode=TwoWay}"
+												  RightFieldText="Z"
+												  RightFieldValue="{Binding PositionZValue, Mode=TwoWay}"/>
+								<local:Vector3Box Label="Rotation"
+												  LeftFieldText="X"
+												  LeftFieldValue="{Binding RotationXValue, Mode=TwoWay}"
+												  CenterFieldText="Y"
+												  CenterFieldValue="{Binding RotationYValue, Mode=TwoWay}"
+												  RightFieldText="Z"
+												  RightFieldValue="{Binding RotationZValue, Mode=TwoWay}"/>
+								<local:Vector3Box Label="Scale"
+												  LeftFieldText="X"
+												  LeftFieldValue="{Binding ScaleXValue, Mode=TwoWay}"
+												  CenterFieldText="Y"
+												  CenterFieldValue="{Binding ScaleYValue, Mode=TwoWay}"
+												  RightFieldText="Z"
+												  RightFieldValue="{Binding ScaleZValue, Mode=TwoWay}"/>
+							</StackPanel>
+						</StackPanel>
+					</DataTemplate>
+
+					<DataTemplate DataType="{x:Type local:RigidBodyComponentViewModel}">
+						<StackPanel>
+							<Grid Background="{StaticResource Background3}">
+								<Grid.ColumnDefinitions>
+									<ColumnDefinition Width="1*"/>
+									<ColumnDefinition Width="Auto"/>
+								</Grid.ColumnDefinitions>
+
+								<TextBlock Text="{Binding Name}"
+										   Style="{StaticResource Header}"
+										   Grid.Column="0"/>
+								<Button Content="X"
+										Command="{Binding RemoveComponentCommand}"
+										Style="{StaticResource RemoveButton}"
+										Grid.Column="1"/>
+							</Grid>
+
+							<Grid Grid.Column="0"
+								  Margin="10 0 0 0">
+								<Grid.ColumnDefinitions>
+									<ColumnDefinition Width="1*"/>
+									<ColumnDefinition Width="2*"/>
+								</Grid.ColumnDefinitions>
+
+								<TextBlock Grid.Column="0"
+										   Text="Mass"/>
+								<TextBox Grid.Column="1"
+										 Text="{Binding Mass, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+							</Grid>
+						</StackPanel>
+					</DataTemplate>
+
+					<DataTemplate DataType="{x:Type local:CollisionShapeComponentViewModel}">
+						<StackPanel>
+							<Grid Background="{StaticResource Background3}">
+								<Grid.ColumnDefinitions>
+									<ColumnDefinition Width="1*"/>
+									<ColumnDefinition Width="Auto"/>
+								</Grid.ColumnDefinitions>
+
+								<TextBlock Text="{Binding Name}"
+										   Style="{StaticResource Header}"
+										   Grid.Column="0"/>
+								<Button Content="X"
+										Command="{Binding RemoveComponentCommand}"
+										Style="{StaticResource RemoveButton}"
+										Grid.Column="1"/>
+							</Grid>
+
+							<Menu HorizontalAlignment="Left">
+								<MenuItem Header="{Binding CurrentShapeType}"
+										  ItemsSource="{Binding AvailableShapes}">
+									<!--Doing a regular DataTemplate here will cause a MenuItem within a MenuItem. So manually set up the container style ourselves-->
+									<MenuItem.ItemContainerStyle>
+										<Style TargetType="MenuItem">
+											<Setter Property="Header"
+													Value="{Binding Name}"/>
+											<Setter Property="Command"
+													Value="{Binding OnSelectedCommand}"/>
+										</Style>
+									</MenuItem.ItemContainerStyle>
+								</MenuItem>
+							</Menu>
+							<StackPanel Orientation="Horizontal"
+										Visibility="{Binding RadiusVisibility}">
+								<TextBlock Text="Radius"/>
+								<TextBox Text="{Binding Radius, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+							</StackPanel>
+							<local:Vector3Box Visibility="{Binding HalfExtentsVisibility}"
+											  Label="Half Extents"
 											  LeftFieldText="X"
-											  LeftFieldValue="{Binding ScaleXValue, Mode=TwoWay}" 
-											  CenterFieldText="Y" 
-											  CenterFieldValue="{Binding ScaleYValue, Mode=TwoWay}" 
-											  RightFieldText="Z" 
-											  RightFieldValue="{Binding ScaleZValue, Mode=TwoWay}"/>
-                        </StackPanel>
-                    </StackPanel>
-                </DataTemplate>
+											  LeftFieldValue="{Binding HalfExtentsX, Mode=TwoWay}"
+											  CenterFieldText="Y"
+											  CenterFieldValue="{Binding HalfExtentsY, Mode=TwoWay}"
+											  RightFieldText="Z"
+											  RightFieldValue="{Binding HalfExtentsZ, Mode=TwoWay}"/>
+						</StackPanel>
+					</DataTemplate>
 
-                <DataTemplate DataType="{x:Type local:RigidBodyComponentViewModel}">
-                    <StackPanel>
+					<DataTemplate DataType="{x:Type local:StaticModelComponentViewModel}">
+						<StackPanel>
+							<Grid Background="{StaticResource Background3}">
+								<Grid.ColumnDefinitions>
+									<ColumnDefinition Width="1*"/>
+									<ColumnDefinition Width="Auto"/>
+								</Grid.ColumnDefinitions>
+
+								<TextBlock Text="{Binding Name}"
+										   Style="{StaticResource Header}"
+										   Grid.Column="0"/>
+								<Button Content="X"
+										Command="{Binding RemoveComponentCommand}"
+										Style="{StaticResource RemoveButton}"
+										Grid.Column="1"/>
+							</Grid>
+
+							<Grid Margin="10, 0, 0, 0">
+								<Grid.ColumnDefinitions>
+									<ColumnDefinition Width="Auto"/>
+									<ColumnDefinition/>
+								</Grid.ColumnDefinitions>
+								<Grid.RowDefinitions>
+									<RowDefinition/>
+									<RowDefinition/>
+									<RowDefinition/>
+								</Grid.RowDefinitions>
+
+								<!-- Mesh -->
+								<TextBlock Text="Mesh"
+										   Grid.Column="0"
+										   Grid.Row="0"
+										   Margin="0 0 10 0"/>
+								<Border BorderThickness="1"
+										BorderBrush="Transparent"
+										Background="{StaticResource Background2}"
+										Grid.Column="1"
+										Grid.Row="0"
+										CornerRadius="5">
+									<TextBlock Text="{Binding MeshPath, Mode=TwoWay}"
+											   AllowDrop="True"
+											   Drop="TextBox_Drop"
+											   ToolTip="{Binding MeshPath}"/>
+								</Border>
+
+								<!-- Diffuse Texture -->
+								<TextBlock Text="Diffuse Texture"
+										   Grid.Column="0"
+										   Grid.Row="1"
+										   Margin="0 0 10 0"/>
+								<Border BorderThickness="1"
+										BorderBrush="Transparent"
+										Background="{StaticResource Background2}"
+										Grid.Column="1"
+										Grid.Row="1"
+										CornerRadius="5">
+									<TextBlock Text="{Binding DiffuseTexturePath, Mode=TwoWay}"
+											   AllowDrop="True"
+											   Drop="TextBox_Drop"
+											   ToolTip="{Binding DiffuseTexturePath}"/>
+								</Border>
+
+								<!-- Specular Texture -->
+								<TextBlock Text="Specular Texture"
+										   Grid.Column="0"
+										   Grid.Row="2"
+										   Margin="0 0 10 0"/>
+								<Border BorderThickness="1"
+										BorderBrush="Transparent"
+										Background="{StaticResource Background2}"
+										Grid.Column="1"
+										Grid.Row="2"
+										CornerRadius="5">
+									<TextBlock Text="{Binding SpecularTexturePath, Mode=TwoWay}"
+											   AllowDrop="True"
+											   Drop="TextBox_Drop"
+											   ToolTip="{Binding SpecularTexturePath}"/>
+								</Border>
+							</Grid>
+						</StackPanel>
+					</DataTemplate>
+
+					<DataTemplate DataType="{x:Type local:ComponentViewModel}">
 						<Grid Background="{StaticResource Background3}">
 							<Grid.ColumnDefinitions>
 								<ColumnDefinition Width="1*"/>
@@ -99,176 +260,25 @@
 									Style="{StaticResource RemoveButton}"
 									Grid.Column="1"/>
 						</Grid>
-						
-						<Grid Grid.Column="0" 
-							  Margin="10 0 0 0">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="1*"/>
-                                <ColumnDefinition Width="2*"/>
-                            </Grid.ColumnDefinitions>
+					</DataTemplate>
+				</ListBox.Resources>
+			</ListBox>
 
-                            <TextBlock Grid.Column="0" 
-									   Text="Mass"/>
-                            <TextBox Grid.Column="1" 
-									 Text="{Binding Mass, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
-                        </Grid>
-                    </StackPanel>
-                </DataTemplate>
-
-                <DataTemplate DataType="{x:Type local:CollisionShapeComponentViewModel}">
-                    <StackPanel>
-						<Grid Background="{StaticResource Background3}">
-							<Grid.ColumnDefinitions>
-								<ColumnDefinition Width="1*"/>
-								<ColumnDefinition Width="Auto"/>
-							</Grid.ColumnDefinitions>
-
-							<TextBlock Text="{Binding Name}"
-									   Style="{StaticResource Header}"
-									   Grid.Column="0"/>
-							<Button Content="X"
-									Command="{Binding RemoveComponentCommand}"
-									Style="{StaticResource RemoveButton}"
-									Grid.Column="1"/>
-						</Grid>
-						
-						<Menu HorizontalAlignment="Left">
-                            <MenuItem Header="{Binding CurrentShapeType}" 
-									  ItemsSource="{Binding AvailableShapes}">
-                                <!--Doing a regular DataTemplate here will cause a MenuItem within a MenuItem. So manually set up the container style ourselves-->
-                                <MenuItem.ItemContainerStyle>
-                                    <Style TargetType="MenuItem">
-                                        <Setter Property="Header" 
-												Value="{Binding Name}"/>
-                                        <Setter Property="Command" 
-												Value="{Binding OnSelectedCommand}"/>
-                                    </Style>
-                                </MenuItem.ItemContainerStyle>
-                            </MenuItem>
-                        </Menu>
-                        <StackPanel Orientation="Horizontal" Visibility="{Binding RadiusVisibility}">
-                            <TextBlock Text="Radius"/>
-                            <TextBox Text="{Binding Radius, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
-                        </StackPanel>
-                        <local:Vector3Box Visibility="{Binding HalfExtentsVisibility}" Label="Half Extents" LeftFieldText="X" LeftFieldValue="{Binding HalfExtentsX, Mode=TwoWay}" CenterFieldText="Y" CenterFieldValue="{Binding HalfExtentsY, Mode=TwoWay}" RightFieldText="Z" RightFieldValue="{Binding HalfExtentsZ, Mode=TwoWay}"/>
-                    </StackPanel>
-                </DataTemplate>
-
-                <DataTemplate DataType="{x:Type local:StaticModelComponentViewModel}">
-                    <StackPanel>
-						<Grid Background="{StaticResource Background3}">
-							<Grid.ColumnDefinitions>
-								<ColumnDefinition Width="1*"/>
-								<ColumnDefinition Width="Auto"/>
-							</Grid.ColumnDefinitions>
-
-							<TextBlock Text="{Binding Name}"
-									   Style="{StaticResource Header}"
-									   Grid.Column="0"/>
-							<Button Content="X"
-									Command="{Binding RemoveComponentCommand}"
-									Style="{StaticResource RemoveButton}"
-									Grid.Column="1"/>
-						</Grid>
-						
-						<Grid Margin="10, 0, 0, 0">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="Auto"/>
-                                <ColumnDefinition/>
-                            </Grid.ColumnDefinitions>
-                            <Grid.RowDefinitions>
-                                <RowDefinition/>
-                                <RowDefinition/>
-                                <RowDefinition/>
-                            </Grid.RowDefinitions>
-
-                            <!-- Mesh -->
-                            <TextBlock Text="Mesh"
-									   Grid.Column="0"
-									   Grid.Row="0"
-									   Margin="0 0 10 0"/>
-                            <Border BorderThickness="1"
-									BorderBrush="Transparent"
-									Background="{StaticResource Background2}"
-									Grid.Column="1"
-									Grid.Row="0"
-									CornerRadius="5">
-                                <TextBlock Text="{Binding MeshPath, Mode=TwoWay}"
-										   AllowDrop="True"
-										   Drop="TextBox_Drop"
-										   ToolTip="{Binding MeshPath}"/>
-                            </Border>
-
-                            <!-- Diffuse Texture -->
-                            <TextBlock Text="Diffuse Texture"
-									   Grid.Column="0"
-									   Grid.Row="1"
-									   Margin="0 0 10 0"/>
-                            <Border BorderThickness="1"
-									BorderBrush="Transparent"
-									Background="{StaticResource Background2}"
-									Grid.Column="1"
-									Grid.Row="1"
-									CornerRadius="5">
-                                <TextBlock Text="{Binding DiffuseTexturePath, Mode=TwoWay}"
-										   AllowDrop="True"
-										   Drop="TextBox_Drop"
-										   ToolTip="{Binding DiffuseTexturePath}"/>
-                            </Border>
-
-                            <!-- Specular Texture -->
-                            <TextBlock Text="Specular Texture"
-									   Grid.Column="0"
-									   Grid.Row="2"
-									   Margin="0 0 10 0"/>
-                            <Border BorderThickness="1"
-									BorderBrush="Transparent"
-									Background="{StaticResource Background2}"
-									Grid.Column="1"
-									Grid.Row="2"
-									CornerRadius="5">
-                                <TextBlock Text="{Binding SpecularTexturePath, Mode=TwoWay}"
-										   AllowDrop="True"
-										   Drop="TextBox_Drop"
-										   ToolTip="{Binding SpecularTexturePath}"/>
-                            </Border>
-                        </Grid>
-                    </StackPanel>
-                </DataTemplate>
-
-				<DataTemplate DataType="{x:Type local:ComponentViewModel}">
-					<Grid Background="{StaticResource Background3}">
-						<Grid.ColumnDefinitions>
-							<ColumnDefinition Width="1*"/>
-							<ColumnDefinition Width="Auto"/>
-						</Grid.ColumnDefinitions>
-
-						<TextBlock Text="{Binding Name}"
-								   Style="{StaticResource Header}"
-								   Grid.Column="0"/>
-						<Button Content="X"
-								Command="{Binding RemoveComponentCommand}"
-								Style="{StaticResource RemoveButton}"
-								Grid.Column="1"/>
-					</Grid>
-				</DataTemplate>
-            </ListBox.Resources>
-        </ListBox>
-
-        <Menu HorizontalAlignment="Center">
-            <MenuItem Header="Add Component" 
-					  ItemsSource="{Binding ComponentMenuItems}">
-                <!--Doing a regular DataTemplate here will cause a MenuItem within a MenuItem. So manually set up the container style ourselves-->
-                <MenuItem.ItemContainerStyle>
-                    <Style TargetType="{x:Type MenuItem}"
-						   BasedOn="{StaticResource {x:Type MenuItem}}">
-                        <Setter Property="Header" 
-								Value="{Binding ComponentType}"/>
-                        <Setter Property="Command" 
-								Value="{Binding OnSelectedCommand}"/>
-                    </Style>
-                </MenuItem.ItemContainerStyle>
-            </MenuItem>
-        </Menu>
-    </StackPanel>
+			<Menu HorizontalAlignment="Center">
+				<MenuItem Header="Add Component"
+						  ItemsSource="{Binding ComponentMenuItems}">
+					<!--Doing a regular DataTemplate here will cause a MenuItem within a MenuItem. So manually set up the container style ourselves-->
+					<MenuItem.ItemContainerStyle>
+						<Style TargetType="{x:Type MenuItem}"
+							   BasedOn="{StaticResource {x:Type MenuItem}}">
+							<Setter Property="Header"
+									Value="{Binding ComponentType}"/>
+							<Setter Property="Command"
+									Value="{Binding OnSelectedCommand}"/>
+						</Style>
+					</MenuItem.ItemContainerStyle>
+				</MenuItem>
+			</Menu>
+		</StackPanel>
+	</StackPanel>
 </UserControl>

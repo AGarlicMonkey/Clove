@@ -64,7 +64,7 @@ namespace Garlic.Bulb {
             foreach (EntityViewModel entity in Entities) {
                 if (entity.EntityId == message.entity) {
                     Entities.Remove(entity);
-                    return;
+                    break;
                 }
             }
 
