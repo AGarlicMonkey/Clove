@@ -52,12 +52,14 @@ namespace garlic::clove {
             std::array<mat4f, MAX_JOINTS> matrixPalet{};
             matrixPalet.fill(mat4f{ 1.0f });
 
-            std::set<GeometryPass::Id> passIds;
-            for(auto const &technique : staticModel.model->getTechniques()) {
-                passIds.insert(technique.passIds.begin(), technique.passIds.end());
-            }
-            for(auto const &mesh : staticModel.model->getMeshes()) {
-                renderer->submitMesh(ForwardRenderer3D::MeshInfo{ mesh, staticModel.material, modelTransform, matrixPalet }, passIds);
+            if(staticModel.model.isValid()) {
+                std::set<GeometryPass::Id> passIds;
+                for(auto const &technique : staticModel.model->getTechniques()) {
+                    passIds.insert(technique.passIds.begin(), technique.passIds.end());
+                }
+                for(auto const &mesh : staticModel.model->getMeshes()) {
+                    renderer->submitMesh(ForwardRenderer3D::MeshInfo{ mesh, staticModel.material, modelTransform, matrixPalet }, passIds);
+                }
             }
         });
         //Submit animated meshes

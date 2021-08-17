@@ -340,14 +340,8 @@ namespace garlic::membrane {
                 break;
             case ComponentType::StaticModel:
                 if(!currentScene.hasComponent<clove::StaticModelComponent>(entity)) {
-                    std::string const meshPath{ "./cube.obj" };//TEMP: Hard coding to a cube for now. This will either need to just be raw vertex data or an internal cube shipped with the editor
-                    currentScene.addComponent<clove::StaticModelComponent>(entity, clove::Application::get().getAssetManager()->getStaticModel(meshPath));
-
-                    StaticModelComponentInitData ^ modelData { gcnew StaticModelComponentInitData{} };
-                    modelData->meshPath = gcnew System::String(meshPath.c_str());
-
+                    currentScene.addComponent<clove::StaticModelComponent>(entity);
                     added    = true;
-                    initData = modelData;
                 }
                 break;
             case ComponentType::PointLight:
