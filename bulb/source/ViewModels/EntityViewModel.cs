@@ -44,13 +44,15 @@ namespace Garlic.Bulb {
 
             //Set up commands
             SelectedCommand = new RelayCommand(() => OnSelected?.Invoke(this));
+
+            RefreshAvailableComponents();
         }
 
         public EntityViewModel(List<Membrane.Component> components) : this() {
             foreach (Membrane.Component component in components) {
                 Components.Add(CreateComponentViewModel(component.type, component.initData));
-                RefreshAvailableComponents();
             }
+            RefreshAvailableComponents();
         }
 
         public void AddComponent(Membrane.ComponentType type) {
