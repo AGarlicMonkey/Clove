@@ -1,4 +1,4 @@
-namespace garlic::clove {
+namespace clove {
     GhaDescriptorSetLayout::Descriptor const &VulkanDescriptorSetLayout::getDescriptor() const {
         return descriptor;
     }

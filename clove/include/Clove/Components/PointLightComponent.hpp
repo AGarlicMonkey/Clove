@@ -6,7 +6,7 @@
 #include <Clove/Maths/Matrix.hpp>
 #include <Clove/Maths/Vector.hpp>
 
-namespace garlic::clove {
+namespace clove {
     struct PointLightComponent {
         vec3f ambientColour{ 0.01f, 0.01f, 0.01f };
         vec3f diffuseColour{ 0.75f, 0.75f, 0.75f };
@@ -14,7 +14,7 @@ namespace garlic::clove {
     };
 }
 
-namespace garlic::clove {
+namespace clove {
     template<>
     inline serialiser::Node serialise(PointLightComponent const &object) {
         serialiser::Node node{};

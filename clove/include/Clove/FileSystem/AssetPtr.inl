@@ -1,6 +1,6 @@
 #include <Clove/Log/Log.hpp>
 
-namespace garlic::clove {
+namespace clove {
     template<typename AssetType>
     AssetPtr<AssetType>::AssetPtr()
         : assetPath{ std::make_shared<std::filesystem::path>() }

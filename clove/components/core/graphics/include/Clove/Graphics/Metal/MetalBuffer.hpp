@@ -4,7 +4,7 @@
 
 #import <MetalKit/MetalKit.h>
 
-namespace garlic::clove {
+namespace clove {
 	class MetalBuffer : public GhaBuffer {
 		//VARIABLES
 	private:

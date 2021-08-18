@@ -10,7 +10,7 @@
 #include <string_view>
 #include <vector>
 
-namespace garlic::membrane {
+namespace membrane {
     /**
      * @brief The layer that controls the interaction between the editor and the engine.
      * Is active while 'editing' and allows the user to build a scene

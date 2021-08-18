@@ -2,7 +2,7 @@
 
 #include <memory>
 
-namespace garlic::clove {
+namespace clove {
     enum class AudioApi {
         OpenAl
     };
@@ -10,6 +10,6 @@ namespace garlic::clove {
     class AhaDevice;
 }
 
-namespace garlic::clove {
+namespace clove {
     std::unique_ptr<AhaDevice> createAudioDevice(AudioApi api);
 }

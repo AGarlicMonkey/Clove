@@ -1,4 +1,4 @@
-namespace garlic::clove {
+namespace clove {
     template<typename EventType>
     EventHandle EventDispatcher::bindToEvent(ListenerFunction<EventType> &&function) {
         return manager.getEventContainer<EventType>().addListener(std::forward<ListenerFunction<EventType>>(function));

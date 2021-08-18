@@ -7,7 +7,7 @@
 
 CLOVE_DECLARE_LOG_CATEGORY(OPENAL)
 
-namespace garlic::clove {
+namespace clove {
     namespace {
         void printErrorAlc(ALenum error, std::string_view const fileName, uint_fast32_t const line) {
             switch(error) {

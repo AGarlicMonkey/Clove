@@ -1,4 +1,4 @@
-namespace garlic::clove {
+namespace clove {
     Application::State Application::getState() const {
         return currentState;
     }

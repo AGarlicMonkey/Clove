@@ -13,7 +13,7 @@
 #include <memory>
 #include <vector>
 
-namespace garlic::clove {
+namespace clove {
     class Surface;
     class GhaDevice;
     class Layer;
@@ -24,7 +24,7 @@ namespace garlic::clove {
     class RenderTarget;
 }
 
-namespace garlic::clove {
+namespace clove {
     class Application {
         //TYPES
     public:

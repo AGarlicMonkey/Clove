@@ -7,7 +7,7 @@
 #include <memory>
 #include <vector>
 
-namespace garlic::clove {
+namespace clove {
     class GhaShader;
     class GhaRenderPass;
     class GhaDescriptorSetLayout;
@@ -50,7 +50,7 @@ namespace garlic::clove {
     };
 }
 
-namespace garlic::clove {
+namespace clove {
     /**
      * @brief Represents the state of the current graphics pipeline.
      */

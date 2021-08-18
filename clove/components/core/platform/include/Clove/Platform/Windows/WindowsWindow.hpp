@@ -3,7 +3,7 @@
 #include "Clove/Platform/Window.hpp"
 #include "Clove/Platform/Windows/CloveWindows.hpp"
 
-namespace garlic::clove {
+namespace clove {
     class WindowsWindow : public Window {
         //VARIABLES
     private:

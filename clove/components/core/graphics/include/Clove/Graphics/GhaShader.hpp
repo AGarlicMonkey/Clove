@@ -3,7 +3,7 @@
 #include <Clove/Definitions.hpp>
 #include <cinttypes>
 
-namespace garlic::clove {
+namespace clove {
     /**
      * @brief A GhaShader represents a small piece of code that runs on the GPU
      */

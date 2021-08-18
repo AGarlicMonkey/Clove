@@ -4,7 +4,7 @@
 
 #include <glm/detail/type_quat.hpp>
 
-namespace garlic::clove {
+namespace clove {
     template<typename T>
     using quat = glm::qua<T, qualifier::defaultp>;
 

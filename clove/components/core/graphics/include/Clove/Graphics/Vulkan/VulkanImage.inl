@@ -1,4 +1,4 @@
-namespace garlic::clove {
+namespace clove {
     VkImage VulkanImage::getImage() const {
         return image;
     }

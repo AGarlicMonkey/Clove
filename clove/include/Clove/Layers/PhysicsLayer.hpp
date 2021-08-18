@@ -19,7 +19,7 @@ class btDiscreteDynamicsWorld;
 class btCollisionObject;
 class btCollisionShape;
 
-namespace garlic::clove {
+namespace clove {
     struct CollisionShapeComponent;
     struct RigidBodyComponent;
     class EntityManager;
@@ -33,7 +33,7 @@ namespace garlic::clove {
     };
 }
 
-namespace garlic::clove {
+namespace clove {
     class PhysicsLayer : public Layer {
         //TYPES
     private:

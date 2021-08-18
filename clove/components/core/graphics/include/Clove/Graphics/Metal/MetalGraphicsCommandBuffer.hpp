@@ -6,7 +6,7 @@
 #include <vector>
 #include <functional>
 
-namespace garlic::clove {
+namespace clove {
 	class MetalGraphicsCommandBuffer : public GhaGraphicsCommandBuffer {
 		//TYPES
 	public:

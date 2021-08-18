@@ -3,12 +3,12 @@
 #include <memory>
 #include <vector>
 
-namespace garlic::clove {
+namespace clove {
     class GhaRenderPass;
     class GhaImageView;
 }
 
-namespace garlic::clove {
+namespace clove {
     /**
      * @brief Provides attachments (as GraphicsImageViews) to a given GhaRenderPass.
      */

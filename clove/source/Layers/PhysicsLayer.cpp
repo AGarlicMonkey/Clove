@@ -14,7 +14,7 @@
 #include <Clove/Event/EventDispatcher.hpp>
 #include <btBulletDynamicsCommon.h>
 
-namespace garlic::clove {
+namespace clove {
     namespace {
         template<typename... Ts>
         struct match : Ts... { using Ts::operator()...; };

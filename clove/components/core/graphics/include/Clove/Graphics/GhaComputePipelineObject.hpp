@@ -5,12 +5,12 @@
 #include <memory>
 #include <vector>
 
-namespace garlic::clove {
+namespace clove {
     class GhaDescriptorSetLayout;
     class GhaShader;
 }
 
-namespace garlic::clove {
+namespace clove {
     class GhaComputePipelineObject {
         //TYPES
     public:

@@ -3,9 +3,9 @@
 #include <sstream>
 #include <yaml-cpp/yaml.h>
 
-using namespace garlic::clove::serialiser;
+using namespace clove::serialiser;
 
-namespace garlic::clove {
+namespace clove {
     namespace {
         void emittNode(YAML::Node &emitterNode, Node const &node) {
             if(node.getKey().length() <= 0 && node.numChildren() <= 0) {

@@ -3,7 +3,7 @@
 #include <Clove/Graphics/GhaGraphicsPipelineObject.hpp>
 #include <Clove/Maths/Vector.hpp>
 
-namespace garlic::clove {
+namespace clove {
     inline size_t constexpr vertexElementAlignment{ 16 };
     struct Vertex {
         alignas(vertexElementAlignment) vec3f position{ 0.0f };

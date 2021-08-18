@@ -28,7 +28,7 @@
 #include <string_view>
 #include <unordered_map>
 
-namespace garlic::clove {
+namespace clove {
     /**
      * @brief Used to create graphics objects. Abstracts away the underlying API.
      */

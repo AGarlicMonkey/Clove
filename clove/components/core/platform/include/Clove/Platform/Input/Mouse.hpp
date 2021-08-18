@@ -11,7 +11,7 @@
 #include <queue>
 #include <unordered_map>
 
-namespace garlic::clove {
+namespace clove {
     /**
      * @brief Provides an interface to handle any platform mouse events.
      */

@@ -4,7 +4,7 @@ using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
 
-namespace Garlic.Bulb
+namespace Bulb
 {
     /// <summary>
     /// A UserControl for displaying 3 component vectors

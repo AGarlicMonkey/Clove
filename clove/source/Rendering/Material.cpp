@@ -8,7 +8,7 @@
 #include <Clove/Graphics/GhaImage.hpp>
 #include <Clove/Graphics/GhaImageView.hpp>
 
-namespace garlic::clove {
+namespace clove {
     std::weak_ptr<GhaImage> Material::defaultImage{};
     std::weak_ptr<GhaImageView> Material::defaultView{};
 

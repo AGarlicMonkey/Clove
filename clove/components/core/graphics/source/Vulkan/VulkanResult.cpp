@@ -3,7 +3,7 @@
 #include <Clove/Definitions.hpp>
 #include <Clove/Log/Log.hpp>
 
-namespace garlic::clove {
+namespace clove {
     Result convertResult(VkResult result) {
         switch(result) {
             case VK_SUCCESS:

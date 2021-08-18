@@ -1,6 +1,6 @@
 #include "Clove/Event/EventDispatcher.hpp"
 
-namespace garlic::clove {
+namespace clove {
     EventDispatcher::EventDispatcher() = default;
 
     EventDispatcher::EventDispatcher(EventDispatcher &&other) noexcept = default;

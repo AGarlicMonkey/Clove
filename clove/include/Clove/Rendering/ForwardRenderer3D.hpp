@@ -12,7 +12,7 @@
 #include <set>
 #include <unordered_map>
 
-namespace garlic::clove {
+namespace clove {
     class RenderTarget;
     class Window;
     class Camera;
@@ -23,7 +23,7 @@ namespace garlic::clove {
     class GhaComputeQueue;
 }
 
-namespace garlic::clove {
+namespace clove {
     class ForwardRenderer3D {
         //TYPES
     public:

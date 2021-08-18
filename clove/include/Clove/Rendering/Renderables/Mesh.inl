@@ -1,4 +1,4 @@
-namespace garlic::clove {
+namespace clove {
     std::shared_ptr<GhaBuffer> const &Mesh::getVertexBuffer() const {
         return vertexBuffer;
     }

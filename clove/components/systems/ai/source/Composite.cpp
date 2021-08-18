@@ -1,6 +1,6 @@
 #include "Clove/AI/Composite.hpp"
 
-namespace garlic::clove {
+namespace clove {
     Composite::Composite() = default;
 
     Composite::Composite(Composite &&other) noexcept = default;

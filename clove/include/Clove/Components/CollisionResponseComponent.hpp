@@ -3,7 +3,7 @@
 #include <Clove/Delegate/MultiCastDelegate.hpp>
 #include <Clove/ECS/Entity.hpp>
 
-namespace garlic::clove {
+namespace clove {
     struct Collision {
         Entity entity;   /**< 'this' Entity. */
         Entity collider; /**< The Entity that collided with this entity */

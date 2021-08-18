@@ -1,6 +1,6 @@
 #include "Clove/Platform/Input/Mouse.hpp"
 
-namespace garlic::clove {
+namespace clove {
     Mouse::Event::Event() = default;
 
     Mouse::Event::Event(Type type, MouseButton button, vec2i pos)

@@ -2,7 +2,7 @@
 
 #include <Clove/ECS/Entity.hpp>
 
-namespace garlic::clove {
+namespace clove {
     /**
      * @brief Establishes a Parent -> Child relationship to which ever entity this is attached to.
      */

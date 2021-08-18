@@ -10,7 +10,7 @@
 //Making the assumption that this library will only be used with Bulb
 CLOVE_DECLARE_LOG_CATEGORY(BULB);
 
-namespace garlic::membrane {
+namespace membrane {
     namespace {
         clove::LogLevel convertLevel(LogLevel level) {
             switch(level) {

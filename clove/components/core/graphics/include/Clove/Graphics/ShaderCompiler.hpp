@@ -10,7 +10,7 @@
 #include <unordered_map>
 #include <vector>
 
-namespace garlic::clove::ShaderCompiler {
+namespace clove::ShaderCompiler {
     /**
      * @brief Compiles a GLSL shader file into SPIR-V shader byte code. 
      * @details All includes will be searched for as relative paths.

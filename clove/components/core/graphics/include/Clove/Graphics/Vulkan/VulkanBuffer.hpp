@@ -6,11 +6,11 @@
 
 #include <vulkan/vulkan.hpp>
 
-namespace garlic::clove {
+namespace clove {
     struct QueueFamilyIndices;
 }
 
-namespace garlic::clove {
+namespace clove {
     class VulkanBuffer : public GhaBuffer {
         //VARIABLES
     private:

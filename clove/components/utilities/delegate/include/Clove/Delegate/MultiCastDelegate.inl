@@ -1,4 +1,4 @@
-namespace garlic::clove {
+namespace clove {
     template<typename FunctionPrototype>
     MultiCastDelegate<FunctionPrototype>::MultiCastDelegate() {
         handleProxy         = std::make_shared<DelegateHandle::Proxy>();

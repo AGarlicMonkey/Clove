@@ -2,7 +2,7 @@
 
 #include <utility>
 
-namespace garlic::clove {
+namespace clove {
     VulkanSemaphore::VulkanSemaphore(DevicePointer device, VkSemaphore semaphore)
         : device{ std::move(device) }
         , semaphore{ semaphore } {

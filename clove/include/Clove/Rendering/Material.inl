@@ -1,4 +1,4 @@
-namespace garlic::clove {
+namespace clove {
     void Material::setDiffuseTexture(AssetPtr<Texture> texture) {
         diffuseTexture = std::move(texture);
     }

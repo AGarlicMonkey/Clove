@@ -2,9 +2,9 @@
 using System.Windows;
 using System.ComponentModel;
 
-using Membrane = garlic.membrane;
+using Membrane = membrane;
 
-namespace Garlic.Bulb {
+namespace Bulb {
     /// <summary>
     /// Interaction logic for Editor.xaml
     /// </summary>

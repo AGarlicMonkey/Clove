@@ -7,7 +7,7 @@
 #include <optional>
 #include <vector>
 
-namespace garlic::clove {
+namespace clove {
     enum class LoadOperation {
         Load,
         Clear,

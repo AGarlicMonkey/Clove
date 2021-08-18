@@ -5,7 +5,7 @@
 #include <Clove/Log/Log.hpp>
 #include <type_traits>
 
-namespace garlic::clove {
+namespace clove {
     bool ComponentContainerInterface::hasComponent(Entity entity) {
         return entity != NullEntity && entityToIndex.size() > entity && entityToIndex[entity] != nullIndex;
     }

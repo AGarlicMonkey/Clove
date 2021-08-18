@@ -6,7 +6,7 @@
 #include <memory>
 #include <Clove/DeltaTime.hpp>
 
-namespace garlic::clove {
+namespace clove {
     class BehaviourTree {
         //VARIABLES
     private:

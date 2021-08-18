@@ -5,7 +5,7 @@
 
 #include <filesystem>
 
-namespace garlic::clove::ModelLoader {
+namespace clove::ModelLoader {
     /**
      * @brief Loads a StaticModel from a given file path.
      * @param modelFilePath File path to a model.

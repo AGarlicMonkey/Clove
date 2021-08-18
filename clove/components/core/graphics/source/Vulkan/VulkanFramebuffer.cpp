@@ -1,6 +1,6 @@
 #include "Clove/Graphics/Vulkan/VulkanFramebuffer.hpp"
 
-namespace garlic::clove {
+namespace clove {
     VulkanFramebuffer::VulkanFramebuffer(DevicePointer device, VkFramebuffer framebuffer)
         : device{ std::move(device) }
         , framebuffer{ framebuffer } {

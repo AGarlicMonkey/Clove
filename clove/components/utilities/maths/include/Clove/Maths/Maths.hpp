@@ -2,7 +2,7 @@
 
 #include "Clove/Maths/MathsTypes.hpp"
 
-namespace garlic::clove {
+namespace clove {
     template<length_t L, typename T>
     vec<L, T> normalise(vec<L, T> const &v);
 

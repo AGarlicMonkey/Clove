@@ -3,7 +3,7 @@
 #include <Clove/Event/EventDispatcher.hpp>
 #include <typeinfo>
 
-namespace garlic::clove {
+namespace clove {
     template<typename ComponentType, typename... ConstructArgs>
     ComponentType &ComponentManager::addComponent(Entity entity, ConstructArgs &&... args) {
         return getContainer<ComponentType>().addComponent(entity, std::forward<ConstructArgs>(args)...);

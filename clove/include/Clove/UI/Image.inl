@@ -1,4 +1,4 @@
-namespace garlic::clove {
+namespace clove {
     void Image::setPosition(vec2f position) {
         this->position = std::move(position);
     }

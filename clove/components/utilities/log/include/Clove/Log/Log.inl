@@ -1,6 +1,6 @@
 #include <spdlog/fmt/fmt.h>
 
-namespace garlic::clove {
+namespace clove {
     Logger &Logger::get(){
         static Logger *instance{ nullptr };
 

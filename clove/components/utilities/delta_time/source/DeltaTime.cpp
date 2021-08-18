@@ -1,6 +1,6 @@
 #include "Clove/DeltaTime.hpp"
 
-namespace garlic::clove {
+namespace clove {
     DeltaTime::DeltaTime(float deltaSeconds)
         : deltaSeconds(deltaSeconds) {
     }

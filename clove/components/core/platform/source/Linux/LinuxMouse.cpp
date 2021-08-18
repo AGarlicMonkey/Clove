@@ -3,7 +3,7 @@
 
 #include <X11/cursorfont.h>
 
-namespace garlic::clove {
+namespace clove {
     vec2i Mouse::getPosition() const {//NOLINT It's designed for this function to not be static
         ::Window rootReturn{};
         ::Window childReturn{};

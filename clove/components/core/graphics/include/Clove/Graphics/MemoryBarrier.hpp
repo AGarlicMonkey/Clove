@@ -3,7 +3,7 @@
 #include "Clove/Graphics/GhaImage.hpp"
 #include "Clove/Graphics/Resource.hpp"
 
-namespace garlic::clove {
+namespace clove {
     enum class QueueType {
         None,
         Graphics,

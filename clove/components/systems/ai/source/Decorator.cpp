@@ -1,6 +1,6 @@
 #include "Clove/AI/Decorator.hpp"
 
-namespace garlic::clove {
+namespace clove {
     Decorator::Decorator() = default;
 
     Decorator::Decorator(Decorator &&other) noexcept = default;

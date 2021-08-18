@@ -1,6 +1,6 @@
 #include "Clove/AI/Selector.hpp"
 
-namespace garlic::clove {
+namespace clove {
     Selector::Selector() = default;
 
     Selector::Selector(Selector &&other) noexcept = default;

@@ -2,11 +2,11 @@
 
 #include <Clove/DeltaTime.hpp>
 
-namespace garlic::clove {
+namespace clove {
     class BlackBoard;
 }
 
-namespace garlic::clove {
+namespace clove {
     /**
 	 * @brief a Task is an action an AI agent can perform. Determined by a behaviour tree
 	 */

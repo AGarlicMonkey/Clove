@@ -3,7 +3,7 @@
 #include "Clove/Event/EventManager.hpp"
 #include "Clove/Event/EventTypes.hpp"
 
-namespace garlic::clove {
+namespace clove {
     class EventDispatcher {
         //VARIABLES
     private:

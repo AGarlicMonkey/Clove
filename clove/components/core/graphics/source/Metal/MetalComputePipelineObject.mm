@@ -1,6 +1,6 @@
 #include "Clove/Graphics/Metal/MetalComputePipelineObject.hpp"
 
-namespace garlic::clove {
+namespace clove {
 	MetalComputePipelineObject::MetalComputePipelineObject(id<MTLComputePipelineState> pipelineState)
 		: pipelineState{ pipelineState } {
 	}

@@ -28,7 +28,7 @@ extern "C" const size_t widget_pLength;
 extern "C" const char font_p[];
 extern "C" const size_t font_pLength;
 
-namespace garlic::clove {
+namespace clove {
     ForwardRenderer3D::ForwardRenderer3D(GhaDevice *graphicsDevice, std::unique_ptr<RenderTarget> renderTarget)
         : ghaDevice{ graphicsDevice }
         , renderTarget{ std::move(renderTarget) } {

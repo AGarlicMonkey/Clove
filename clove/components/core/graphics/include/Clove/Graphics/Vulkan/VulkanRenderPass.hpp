@@ -5,7 +5,7 @@
 
 #include <vulkan/vulkan.h>
 
-namespace garlic::clove {
+namespace clove {
     class VulkanRenderPass : public GhaRenderPass {
         //VARIABLES
     private:

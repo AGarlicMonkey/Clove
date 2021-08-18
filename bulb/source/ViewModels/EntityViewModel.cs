@@ -4,9 +4,9 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows.Input;
 
-using Membrane = garlic.membrane;
+using Membrane = membrane;
 
-namespace Garlic.Bulb {
+namespace Bulb {
     public class EntityViewModel : ViewModel {
         public uint EntityId { get; set; }
 

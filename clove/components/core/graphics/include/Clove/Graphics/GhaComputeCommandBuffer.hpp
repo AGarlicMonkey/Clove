@@ -7,14 +7,14 @@
 
 #include <Clove/Maths/Vector.hpp>
 
-namespace garlic::clove {
+namespace clove {
     class GhaBuffer;
     class GhaComputePipelineObject;
     class GhaDescriptorSet;
     class GhaImage;
 }
 
-namespace garlic::clove {
+namespace clove {
     /**
      * @brief A buffer for recording compute commands.
      * @details Allocated from a GhaComputeQueue.

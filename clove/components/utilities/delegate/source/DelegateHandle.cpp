@@ -1,6 +1,6 @@
 #include "Clove/Delegate/DelegateHandle.hpp"
 
-namespace garlic::clove {
+namespace clove {
     DelegateHandle::DelegateHandle() = default;
 
     DelegateHandle::DelegateHandle(IdType id, std::weak_ptr<Proxy> proxy)

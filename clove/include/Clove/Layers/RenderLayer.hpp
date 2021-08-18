@@ -4,12 +4,12 @@
 
 #include <Clove/DeltaTime.hpp>
 
-namespace garlic::clove {
+namespace clove {
     class ForwardRenderer3D;
     class EntityManager;
 }
 
-namespace garlic::clove {
+namespace clove {
     class RenderLayer : public Layer {
         //VARIABLES
     private:

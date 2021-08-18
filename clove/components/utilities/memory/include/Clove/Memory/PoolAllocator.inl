@@ -1,7 +1,7 @@
 #include <Clove/Definitions.hpp>
 #include <Clove/Log/Log.hpp>
 
-namespace garlic::clove {
+namespace clove {
     template<typename ItemType, AllocatorStrategy strategy>
     PoolAllocator<ItemType, strategy>::PoolArena::PoolArena(size_t const itemCount) {
         storage = std::unique_ptr<PoolItem[]>{ new PoolItem[itemCount] };

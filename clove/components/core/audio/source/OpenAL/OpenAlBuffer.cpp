@@ -4,7 +4,7 @@
 
 #include <utility>
 
-namespace garlic::clove {
+namespace clove {
     namespace {
         ALenum convertFormat(AhaBuffer::Format format) {
             switch(format) {

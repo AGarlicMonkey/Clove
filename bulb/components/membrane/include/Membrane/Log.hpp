@@ -1,6 +1,6 @@
 #pragma once
 
-namespace garlic::membrane {
+namespace membrane {
     public enum class LogLevel {
         Trace,
         Debug,
@@ -11,7 +11,7 @@ namespace garlic::membrane {
     };
 }
 
-namespace garlic::membrane {
+namespace membrane {
     public delegate void LogSink(System::String ^ message);
 
     /**

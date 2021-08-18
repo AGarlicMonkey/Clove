@@ -7,7 +7,7 @@
 #include <variant>
 #include <vector>
 
-namespace garlic::clove::serialiser {
+namespace clove::serialiser {
     /**
      * @brief Each serialisation node represents a value deserialised from a file.
      */
@@ -89,7 +89,7 @@ namespace garlic::clove::serialiser {
     };
 }
 
-namespace garlic::clove {
+namespace clove {
     template<typename UnkownType>
     serialiser::Node serialise(UnkownType const &object) {
         CLOVE_ASSERT(false, "No template specialisation provided");

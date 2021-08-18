@@ -1,4 +1,4 @@
-namespace garlic::clove {
+namespace clove {
     template<typename FunctionPrototype>
     SingleCastDelegate<FunctionPrototype>::SingleCastDelegate() = default;
 

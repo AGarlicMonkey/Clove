@@ -1,6 +1,6 @@
 #include "Clove/Graphics/Metal/MetalFence.hpp"
 
-namespace garlic::clove {
+namespace clove {
 	MetalFence::MetalFence(bool signaled)
 		: signaled{ signaled } {
 	}

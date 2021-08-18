@@ -7,7 +7,7 @@
 
 #include <queue>
 
-namespace garlic::clove{
+namespace clove{
     class GhaFence;
     class GhaSemaphore;
     class GhaGraphicsQueue;
@@ -17,7 +17,7 @@ namespace garlic::clove{
     class GhaFactory;
 }
 
-namespace garlic::clove {
+namespace clove {
     /**
      * @brief A RenderTarget backed by a GraphicsImages.
      */

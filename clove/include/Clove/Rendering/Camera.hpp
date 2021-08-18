@@ -3,7 +3,7 @@
 #include <Clove/Delegate/DelegateHandle.hpp>
 #include <Clove/Maths/Matrix.hpp>
 
-namespace garlic::clove {
+namespace clove {
     class Window;
 
     struct Viewport {
@@ -14,7 +14,7 @@ namespace garlic::clove {
     };
 }
 
-namespace garlic::clove {
+namespace clove {
     class Camera {
         //TYPES
     public:

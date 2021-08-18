@@ -7,7 +7,7 @@
 
 #include <Clove/Cast.hpp>
 
-namespace garlic::clove {
+namespace clove {
     MetalDescriptorSet::MetalDescriptorSet(id<MTLArgumentEncoder> vertexEncoder, id<MTLBuffer> vertexEncoderBuffer, id<MTLArgumentEncoder> pixelEncoder, id<MTLBuffer> pixelEncoderBuffer, id<MTLArgumentEncoder> computeEncoder, id<MTLBuffer> computeEncoderBuffer, std::shared_ptr<GhaDescriptorSetLayout> layout)
         : vertexEncoder{ vertexEncoder }
         , vertexEncoderBuffer{ vertexEncoderBuffer }

@@ -4,7 +4,7 @@
 
 #include <AL/al.h>
 
-namespace garlic::clove {
+namespace clove {
     class OpenAlListener : public AhaListener {
         //FUNCTIONS
     public:

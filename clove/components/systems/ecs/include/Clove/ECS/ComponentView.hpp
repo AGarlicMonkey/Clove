@@ -6,7 +6,7 @@
 
 #include <tuple>
 
-namespace garlic::clove {
+namespace clove {
     template<typename...>
     class ComponentView;
 

@@ -9,9 +9,9 @@
 #include <Clove/Graphics/GhaTransferQueue.hpp>
 #include <Clove/TextureLoader.hpp>
 
-using namespace garlic::clove;
+using namespace clove;
 
-namespace garlic::clove {
+namespace clove {
     std::unique_ptr<GhaDescriptorSetLayout> createMeshDescriptorSetLayout(GhaFactory &factory) {
         DescriptorSetBindingInfo const modelBinding{
             .binding   = 0,

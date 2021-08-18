@@ -1,7 +1,7 @@
 #include <Clove/FileSystem/VirtualFileSystem.hpp>
 #include <gtest/gtest.h>
 
-using namespace garlic::clove;
+using namespace clove;
 
 TEST(VirtualFileSystemTest, CanMountAndResolveAFilePath) {
     std::filesystem::path const rootPath{ "C:/Users/Test/Some/Root/Path" };

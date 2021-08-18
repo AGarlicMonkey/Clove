@@ -6,7 +6,7 @@
 #include <memory>
 #include <unordered_map>
 
-namespace garlic::clove {
+namespace clove {
     /**
 	 * @brief A callback that can have multiple bindings.
 	 * @tparam FunctionPrototype The function prototypes that can be bound to this delegate.

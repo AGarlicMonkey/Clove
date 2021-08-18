@@ -11,7 +11,7 @@
 #include <Clove/Definitions.hpp>
 #include <Clove/Log/Log.hpp>
 
-namespace garlic::clove {
+namespace clove {
     std::unique_ptr<GhaDevice> createGraphicsDevice(GraphicsApi api, std::any nativeWindow) {
         switch(api) {
 #if CLOVE_PLATFORM_WINDOWS

@@ -1,6 +1,6 @@
 #include "Clove/ECS/EntityManager.hpp"
 
-namespace garlic::clove {
+namespace clove {
     Entity EntityManager::nextEntity{ 1 };
 
     EntityManager::EntityManager()

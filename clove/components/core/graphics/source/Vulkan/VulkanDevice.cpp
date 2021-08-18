@@ -32,17 +32,17 @@ static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(
     VkDebugUtilsMessengerCallbackDataEXT const *pCallbackData,
     void *pUserData) {
     if((messageSeverity & VK_DEBUG_UTILS_MESSAGE_SEVERITY_INFO_BIT_EXT) != 0) {
-        CLOVE_LOG(LOG_CATEGORY_VULKAN, garlic::clove::LogLevel::Trace, pCallbackData->pMessage);
+        CLOVE_LOG(LOG_CATEGORY_VULKAN, clove::LogLevel::Trace, pCallbackData->pMessage);
     } else if((messageSeverity & VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT) != 0) {
-        CLOVE_LOG(LOG_CATEGORY_VULKAN, garlic::clove::LogLevel::Warning, pCallbackData->pMessage);
+        CLOVE_LOG(LOG_CATEGORY_VULKAN, clove::LogLevel::Warning, pCallbackData->pMessage);
     } else if((messageSeverity & VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT) != 0) {
-        CLOVE_LOG(LOG_CATEGORY_VULKAN, garlic::clove::LogLevel::Error, pCallbackData->pMessage);
+        CLOVE_LOG(LOG_CATEGORY_VULKAN, clove::LogLevel::Error, pCallbackData->pMessage);
     }
 
     return VK_FALSE;
 }
 
-namespace garlic::clove {
+namespace clove {
     namespace {
         VkResult createDebugUtilsMessengerEXT(VkInstance instance, VkDebugUtilsMessengerCreateInfoEXT const *pCreateInfo, VkAllocationCallbacks const *pAllocator, VkDebugUtilsMessengerEXT *pDebugMessenger) {
             auto func = reinterpret_cast<PFN_vkCreateDebugUtilsMessengerEXT>(vkGetInstanceProcAddr(instance, "vkCreateDebugUtilsMessengerEXT"));

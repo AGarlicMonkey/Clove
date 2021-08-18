@@ -18,7 +18,7 @@ namespace spdlog {
     }
 }
 
-namespace garlic::clove {
+namespace clove {
     enum class LogLevel {
         Trace,    /**< Extra info which is usually uneccessary. */
         Debug,    /**< Anything which could help with debugging. */
@@ -29,7 +29,7 @@ namespace garlic::clove {
     };
 }
 
-namespace garlic::clove {
+namespace clove {
     class Logger {
         //VARIABLES
     private:
@@ -52,13 +52,13 @@ namespace garlic::clove {
     };
 }
 
-#define CLOVE_LOG(category, level, ...) ::garlic::clove::Logger::get().log(category::name, level, __VA_ARGS__);
+#define CLOVE_LOG(category, level, ...) ::clove::Logger::get().log(category::name, level, __VA_ARGS__);
 
 #if CLOVE_ENABLE_ASSERTIONS
     #define CLOVE_ASSERT(x, ...)                                                                                          \
         {                                                                                                                 \
             if(!(x)) {                                                                                                    \
-                CLOVE_LOG(LOG_CATEGORY_CLOVE, ::garlic::clove::LogLevel::Critical, "Assertion Failed: {0}", __VA_ARGS__); \
+                CLOVE_LOG(LOG_CATEGORY_CLOVE, ::clove::LogLevel::Critical, "Assertion Failed: {0}", __VA_ARGS__); \
                 CLOVE_DEBUG_BREAK;                                                                                        \
             }                                                                                                             \
         }

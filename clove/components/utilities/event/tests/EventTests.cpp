@@ -1,7 +1,7 @@
 #include <Clove/Event/EventDispatcher.hpp>
 #include <gtest/gtest.h>
 
-using namespace garlic::clove;
+using namespace clove;
 
 TEST(EventTests, CanBroadcastAnEvent) {
     struct Event {

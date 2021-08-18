@@ -3,7 +3,7 @@
 #include <stb_image.h>
 #include <functional>
 
-namespace garlic::clove::TextureLoader {
+namespace clove::TextureLoader {
     Expected<Texture, std::runtime_error> loadTexture(std::filesystem::path const &path) {
         int width{ 0 };
         int height{ 0 };

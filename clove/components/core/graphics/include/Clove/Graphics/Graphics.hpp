@@ -5,11 +5,11 @@
 #include <any>
 #include <memory>
 
-namespace garlic::clove {
+namespace clove {
     class GhaDevice;
 }
 
-namespace garlic::clove {
+namespace clove {
     /**
      * @brief Create a Graphics Device to communicate with the graphics hardware.
      * @param api What API to use.

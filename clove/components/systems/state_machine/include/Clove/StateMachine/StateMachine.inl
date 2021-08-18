@@ -1,7 +1,7 @@
 #include "Clove/StateMachine/State.hpp"
 #include "Clove/StateMachine/Transition.hpp"
 
-namespace garlic::clove {
+namespace clove {
     template<typename Action>
     StateMachine<Action>::StateMachine(State<Action> *initialState)
         : currentState(initialState) {

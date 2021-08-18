@@ -2,7 +2,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtx/norm.hpp>
 
-namespace garlic::clove {
+namespace clove {
     template<length_t L, typename T>
     vec<L, T> normalise(vec<L, T> const &v) {
         return glm::normalize(v);

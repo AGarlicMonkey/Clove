@@ -6,11 +6,11 @@
 #include <memory>
 #include <vector>
 
-namespace garlic::clove {
+namespace clove {
     class Mesh;
 }
 
-namespace garlic::clove {
+namespace clove {
     /**
      * @brief Represents a collection of meshes.
      */

@@ -7,11 +7,11 @@
 #include <Clove/Maths/Vector.hpp>
 #include <memory>
 
-namespace garlic::clove {
+namespace clove {
     class GhaImageView;
 }
 
-namespace garlic::clove {
+namespace clove {
     /**
      * @brief Represents an arbitrary multidimensional (up to 3) array of sections of memory. Used in graphics operations.
      * @details Images can't be written to by the CPU directly. Data must be transferred into an image using a GhaBuffer

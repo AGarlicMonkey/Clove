@@ -5,7 +5,7 @@
 #include <cstddef>
 #include <memory>
 
-namespace garlic::clove {
+namespace clove {
     /**
      * @brief An allocator that prevents memory being fragmented but can only allocate a single type of item.
      * @details A PoolAllocator can only work on a single type of item because internally it works like 

@@ -1,4 +1,4 @@
-namespace garlic::clove {
+namespace clove {
     template<typename Action>
     State<Action>::State(StateInitialiser<Action> &&initialiser) {
         entryActions = std::move(initialiser.entryActions);

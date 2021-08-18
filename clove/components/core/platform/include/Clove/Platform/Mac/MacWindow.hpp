@@ -3,18 +3,18 @@
 #include "Clove/Platform/Mac/CloveMac.hpp"
 #include "Clove/Platform/Window.hpp"
 
-namespace garlic::clove {
+namespace clove {
     class Window;
     class MacWindow;
 }
 
 @interface MacWindowProxy : NSWindow <NSWindowDelegate>
 
-@property garlic::clove::MacWindow *cloveWindow;
+@property clove::MacWindow *cloveWindow;
 
 @end
 
-namespace garlic::clove {
+namespace clove {
     class MacWindow : public Window {
         //VARIABLES
     private:

@@ -6,14 +6,14 @@
 #include "Clove/Rendering/Renderables/StaticModel.hpp"
 #include "Clove/SerialisationCommon.hpp"
 
-namespace garlic::clove {
+namespace clove {
     struct StaticModelComponent {
         AssetPtr<StaticModel> model;
         std::shared_ptr<Material> material{ std::make_shared<Material>() };
     };
 }
 
-namespace garlic::clove {
+namespace clove {
     template<>
     inline serialiser::Node serialise(StaticModelComponent const &object) {
         serialiser::Node node{};

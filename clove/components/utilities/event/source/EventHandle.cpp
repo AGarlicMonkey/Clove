@@ -2,7 +2,7 @@
 
 #include "Clove/Event/EventContainerBase.hpp"
 
-namespace garlic::clove {
+namespace clove {
     EventHandle::EventHandle() = default;
 
     EventHandle::EventHandle(ListenerId id, EventContainerBase *container)

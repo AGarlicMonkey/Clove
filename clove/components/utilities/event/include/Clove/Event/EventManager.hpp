@@ -8,7 +8,7 @@
 #include <unordered_map>
 #include <vector>
 
-namespace garlic::clove {
+namespace clove {
     class EventManager {
         //TYPES
     private:

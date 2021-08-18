@@ -1,7 +1,7 @@
 #include <Clove/Definitions.hpp>
 #include <Clove/Log/Log.hpp>
 
-namespace garlic::clove {
+namespace clove {
     template<typename DataType>
     void BlackBoard::setValue(Key key, DataType value) {
         if(dataMap.find(key) == dataMap.end()) {

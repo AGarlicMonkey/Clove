@@ -4,11 +4,11 @@
 
 #include <memory>
 
-namespace garlic::clove {
+namespace clove {
     class Window;
 }
 
-namespace garlic::clove {
+namespace clove {
     /**
      * @brief A Surface backed by a platform Window.
      */

@@ -4,7 +4,7 @@
 
 #include <memory>
 
-namespace garlic::clove {
+namespace clove {
     class Decorator : public Task {
         //VARIABLES
     protected:

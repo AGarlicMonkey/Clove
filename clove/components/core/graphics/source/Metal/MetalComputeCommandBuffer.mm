@@ -8,7 +8,7 @@
 
 #include <Clove/Cast.hpp>
 
-namespace garlic::clove {
+namespace clove {
 	MetalComputeCommandBuffer::MetalComputeCommandBuffer(bool allowReuse)
 		: allowReuse{ allowReuse } {
 	}

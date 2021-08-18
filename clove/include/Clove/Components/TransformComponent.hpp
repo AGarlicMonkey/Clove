@@ -4,7 +4,7 @@
 
 #include <Clove/Maths/MathsTypes.hpp>
 
-namespace garlic::clove {
+namespace clove {
     /**
      * @brief A TransformComponent holds the position, rotation and scale of an Entity.
      */
@@ -43,7 +43,7 @@ namespace garlic::clove {
     };
 }
 
-namespace garlic::clove {
+namespace clove {
     template<>
     inline serialiser::Node serialise(TransformComponent const &object) {
         serialiser::Node node{};

@@ -1,6 +1,6 @@
 #include <cassert>
 
-namespace garlic::clove {
+namespace clove {
     template<typename T, typename E>
     Expected<T, E>::Expected(T const &value) noexcept
         : value{ value } {

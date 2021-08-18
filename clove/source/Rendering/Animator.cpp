@@ -8,7 +8,7 @@
 #include <Clove/Timer.hpp>
 #include <cmath>
 
-namespace garlic::clove {
+namespace clove {
     namespace {
         std::vector<JointPose> lerpJointPoses(AnimationPose const &posesA, AnimationPose const &posesB, float const time) {
             size_t const jointCount{ posesA.poses.size() };

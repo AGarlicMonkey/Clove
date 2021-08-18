@@ -4,7 +4,7 @@
 
 #include <MetalKit/MetalKit.h>
 
-namespace garlic::clove {
+namespace clove {
 	class MetalImage : public GhaImage {
 		//VARIABLES
 	private:

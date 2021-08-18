@@ -1,7 +1,7 @@
 #include <memory>
 #include <vector>
 
-namespace garlic::clove {
+namespace clove {
     template<typename Action>
     class Transition;
 
@@ -18,7 +18,7 @@ namespace garlic::clove {
     };
 }
 
-namespace garlic::clove {
+namespace clove {
     /**
 	 * @brief A State is a State that a StateMachine can currently be in.
 	 * @details A State is comprised of entry Actions, Actions and exit Actions. These are certain behaviours

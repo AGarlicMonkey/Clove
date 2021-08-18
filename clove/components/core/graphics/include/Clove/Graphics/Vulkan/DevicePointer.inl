@@ -1,4 +1,4 @@
-namespace garlic::clove {
+namespace clove {
     VkDevice DevicePointer::get() const {
         return logicalDevice;
     }

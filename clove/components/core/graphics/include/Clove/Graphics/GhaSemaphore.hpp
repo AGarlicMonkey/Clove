@@ -1,6 +1,6 @@
 #pragma once
 
-namespace garlic::clove {
+namespace clove {
     /**
      * @brief A GhaSemaphore is a synchronisation object that is used to synchronise queues between each other.
      * @details Semaphores have two states: signaled and unsignaled. Once a signaled semaphore has been read it's

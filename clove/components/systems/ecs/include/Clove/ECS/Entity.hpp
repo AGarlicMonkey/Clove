@@ -2,7 +2,7 @@
 
 #include <cinttypes>
 
-namespace garlic::clove {
+namespace clove {
     using Entity = uint32_t;
 
     inline constexpr Entity NullEntity{ 0 };

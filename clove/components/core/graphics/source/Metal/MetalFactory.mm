@@ -24,7 +24,7 @@
 
 #include <Clove/Cast.hpp>
 
-namespace garlic::clove {
+namespace clove {
     namespace {
         MTLVertexFormat convertAttributeFormat(VertexAttributeFormat garlicFormat) {
             switch(garlicFormat) {

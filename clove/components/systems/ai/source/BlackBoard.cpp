@@ -4,7 +4,7 @@ namespace {
     size_t constexpr defaultMemorySize{ 1024 };
 }
 
-namespace garlic::clove {
+namespace clove {
     BlackBoard::BlackBoard()
         : BlackBoard(defaultMemorySize) {
     }

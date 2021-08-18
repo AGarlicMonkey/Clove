@@ -31,7 +31,7 @@
 #include <Clove/Log/Log.hpp>
 #include <fstream>
 
-namespace garlic::clove {
+namespace clove {
     namespace {
         VkCommandPoolCreateFlags convertCommandPoolCreateFlags(QueueFlags garlicFlags) {
             VkCommandPoolCreateFlags flags{ 0 };

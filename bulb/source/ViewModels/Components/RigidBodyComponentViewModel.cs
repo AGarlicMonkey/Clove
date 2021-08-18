@@ -1,6 +1,6 @@
-using Membrane = garlic.membrane;
+using Membrane = membrane;
 
-namespace Garlic.Bulb {
+namespace Bulb {
     public class RigidBodyComponentViewModel : ComponentViewModel {
         public string Mass {
             get => mass.ToString();

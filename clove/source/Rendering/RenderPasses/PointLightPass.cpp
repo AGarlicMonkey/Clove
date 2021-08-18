@@ -17,7 +17,7 @@ extern "C" const size_t meshcubeshadowmap_vLength;
 extern "C" const char meshcubeshadowmap_p[];
 extern "C" const size_t meshcubeshadowmap_pLength;
 
-namespace garlic::clove {
+namespace clove {
     PointLightPass::PointLightPass(GhaFactory &ghaFactory, std::shared_ptr<GhaRenderPass> ghaRenderPass) {
         //Build include map
         std::unordered_map<std::string, std::string> shaderIncludes;

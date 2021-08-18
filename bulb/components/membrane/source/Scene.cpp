@@ -13,9 +13,9 @@
 #include <fstream>
 #include <typeinfo>
 
-using namespace garlic::clove;
+using namespace clove;
 
-namespace garlic::membrane {
+namespace membrane {
     namespace {
         template<typename ComponentType>
         void serialiseComponent(serialiser::Node &entityNode, EntityManager &manager, Entity entity) {

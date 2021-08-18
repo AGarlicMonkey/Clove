@@ -4,7 +4,7 @@
 #include "Clove/ModelLoader.hpp"
 #include "Clove/TextureLoader.hpp"
 
-namespace garlic::clove {
+namespace clove {
     AssetManager::AssetManager(VirtualFileSystem *vfs)
         : vfs{ vfs } {
     }

@@ -3,7 +3,7 @@
 #include <Clove/Definitions.hpp>
 #include <Clove/Log/Log.hpp>
 
-namespace garlic::clove {
+namespace clove {
     LinuxWindow::LinuxWindow(Descriptor const &descriptor)
         : Window(keyboardDispatcher, mouseDispatcher) {
         CLOVE_LOG(LOG_CATEGORY_CLOVE, LogLevel::Trace, "Creating window: {0} ({1}, {2})", descriptor.title, descriptor.width, descriptor.height);

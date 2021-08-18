@@ -2,7 +2,7 @@
 
 #include "Clove/ECS/Entity.hpp"
 
-namespace garlic::clove {
+namespace clove {
     template<typename ComponentType>
     struct ComponentAddedEvent {
         Entity entity;

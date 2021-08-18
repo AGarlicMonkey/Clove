@@ -8,7 +8,7 @@
 #include <Clove/Graphics/GhaFactory.hpp>
 #include <Clove/Graphics/GhaGraphicsQueue.hpp>
 
-namespace garlic::clove {
+namespace clove {
     GraphicsImageRenderTarget::GraphicsImageRenderTarget(GhaImage::Descriptor imageDescriptor, std::shared_ptr<GhaFactory> factory)
         : imageDescriptor{ imageDescriptor }
         , factory{ std::move(factory) } {
@@ -45,7 +45,7 @@ namespace garlic::clove {
     }
 
     void GraphicsImageRenderTarget::submit(uint32_t imageIndex, size_t const frameId, GraphicsSubmitInfo submission) {
-        using namespace garlic::clove;
+        using namespace clove;
 
         submission.signalSemaphores.push_back(renderFinishedSemaphore);
         graphicsQueue->submit({ std::move(submission) }, nullptr);

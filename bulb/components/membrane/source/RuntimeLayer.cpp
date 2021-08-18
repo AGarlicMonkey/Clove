@@ -10,7 +10,7 @@
 #include <Clove/Maths/MathsHelpers.hpp>
 #include <Clove/ModelLoader.hpp>
 
-namespace garlic::membrane {
+namespace membrane {
     RuntimeLayer::RuntimeLayer()
         : clove::Layer{ "Runtime Layer" }
         , currentScene{ clove::Application::get().getEntityManager(), "scene.yaml" } {

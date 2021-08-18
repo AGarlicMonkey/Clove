@@ -2,7 +2,7 @@
 
 #include <Clove/Maths/Vector.hpp>
 
-namespace garlic::clove {
+namespace clove {
 	class DrawableElement {
 		//FUNCTIONS
 	public:

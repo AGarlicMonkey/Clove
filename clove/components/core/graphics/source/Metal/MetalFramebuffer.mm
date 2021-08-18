@@ -1,6 +1,6 @@
 #include "Clove/Graphics/Metal/MetalFramebuffer.hpp"
 
-namespace garlic::clove {
+namespace clove {
     MetalFramebuffer::MetalFramebuffer(MTLRenderPassDescriptor *renderPassDescriptor)
         : renderPassDescriptor{ renderPassDescriptor } {
     }

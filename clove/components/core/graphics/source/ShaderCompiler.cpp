@@ -14,7 +14,7 @@
 #include <spirv_msl.hpp>
 #include <sstream>
 
-namespace garlic::clove::ShaderCompiler {
+namespace clove::ShaderCompiler {
     namespace {
         /**
          * @brief Keeps a map for shader source strings to provide as included files.

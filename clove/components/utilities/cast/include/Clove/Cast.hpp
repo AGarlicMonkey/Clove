@@ -1,6 +1,6 @@
 #pragma once
 
-namespace garlic::clove {
+namespace clove {
     /**
      * @brief Casts a polymorphic type from SourceType to DestType.
      * @details This cast is designed for situations where you know

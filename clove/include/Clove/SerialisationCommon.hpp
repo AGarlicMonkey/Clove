@@ -8,7 +8,7 @@
 #include <Clove/Maths/Quaternion.hpp>
 #include <Clove/Serialisation/Node.hpp>
 
-namespace garlic::clove {
+namespace clove {
     //Vec3
     template<>
     inline serialiser::Node serialise(vec3f const &object) {

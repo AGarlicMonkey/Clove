@@ -1,6 +1,6 @@
 using System.IO;
 
-namespace Garlic.Bulb {
+namespace Bulb {
     public class FileViewModel : DirectoryItemViewModel {
         public override ObjectType Type => ObjectType.File;
 

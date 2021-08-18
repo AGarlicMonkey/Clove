@@ -6,7 +6,7 @@
 #include <vector>
 #include <functional>
 
-namespace garlic::clove {
+namespace clove {
 	class MetalComputeCommandBuffer : public GhaComputeCommandBuffer {
 		//VARIABLES
 	private:

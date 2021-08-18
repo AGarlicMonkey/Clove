@@ -1,6 +1,6 @@
 #include "Clove/AI/Sequence.hpp"
 
-namespace garlic::clove {
+namespace clove {
     Sequence::Sequence() = default;
 
     Sequence::Sequence(Sequence &&other) noexcept = default;

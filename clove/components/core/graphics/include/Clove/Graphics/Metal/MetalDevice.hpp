@@ -8,12 +8,12 @@
 #include <MetalKit/MetalKit.h>
 #endif
 
-namespace garlic::clove {
+namespace clove {
 	class MetalFactory;
 	struct DeviceWrapper;
 }
 
-namespace garlic::clove {
+namespace clove {
 	class MetalDevice : public GhaDevice {
 		//VARIABLES
 	private:

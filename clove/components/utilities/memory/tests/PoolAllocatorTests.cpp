@@ -2,7 +2,7 @@
 #include <array>
 #include <gtest/gtest.h>
 
-using namespace garlic::clove;
+using namespace clove;
 
 TEST(PoolAllocatorTests, CanAllocateAnItem) {
     size_t constexpr numOfItems = 100;

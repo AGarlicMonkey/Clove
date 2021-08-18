@@ -2,11 +2,11 @@
 
 #include "Clove/Layer.hpp"
 
-namespace garlic::clove {
+namespace clove {
     class EntityManager;
 }
 
-namespace garlic::clove {
+namespace clove {
     /**
      * @brief Calculates the world matrices of the entities.
      */

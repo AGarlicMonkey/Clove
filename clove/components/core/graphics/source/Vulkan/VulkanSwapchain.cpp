@@ -7,7 +7,7 @@
 
 #include <Clove/Cast.hpp>
 
-namespace garlic::clove {
+namespace clove {
     VulkanSwapchain::VulkanSwapchain(DevicePointer device, VkSwapchainKHR swapchain, VkFormat swapChainImageFormat, VkExtent2D swapChainExtent)
         : device{ std::move(device) }
         , swapchain{ swapchain }

@@ -1,6 +1,6 @@
 #include "Clove/Graphics/Metal/MetalGraphicsPipelineObject.hpp"
 
-namespace garlic::clove {
+namespace clove {
     MetalGraphicsPipelineObject::MetalGraphicsPipelineObject(id<MTLRenderPipelineState> pipeline, id<MTLDepthStencilState> depthStencil)
         : pipeline{ pipeline }
         , depthStencil{ depthStencil }{

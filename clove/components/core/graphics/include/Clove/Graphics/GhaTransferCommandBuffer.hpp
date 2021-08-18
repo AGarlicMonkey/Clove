@@ -7,11 +7,11 @@
 
 #include <Clove/Maths/Vector.hpp>
 
-namespace garlic::clove {
+namespace clove {
     class GhaBuffer;
 }
 
-namespace garlic::clove {
+namespace clove {
     /**
      * @brief A buffer for recording transfer commands.
      * @details Allocated from a GhaTransferQueue.

@@ -5,7 +5,7 @@
 
 #include <Clove/Log/Log.hpp>
 
-namespace garlic::clove {
+namespace clove {
 	MetalSwapchain::MetalSwapchain(std::vector<std::shared_ptr<GhaImage>> images, GhaImage::Format imageFormat, vec2ui imageSize)
 		: images{ std::move(images) }
 		, imageFormat{ imageFormat }

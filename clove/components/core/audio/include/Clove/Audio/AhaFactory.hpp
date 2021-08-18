@@ -7,7 +7,7 @@
 #include <Clove/Expected.hpp>
 #include <stdexcept>
 
-namespace garlic::clove {
+namespace clove {
     /**
 	 * @brief Responsible for creating all audio objects.
 	 */

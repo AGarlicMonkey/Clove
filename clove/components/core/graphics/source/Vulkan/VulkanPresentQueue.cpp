@@ -10,7 +10,7 @@
 
 #include <Clove/Cast.hpp>
 
-namespace garlic::clove {
+namespace clove {
     VulkanPresentQueue::VulkanPresentQueue(DevicePointer device, VkQueue queue)
         : device{ std::move(device) }
         , queue{ queue } {

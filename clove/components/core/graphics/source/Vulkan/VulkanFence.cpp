@@ -2,7 +2,7 @@
 
 #include <utility>
 
-namespace garlic::clove {
+namespace clove {
     VulkanFence::VulkanFence(DevicePointer device, VkFence fence)
         : device{ std::move(device) }
         , fence{ fence } {

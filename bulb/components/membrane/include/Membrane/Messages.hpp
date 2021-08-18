@@ -3,7 +3,7 @@
 #include "Membrane/EditorTypes.hpp"
 #include "Membrane/MessageBase.hpp"
 
-namespace garlic::membrane {
+namespace membrane {
     // clang-format off
     //Types
     public ref struct Component{

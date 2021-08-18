@@ -1,6 +1,6 @@
 #pragma once
 
-namespace garlic::membrane {
+namespace membrane {
     // clang-format off
     public enum class ComponentType {
         Transform,

@@ -14,7 +14,7 @@
 }
 @end
 
-namespace garlic::clove{
+namespace clove{
     MacWindow::MacWindow(Descriptor const &descriptor)
         : Window(keyboardDispatcher, mouseDispatcher) {
         //Application specific init

@@ -5,7 +5,7 @@
 
 #include <vulkan/vulkan.h>
 
-namespace garlic::clove {
+namespace clove {
     class VulkanComputePipelineObject : public GhaComputePipelineObject {
         //VARIABLES
     private:

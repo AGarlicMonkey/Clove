@@ -4,7 +4,7 @@
 
 #include <Clove/Log/Log.hpp>
 
-namespace garlic::clove {
+namespace clove {
     namespace {
         MTLTextureType convertImageViewType(GhaImageView::Type type, uint32_t arrayCount) {
             switch (type) {

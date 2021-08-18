@@ -1,6 +1,6 @@
 #include "Clove/Graphics/Vulkan/VulkanGraphicsPipelineObject.hpp"
 
-namespace garlic::clove {
+namespace clove {
     VulkanGraphicsPipelineObject::VulkanGraphicsPipelineObject(DevicePointer device, VkPipeline pipeline, VkPipelineLayout pipelineLayout)
         : device{ std::move(device) }
         , pipeline{ pipeline }

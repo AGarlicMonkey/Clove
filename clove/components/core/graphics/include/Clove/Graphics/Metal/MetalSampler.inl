@@ -1,4 +1,4 @@
-namespace garlic::clove {
+namespace clove {
 	id<MTLSamplerState> MetalSampler::getSamplerState() const {
 		return samplerState;
 	}

@@ -1,6 +1,6 @@
 #include "Clove/Layer.hpp"
 
-namespace garlic::clove {
+namespace clove {
     Layer::Layer(std::string name)
         : debugName(std::move(name)) {
     }

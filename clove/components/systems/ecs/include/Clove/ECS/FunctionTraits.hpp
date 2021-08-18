@@ -1,6 +1,6 @@
 #pragma once
 
-namespace garlic::clove {
+namespace clove {
     template<typename FunctionType>
     struct FunctionTraits;
 

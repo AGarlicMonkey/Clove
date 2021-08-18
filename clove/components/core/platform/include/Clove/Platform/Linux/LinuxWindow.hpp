@@ -3,11 +3,11 @@
 #include "Clove/Platform/Linux/CloveLinux.hpp"
 #include "Clove/Platform/Window.hpp"
 
-namespace garlic::clove {
+namespace clove {
     class GhaFactory;
 }
 
-namespace garlic::clove {
+namespace clove {
     class LinuxWindow : public Window {
         //VARIABLES
     private:

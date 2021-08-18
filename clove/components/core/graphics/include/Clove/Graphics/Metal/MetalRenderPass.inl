@@ -1,4 +1,4 @@
-namespace garlic::clove{
+namespace clove{
 	MTLRenderPipelineColorAttachmentDescriptorArray* MetalRenderPass::getColourAttachments() const {
 		return colourAttachments;
 	}

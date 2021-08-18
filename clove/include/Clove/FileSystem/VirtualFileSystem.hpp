@@ -3,7 +3,7 @@
 #include <filesystem>
 #include <unordered_map>
 
-namespace garlic::clove {
+namespace clove {
     /**
      * @brief Manages a file system that mounts system paths to aliases.
      * @details These aliases will not change between systems. Providing a way

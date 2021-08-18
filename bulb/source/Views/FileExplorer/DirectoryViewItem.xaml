@@ -1,4 +1,4 @@
-<Button x:Class="Garlic.Bulb.DirectoryViewItem"
+<Button x:Class="Bulb.DirectoryViewItem"
 		x:Name="this"
 		xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
 		xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"

@@ -4,6 +4,6 @@
 
 #include <vulkan/vulkan.h>
 
-namespace garlic::clove {
+namespace clove {
     VkPipelineStageFlags convertStage(PipelineStage stage);
 }

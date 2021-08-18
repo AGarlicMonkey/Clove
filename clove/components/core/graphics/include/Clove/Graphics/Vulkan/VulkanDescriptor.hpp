@@ -4,6 +4,6 @@
 
 #include <vulkan/vulkan.h>
 
-namespace garlic::clove{
+namespace clove{
     VkDescriptorType getDescriptorType(DescriptorType garlicType);
 }

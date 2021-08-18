@@ -2,7 +2,7 @@
 
 #include <utility>
 
-namespace garlic::clove {
+namespace clove {
     BehaviourTree::BehaviourTree() = default;
 
     BehaviourTree::BehaviourTree(BehaviourTree &&other) noexcept = default;

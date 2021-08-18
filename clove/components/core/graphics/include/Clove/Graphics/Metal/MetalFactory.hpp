@@ -6,7 +6,7 @@
 
 @class MetalView;
 
-namespace garlic::clove {
+namespace clove {
 	class MetalFactory : public GhaFactory {
 		//VARIABLES
 	private:

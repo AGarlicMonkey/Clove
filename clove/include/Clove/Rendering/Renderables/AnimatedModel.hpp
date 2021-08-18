@@ -9,7 +9,7 @@
 #include <vector>
 #include <memory>
 
-namespace garlic::clove {
+namespace clove {
     /**
      * @brief Represents a collection of meshes that can be animated.
      */

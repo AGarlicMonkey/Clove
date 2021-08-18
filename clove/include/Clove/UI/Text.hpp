@@ -5,11 +5,11 @@
 
 #include <vector>
 
-namespace garlic::clove {
+namespace clove {
     class GrpahicsFactory;
 }
 
-namespace garlic::clove {
+namespace clove {
     class Text : public DrawableElement {
         //VARIABLES
     private:

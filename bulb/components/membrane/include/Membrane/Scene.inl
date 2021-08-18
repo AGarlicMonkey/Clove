@@ -1,4 +1,4 @@
-namespace garlic::membrane {
+namespace membrane {
     clove::Entity Scene::createEntity() {
         clove::Entity entity{ manager->create() };
         knownEntities.push_back(entity);

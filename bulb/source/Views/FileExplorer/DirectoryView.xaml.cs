@@ -1,7 +1,7 @@
 using System.Windows;
 using System.Windows.Controls;
 
-namespace Garlic.Bulb {
+namespace Bulb {
     /// <summary>
     /// A UserControl that displays the entire contents of a single directory in a grid.
     /// </summary>

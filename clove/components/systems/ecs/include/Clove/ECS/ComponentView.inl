@@ -1,4 +1,4 @@
-namespace garlic::clove {
+namespace clove {
     template<typename... ExcludedTypes, typename... ComponentTypes>
     ComponentView<Exclude<ExcludedTypes...>, ComponentTypes...>::ComponentView(std::tuple<ComponentContainer<ComponentTypes> *...> containerViews)
         : containerViews{ std::move(containerViews) }

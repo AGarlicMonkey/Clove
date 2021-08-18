@@ -6,7 +6,7 @@
 #include <unordered_map>
 #include <vector>
 
-namespace garlic::clove {
+namespace clove {
 	class MetalDescriptorPool : public GhaDescriptorPool {
 		//TYPES
 	private:

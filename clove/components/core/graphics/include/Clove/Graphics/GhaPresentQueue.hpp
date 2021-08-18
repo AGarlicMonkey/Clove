@@ -5,7 +5,7 @@
 #include <memory>
 #include <vector>
 
-namespace garlic::clove {
+namespace clove {
     class GhaSemaphore;
     class GhaSwapchain;
 
@@ -17,7 +17,7 @@ namespace garlic::clove {
     };
 }
 
-namespace garlic::clove {
+namespace clove {
     /**
 	 * @brief Presents a swapchain. Displaying it's contents on the Window / Surface it represents.
      * @details Note that unlike the other queues, a GhaPresentQueue does not need a command buffer.

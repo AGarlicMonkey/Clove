@@ -1,6 +1,6 @@
 #include "Clove/Graphics/Metal/MetalImageView.hpp"
 
-namespace garlic::clove {
+namespace clove {
     MetalImageView::MetalImageView(id<MTLTexture> texture)
         : texture{ texture }{
     }

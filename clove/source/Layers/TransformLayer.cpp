@@ -8,7 +8,7 @@
 #include <Clove/Maths/Maths.hpp>
 #include <Clove/Maths/MathsHelpers.hpp>
 
-namespace garlic::clove {
+namespace clove {
     namespace {
         mat4f calculateWorldMatrix(EntityManager *entityManager, TransformComponent &transform, Entity parent) {
             if(entityManager->hasComponent<TransformComponent>(parent)) {

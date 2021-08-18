@@ -3,7 +3,7 @@
 #include <Clove/Definitions.hpp>
 #include <Clove/Log/Log.hpp>
 
-namespace garlic::clove {
+namespace clove {
     VkAccessFlags convertAccessFlags(AccessFlags garlicAccess) {
         VkAccessFlags flags = 0;
         uint32_t total      = 0;

@@ -1,6 +1,6 @@
 #pragma once
 
-namespace garlic::clove {
+namespace clove {
     enum class GraphicsApi {
         None,
 #if CLOVE_PLATFORM_WINDOWS

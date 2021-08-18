@@ -1,6 +1,6 @@
 #include <Clove/Timer.hpp>
 
-namespace garlic::clove {
+namespace clove {
     EventDispatcher &EntityManager::getDispatcher() {
         return ecsEventDispatcher;
     }

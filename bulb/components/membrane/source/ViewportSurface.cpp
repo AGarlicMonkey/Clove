@@ -5,9 +5,9 @@
 
 #include <Clove/Log/Log.hpp>
 
-using namespace garlic::clove;
+using namespace clove;
 
-namespace garlic::membrane {
+namespace membrane {
     namespace {
         Key convertKey(System::Windows::Input::Key key) {
             switch(key) {
@@ -287,7 +287,7 @@ namespace garlic::membrane {
     // clang-format on
 }
 
-namespace garlic::membrane {
+namespace membrane {
     ViewportSurface::ViewportSurface()
         : messageProxy{ gcnew ViewportSurfaceMessageProxy(this) }
         , keyboard{ keyboardDispatcher }

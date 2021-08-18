@@ -5,7 +5,7 @@
 #include <Clove/Definitions.hpp>
 #include <cstddef>
 
-namespace garlic::clove {
+namespace clove {
     /**
      * @brief Represents an arbitrary section of memory. Used in graphics operations.
      */

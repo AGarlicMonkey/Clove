@@ -2,7 +2,7 @@
 #include <gtest/gtest.h>
 #include <set>
 
-using namespace garlic::clove;
+using namespace clove;
 
 class ValueComponent {
 public:

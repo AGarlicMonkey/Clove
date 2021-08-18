@@ -4,7 +4,7 @@
 #include <Clove/Log/Log.hpp>
 #include <cstdlib>
 
-namespace garlic::clove {
+namespace clove {
     StackAllocator::StackAllocator(size_t sizeBytes)
         : stackSize(sizeBytes) {
         stack = reinterpret_cast<std::byte *>(malloc(stackSize));

@@ -1,6 +1,6 @@
 #include "Clove/ECS/ComponentManager.hpp"
 
-namespace garlic::clove {
+namespace clove {
     ComponentManager::ComponentManager(EventDispatcher *dispatcher)
         : ecsEventDispatcher(dispatcher) {
     }

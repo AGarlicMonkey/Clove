@@ -4,7 +4,7 @@
 #include <cstddef>
 #include <list>
 
-namespace garlic::clove {
+namespace clove {
     /**
      * @brief An allocator that prevents memory fragmentation that works for any size of allocation.
      * @details A ListAllocator is a bit more complicated than a PoolAllocator because

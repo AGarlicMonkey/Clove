@@ -7,12 +7,12 @@
 #include <unordered_map>
 #include <filesystem>
 
-namespace garlic::clove {
+namespace clove {
     class GhaDescriptorSetLayout;
     class GhaFactory;
 }
 
-namespace garlic::clove {
+namespace clove {
     //Graphics sets
     std::unique_ptr<GhaDescriptorSetLayout> createMeshDescriptorSetLayout(GhaFactory &factory);
     std::unique_ptr<GhaDescriptorSetLayout> createViewDescriptorSetLayout(GhaFactory &factory);

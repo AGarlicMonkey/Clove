@@ -2,12 +2,12 @@
 #include <memory>
 #include <vector>
 
-namespace garlic::clove {
+namespace clove {
     template<typename Action>
     class State;
 }
 
-namespace garlic::clove {
+namespace clove {
     /**
 	 * @brief A Transition defines a condition on how to transition from one State to another
 	 * @details Transitions can also perform actions while transitioning between States

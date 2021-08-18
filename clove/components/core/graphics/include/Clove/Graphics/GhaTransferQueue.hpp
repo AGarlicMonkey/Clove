@@ -5,7 +5,7 @@
 
 #include <vector>
 
-namespace garlic::clove {
+namespace clove {
     class GhaFence;
     class GhaSemaphore;
 
@@ -16,7 +16,7 @@ namespace garlic::clove {
     };
 }
 
-namespace garlic::clove {
+namespace clove {
     /**
      * @brief Creates buffers that can record transfer commands and then be submitted.
      */

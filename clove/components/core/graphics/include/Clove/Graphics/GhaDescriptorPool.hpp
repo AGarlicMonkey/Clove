@@ -6,7 +6,7 @@
 #include <memory>
 #include <vector>
 
-namespace garlic::clove {
+namespace clove {
     class GhaDescriptorSet;
     class GhaDescriptorSetLayout;
 
@@ -19,7 +19,7 @@ namespace garlic::clove {
     };
 }
 
-namespace garlic::clove {
+namespace clove {
     /**
      * @brief Used to allocate GhaDescriptorSets. GhaDescriptorPool is not tied to a specific GhaDescriptorSetLayout.
      */

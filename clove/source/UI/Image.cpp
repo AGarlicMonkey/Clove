@@ -11,7 +11,7 @@
 #include <Clove/Maths/Maths.hpp>
 #include <Clove/Maths/MathsHelpers.hpp>
 
-namespace garlic::clove {
+namespace clove {
     Image::Image() {
         vec2ui constexpr imageDimensions{ 1, 1 };
         uint32_t constexpr bytesPerTexel{ 4 };

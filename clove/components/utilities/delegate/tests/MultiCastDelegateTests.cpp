@@ -1,7 +1,7 @@
 #include <Clove/Delegate/MultiCastDelegate.hpp>
 #include <gtest/gtest.h>
 
-using namespace garlic::clove;
+using namespace clove;
 
 TEST(MultiCastDelegateTests, CanBroadcastADelegate) {
     bool called{ false };

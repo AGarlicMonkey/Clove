@@ -1,6 +1,6 @@
 #include "Clove/Rendering/RenderPasses/GeometryPass.hpp"
 
-namespace garlic::clove {
+namespace clove {
     GeometryPass::GeometryPass() = default;
 
     GeometryPass::GeometryPass(GeometryPass const &other) = default;

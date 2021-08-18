@@ -1,6 +1,6 @@
 #include "Clove/Platform/Input/Keyboard.hpp"
 
-namespace garlic::clove {
+namespace clove {
     Keyboard::Event::Event() = default;
 
     Keyboard::Event::Event(Type type, Key key)

@@ -5,7 +5,7 @@
 
 #include <Clove/Log/Log.hpp>
 
-namespace garlic::clove {
+namespace clove {
     namespace {
         VkMemoryPropertyFlags getMemoryPropertyFlags(MemoryType garlicProperties) {
             switch(garlicProperties) {

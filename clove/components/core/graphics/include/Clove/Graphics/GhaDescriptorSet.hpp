@@ -5,13 +5,13 @@
 
 #include <span>
 
-namespace garlic::clove {
+namespace clove {
     class GhaBuffer;
     class GhaSampler;
     class GhaImageView;
 }
 
-namespace garlic::clove {
+namespace clove {
     /**
      * @brief Used to associate data from certain containers into a binding inside a GhaShader.
      * @details A 'set' is defined in the shader by: layout(set = 0, binding = 1). Whenever

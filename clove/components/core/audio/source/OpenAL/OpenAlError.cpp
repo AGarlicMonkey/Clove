@@ -3,7 +3,7 @@
 #include <AL/alc.h>
 #include <Clove/Log/Log.hpp>
 
-namespace garlic::clove {
+namespace clove {
     void printErrorAl(ALenum error, std::string_view const fileName, uint_fast32_t const line) {
         switch(error) {
             case AL_INVALID_NAME:

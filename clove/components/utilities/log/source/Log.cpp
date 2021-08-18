@@ -5,7 +5,7 @@
 #include <spdlog/sinks/stdout_color_sinks.h>
 #include <spdlog/spdlog.h>
 
-namespace garlic::clove {
+namespace clove {
     Logger::Logger() {
         auto consoleSink = std::make_shared<spdlog::sinks::stdout_color_sink_mt>();
         auto fileSink    = std::make_shared<spdlog::sinks::basic_file_sink_mt>("CLOVE_LOG.txt", true);

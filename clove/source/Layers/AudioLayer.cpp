@@ -10,7 +10,7 @@
 #include <Clove/ECS/EntityManager.hpp>
 #include <Clove/Log/Log.hpp>
 
-namespace garlic::clove {
+namespace clove {
     AudioLayer::AudioLayer(EntityManager *entityManager)
         : Layer("Audio")
         , entityManager{ entityManager } {

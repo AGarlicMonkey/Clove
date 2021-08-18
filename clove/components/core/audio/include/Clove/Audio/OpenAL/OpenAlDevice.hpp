@@ -4,11 +4,11 @@
 
 #include <AL/alc.h>
 
-namespace garlic::clove {
+namespace clove {
     class OpenAlFactory;
 }
 
-namespace garlic::clove {
+namespace clove {
     /**
      * @brief Represents the actual hardware used for audio rendering. Can be quieried for info about the device.
      */

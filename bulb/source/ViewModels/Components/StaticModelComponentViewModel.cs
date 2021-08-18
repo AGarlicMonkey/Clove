@@ -1,6 +1,6 @@
-using Membrane = garlic.membrane;
+using Membrane = membrane;
 
-namespace Garlic.Bulb {
+namespace Bulb {
     class StaticModelComponentViewModel : ComponentViewModel {
         public string MeshPath {
             get => meshPath;

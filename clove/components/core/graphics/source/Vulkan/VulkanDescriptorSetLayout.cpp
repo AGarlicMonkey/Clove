@@ -1,6 +1,6 @@
 #include "Clove/Graphics/Vulkan/VulkanDescriptorSetLayout.hpp"
 
-namespace garlic::clove {
+namespace clove {
     VulkanDescriptorSetLayout::VulkanDescriptorSetLayout(DevicePointer device, VkDescriptorSetLayout layout, Descriptor descriptor)
         : device{ std::move(device) }
         , layout{ layout }

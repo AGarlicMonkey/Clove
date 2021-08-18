@@ -4,7 +4,7 @@
 
 #include <Clove/DeltaTime.hpp>
 
-namespace garlic::clove {
+namespace clove {
     class Sequence : public Composite {
         //FUNCTIONS
     public:

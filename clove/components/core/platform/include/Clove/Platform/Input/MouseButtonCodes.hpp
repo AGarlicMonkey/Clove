@@ -6,7 +6,7 @@
 
 #include <ostream>
 
-namespace garlic::clove {
+namespace clove {
     enum class MouseButton {
         None      = -2,
         Undefined = -1,

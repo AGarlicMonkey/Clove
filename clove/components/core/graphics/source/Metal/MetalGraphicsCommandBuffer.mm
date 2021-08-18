@@ -12,7 +12,7 @@
 
 #include <Clove/Cast.hpp>
 
-namespace garlic::clove {
+namespace clove {
     namespace {
         MTLIndexType getIndexType(IndexType garlicType) {
             switch(garlicType) {

@@ -5,7 +5,7 @@
 
 #include <Clove/DeltaTime.hpp>
 
-namespace garlic::clove {
+namespace clove {
     /**
      * @brief A Layer represents a slice of functionality that can be injected into Clove.
      */

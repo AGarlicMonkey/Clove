@@ -5,7 +5,7 @@
 #include <Clove/Maths/Maths.hpp>
 #include <Clove/Maths/MathsHelpers.hpp>
 
-namespace garlic::clove {
+namespace clove {
     vec3f TransformComponent::getWorldPosition() const {
         return decomposeTranslation(worldMatrix);
     }

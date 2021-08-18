@@ -3,7 +3,7 @@
 #include <Clove/Definitions.hpp>
 #include <Clove/Log/Log.hpp>
 
-namespace garlic::clove {
+namespace clove {
     VulkanSampler::VulkanSampler(DevicePointer device, VkSampler sampler)
         : device{ std::move(device) }
         , sampler{ sampler } {

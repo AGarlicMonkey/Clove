@@ -8,7 +8,7 @@
 #include <string>
 #include <vector>
 
-namespace garlic::clove {
+namespace clove {
     using JointIndexType = uint8_t;
 
     struct Joint {

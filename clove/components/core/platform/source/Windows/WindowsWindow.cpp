@@ -5,7 +5,7 @@
 
 #define CLV_WINDOWS_QUIT 25397841//Note: this number is completely random
 
-namespace garlic::clove {
+namespace clove {
     WindowsWindow::WindowsWindow(Descriptor const &descriptor)
         : Window(keyboardDispatcher, mouseDispatcher) {
         CLOVE_LOG(LOG_CATEGORY_CLOVE, LogLevel::Trace, "Creating window: {0} ({1}, {2})", descriptor.title, descriptor.width, descriptor.height);

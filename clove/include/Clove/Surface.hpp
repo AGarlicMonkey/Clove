@@ -3,12 +3,12 @@
 #include <Clove/Delegate/MultiCastDelegate.hpp>
 #include <Clove/Maths/Vector.hpp>
 
-namespace garlic::clove {
+namespace clove {
     class Keyboard;
     class Mouse;
 }
 
-namespace garlic::clove {
+namespace clove {
     /**
      * @brief Provides an abstraction over a renderable area that handles input.
      */

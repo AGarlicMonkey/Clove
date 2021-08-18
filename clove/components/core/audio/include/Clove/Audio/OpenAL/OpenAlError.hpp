@@ -3,7 +3,7 @@
 #include <AL/al.h>
 #include <string_view>
 
-namespace garlic::clove {
+namespace clove {
     void printErrorAl(ALenum error, std::string_view const fileName, uint_fast32_t const line);
 }
 

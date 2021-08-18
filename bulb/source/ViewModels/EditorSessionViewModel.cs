@@ -1,8 +1,8 @@
 using System.Windows.Input;
 
-using Membrane = garlic.membrane;
+using Membrane = membrane;
 
-namespace Garlic.Bulb {
+namespace Bulb {
     /// <summary>
     /// The View Model for the entire editor's session. Used to manage the viewmodels that make up the editor itself.
     /// </summary>

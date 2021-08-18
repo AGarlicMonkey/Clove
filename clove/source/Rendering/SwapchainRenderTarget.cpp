@@ -11,7 +11,7 @@
 #include <Clove/Graphics/GhaSwapchain.hpp>
 #include <Clove/Log/Log.hpp>
 
-namespace garlic::clove {
+namespace clove {
     SwapchainRenderTarget::SwapchainRenderTarget(Surface &swapchainSurface, GhaDevice *graphicsDevice)
         : graphicsDevice{ graphicsDevice } {
         graphicsFactory = graphicsDevice->getGraphicsFactory();

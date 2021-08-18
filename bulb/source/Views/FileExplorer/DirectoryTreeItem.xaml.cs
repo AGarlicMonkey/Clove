@@ -2,7 +2,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 
-namespace Garlic.Bulb {
+namespace Bulb {
     /// <summary>
     /// An idividual item inside of a directory tree.
     /// </summary>

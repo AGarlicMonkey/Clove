@@ -7,7 +7,7 @@
 #include <glm/detail/type_vec3.hpp>
 #include <glm/detail/type_vec4.hpp>
 
-namespace garlic::clove {
+namespace clove {
     template<length_t L, typename T>
     using vec = glm::vec<L, T, qualifier::defaultp>;
 

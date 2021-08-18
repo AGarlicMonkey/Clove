@@ -2,7 +2,7 @@
 
 #include <functional>
 
-namespace garlic::clove {
+namespace clove {
     using ListenerId = size_t;
     static constexpr ListenerId invalidListenerId{ 0 };
 

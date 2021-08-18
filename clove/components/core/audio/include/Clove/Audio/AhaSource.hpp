@@ -4,11 +4,11 @@
 #include <memory>
 #include <vector>
 
-namespace garlic::clove {
+namespace clove {
     class AhaBuffer;
 }
 
-namespace garlic::clove {
+namespace clove {
     /**
 	 * @brief An AhaSource allows sound to played from a cetain point in space
 	 */

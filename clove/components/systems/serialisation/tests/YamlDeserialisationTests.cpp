@@ -4,8 +4,8 @@
 #include <fstream>
 #include <gtest/gtest.h>
 
-using namespace garlic::clove;
-using namespace garlic::clove::serialiser;
+using namespace clove;
+using namespace clove::serialiser;
 
 class YamlDeserialisationTests : public ::testing::Test {
 protected:
@@ -102,7 +102,7 @@ struct BasicSerialisableType {
     float memberTwo;
 };
 
-namespace garlic::clove {
+namespace clove {
     template<>
     Node serialise<BasicSerialisableType>(BasicSerialisableType const &object) {
         Node node{};
@@ -134,7 +134,7 @@ struct ParentSerialisableType {
     int32_t memberTwo;
 };
 
-namespace garlic::clove {
+namespace clove {
     template<>
     Node serialise<ParentSerialisableType>(ParentSerialisableType const &object) {
         Node node{};

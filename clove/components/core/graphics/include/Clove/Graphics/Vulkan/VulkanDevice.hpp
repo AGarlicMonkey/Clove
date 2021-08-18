@@ -7,11 +7,11 @@
 #include <any>
 #include <memory>
 
-namespace garlic::clove {
+namespace clove {
     class VulkanFactory;
 }
 
-namespace garlic::clove {
+namespace clove {
     class VulkanDevice : public GhaDevice {
         //VARIABLES
     private:

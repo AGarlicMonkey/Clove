@@ -2,7 +2,7 @@
 
 #include "Clove/Audio/AhaFactory.hpp"
 
-namespace garlic::clove {
+namespace clove {
     class OpenAlFactory : public AhaFactory {
         //FUNCTIONS
     public:

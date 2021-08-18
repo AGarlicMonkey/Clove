@@ -2,7 +2,7 @@
 
 #include "Clove/Event/EventHandle.hpp"
 
-namespace garlic::clove {
+namespace clove {
     EventContainerBase::EventContainerBase() = default;
 
     EventContainerBase::EventContainerBase(EventContainerBase &&other) noexcept {

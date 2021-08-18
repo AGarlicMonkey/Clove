@@ -2,7 +2,7 @@
 
 #include <Clove/Definitions.hpp>
 
-namespace garlic::clove {
+namespace clove {
     using QueueFlagsType = uint8_t;
     enum class QueueFlags : QueueFlagsType {
         None         = 0,

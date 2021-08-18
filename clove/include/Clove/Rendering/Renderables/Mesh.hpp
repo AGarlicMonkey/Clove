@@ -2,7 +2,7 @@
 
 #include "Clove/Rendering/Vertex.hpp"
 
-namespace garlic::clove {
+namespace clove {
     class GhaBuffer;
     class VertexLayout;
     class VertexBufferData;
@@ -10,7 +10,7 @@ namespace garlic::clove {
     class GhaFactory;
 }
 
-namespace garlic::clove {
+namespace clove {
     class Mesh {
         //VARIABLES
     private:

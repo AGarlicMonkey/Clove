@@ -1,6 +1,6 @@
 #include <optional>
 
-namespace garlic::clove {
+namespace clove {
     template<typename EventType>
     EventManager::EventContainer<EventType>::EventContainer() = default;
 

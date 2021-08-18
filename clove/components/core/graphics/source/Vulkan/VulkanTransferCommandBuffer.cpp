@@ -9,7 +9,7 @@
 #include <Clove/Definitions.hpp>
 #include <Clove/Log/Log.hpp>
 
-namespace garlic::clove {
+namespace clove {
     VulkanTransferCommandBuffer::VulkanTransferCommandBuffer(VkCommandBuffer commandBuffer, QueueFamilyIndices queueFamilyIndices)
         : commandBuffer(commandBuffer)
         , queueFamilyIndices(queueFamilyIndices) {

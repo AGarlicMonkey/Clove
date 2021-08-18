@@ -3,14 +3,14 @@
 #include "Clove/Graphics/Metal/MetalFactory.hpp"
 #include "Clove/Graphics/Metal/MetalView.hpp"
 
-namespace garlic::clove {
+namespace clove {
     struct DeviceWrapper {
         id<MTLDevice> device{ nullptr };
         MetalView *view{ nullptr };
     };
 }
 
-namespace garlic::clove {
+namespace clove {
     MetalDevice::MetalDevice(std::any nativeWindow) {
         wrapper = std::make_unique<DeviceWrapper>();
         

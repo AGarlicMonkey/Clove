@@ -1,4 +1,4 @@
-namespace garlic::clove {
+namespace clove {
 	id<MTLBuffer> MetalDescriptorSet::getVertexBuffer() const {
 		return vertexEncoderBuffer;
 	}

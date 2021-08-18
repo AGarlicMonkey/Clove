@@ -2,7 +2,7 @@
 
 #include <Clove/Log/Log.hpp>
 
-namespace garlic::clove {
+namespace clove {
     VirtualFileSystem::VirtualFileSystem() = default;
 
     VirtualFileSystem::VirtualFileSystem(VirtualFileSystem &&other) noexcept = default;

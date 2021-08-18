@@ -5,12 +5,12 @@
 
 #include <memory>
 
-namespace garlic::clove {
+namespace clove {
     class DrawableElement;
     class InputElement;
 }
 
-namespace garlic::clove {
+namespace clove {
     class UIFrame {
         //VARIABLES
     private:

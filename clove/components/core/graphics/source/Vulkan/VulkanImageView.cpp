@@ -2,7 +2,7 @@
 
 #include <Clove/Log/Log.hpp>
 
-namespace garlic::clove {
+namespace clove {
     VulkanImageView::VulkanImageView(VkDevice device, VkImageView imageView)
         : device(device)
         , imageView(imageView) {

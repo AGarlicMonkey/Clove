@@ -1,6 +1,6 @@
 #pragma once
 
-namespace garlic::clove {
+namespace clove {
     /**
      * @brief A GhaFence is a synchronisation object that can be used to synchronise the application
      * with a graphics operation.

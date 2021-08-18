@@ -5,7 +5,7 @@
 #include <msclr/lock.h>
 #include <msclr/marshal_cppstd.h>
 
-namespace garlic::membrane {
+namespace membrane {
     // clang-format off
     generic<class MessageType> 
     void MessageHandler::bindToMessage(MessageSentHandler<MessageType> ^ handler) {

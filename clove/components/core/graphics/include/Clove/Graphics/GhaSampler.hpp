@@ -1,6 +1,6 @@
 #pragma once
 
-namespace garlic::clove {
+namespace clove {
     /**
      * @brief Describes how a shader should sample a GhaImage.
      */

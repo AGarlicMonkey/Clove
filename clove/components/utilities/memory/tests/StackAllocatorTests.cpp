@@ -2,7 +2,7 @@
 #include <array>
 #include <gtest/gtest.h>
 
-using namespace garlic::clove;
+using namespace clove;
 
 TEST(StackAllocatorTests, CanAllocateAnAmountOfBytes) {
     const size_t allocatorSize = 256 * 1024;//256kb

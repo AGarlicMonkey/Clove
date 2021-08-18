@@ -7,7 +7,7 @@
 
 #include <Clove/Cast.hpp>
 
-namespace garlic::clove {
+namespace clove {
     MetalTransferQueue::MetalTransferQueue(CommandQueueDescriptor descriptor, id<MTLCommandQueue> commandQueue)
         : commandQueue{ commandQueue } {
         allowBufferReuse = (descriptor.flags & QueueFlags::ReuseBuffers) != 0;

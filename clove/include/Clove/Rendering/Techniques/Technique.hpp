@@ -4,12 +4,12 @@
 
 #include <set>
 
-namespace garlic::clove {
+namespace clove {
     class Mesh;
     class ForwardRenderer3D;
 }
 
-namespace garlic::clove {
+namespace clove {
     /**
      * @brief Describes the steps involved to render geometry in a certain way.
      * @details A Technique's main responsibility is distribute a mesh into the 

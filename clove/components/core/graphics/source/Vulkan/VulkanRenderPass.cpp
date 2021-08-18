@@ -6,7 +6,7 @@
 #include <Clove/Definitions.hpp>
 #include <Clove/Log/Log.hpp>
 
-namespace garlic::clove {
+namespace clove {
     VulkanRenderPass::VulkanRenderPass(DevicePointer device, VkRenderPass renderPass)
         : device{ std::move(device) }
         , renderPass{ renderPass } {

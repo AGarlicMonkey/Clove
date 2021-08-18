@@ -2,7 +2,7 @@ using System.Collections.ObjectModel;
 using System.IO;
 using System.Windows;
 
-namespace Garlic.Bulb {
+namespace Bulb {
     public class FolderViewModel : DirectoryItemViewModel {
         /// <summary>
         /// A list of all directories within this directory. Will be empty if this item is a file.

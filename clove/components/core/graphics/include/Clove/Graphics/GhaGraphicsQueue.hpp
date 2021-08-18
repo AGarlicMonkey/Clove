@@ -3,7 +3,7 @@
 #include "Clove/Graphics/GhaGraphicsCommandBuffer.hpp"
 #include "Clove/Graphics/GhaGraphicsPipelineObject.hpp"
 
-namespace garlic::clove {
+namespace clove {
     class GhaFence;
     class GhaSemaphore;
 
@@ -14,7 +14,7 @@ namespace garlic::clove {
     };
 }
 
-namespace garlic::clove {
+namespace clove {
     /**
      * @brief Creates buffers that can record graphics commands and then be submitted for rendering.
      */

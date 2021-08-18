@@ -2,7 +2,7 @@
 
 #include <Clove/Log/Log.hpp>
 
-namespace garlic::clove {
+namespace clove {
     VkPipelineStageFlags convertStage(PipelineStage stage) {
         switch(stage) {
             case PipelineStage::Top:

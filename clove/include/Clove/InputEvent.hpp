@@ -4,7 +4,7 @@
 #include <Clove/Platform/Input/Mouse.hpp>
 #include <variant>
 
-namespace garlic::clove {
+namespace clove {
     struct InputEvent {
         enum class Type {
             Keyboard,

@@ -1,4 +1,4 @@
-namespace garlic::clove {
+namespace clove {
     Keyboard &Window::getKeyboard() {
         return keyboard;
     }

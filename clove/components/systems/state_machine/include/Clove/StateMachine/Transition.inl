@@ -1,4 +1,4 @@
-namespace garlic::clove {
+namespace clove {
     template<typename Action>
     Transition<Action>::Transition() = default;
 

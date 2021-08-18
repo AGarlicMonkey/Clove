@@ -5,7 +5,7 @@
 #include <Clove/Delegate/DelegateHandle.hpp>
 #include <vector>
 
-namespace garlic::clove {
+namespace clove {
     class GhaSwapchain;
     class GhaPresentQueue;
     class GhaGraphicsQueue;
@@ -15,7 +15,7 @@ namespace garlic::clove {
     class Surface;
 }
 
-namespace garlic::clove {
+namespace clove {
     /**
      * @brief GhaSwapchain backed RenderTarget.
      */

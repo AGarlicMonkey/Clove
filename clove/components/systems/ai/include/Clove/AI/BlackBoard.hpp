@@ -4,7 +4,7 @@
 #include <map>
 #include <optional>
 
-namespace garlic::clove {
+namespace clove {
     class BlackBoard {
         //TYPES
     public:

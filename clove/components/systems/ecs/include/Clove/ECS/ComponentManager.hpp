@@ -8,11 +8,11 @@
 #include <typeindex>
 #include <unordered_map>
 
-namespace garlic::clove {
+namespace clove {
     class EventDispatcher;
 }
 
-namespace garlic::clove {
+namespace clove {
     class ComponentManager {
         //VARIABLES
     private:

@@ -1,7 +1,7 @@
 #include <sstream>
 #include <stdexcept>
 
-namespace garlic::clove::serialiser {
+namespace clove::serialiser {
     namespace detail {
         template<typename T>
         inline bool constexpr isKeyType = std::is_same_v<std::string, T> || std::is_same_v<std::string_view, T>;

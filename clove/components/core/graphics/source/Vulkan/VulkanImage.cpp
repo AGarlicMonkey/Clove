@@ -7,7 +7,7 @@
 #include <Clove/Log/Log.hpp>
 #include <array>
 
-namespace garlic::clove {
+namespace clove {
     namespace {
         VkImageViewType getImageViewType(GhaImageView::Type garlicImageType, uint32_t layerCount) {
             switch(garlicImageType) {

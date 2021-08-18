@@ -19,12 +19,12 @@
 #include <Clove/Surface.hpp>
 #include <msclr/marshal_cppstd.h>
 
-namespace garlic::membrane {
+namespace membrane {
     // clang-format off
     /**
      * @brief 
      */
-    private ref class EditorLayerMessageProxy { //TODO: This will move into editor layer - runtime layer does not respond to editor
+    private ref class EditorLayerMessageProxy {
         //VARIABLES
     private:
         EditorLayer *layer{ nullptr };
@@ -112,7 +112,7 @@ namespace garlic::membrane {
     // clang-format on
 }
 
-namespace garlic::membrane {
+namespace membrane {
     EditorLayer::EditorLayer()
         : clove::Layer{ "Editor Layer" }
         , currentScene{ clove::Application::get().getEntityManager(), "scene.yaml" } {

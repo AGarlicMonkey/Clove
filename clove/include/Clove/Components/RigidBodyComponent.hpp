@@ -6,7 +6,7 @@
 #include <cinttypes>
 #include <optional>
 
-namespace garlic::clove {
+namespace clove {
     /**
 	 * @brief Enables an entity to respond to physics events.
 	 * @details Entities with a RigidBodyComponent can collide with other
@@ -90,7 +90,7 @@ namespace garlic::clove {
     };
 }
 
-namespace garlic::clove {
+namespace clove {
     template<>
     inline serialiser::Node serialise(RigidBodyComponent const &object) {
         serialiser::Node node{};

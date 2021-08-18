@@ -6,7 +6,7 @@
 #include <Clove/Maths/Vector.hpp>
 #include <array>
 
-namespace garlic::clove {
+namespace clove {
     struct alignas(16) MaterialData {
         float sininess;
     };

@@ -14,7 +14,7 @@
 extern "C" const unsigned char roboto_black[];
 extern "C" const size_t roboto_blackLength;
 
-namespace garlic::clove {
+namespace clove {
     static Font::FacePtr makeUniqueFace(FT_Face face) {
         return Font::FacePtr(face, [](FT_Face face) { FT_Done_Face(face); });
     }

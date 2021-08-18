@@ -4,11 +4,11 @@
 
 #include <list>
 
-namespace garlic::clove {
+namespace clove {
     struct EventHandle;
 }
 
-namespace garlic::clove {
+namespace clove {
     class EventContainerBase {
         friend EventHandle;
 

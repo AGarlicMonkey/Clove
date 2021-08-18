@@ -1,7 +1,7 @@
 using System.Windows.Input;
-using Membrane = garlic.membrane;
+using Membrane = membrane;
 
-namespace Garlic.Bulb {
+namespace Bulb {
     /// <summary>
     /// The base viewmodel for all components
     /// </summary>

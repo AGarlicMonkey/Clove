@@ -9,11 +9,11 @@
 #include <filesystem>
 #include <unordered_map>
 
-namespace garlic::clove {
+namespace clove {
     class VirtualFileSystem;
 }
 
-namespace garlic::clove {
+namespace clove {
     /**
      * @brief Manages the loading of assets.
      */

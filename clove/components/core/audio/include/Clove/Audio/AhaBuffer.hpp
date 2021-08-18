@@ -2,7 +2,7 @@
 
 #include <cstddef>
 
-namespace garlic::clove {
+namespace clove {
 	/**
 	 * @brief Represents a buffer of data that can be played with an AhaSource
 	 * @details Created from an AhaFactory. Can be created empty and then

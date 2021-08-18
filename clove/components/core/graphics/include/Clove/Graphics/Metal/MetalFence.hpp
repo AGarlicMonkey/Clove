@@ -6,7 +6,7 @@
 #include <condition_variable>
 #include <mutex>
 
-namespace garlic::clove {
+namespace clove {
 	class MetalFence : public GhaFence {
 		//VARIABLES
 	private:

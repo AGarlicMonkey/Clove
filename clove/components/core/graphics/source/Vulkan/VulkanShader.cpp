@@ -4,7 +4,7 @@
 #include <Clove/Log/Log.hpp>
 #include <vector>
 
-namespace garlic::clove {
+namespace clove {
     VulkanShader::VulkanShader(DevicePointer device, VkShaderModule module)
         : device{ std::move(device) }
         , module{ module } {

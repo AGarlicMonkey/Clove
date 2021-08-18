@@ -1,6 +1,6 @@
 #include "Clove/Graphics/Metal/MetalSemaphore.hpp"
 
-namespace garlic::clove {
+namespace clove {
     MetalSemaphore::MetalSemaphore(id<MTLFence> fence)
         : fence{ fence } {
     }

@@ -5,11 +5,11 @@
 #include <unordered_map>
 #include <vector>
 
-namespace garlic::clove {
+namespace clove {
     class EventDispatcher;
 }
 
-namespace garlic::clove {
+namespace clove {
     class ComponentContainerInterface {
         //TYPES
     public:

@@ -1,6 +1,6 @@
 #include "Clove/Event/EventManager.hpp"
 
-namespace garlic::clove {
+namespace clove {
     EventManager::EventManager() = default;
 
     EventManager::EventManager(EventManager &&other) noexcept {

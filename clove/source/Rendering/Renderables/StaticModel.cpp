@@ -3,7 +3,7 @@
 #include "Clove/Rendering/Renderables/Mesh.hpp"
 #include "Clove/Rendering/Techniques/ForwardLightingTechnique.hpp"
 
-namespace garlic::clove {
+namespace clove {
     StaticModel::StaticModel(std::vector<std::shared_ptr<Mesh>> meshes)
         : StaticModel{ std::move(meshes), { createForwardLightingTechnique() } } {
     }

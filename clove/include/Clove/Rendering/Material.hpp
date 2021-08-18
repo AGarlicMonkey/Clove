@@ -9,13 +9,13 @@
 #include <Clove/Maths/Vector.hpp>
 #include <memory>
 
-namespace garlic::clove {
+namespace clove {
     class GhaFactory;
     class GhaImage;
     class GhaImageView;
 }
 
-namespace garlic::clove {
+namespace clove {
     /**
 	 * @brief A Material contains values that will be passed to shaders to customise
 	 * what an object looks like.
@@ -73,7 +73,7 @@ namespace garlic::clove {
 
 #include "Material.inl"
 
-namespace garlic::clove {
+namespace clove {
     template<>
     inline serialiser::Node serialise(Material const &object) {
         serialiser::Node node{};

@@ -1,10 +1,10 @@
-<UserControl x:Class="Garlic.Bulb.FileExplorer"
+<UserControl x:Class="Bulb.FileExplorer"
 			 x:Name="this"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-			 xmlns:local="clr-namespace:Garlic.Bulb"
+			 xmlns:local="clr-namespace:Bulb"
              mc:Ignorable="d" d:DesignWidth="267.396" d:DesignHeight="155.156">
 	<Grid>
 		<Grid.RowDefinitions>

@@ -6,7 +6,7 @@
 #include <msclr/gcroot.h>
 #include <vector>
 
-namespace garlic::membrane {
+namespace membrane {
     /**
      * @brief A surface backed by an editor viewport.
      */

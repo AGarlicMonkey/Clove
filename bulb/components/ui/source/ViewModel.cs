@@ -1,6 +1,6 @@
 using System.ComponentModel;
 
-namespace Garlic.Bulb
+namespace Bulb
 {
     public class ViewModel : INotifyPropertyChanged
     {

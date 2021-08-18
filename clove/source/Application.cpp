@@ -17,7 +17,7 @@
 #include <Clove/Graphics/Graphics.hpp>
 #include <Clove/Log/Log.hpp>
 
-namespace garlic::clove {
+namespace clove {
     Application *Application::instance{ nullptr };
 
     Application::~Application() {

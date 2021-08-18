@@ -1,7 +1,7 @@
 #include <Clove/FileSystem/AssetPtr.hpp>
 #include <gtest/gtest.h>
 
-using namespace garlic::clove;
+using namespace clove;
 
 class MockFile {
 public:

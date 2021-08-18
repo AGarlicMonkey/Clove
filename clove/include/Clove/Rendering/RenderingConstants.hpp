@@ -5,7 +5,7 @@
 #include <cstdint>
 #include <limits>
 
-namespace garlic::clove {
+namespace clove {
 	//Variables present in Constants.glsl
     inline uint8_t constexpr MAX_LIGHTS{ 10u };
     inline uint8_t constexpr MAX_JOINTS{ std::numeric_limits<JointIndexType>::max() };

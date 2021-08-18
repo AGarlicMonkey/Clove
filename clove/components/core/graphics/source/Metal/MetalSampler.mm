@@ -1,6 +1,6 @@
 #include "Clove/Graphics/Metal/MetalSampler.hpp"
 
-namespace garlic::clove {
+namespace clove {
     MetalSampler::MetalSampler(id<MTLSamplerState> samplerState)
         : samplerState{ samplerState } {
     }

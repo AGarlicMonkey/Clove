@@ -5,13 +5,13 @@
 #include <memory>
 #include <Clove/Maths/Vector.hpp>
 
-namespace garlic::clove {
+namespace clove {
     class GhaFactory;
     class GhaImage;
     class GhaImageView;
 }
 
-namespace garlic::clove {
+namespace clove {
     class Image : public DrawableElement {
         //VARIABLES
     private:

@@ -6,7 +6,7 @@
 
 #include <Clove/Cast.hpp>
 
-namespace garlic::clove {
+namespace clove {
 	namespace {
 		size_t getBytesPerPixel(GhaImage::Format imageFormat) {
 			switch (imageFormat) {

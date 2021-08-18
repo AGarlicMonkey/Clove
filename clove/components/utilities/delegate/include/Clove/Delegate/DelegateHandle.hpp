@@ -5,7 +5,7 @@
 #include <memory>
 #include <optional>
 
-namespace garlic::clove {
+namespace clove {
     /**
 	 * @brief Defines the scope of a delegate binding.
 	 * @details In it's simplest for the handle is just an ID to the

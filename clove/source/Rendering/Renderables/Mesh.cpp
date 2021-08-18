@@ -5,7 +5,7 @@
 #include <Clove/Graphics/GhaDevice.hpp>
 #include <Clove/Graphics/GhaFactory.hpp>
 
-namespace garlic::clove {
+namespace clove {
     namespace {
         void copyFullBuffer(GhaBuffer &source, GhaBuffer &dest, size_t const size) {
             GhaFactory &factory{ *Application::get().getGraphicsDevice()->getGraphicsFactory() };

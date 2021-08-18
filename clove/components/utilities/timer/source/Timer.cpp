@@ -4,7 +4,7 @@
 #include <algorithm>
 
 #if CLOVE_ENABLE_PROFILING
-namespace garlic::clove {
+namespace clove {
     Timer::Timer()
         : currentSession(nullptr)
         , profileCount(0) {

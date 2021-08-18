@@ -8,7 +8,7 @@
 #include <Clove/Log/Log.hpp>
 #include <sndfile.h>
 
-namespace garlic::clove {
+namespace clove {
     namespace {
         int getWhence(SoundFile::SeekPosition position) {
             switch(position) {

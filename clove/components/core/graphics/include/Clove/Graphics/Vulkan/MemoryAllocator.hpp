@@ -6,7 +6,7 @@
 #include <vector>
 #include <vulkan/vulkan.h>
 
-namespace garlic::clove {
+namespace clove {
     /**
      * @brief Handles allocating memory from Vulkan's VkDeviceMemory. Aims to reduce memory fragmentation
      * and to reduce the amount of vkAllocateMemory calls.

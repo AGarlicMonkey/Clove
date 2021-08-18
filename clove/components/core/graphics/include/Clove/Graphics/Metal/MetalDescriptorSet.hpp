@@ -7,11 +7,11 @@
 #include <unordered_map>
 #include <MetalKit/MetalKit.h>
 
-namespace garlic::clove {
+namespace clove {
 	class GhaDescriptorSetLayout;
 }
 
-namespace garlic::clove {
+namespace clove {
 	class MetalDescriptorSet : public GhaDescriptorSet {
 		//VARIABLES
 	private:

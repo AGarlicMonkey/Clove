@@ -2,7 +2,7 @@
 
 #include "Clove/Audio/OpenAL/OpenAlError.hpp"
 
-namespace garlic::clove {
+namespace clove {
     OpenAlListener::OpenAlListener() = default;
 
     OpenAlListener::OpenAlListener(OpenAlListener &&other) noexcept = default;

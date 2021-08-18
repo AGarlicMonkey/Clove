@@ -5,7 +5,7 @@
 
 #include <Clove/Cast.hpp>
 
-namespace garlic::clove {
+namespace clove {
     MetalDescriptorPool::BufferPool::BufferPool() = default;
     
     MetalDescriptorPool::BufferPool::~BufferPool() = default;

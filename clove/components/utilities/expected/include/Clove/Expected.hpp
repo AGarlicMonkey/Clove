@@ -2,7 +2,7 @@
 
 #include <utility>
 
-namespace garlic::clove {
+namespace clove {
     /**
      * @brief Allows Expected to be constructed as an error properly 
      * if Expected's T and E are the same type.

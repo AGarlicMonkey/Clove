@@ -3,7 +3,7 @@
 #include <Clove/Maths/Matrix.hpp>
 #include <Clove/Maths/Vector.hpp>
 
-namespace garlic::clove {
+namespace clove {
     struct DirectionalLightComponent {
         /**
          * @brief The direction the light faces.

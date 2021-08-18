@@ -3,7 +3,7 @@
 #include "Clove/UI/DrawableElement.hpp"
 #include "Clove/UI/InputElement.hpp"
 
-namespace garlic::clove {
+namespace clove {
     UIFrame::UIFrame(vec2i size)
         : size(size) {
     }

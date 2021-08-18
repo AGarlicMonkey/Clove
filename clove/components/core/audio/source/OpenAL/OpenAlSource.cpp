@@ -8,7 +8,7 @@
 #include <Clove/Log/Log.hpp>
 #include <set>
 
-namespace garlic::clove {
+namespace clove {
     OpenAlSource::OpenAlSource(ALuint source)
         : source{ source } {
     }

@@ -8,7 +8,7 @@
 #include <Clove/Graphics/GhaImage.hpp>
 #include <Clove/Graphics/GhaImageView.hpp>
 
-namespace garlic::clove {
+namespace clove {
     Texture::Texture(std::unique_ptr<void, std::function<void(void *)>> buffer, vec2ui dimensions, int32_t channels)
         : buffer{ std::move(buffer) }
         , dimensions{ dimensions }

@@ -2,7 +2,7 @@
 
 #include "Clove/Rendering/Techniques/Technique.hpp"
 
-namespace garlic::clove {
+namespace clove {
     Technique createForwardLightingTechnique();
     Technique createSkinnedForwardLightingTechnique();
 }

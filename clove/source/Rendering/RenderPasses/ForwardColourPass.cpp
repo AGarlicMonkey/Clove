@@ -17,7 +17,7 @@ extern "C" const size_t mesh_vLength;
 extern "C" const char mesh_p[];
 extern "C" const size_t mesh_pLength;
 
-namespace garlic::clove {
+namespace clove {
     ForwardColourPass::ForwardColourPass(GhaFactory &ghaFactory, std::shared_ptr<GhaRenderPass> ghaRenderPass) {
         //Build include map
         std::unordered_map<std::string, std::string> shaderIncludes;

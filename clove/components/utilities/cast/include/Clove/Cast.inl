@@ -1,6 +1,6 @@
 #include <Clove/Log/Log.hpp>
 
-namespace garlic::clove {
+namespace clove {
     template<typename DestType, typename SourceType>
     DestType *polyCast(SourceType *source) {
 #if CLOVE_SAFE_CAST

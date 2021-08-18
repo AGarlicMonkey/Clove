@@ -2,7 +2,7 @@
 
 #include <Clove/Maths/Vector.hpp>
 
-namespace garlic::clove {
+namespace clove {
     /**
 	 * @brief Handle to the listener in the 'audio scene'
 	 * @details Only one listener is active when playing audio. This class

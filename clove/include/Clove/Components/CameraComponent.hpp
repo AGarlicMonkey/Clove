@@ -2,7 +2,7 @@
 
 #include "Clove/Rendering/Camera.hpp"
 
-namespace garlic::clove {
+namespace clove {
     struct CameraComponent {
         Camera camera;
     };

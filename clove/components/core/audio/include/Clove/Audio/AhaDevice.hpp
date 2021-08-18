@@ -2,11 +2,11 @@
 
 #include <memory>
 
-namespace garlic::clove {
+namespace clove {
     class AhaFactory;
 }
 
-namespace garlic::clove {
+namespace clove {
     /**
      * @brief Represents the actual hardware used for audio rendering. Can be quieried for info about the device.
      */

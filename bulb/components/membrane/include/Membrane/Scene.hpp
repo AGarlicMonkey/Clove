@@ -5,7 +5,7 @@
 #include <unordered_map>
 #include <vector>
 
-namespace garlic::membrane {
+namespace membrane {
     class Scene {
         //VARIABLES
     private:

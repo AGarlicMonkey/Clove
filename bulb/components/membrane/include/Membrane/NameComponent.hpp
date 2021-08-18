@@ -2,7 +2,7 @@
 
 #include <Clove/SerialisationCommon.hpp>
 
-namespace garlic::membrane {
+namespace membrane {
     /**
      * @brief Holds the name of the entity used in the editor
      */
@@ -11,7 +11,7 @@ namespace garlic::membrane {
     };
 }
 
-namespace garlic::clove {
+namespace clove {
     template<>
     inline serialiser::Node serialise(membrane::NameComponent const &object) {
         serialiser::Node node{};

@@ -6,7 +6,7 @@
 #include <Clove/Cast.hpp>
 #include <Clove/Log/Log.hpp>
 
-namespace garlic::clove {
+namespace clove {
     VulkanDescriptorPool::VulkanDescriptorPool(DevicePointer device, VkDescriptorPool pool, Descriptor descriptor)
         : device{ std::move(device) }
         , pool{ pool }

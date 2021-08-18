@@ -3,11 +3,11 @@
 #include <memory>
 #include <string_view>
 
-namespace garlic::clove {
+namespace clove {
     class AhaBuffer;
 }
 
-namespace garlic::clove {
+namespace clove {
     /**
 	 * @brief Opens a sound file (.wav etc.) and allows acess to the data.
      * @details SoundFile is setup in such a way that allows for audio files to be streamed and not

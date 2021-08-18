@@ -2,7 +2,7 @@
 #include <gtest/gtest.h>
 #include <vector>
 
-using namespace garlic::clove;
+using namespace clove;
 
 TEST(SingleCastDelegateTests, CanBroadcastADelegate) {
     bool called{ false };

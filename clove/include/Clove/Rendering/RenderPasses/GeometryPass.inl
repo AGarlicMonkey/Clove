@@ -1,4 +1,4 @@
-namespace garlic::clove {
+namespace clove {
     template<typename GeometryPassType>
     GeometryPass::Id GeometryPass::getId() {
         static_assert(std::is_base_of_v<GeometryPass, GeometryPassType>, "Type passed is not derived from GeometryPass!");

@@ -7,7 +7,7 @@
 #include <string_view>
 #include <vulkan/vulkan.h>
 
-namespace garlic::clove {
+namespace clove {
     class VulkanShader : public GhaShader {
         //VARIABLES
     private:

@@ -5,7 +5,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Threading;
 
-namespace Garlic.Bulb {
+namespace Bulb {
     public partial class Viewport : UserControl {
         public delegate void RenderDelegate(IntPtr backBuffer);
 

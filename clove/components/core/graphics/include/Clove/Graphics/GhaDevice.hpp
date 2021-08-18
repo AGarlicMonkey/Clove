@@ -2,11 +2,11 @@
 
 #include <memory>
 
-namespace garlic::clove{
+namespace clove{
     class GhaFactory;
 }
 
-namespace garlic::clove {
+namespace clove {
     /**
      * @brief Represents the actual hardware used for rendering. Can be quieried for info about the device.
      */

@@ -6,12 +6,12 @@
 #include <Clove/Maths/Matrix.hpp>
 #include <array>
 
-namespace garlic::clove {
+namespace clove {
     struct AnimationClip;
     struct AnimationPose;
 }
 
-namespace garlic::clove {
+namespace clove {
     /**
      * @brief Drives the animation for an AnimatedModel.
      * @details Takes in an AnimationClip and uses that to calculate an AnimatedModel's skinning matrix palette for a given frame.

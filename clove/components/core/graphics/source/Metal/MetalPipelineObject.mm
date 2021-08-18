@@ -2,7 +2,7 @@
 
 #include <Clove/Log/Log.hpp>
 
-namespace garlic::clove {
+namespace clove {
 	MTLRenderStages convertStage(PipelineStage stage) {
 		//Metal only has 2 stages: Vertex and Fragment
 		switch (stage) {

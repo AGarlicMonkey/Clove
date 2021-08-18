@@ -2,7 +2,7 @@
 
 #include "Membrane/MessageBase.hpp"
 
-namespace garlic::membrane {
+namespace membrane {
     // clang-format off
     //Delegates
     generic<class MessageType> 

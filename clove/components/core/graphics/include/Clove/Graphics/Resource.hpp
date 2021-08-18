@@ -3,7 +3,7 @@
 #include <Clove/Definitions.hpp>
 #include <cinttypes>
 
-namespace garlic::clove {
+namespace clove {
     enum class SharingMode {
         Exclusive, /**< Can only be accessed by a single queue type at a time. The ownership must be explicitly transfered between queues. */
         Concurrent /**< Can be accessed between different queue types without transferring ownership. */

@@ -4,12 +4,12 @@
 #include <memory>
 #include <functional>
 
-namespace garlic::clove{
+namespace clove{
     class GhaImage;
     class GhaImageView;
 }
 
-namespace garlic::clove {
+namespace clove {
     class Texture {
         //VARIABLES
     private:

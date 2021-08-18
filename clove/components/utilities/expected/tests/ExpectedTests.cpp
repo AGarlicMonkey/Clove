@@ -1,7 +1,7 @@
 #include <Clove/Expected.hpp>
 #include <gtest/gtest.h>
 
-using namespace garlic::clove;
+using namespace clove;
 
 TEST(ExpectedTests, CanConstructWithAValue) {
     int32_t constexpr testValue = 50;

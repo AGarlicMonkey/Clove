@@ -8,7 +8,7 @@
 #include <Clove/Maths/Vector.hpp>
 #include <any>
 
-namespace garlic::clove {
+namespace clove {
     /**
      * @brief An abstraction over a platform's native window
      */

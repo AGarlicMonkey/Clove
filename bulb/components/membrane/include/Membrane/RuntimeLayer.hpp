@@ -4,11 +4,11 @@
 
 #include <Clove/Layer.hpp>
 
-namespace garlic::clove {
+namespace clove {
     class EntityManager;
 }
 
-namespace garlic::membrane {
+namespace membrane {
     /**
      * @brief The layer that is active while the game is running.
      * Deliberately does not handle editor events to simulate the game running.

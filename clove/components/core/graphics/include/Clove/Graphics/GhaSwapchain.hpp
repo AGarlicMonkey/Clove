@@ -6,12 +6,12 @@
 #include <Clove/Maths/Vector.hpp>
 #include <vector>
 
-namespace garlic::clove {
+namespace clove {
     class GhaSemaphore;
     class GhaImageView;
 }
 
-namespace garlic::clove {
+namespace clove {
     /**
      * @brief A GhaSwapchain allows presentation of rendering results to a Window
      */

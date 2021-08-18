@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Windows.Input;
 using System.Windows;
 
-using Membrane = garlic.membrane;
+using Membrane = membrane;
 
-namespace Garlic.Bulb {
+namespace Bulb {
     /// <summary>
     /// The View Model for the editor's current scene.
     /// </summary>

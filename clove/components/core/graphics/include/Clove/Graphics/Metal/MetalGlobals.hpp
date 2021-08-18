@@ -2,7 +2,7 @@
 
 #include <cinttypes>
 
-namespace garlic::clove {
+namespace clove {
     /**
      * @brief Due to SPIR-V Cross we don't have much control at what index push constants
      * and UBOs etc. start in metal as with MSL the vertex buffer + data for the vertex

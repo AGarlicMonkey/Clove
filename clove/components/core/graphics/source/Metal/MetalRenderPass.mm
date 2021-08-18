@@ -1,6 +1,6 @@
 #include "Clove/Graphics/Metal/MetalRenderPass.hpp"
 
-namespace garlic::clove {
+namespace clove {
     MetalRenderPass::MetalRenderPass(MTLRenderPipelineColorAttachmentDescriptorArray* colourAttachments, MTLPixelFormat depthPixelFormat, Descriptor descriptor)
         : colourAttachments{ colourAttachments }
         , depthPixelFormat{ depthPixelFormat }

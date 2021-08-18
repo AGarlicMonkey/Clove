@@ -8,14 +8,14 @@
 #include <typeinfo>
 #include <vector>
 
-namespace garlic::clove {
+namespace clove {
     class GhaDescriptorSet;
     class GhaGraphicsCommandBuffer;
     class GhaComputeCommandBuffer;
     class Mesh;
 }
 
-namespace garlic::clove {
+namespace clove {
     /**
      * @brief A GeometryPass is a single graphics operation that is performed on a set of meshes.
      */

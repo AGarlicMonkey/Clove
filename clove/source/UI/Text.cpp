@@ -5,7 +5,7 @@
 
 #include <Clove/Maths/MathsHelpers.hpp>
 
-namespace garlic::clove {
+namespace clove {
     Text::Text(Font font)
         : font(std::move(font)) {
     }

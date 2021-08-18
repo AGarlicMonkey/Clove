@@ -5,7 +5,7 @@
 #include <Clove/Maths/Vector.hpp>
 #include <variant>
 
-namespace garlic::clove {
+namespace clove {
     /**
      * @brief Provides a collision shape for an entity.
      * @details On it's own a CollisionShapeComponent can act like a trigger.
@@ -28,7 +28,7 @@ namespace garlic::clove {
     };
 }
 
-namespace garlic::clove {
+namespace clove {
     enum class ShapeSeralisationType : uint32_t {
         Sphere = 0,
         Cube   = 1,

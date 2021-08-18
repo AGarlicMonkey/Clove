@@ -5,7 +5,7 @@
 
 #include <MetalKit/MetalKit.h>
 
-namespace garlic::clove {
+namespace clove {
 	class MetalTransferQueue : public GhaTransferQueue {
 		//VARIABLES
 	private:

@@ -4,11 +4,11 @@
 
 #include <queue>
 
-namespace garlic::clove {
+namespace clove {
 	class GhaImage;
 }
 
-namespace garlic::clove {
+namespace clove {
 	class MetalSwapchain : public GhaSwapchain {
 		//VARIABLES
 	private:

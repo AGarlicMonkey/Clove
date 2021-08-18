@@ -7,7 +7,7 @@
 #undef near
 #undef far
 
-namespace garlic::clove {
+namespace clove {
     template<typename T>
     typename T::value_type const *valuePtr(T const &v) {
         return glm::value_ptr(v);

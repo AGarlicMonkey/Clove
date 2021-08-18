@@ -1,6 +1,6 @@
 #include "Clove/Serialisation/Node.hpp"
 
-namespace garlic::clove::serialiser {
+namespace clove::serialiser {
     Node::Node() = default;
 
     Node::Node(Node const &other) = default;

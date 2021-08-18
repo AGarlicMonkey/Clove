@@ -1,7 +1,7 @@
 using System.Windows.Input;
-using Membrane = garlic.membrane;
+using Membrane = membrane;
 
-namespace Garlic.Bulb {
+namespace Bulb {
     public class ComponentMenuItemViewModel : ViewModel {
         public Membrane.ComponentType ComponentType { get; }
         public ICommand OnSelectedCommand { get; }

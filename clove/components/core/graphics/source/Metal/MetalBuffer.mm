@@ -2,7 +2,7 @@
 
 #include <Clove/Log/Log.hpp>
 
-namespace garlic::clove {
+namespace clove {
 	MetalBuffer::MetalBuffer(id<MTLBuffer> buffer, Descriptor descriptor)
 		: buffer{ buffer }
 		, descriptor{ descriptor }{

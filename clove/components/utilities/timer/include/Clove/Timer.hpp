@@ -4,7 +4,7 @@
 #include <fstream>
 
 #if CLOVE_ENABLE_PROFILING
-namespace garlic::clove {
+namespace clove {
     struct ProfileResult {
         std::string name;
 
@@ -19,7 +19,7 @@ namespace garlic::clove {
     };
 }
 
-namespace garlic::clove {
+namespace clove {
     class Timer {
         //VARIABLES
     private:
@@ -44,7 +44,7 @@ namespace garlic::clove {
     };
 }
 
-namespace garlic::clove {
+namespace clove {
     class ScopedTimerClock {
         //VARIABLES
     private:
@@ -61,9 +61,9 @@ namespace garlic::clove {
 #endif
 
 #if CLOVE_ENABLE_PROFILING
-    #define CLOVE_PROFILE_BEGIN_SESSION(name, filepath) ::garlic::clove::Timer::get().beginSession(name, filepath)
-    #define CLOVE_PROFILE_END_SESSION() ::garlic::clove::Timer::get().endSession()
-    #define CLOVE_PROFILE_SCOPE(name) ::garlic::clove::ScopedTimerClock timer##__LINE__(name)
+    #define CLOVE_PROFILE_BEGIN_SESSION(name, filepath) ::clove::Timer::get().beginSession(name, filepath)
+    #define CLOVE_PROFILE_END_SESSION() ::clove::Timer::get().endSession()
+    #define CLOVE_PROFILE_SCOPE(name) ::clove::ScopedTimerClock timer##__LINE__(name)
     #define CLOVE_PROFILE_FUNCTION() CLOVE_PROFILE_SCOPE(CLOVE_FUNCTION_NAME_PRETTY)
 #else
     #define CLOVE_PROFILE_BEGIN_SESSION(name, filepath)

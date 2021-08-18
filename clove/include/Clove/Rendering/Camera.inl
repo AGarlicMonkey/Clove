@@ -1,4 +1,4 @@
-namespace garlic::clove {
+namespace clove {
     float Camera::getNearPlane() const {
         return nearPlane;
     }

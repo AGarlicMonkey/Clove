@@ -2,7 +2,7 @@
 
 #include <Clove/Log/Log.hpp>
 
-namespace garlic::clove {
+namespace clove {
     VkDescriptorType getDescriptorType(DescriptorType garlicType) {
         switch(garlicType) {
             case DescriptorType::UniformBuffer:

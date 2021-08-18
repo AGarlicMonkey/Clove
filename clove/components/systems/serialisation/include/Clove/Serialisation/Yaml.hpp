@@ -6,7 +6,7 @@
 #include <string>
 #include <filesystem>
 
-namespace garlic::clove{
+namespace clove{
     enum class LoadError {
         BadFile,
         WrongType,

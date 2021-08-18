@@ -5,14 +5,14 @@
 #include <Clove/Platform/Input/Keyboard.hpp>
 #include <Clove/Platform/Input/Mouse.hpp>
 
-namespace garlic::clove {
+namespace clove {
     struct ElementBounds {
         vec2i start;
         vec2i end;
     };
 }
 
-namespace garlic::clove {
+namespace clove {
     class InputElement {
         //FUNCTIONS
     public:

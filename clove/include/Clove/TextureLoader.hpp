@@ -5,7 +5,7 @@
 #include <Clove/Expected.hpp>
 #include <filesystem>
 
-namespace garlic::clove::TextureLoader {
+namespace clove::TextureLoader {
     /**
      * @brief Loads a texture. Returning the result or the reason for failure.
      * @param path Path to texture.

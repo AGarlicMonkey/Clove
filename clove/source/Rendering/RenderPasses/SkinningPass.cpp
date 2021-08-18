@@ -13,7 +13,7 @@ extern "C" const size_t constantsLength;
 extern "C" const char skinning_c[];
 extern "C" const size_t skinning_cLength;
 
-namespace garlic::clove {
+namespace clove {
     SkinningPass::SkinningPass(GhaFactory &ghaFactory) {
         //Build include map
         std::unordered_map<std::string, std::string> shaderIncludes;

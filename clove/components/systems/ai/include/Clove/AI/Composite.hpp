@@ -5,7 +5,7 @@
 #include <vector>
 #include <memory>
 
-namespace garlic::clove {
+namespace clove {
     class Composite : public Task {
         //VARIABLES
     protected:

@@ -5,7 +5,7 @@
 #include "Clove/Audio/OpenAL/OpenAlListener.hpp"
 #include "Clove/Audio/OpenAL/OpenAlSource.hpp"
 
-namespace garlic::clove {
+namespace clove {
     OpenAlFactory::OpenAlFactory() = default;
 
     OpenAlFactory::OpenAlFactory(OpenAlFactory &&other) noexcept = default;

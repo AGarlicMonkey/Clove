@@ -2,8 +2,8 @@
 #include <Clove/Serialisation/Yaml.hpp>
 #include <gtest/gtest.h>
 
-using namespace garlic::clove;
-using namespace garlic::clove::serialiser;
+using namespace clove;
+using namespace clove::serialiser;
 
 TEST(YamlSerialisationTests, CanEmittDefaultInformation) {
     Node node{};
@@ -97,7 +97,7 @@ struct TestStruct {
     float memberThree;
 };
 
-namespace garlic::clove {
+namespace clove {
     template<>
     Node serialise<TestStruct>(TestStruct const &object) {
         Node node{};
@@ -127,7 +127,7 @@ struct NestedTestStruct {
     TestStruct memberTwo;
 };
 
-namespace garlic::clove {
+namespace clove {
     template<>
     Node serialise<NestedTestStruct>(NestedTestStruct const &object) {
         Node node{};

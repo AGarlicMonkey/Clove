@@ -4,13 +4,13 @@
 
 #include <memory>
 
-namespace garlic::clove {
+namespace clove {
     class GhaFactory;
     class GhaGraphicsPipelineObject;
     class GhaRenderPass;
 }
 
-namespace garlic::clove {
+namespace clove {
     class PointLightPass : public GeometryPass {
         //VARIABLES
     private:

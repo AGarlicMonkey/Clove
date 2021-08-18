@@ -2,7 +2,7 @@
 
 #include <vulkan/vulkan.h>
 
-namespace garlic::clove {
+namespace clove {
     /**
      * @brief Wraps a Vulkan device / instance to help control the lifetime of those objects.
      */

@@ -5,13 +5,13 @@
 #include <Clove/Delegate/MultiCastDelegate.hpp>
 #include <Clove/Expected.hpp>
 
-namespace garlic::clove {
+namespace clove {
     class GhaSemaphore;
     class FrameBuffer;
     struct GraphicsSubmitInfo;
 }
 
-namespace garlic::clove {
+namespace clove {
     /**
      * @brief Contains an array of 1-N images that can be rendered to.
      */
@@ -56,11 +56,11 @@ namespace garlic::clove {
          * number will be from 0 - N-1 where N is the total number of frames in flight.
          * @param submission The graphics queue submission that uses the imageIndex image.
          */
-        virtual void submit(uint32_t imageIndex, size_t const frameId, garlic::clove::GraphicsSubmitInfo submission) = 0;
+        virtual void submit(uint32_t imageIndex, size_t const frameId, clove::GraphicsSubmitInfo submission) = 0;
 
-        virtual garlic::clove::GhaImage::Format getImageFormat() const = 0;
+        virtual clove::GhaImage::Format getImageFormat() const = 0;
         virtual vec2ui getSize() const                                      = 0;
 
-        virtual std::vector<std::shared_ptr<garlic::clove::GhaImageView>> getImageViews() const = 0;
+        virtual std::vector<std::shared_ptr<clove::GhaImageView>> getImageViews() const = 0;
     };
 }

@@ -11,7 +11,7 @@
 
 #include <ostream>
 
-namespace garlic::clove {
+namespace clove {
     enum class Key {
         None      = -2,
         Undefined = -1,

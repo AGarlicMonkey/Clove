@@ -6,7 +6,7 @@
 
 @class MetalView;
 
-namespace garlic::clove {
+namespace clove {
 	class MetalPresentQueue : public GhaPresentQueue {
 		//VARIABLES
 	private:

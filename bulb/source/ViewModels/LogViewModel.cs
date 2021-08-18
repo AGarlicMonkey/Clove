@@ -1,4 +1,4 @@
-namespace Garlic.Bulb{
+namespace Bulb{
     public class LogViewModel : ViewModel{
         public string LogText
         {

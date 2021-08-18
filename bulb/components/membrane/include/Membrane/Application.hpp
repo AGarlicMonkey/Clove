@@ -3,11 +3,11 @@
 #include <Clove/Application.hpp>
 #include <Clove/ECS/Entity.hpp>
 
-namespace garlic::clove {
+namespace clove {
     class GraphicsImageRenderTarget;
 }
 
-namespace garlic::membrane {
+namespace membrane {
     class EditorLayer;
     class RuntimeLayer;
     class ViewportSurface;
@@ -15,7 +15,7 @@ namespace garlic::membrane {
     ref class Editor_Play;
 }
 
-namespace garlic::membrane {
+namespace membrane {
     /**
      * @brief Translates a Clove session into C++/CLI
      */

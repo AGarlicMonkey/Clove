@@ -5,7 +5,7 @@
 
 #include <Clove/Maths/MathsHelpers.hpp>
 
-namespace garlic::clove {
+namespace clove {
     Camera::Camera(Viewport viewport, ProjectionMode const projection)
         : viewport{ viewport }
         , currentProjectionMode{ projection } {

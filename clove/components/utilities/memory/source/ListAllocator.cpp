@@ -4,7 +4,7 @@
 #include <Clove/Log/Log.hpp>
 #include <cstdlib>
 
-namespace garlic::clove {
+namespace clove {
     ListAllocator::ListAllocator(size_t sizeBytes)
         : listSize(sizeBytes) {
         rawList = reinterpret_cast<std::byte *>(malloc(listSize));

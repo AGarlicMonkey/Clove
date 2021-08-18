@@ -4,7 +4,7 @@
 
 #include <glm/ext/scalar_constants.hpp>
 
-namespace garlic::clove {
+namespace clove {
     template<typename T>
     typename T::value_type const *valuePtr(T const &v);
 

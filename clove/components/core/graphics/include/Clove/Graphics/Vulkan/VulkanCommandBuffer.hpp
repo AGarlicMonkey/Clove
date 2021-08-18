@@ -7,11 +7,11 @@
 
 #include <vulkan/vulkan.h>
 
-namespace garlic::clove {
+namespace clove {
     class GhaBuffer;
 }
 
-namespace garlic::clove {
+namespace clove {
     VkCommandBufferUsageFlags getCommandBufferUsageFlags(CommandBufferUsage garlicUsage);
 
     void createBufferMemoryBarrier(VkCommandBuffer vkCommandBuffer, QueueFamilyIndices const &queueFamilyIndices, GhaBuffer &buffer, BufferMemoryBarrierInfo const &barrierInfo, PipelineStage sourceStage, PipelineStage destinationStage);

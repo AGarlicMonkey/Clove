@@ -2,7 +2,7 @@
 
 #include <Clove/Platform/Window.hpp>
 
-namespace garlic::clove {
+namespace clove {
     WindowSurface::WindowSurface(std::unique_ptr<Window> window)
         : window{ std::move(window) } {
     }

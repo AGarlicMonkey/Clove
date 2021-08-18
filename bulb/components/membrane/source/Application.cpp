@@ -18,11 +18,11 @@
 #include <Clove/Rendering/GraphicsImageRenderTarget.hpp>
 #include <msclr/marshal_cppstd.h>
 
-namespace garlic::membrane {
+namespace membrane {
     Application::Application(int const width, int const height)
         : width{ width }
         , height{ height } {
-        using namespace garlic::clove;
+        using namespace clove;
 
         GhaImage::Descriptor renderTargetImageDescriptor{};
         renderTargetImageDescriptor.type        = GhaImage::Type::_2D;

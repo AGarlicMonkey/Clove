@@ -1,4 +1,4 @@
-namespace garlic::clove {
+namespace clove {
 	NSArray<MTLArgumentDescriptor *> *MetalDescriptorSetLayout::getVertexDescriptors() const {
 		return vertexDescriptors;
 	}

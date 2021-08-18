@@ -5,7 +5,7 @@
 
 #include <vector>
 
-namespace garlic::clove {
+namespace clove {
     /**
      * @brief Describes a binding within an individual DescriptorSet.
      */

@@ -1,4 +1,4 @@
-namespace garlic::clove {
+namespace clove {
     VkDeviceSize MemoryAllocator::Block::getSize() const {
         return size;
     }

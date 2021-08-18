@@ -1,6 +1,6 @@
 using System.Windows.Input;
 
-namespace Garlic.Bulb {
+namespace Bulb {
     /// <summary>
     /// Manages the current position in the file explorer.
     /// </summary>

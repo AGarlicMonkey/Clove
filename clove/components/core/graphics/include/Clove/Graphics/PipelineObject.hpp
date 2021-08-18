@@ -4,7 +4,7 @@
 
 #include <cstddef>
 
-namespace garlic::clove {
+namespace clove {
     enum class PipelineStage {
         //External Stages
         Top,

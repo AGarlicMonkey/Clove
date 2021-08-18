@@ -6,7 +6,7 @@
 #include <glm/detail/type_mat3x3.hpp>
 #include <glm/detail/type_mat4x4.hpp>
 
-namespace garlic::clove {
+namespace clove {
     template<length_t C, length_t R, typename T>
     using mat = glm::mat<C, R, T, qualifier::defaultp>;
 

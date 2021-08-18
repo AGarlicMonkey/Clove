@@ -5,7 +5,7 @@
 #include <functional>
 #include <memory>
 
-namespace garlic::clove {
+namespace clove {
     /**
      * @brief Points to an asset on disk. Can load the asset when required.
      * @tparam AssetType 

@@ -3,7 +3,7 @@
 #include <Clove/Audio/AhaSource.hpp>
 #include <memory>
 
-namespace garlic::clove {
+namespace clove {
     /**
 	 * @brief Allows an entity to determine where a sound is coming from.
 	 */

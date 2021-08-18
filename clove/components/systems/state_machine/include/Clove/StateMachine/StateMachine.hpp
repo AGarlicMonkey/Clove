@@ -1,11 +1,11 @@
 #pragma once
 
-namespace garlic::clove {
+namespace clove {
     template<typename Action>
     class State;
 }
 
-namespace garlic::clove {
+namespace clove {
     /**
 	 * @brief A StateMachine manages States and Transitions. Determining what Action to execute.
 	 * @tparam Action The type of Action this StateMachine handles

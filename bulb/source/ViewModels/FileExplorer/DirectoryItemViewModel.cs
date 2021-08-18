@@ -3,7 +3,7 @@ using System.IO;
 using System.Windows;
 using System.Windows.Input;
 
-namespace Garlic.Bulb {
+namespace Bulb {
     public enum ObjectType {
         Directory,
         File

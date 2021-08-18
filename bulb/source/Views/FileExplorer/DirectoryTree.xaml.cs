@@ -1,6 +1,6 @@
 using System.Windows.Controls;
 
-namespace Garlic.Bulb {
+namespace Bulb {
     /// <summary>
     /// A UserControl that displays the contents of a directory in a tree view.
     /// Expects a DirectoryViewModel

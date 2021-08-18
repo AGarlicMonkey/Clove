@@ -2,11 +2,11 @@
 
 #include "Clove/Event/EventTypes.hpp"
 
-namespace garlic::clove {
+namespace clove {
     class EventContainerBase;
 }
 
-namespace garlic::clove {
+namespace clove {
     struct EventHandle {
         friend class EventContainerBase;
 

@@ -1,7 +1,7 @@
 using System;
 using System.Windows.Input;
 
-namespace Garlic.Bulb {
+namespace Bulb {
     /// <summary>
     /// Simple RelayCommand that invokes an action when executed.
     /// </summary>
