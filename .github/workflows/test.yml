@@ -93,8 +93,8 @@ jobs:
     container:
       image: ghcr.io/agarlicmonkey/clove/linux_build:1.0
       credentials:
-        username: ${{ secrets.DOCKER_LOGIN_USERNAME }}
-        password: ${{ secrets.DOCKER_LOGIN_TOKEN }}
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
     steps:
       - uses: actions/checkout@v2
         with:
@@ -120,8 +120,8 @@ jobs:
     container:
       image: ghcr.io/agarlicmonkey/clove/linux_build:1.0
       credentials:
-        username: ${{ secrets.DOCKER_LOGIN_USERNAME }}
-        password: ${{ secrets.DOCKER_LOGIN_TOKEN }}
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
     steps:
       - uses: actions/checkout@v2
         with:
@@ -148,8 +148,8 @@ jobs:
     container:
       image: ghcr.io/agarlicmonkey/clove/linux_build:1.0
       credentials:
-        username: ${{ secrets.DOCKER_LOGIN_USERNAME }}
-        password: ${{ secrets.DOCKER_LOGIN_TOKEN }}
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
     steps:
       - name: Download build artefacts
         uses: actions/download-artifact@v2
@@ -167,8 +167,8 @@ jobs:
     container:
       image: ghcr.io/agarlicmonkey/clove/linux_build:1.0
       credentials:
-        username: ${{ secrets.DOCKER_LOGIN_USERNAME }}
-        password: ${{ secrets.DOCKER_LOGIN_TOKEN }}
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
     steps:
       - name: Download build artefacts
         uses: actions/download-artifact@v2
