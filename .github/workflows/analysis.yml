@@ -9,7 +9,7 @@ jobs:
   cpp_check:
     runs-on: ubuntu-latest
     container:
-      image: docker.pkg.github.com/agarlicmonkey/garlic/linux_analysis:2.0
+      image: ghcr.io/agarlicmonkey/clove/linux_analysis:2.0
       credentials:
         username: ${{ secrets.DOCKER_LOGIN_USERNAME }}
         password: ${{ secrets.DOCKER_LOGIN_TOKEN }}
@@ -45,7 +45,7 @@ jobs:
   clang-tidy-linux:
     runs-on: ubuntu-latest
     container:
-      image: docker.pkg.github.com/agarlicmonkey/garlic/linux_analysis:2.0
+      image: ghcr.io/agarlicmonkey/clove/linux_analysis:2.0
       credentials:
         username: ${{ secrets.DOCKER_LOGIN_USERNAME }}
         password: ${{ secrets.DOCKER_LOGIN_TOKEN }}

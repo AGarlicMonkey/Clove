@@ -51,7 +51,7 @@ jobs:
   compile-linux-gcc:
     runs-on: ubuntu-latest
     container:
-      image: docker.pkg.github.com/agarlicmonkey/garlic/linux_build:1.0
+      image: ghcr.io/agarlicmonkey/clove/linux_build:1.0
       credentials:
         username: ${{ secrets.DOCKER_LOGIN_USERNAME }}
         password: ${{ secrets.DOCKER_LOGIN_TOKEN }}
@@ -70,7 +70,7 @@ jobs:
   compile-linux-clang:
     runs-on: ubuntu-latest
     container:
-      image: docker.pkg.github.com/agarlicmonkey/garlic/linux_build:1.0
+      image: ghcr.io/agarlicmonkey/clove/linux_build:1.0
       credentials:
         username: ${{ secrets.DOCKER_LOGIN_USERNAME }}
         password: ${{ secrets.DOCKER_LOGIN_TOKEN }}
