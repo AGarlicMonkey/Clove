@@ -1,1 +1,1 @@
-Scape.Membrane is a C++/CLR library that glues Bulb onto Clove.
+Membrane is a C++/CLR library that glues Bulb onto Clove.
