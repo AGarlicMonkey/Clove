@@ -58,9 +58,9 @@ target_include_directories(
 )
 
 if(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
-	find_library(CLV_COCOA_LIB Cocoa)
-	find_library(CLV_APPKIT_LIB AppKit)
-	find_library(CLV_QUARTZ_LIB QuartzCore)
+	find_library(CLOVE_COCOA_LIB Cocoa)
+	find_library(CLOVE_APPKIT_LIB AppKit)
+	find_library(CLOVE_QUARTZ_LIB QuartzCore)
 endif()
 
 #Libraries
@@ -80,9 +80,9 @@ target_link_libraries(
 
 	#MacOS
 	PRIVATE
-		$<$<PLATFORM_ID:Darwin>:${CLV_COCOA_LIB}>
-		$<$<PLATFORM_ID:Darwin>:${CLV_APPKIT_LIB}>
-		$<$<PLATFORM_ID:Darwin>:${CLV_QUARTZ_LIB}>
+		$<$<PLATFORM_ID:Darwin>:${CLOVE_COCOA_LIB}>
+		$<$<PLATFORM_ID:Darwin>:${CLOVE_APPKIT_LIB}>
+		$<$<PLATFORM_ID:Darwin>:${CLOVE_QUARTZ_LIB}>
 )
 
 #Compiler
