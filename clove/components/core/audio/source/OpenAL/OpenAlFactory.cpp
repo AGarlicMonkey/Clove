@@ -14,7 +14,7 @@ namespace clove {
 
     OpenAlFactory::~OpenAlFactory() = default;
 
-    Expected<std::unique_ptr<AhaBuffer>, std::runtime_error> OpenAlFactory::createAudioBuffer(AhaBuffer::Descriptor descriptor) {
+    Expected<std::unique_ptr<AhaBuffer>, std::runtime_error> OpenAlFactory::createAudioBuffer(AhaBuffer::Descriptor descriptor) noexcept {
         ALuint buffer{ 0 };
         alGenBuffers(1, &buffer);
 
@@ -27,7 +27,7 @@ namespace clove {
         return std::unique_ptr<AhaBuffer>{ std::make_unique<OpenAlBuffer>(buffer, descriptor) };
     }
 
-    Expected<std::unique_ptr<AhaSource>, std::runtime_error> OpenAlFactory::createAudioSource() {
+    Expected<std::unique_ptr<AhaSource>, std::runtime_error> OpenAlFactory::createAudioSource() noexcept {
         ALuint source{ 0 };
         alGenSources(1, &source);
 
@@ -40,7 +40,7 @@ namespace clove {
         return std::unique_ptr<AhaSource>{ std::make_unique<OpenAlSource>(source) };
     }
 
-    Expected<std::unique_ptr<AhaListener>, std::runtime_error> OpenAlFactory::createAudioListener() {
+    Expected<std::unique_ptr<AhaListener>, std::runtime_error> OpenAlFactory::createAudioListener() noexcept {
         return std::unique_ptr<AhaListener>{ std::make_unique<OpenAlListener>() };
     }
 }

@@ -157,23 +157,23 @@ namespace clove {
     
     MetalFactory::~MetalFactory() = default;
     
-    Expected<std::unique_ptr<GhaGraphicsQueue>, std::runtime_error> MetalFactory::createGraphicsQueue(CommandQueueDescriptor descriptor) {
+    Expected<std::unique_ptr<GhaGraphicsQueue>, std::runtime_error> MetalFactory::createGraphicsQueue(CommandQueueDescriptor descriptor) noexcept {
         return std::unique_ptr<GhaGraphicsQueue>{ std::make_unique<MetalGraphicsQueue>(descriptor, graphicsPresentCommandQueue) };
     }
     
-    Expected<std::unique_ptr<GhaPresentQueue>, std::runtime_error> MetalFactory::createPresentQueue() {
+    Expected<std::unique_ptr<GhaPresentQueue>, std::runtime_error> MetalFactory::createPresentQueue() noexcept {
         return std::unique_ptr<GhaPresentQueue>{ std::make_unique<MetalPresentQueue>(graphicsPresentCommandQueue, view) };
     }
     
-    Expected<std::unique_ptr<GhaTransferQueue>, std::runtime_error> MetalFactory::createTransferQueue(CommandQueueDescriptor descriptor) {
+    Expected<std::unique_ptr<GhaTransferQueue>, std::runtime_error> MetalFactory::createTransferQueue(CommandQueueDescriptor descriptor) noexcept {
         return std::unique_ptr<GhaTransferQueue>{ std::make_unique<MetalTransferQueue>(descriptor, transferCommandQueue) };
     }
     
-    Expected<std::unique_ptr<GhaComputeQueue>, std::runtime_error> MetalFactory::createComputeQueue(CommandQueueDescriptor descriptor) {
+    Expected<std::unique_ptr<GhaComputeQueue>, std::runtime_error> MetalFactory::createComputeQueue(CommandQueueDescriptor descriptor) noexcept {
         return std::unique_ptr<GhaComputeQueue>{ std::make_unique<MetalComputeQueue>(descriptor, computeCommandQueue) };
     }
     
-    Expected<std::unique_ptr<GhaSwapchain>, std::runtime_error> MetalFactory::createSwapChain(GhaSwapchain::Descriptor descriptor) {
+    Expected<std::unique_ptr<GhaSwapchain>, std::runtime_error> MetalFactory::createSwapChain(GhaSwapchain::Descriptor descriptor) noexcept {
         std::vector<std::shared_ptr<GhaImage>> swapchainImages{};
         GhaImage::Format const drawableFormat{ MetalImage::convertFormat([view.metalLayer pixelFormat]) }; //Needs to be the same as the target for when we blit in the present queue
         
@@ -201,7 +201,7 @@ namespace clove {
         return std::unique_ptr<GhaSwapchain>{ std::make_unique<MetalSwapchain>(std::move(swapchainImages), drawableFormat, descriptor.extent) };
     }
     
-    Expected<std::unique_ptr<GhaShader>, std::runtime_error> MetalFactory::createShaderFromFile(std::filesystem::path const &file, GhaShader::Stage shaderStage) {
+    Expected<std::unique_ptr<GhaShader>, std::runtime_error> MetalFactory::createShaderFromFile(std::filesystem::path const &file, GhaShader::Stage shaderStage) noexcept {
         Expected<std::vector<uint32_t>, std::runtime_error> compilationResult{ ShaderCompiler::compileFromFile(file, shaderStage) };
         if(compilationResult.hasValue()) {
             Expected<std::string, std::runtime_error> msl{ ShaderCompiler::spirvToMSL(compilationResult.getValue()) };
@@ -215,7 +215,7 @@ namespace clove {
         }
     }
     
-    Expected<std::unique_ptr<GhaShader>, std::runtime_error> MetalFactory::createShaderFromSource(std::string_view source, std::unordered_map<std::string, std::string> includeSources, std::string_view shaderName, GhaShader::Stage shaderStage) {
+    Expected<std::unique_ptr<GhaShader>, std::runtime_error> MetalFactory::createShaderFromSource(std::string_view source, std::unordered_map<std::string, std::string> includeSources, std::string_view shaderName, GhaShader::Stage shaderStage) noexcept {
         Expected<std::vector<uint32_t>, std::runtime_error> compilationResult{ ShaderCompiler::compileFromSource(source, std::move(includeSources), shaderName, shaderStage) };
         if(compilationResult.hasValue()) {
             Expected<std::string, std::runtime_error> msl{ ShaderCompiler::spirvToMSL(compilationResult.getValue()) };
@@ -229,7 +229,7 @@ namespace clove {
         }
     }
     
-    Expected<std::unique_ptr<GhaRenderPass>, std::runtime_error> MetalFactory::createRenderPass(GhaRenderPass::Descriptor descriptor) {
+    Expected<std::unique_ptr<GhaRenderPass>, std::runtime_error> MetalFactory::createRenderPass(GhaRenderPass::Descriptor descriptor) noexcept {
         MTLRenderPipelineColorAttachmentDescriptorArray* colourAttachments{ [[MTLRenderPipelineColorAttachmentDescriptorArray alloc] init] };
         for(size_t i{ 0 }; i < descriptor.colourAttachments.size(); ++i){
             colourAttachments[i].pixelFormat = MetalImage::convertFormat(descriptor.colourAttachments[i].format);
@@ -240,7 +240,7 @@ namespace clove {
         return std::unique_ptr<GhaRenderPass>{ std::make_unique<MetalRenderPass>(colourAttachments, depthPixelFormat, std::move(descriptor)) };
     }
     
-    Expected<std::unique_ptr<GhaDescriptorSetLayout>, std::runtime_error> MetalFactory::createDescriptorSetLayout(GhaDescriptorSetLayout::Descriptor descriptor) {
+    Expected<std::unique_ptr<GhaDescriptorSetLayout>, std::runtime_error> MetalFactory::createDescriptorSetLayout(GhaDescriptorSetLayout::Descriptor descriptor) noexcept {
         NSMutableArray<MTLArgumentDescriptor *> *vertexDescriptors{ [[NSMutableArray<MTLArgumentDescriptor *> alloc] init] };
         NSMutableArray<MTLArgumentDescriptor *> *pixelDescriptors{ [[NSMutableArray<MTLArgumentDescriptor *> alloc] init] };
         NSMutableArray<MTLArgumentDescriptor *> *computeDescriptors{ [[NSMutableArray<MTLArgumentDescriptor *> alloc] init]  };
@@ -275,7 +275,7 @@ namespace clove {
         return std::unique_ptr<GhaDescriptorSetLayout>{ std::make_unique<MetalDescriptorSetLayout>(std::move(descriptor), vertexDescriptors, pixelDescriptors, computeDescriptors) };
     }
     
-    Expected<std::unique_ptr<GhaGraphicsPipelineObject>, std::runtime_error> MetalFactory::createGraphicsPipelineObject(GhaGraphicsPipelineObject::Descriptor descriptor) {
+    Expected<std::unique_ptr<GhaGraphicsPipelineObject>, std::runtime_error> MetalFactory::createGraphicsPipelineObject(GhaGraphicsPipelineObject::Descriptor descriptor) noexcept {
         //Vertex shader
         id<MTLFunction> vertexFunction{ polyCast<MetalShader>(descriptor.vertexShader.get())->getFunction() };
         
@@ -344,7 +344,7 @@ namespace clove {
         return std::unique_ptr<GhaGraphicsPipelineObject>{ std::make_unique<MetalGraphicsPipelineObject>(pipelineState, depthStencilState) };
     }
     
-    Expected<std::unique_ptr<GhaComputePipelineObject>, std::runtime_error> MetalFactory::createComputePipelineObject(GhaComputePipelineObject::Descriptor descriptor) {
+    Expected<std::unique_ptr<GhaComputePipelineObject>, std::runtime_error> MetalFactory::createComputePipelineObject(GhaComputePipelineObject::Descriptor descriptor) noexcept {
         id<MTLFunction> function{ polyCast<MetalShader>(descriptor.shader.get())->getFunction() };
         
         NSError *error{ nullptr };
@@ -358,7 +358,7 @@ namespace clove {
         return std::unique_ptr<GhaComputePipelineObject>{ std::make_unique<MetalComputePipelineObject>(pipelineState) };
     }
     
-    Expected<std::unique_ptr<GhaFramebuffer>, std::runtime_error> MetalFactory::createFramebuffer(GhaFramebuffer::Descriptor descriptor) {
+    Expected<std::unique_ptr<GhaFramebuffer>, std::runtime_error> MetalFactory::createFramebuffer(GhaFramebuffer::Descriptor descriptor) noexcept {
         GhaRenderPass::Descriptor const &renderPassDescriptor{ polyCast<MetalRenderPass>(descriptor.renderPass.get())->getDescriptor() };
         
         MTLRenderPassDescriptor *frameBufferDescriptor{ [[MTLRenderPassDescriptor alloc] init] };
@@ -374,20 +374,20 @@ namespace clove {
         return std::unique_ptr<GhaFramebuffer>{ std::make_unique<MetalFramebuffer>(frameBufferDescriptor) };
     }
     
-    Expected<std::unique_ptr<GhaDescriptorPool>, std::runtime_error> MetalFactory::createDescriptorPool(GhaDescriptorPool::Descriptor descriptor) {
+    Expected<std::unique_ptr<GhaDescriptorPool>, std::runtime_error> MetalFactory::createDescriptorPool(GhaDescriptorPool::Descriptor descriptor) noexcept {
         return std::unique_ptr<GhaDescriptorPool>{ std::make_unique<MetalDescriptorPool>(std::move(descriptor), device) };
     }
     
-    Expected<std::unique_ptr<GhaSemaphore>, std::runtime_error> MetalFactory::createSemaphore() {
+    Expected<std::unique_ptr<GhaSemaphore>, std::runtime_error> MetalFactory::createSemaphore() noexcept {
         id<MTLFence> fence{ [device newFence] };
         return std::unique_ptr<GhaSemaphore>{ std::make_unique<MetalSemaphore>(fence) };
     }
     
-    Expected<std::unique_ptr<GhaFence>, std::runtime_error> MetalFactory::createFence(GhaFence::Descriptor descriptor) {
+    Expected<std::unique_ptr<GhaFence>, std::runtime_error> MetalFactory::createFence(GhaFence::Descriptor descriptor) noexcept {
         return std::unique_ptr<GhaFence>{ std::make_unique<MetalFence>(descriptor.signaled) };
     }
     
-    Expected<std::unique_ptr<GhaBuffer>, std::runtime_error> MetalFactory::createBuffer(GhaBuffer::Descriptor descriptor) {
+    Expected<std::unique_ptr<GhaBuffer>, std::runtime_error> MetalFactory::createBuffer(GhaBuffer::Descriptor descriptor) noexcept {
         MTLResourceOptions resourceOptions{};
         switch (descriptor.memoryType) {
             case MemoryType::VideoMemory:
@@ -404,7 +404,7 @@ namespace clove {
         return std::unique_ptr<GhaBuffer>{ std::make_unique<MetalBuffer>(buffer, descriptor) };
     }
     
-    Expected<std::unique_ptr<GhaImage>, std::runtime_error> MetalFactory::createImage(GhaImage::Descriptor descriptor) {
+    Expected<std::unique_ptr<GhaImage>, std::runtime_error> MetalFactory::createImage(GhaImage::Descriptor descriptor) noexcept {
         MTLTextureDescriptor *mtlDescriptor{ [[MTLTextureDescriptor alloc] init] };
         mtlDescriptor.textureType = convertImageType(descriptor.type, descriptor.arrayCount);
         mtlDescriptor.pixelFormat = MetalImage::convertFormat(descriptor.format);
@@ -418,7 +418,7 @@ namespace clove {
         return std::unique_ptr<GhaImage>{ std::make_unique<MetalImage>(texture, descriptor) };
     }
     
-    Expected<std::unique_ptr<GhaSampler>, std::runtime_error> MetalFactory::createSampler(GhaSampler::Descriptor descriptor) {
+    Expected<std::unique_ptr<GhaSampler>, std::runtime_error> MetalFactory::createSampler(GhaSampler::Descriptor descriptor) noexcept {
         MTLSamplerDescriptor *samplerDescriptor{ [[MTLSamplerDescriptor alloc] init] };
         samplerDescriptor.minFilter     = convertMinMagFilter(descriptor.minFilter);
         samplerDescriptor.magFilter     = convertMinMagFilter(descriptor.magFilter);
@@ -432,7 +432,7 @@ namespace clove {
         return std::unique_ptr<GhaSampler>{ std::make_unique<MetalSampler>(samplerState) };
     }
     
-    Expected<std::unique_ptr<GhaShader>, std::runtime_error> MetalFactory::createShaderObject(std::string const &mslSource) {
+    Expected<std::unique_ptr<GhaShader>, std::runtime_error> MetalFactory::createShaderObject(std::string const &mslSource) noexcept {
         NSString *librarySource{ [NSString stringWithCString:mslSource.c_str() encoding:[NSString defaultCStringEncoding]] };
         if(librarySource == nullptr) {
             return Unexpected{ std::runtime_error{ "Shader creation failed. Could not convert std::string to NSString" } };

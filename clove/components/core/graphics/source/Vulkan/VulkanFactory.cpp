@@ -1,9 +1,5 @@
-//There seems to be a bug with optional in msvc that stops it compiling. Having this header included here (above VulkanFactory) is a current work around.
-#include "Clove/Graphics/Vulkan/VulkanRenderPass.hpp"
-//
 #include "Clove/Graphics/Vulkan/VulkanFactory.hpp"
-//
-
+#include "Clove/Graphics/Vulkan/VulkanRenderPass.hpp"
 #include "Clove/Graphics/ShaderCompiler.hpp"
 #include "Clove/Graphics/Vulkan/MemoryAllocator.hpp"
 #include "Clove/Graphics/Vulkan/VulkanBuffer.hpp"
@@ -235,7 +231,7 @@ namespace clove {
 
     VulkanFactory::~VulkanFactory() = default;
 
-    Expected<std::unique_ptr<GhaGraphicsQueue>, std::runtime_error> VulkanFactory::createGraphicsQueue(CommandQueueDescriptor descriptor) {
+    Expected<std::unique_ptr<GhaGraphicsQueue>, std::runtime_error> VulkanFactory::createGraphicsQueue(CommandQueueDescriptor descriptor) noexcept {
         uint32_t const familyIndex{ *queueFamilyIndices.graphicsFamily };
 
         VkCommandPoolCreateInfo poolInfo{
@@ -263,7 +259,7 @@ namespace clove {
         return std::unique_ptr<GhaGraphicsQueue>{ std::make_unique<VulkanGraphicsQueue>(devicePtr, queue, commandPool, queueFamilyIndices) };
     }
 
-    Expected<std::unique_ptr<GhaPresentQueue>, std::runtime_error> VulkanFactory::createPresentQueue() {
+    Expected<std::unique_ptr<GhaPresentQueue>, std::runtime_error> VulkanFactory::createPresentQueue() noexcept {
         if(!queueFamilyIndices.presentFamily.has_value()) {
             return Unexpected{ std::runtime_error{ "Presentation queue not available. GhaDevice is likely headless" } };
         }
@@ -274,7 +270,7 @@ namespace clove {
         return std::unique_ptr<GhaPresentQueue>{ std::make_unique<VulkanPresentQueue>(devicePtr, queue) };
     }
 
-    Expected<std::unique_ptr<GhaTransferQueue>, std::runtime_error> VulkanFactory::createTransferQueue(CommandQueueDescriptor descriptor) {
+    Expected<std::unique_ptr<GhaTransferQueue>, std::runtime_error> VulkanFactory::createTransferQueue(CommandQueueDescriptor descriptor) noexcept {
         uint32_t const familyIndex{ *queueFamilyIndices.transferFamily };
 
         VkCommandPoolCreateInfo const poolInfo{
@@ -302,7 +298,7 @@ namespace clove {
         return std::unique_ptr<GhaTransferQueue>{ std::make_unique<VulkanTransferQueue>(devicePtr, queue, commandPool, queueFamilyIndices) };
     }
 
-    Expected<std::unique_ptr<GhaComputeQueue>, std::runtime_error> VulkanFactory::createComputeQueue(CommandQueueDescriptor descriptor) {
+    Expected<std::unique_ptr<GhaComputeQueue>, std::runtime_error> VulkanFactory::createComputeQueue(CommandQueueDescriptor descriptor) noexcept {
         uint32_t const familyIndex{ *queueFamilyIndices.computeFamily };
 
         VkCommandPoolCreateInfo const poolInfo{
@@ -330,7 +326,7 @@ namespace clove {
         return std::unique_ptr<GhaComputeQueue>{ std::make_unique<VulkanComputeQueue>(devicePtr, queue, commandPool, queueFamilyIndices) };
     }
 
-    Expected<std::unique_ptr<GhaSwapchain>, std::runtime_error> VulkanFactory::createSwapChain(GhaSwapchain::Descriptor descriptor) {
+    Expected<std::unique_ptr<GhaSwapchain>, std::runtime_error> VulkanFactory::createSwapChain(GhaSwapchain::Descriptor descriptor) noexcept {
         if(devicePtr.getSurface() == VK_NULL_HANDLE) {
             return Unexpected{ std::runtime_error{ "GhaSwapchain is not available. GhaDevice is likely headless" } };
         }
@@ -393,7 +389,7 @@ namespace clove {
         return std::unique_ptr<GhaSwapchain>{ std::make_unique<VulkanSwapchain>(devicePtr, swapchain, surfaceFormat.format, swapchainExtent) };
     }
 
-    Expected<std::unique_ptr<GhaShader>, std::runtime_error> VulkanFactory::createShaderFromFile(std::filesystem::path const &file, GhaShader::Stage shaderStage) {
+    Expected<std::unique_ptr<GhaShader>, std::runtime_error> VulkanFactory::createShaderFromFile(std::filesystem::path const &file, GhaShader::Stage shaderStage) noexcept {
         Expected<std::vector<uint32_t>, std::runtime_error> compilationResult{ ShaderCompiler::compileFromFile(file, shaderStage) };
         if(compilationResult.hasValue()) {
             std::vector<uint32_t> spirvSource{ std::move(compilationResult.getValue()) };
@@ -403,7 +399,7 @@ namespace clove {
         }
     }
 
-    Expected<std::unique_ptr<GhaShader>, std::runtime_error> VulkanFactory::createShaderFromSource(std::string_view source, std::unordered_map<std::string, std::string> includeSources, std::string_view shaderName, GhaShader::Stage shaderStage) {
+    Expected<std::unique_ptr<GhaShader>, std::runtime_error> VulkanFactory::createShaderFromSource(std::string_view source, std::unordered_map<std::string, std::string> includeSources, std::string_view shaderName, GhaShader::Stage shaderStage) noexcept {
         Expected<std::vector<uint32_t>, std::runtime_error> compilationResult{ ShaderCompiler::compileFromSource(source, std::move(includeSources), shaderName, shaderStage) };
         if(compilationResult.hasValue()) {
             std::vector<uint32_t> spirvSource{ std::move(compilationResult.getValue()) };
@@ -413,7 +409,7 @@ namespace clove {
         }
     }
 
-    Expected<std::unique_ptr<GhaRenderPass>, std::runtime_error> VulkanFactory::createRenderPass(GhaRenderPass::Descriptor descriptor) {
+    Expected<std::unique_ptr<GhaRenderPass>, std::runtime_error> VulkanFactory::createRenderPass(GhaRenderPass::Descriptor descriptor) noexcept {
         //Attachments
         size_t const colourAttachmentSize{ descriptor.colourAttachments.size() };
         std::vector<VkAttachmentDescription> attachments(colourAttachmentSize);
@@ -504,7 +500,7 @@ namespace clove {
         return std::unique_ptr<GhaRenderPass>{ std::make_unique<VulkanRenderPass>(devicePtr, renderPass) };
     }
 
-    Expected<std::unique_ptr<GhaDescriptorSetLayout>, std::runtime_error> VulkanFactory::createDescriptorSetLayout(GhaDescriptorSetLayout::Descriptor descriptor) {
+    Expected<std::unique_ptr<GhaDescriptorSetLayout>, std::runtime_error> VulkanFactory::createDescriptorSetLayout(GhaDescriptorSetLayout::Descriptor descriptor) noexcept {
         std::vector<VkDescriptorSetLayoutBinding> layoutBindings(std::size(descriptor.bindings));
         for(size_t i = 0; i < std::size(layoutBindings); ++i) {
             auto const &bindingDescriptor{ descriptor.bindings[i] };
@@ -540,7 +536,7 @@ namespace clove {
         return std::unique_ptr<GhaDescriptorSetLayout>{ std::make_unique<VulkanDescriptorSetLayout>(devicePtr, layout, std::move(descriptor)) };
     }
 
-    Expected<std::unique_ptr<GhaGraphicsPipelineObject>, std::runtime_error> VulkanFactory::createGraphicsPipelineObject(GhaGraphicsPipelineObject::Descriptor descriptor) {
+    Expected<std::unique_ptr<GhaGraphicsPipelineObject>, std::runtime_error> VulkanFactory::createGraphicsPipelineObject(GhaGraphicsPipelineObject::Descriptor descriptor) noexcept {
         //Descriptor set layouts
         size_t const descriptorLayoutCount{ std::size(descriptor.descriptorSetLayouts) };
         std::vector<VkDescriptorSetLayout> descriptorLayouts(descriptorLayoutCount);
@@ -766,7 +762,7 @@ namespace clove {
         return std::unique_ptr<GhaGraphicsPipelineObject>{ std::make_unique<VulkanGraphicsPipelineObject>(devicePtr, pipeline, pipelineLayout) };
     }
 
-    Expected<std::unique_ptr<GhaComputePipelineObject>, std::runtime_error> VulkanFactory::createComputePipelineObject(GhaComputePipelineObject::Descriptor descriptor) {
+    Expected<std::unique_ptr<GhaComputePipelineObject>, std::runtime_error> VulkanFactory::createComputePipelineObject(GhaComputePipelineObject::Descriptor descriptor) noexcept {
         //Descriptor set layouts
         size_t const descriptorLayoutCount{ std::size(descriptor.descriptorSetLayouts) };
         std::vector<VkDescriptorSetLayout> descriptorLayouts(descriptorLayoutCount);
@@ -837,7 +833,7 @@ namespace clove {
         return std::unique_ptr<GhaComputePipelineObject>{ std::make_unique<VulkanComputePipelineObject>(devicePtr, pipeline, pipelineLayout) };
     }
 
-    Expected<std::unique_ptr<GhaFramebuffer>, std::runtime_error> VulkanFactory::createFramebuffer(GhaFramebuffer::Descriptor descriptor) {
+    Expected<std::unique_ptr<GhaFramebuffer>, std::runtime_error> VulkanFactory::createFramebuffer(GhaFramebuffer::Descriptor descriptor) noexcept {
         std::vector<VkImageView> attachments;
         attachments.reserve(std::size(descriptor.attachments));
         for(auto &attachment : descriptor.attachments) {
@@ -871,7 +867,7 @@ namespace clove {
         return std::unique_ptr<GhaFramebuffer>{ std::make_unique<VulkanFramebuffer>(devicePtr, framebuffer) };
     }
 
-    Expected<std::unique_ptr<GhaDescriptorPool>, std::runtime_error> VulkanFactory::createDescriptorPool(GhaDescriptorPool::Descriptor descriptor) {
+    Expected<std::unique_ptr<GhaDescriptorPool>, std::runtime_error> VulkanFactory::createDescriptorPool(GhaDescriptorPool::Descriptor descriptor) noexcept {
         size_t const numDescriptorTypes = std::size(descriptor.poolTypes);
         std::vector<VkDescriptorPoolSize> poolSizes(numDescriptorTypes);
         for(size_t i = 0; i < numDescriptorTypes; ++i) {
@@ -907,7 +903,7 @@ namespace clove {
         return std::unique_ptr<GhaDescriptorPool>{ std::make_unique<VulkanDescriptorPool>(devicePtr, pool, std::move(descriptor)) };
     }
 
-    Expected<std::unique_ptr<GhaSemaphore>, std::runtime_error> VulkanFactory::createSemaphore() {
+    Expected<std::unique_ptr<GhaSemaphore>, std::runtime_error> VulkanFactory::createSemaphore() noexcept {
         VkSemaphoreCreateInfo const createInfo{
             .sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO,
         };
@@ -927,7 +923,7 @@ namespace clove {
         return std::unique_ptr<GhaSemaphore>{ std::make_unique<VulkanSemaphore>(devicePtr, semaphore) };
     }
 
-    Expected<std::unique_ptr<GhaFence>, std::runtime_error> VulkanFactory::createFence(GhaFence::Descriptor descriptor) {
+    Expected<std::unique_ptr<GhaFence>, std::runtime_error> VulkanFactory::createFence(GhaFence::Descriptor descriptor) noexcept {
         VkFenceCreateInfo createInfo{
             .sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO,
             .flags = descriptor.signaled ? VK_FENCE_CREATE_SIGNALED_BIT : static_cast<VkFenceCreateFlags>(0),
@@ -948,7 +944,7 @@ namespace clove {
         return std::unique_ptr<GhaFence>{ std::make_unique<VulkanFence>(devicePtr, fence) };
     }
 
-    Expected<std::unique_ptr<GhaBuffer>, std::runtime_error> VulkanFactory::createBuffer(GhaBuffer::Descriptor descriptor) {
+    Expected<std::unique_ptr<GhaBuffer>, std::runtime_error> VulkanFactory::createBuffer(GhaBuffer::Descriptor descriptor) noexcept {
         std::array const sharedQueueIndices{ *queueFamilyIndices.graphicsFamily, *queueFamilyIndices.transferFamily, *queueFamilyIndices.computeFamily };
         bool const isExclusive{ descriptor.sharingMode == SharingMode::Exclusive };
 
@@ -978,7 +974,7 @@ namespace clove {
         return std::unique_ptr<GhaBuffer>{ std::make_unique<VulkanBuffer>(devicePtr, buffer, descriptor, memoryAllocator) };
     }
 
-    Expected<std::unique_ptr<GhaImage>, std::runtime_error> VulkanFactory::createImage(GhaImage::Descriptor descriptor) {
+    Expected<std::unique_ptr<GhaImage>, std::runtime_error> VulkanFactory::createImage(GhaImage::Descriptor descriptor) noexcept {
         std::array const sharedQueueIndices{ *queueFamilyIndices.graphicsFamily, *queueFamilyIndices.transferFamily, *queueFamilyIndices.computeFamily };
         bool const isExclusive{ descriptor.sharingMode == SharingMode::Exclusive };
         bool const isCube{ descriptor.type == GhaImage::Type::Cube };
@@ -1017,7 +1013,7 @@ namespace clove {
         return std::unique_ptr<GhaImage>{ std::make_unique<VulkanImage>(devicePtr, image, descriptor, memoryAllocator) };
     }
 
-    Expected<std::unique_ptr<GhaSampler>, std::runtime_error> VulkanFactory::createSampler(GhaSampler::Descriptor descriptor) {
+    Expected<std::unique_ptr<GhaSampler>, std::runtime_error> VulkanFactory::createSampler(GhaSampler::Descriptor descriptor) noexcept {
         VkSamplerCreateInfo const createInfo{
             .sType                   = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO,
             .pNext                   = nullptr,
@@ -1054,7 +1050,7 @@ namespace clove {
         return std::unique_ptr<GhaSampler>{ std::make_unique<VulkanSampler>(devicePtr, sampler) };
     }
 
-    Expected<std::unique_ptr<GhaShader>, std::runtime_error> VulkanFactory::createShaderObject(std::span<uint32_t> spirvSource) {
+    Expected<std::unique_ptr<GhaShader>, std::runtime_error> VulkanFactory::createShaderObject(std::span<uint32_t> spirvSource) noexcept {
         VkShaderModuleCreateInfo const createInfo{
             .sType    = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO,
             .pNext    = nullptr,
