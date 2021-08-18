@@ -1,7 +1,7 @@
 include(CSharpUtilities)
 
 #Create another project to enable C#
-project(Garlic-Editor LANGUAGES CSharp)
+project(Clove-Editor LANGUAGES CSharp)
 
 set(SOURCE ${CMAKE_CURRENT_SOURCE_DIR}/source)
 set(RESOURCE ${CMAKE_CURRENT_SOURCE_DIR}/resource)

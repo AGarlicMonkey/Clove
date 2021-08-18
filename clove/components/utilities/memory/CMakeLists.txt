@@ -30,6 +30,6 @@ target_link_libraries(
 		CloveLog
 )
 
-if(GAR_BUILD_TESTS)
+if(CLOVE_BUILD_TESTS)
 	add_subdirectory(tests)
 endif()

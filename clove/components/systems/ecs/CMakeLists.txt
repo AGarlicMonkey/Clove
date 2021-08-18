@@ -43,6 +43,6 @@ target_link_libraries(
 		CloveTimer
 )
 
-if(GAR_BUILD_TESTS)
+if(CLOVE_BUILD_TESTS)
 	add_subdirectory(tests)
 endif()
