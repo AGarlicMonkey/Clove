@@ -1,2 +1,2 @@
 The Definitions library of the Root layer contains all the definitions the Garlic engine uses.
-These definitions can be platform or configuration definitions (GARLIC_WINDOWS or CLOVE_DEBUG) or can be more complex ones (CLOVE_ASSERT)
+These definitions can be platform or configuration definitions (CLOVE_WINDOWS) or can be more complex ones (CLOVE_ASSERT)

@@ -105,10 +105,10 @@ namespace clove::ShaderCompiler {
 
             shaderc::CompileOptions options{};
             options.SetIncluder(std::move(includer));
-#if !CLOVE_DEBUG
-            options.SetOptimizationLevel(shaderc_optimization_level_performance);
-#else
+#if CLOVE_COMPILE_DEBUG_SHADERS
             options.SetOptimizationLevel(shaderc_optimization_level_zero);
+#else
+            options.SetOptimizationLevel(shaderc_optimization_level_performance);
 #endif
 
             shaderc::Compiler compiler{};

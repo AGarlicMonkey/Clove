@@ -28,7 +28,7 @@ namespace clove {
         void setBuffer(std::unique_ptr<AhaBuffer> buffer) override;
 
         void queueBuffers(std::vector<std::unique_ptr<AhaBuffer>> buffers) override;
-        std::vector<std::unique_ptr<AhaBuffer>> unQueueBuffers(uint32_t const numToUnqueue) override;
+        std::vector<std::unique_ptr<AhaBuffer>> unQueueBuffers(uint32_t numToUnqueue) override;
 
         void setPitch(float pitch) override;
         void setLooping(bool isLooping) override;

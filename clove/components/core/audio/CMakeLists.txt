@@ -1,6 +1,9 @@
 set(SOURCE ${CMAKE_CURRENT_SOURCE_DIR}/source)
 set(INCLUDE ${CMAKE_CURRENT_SOURCE_DIR}/include/Clove/Audio)
 
+#CMake
+option(CLOVE_ENABLE_AHA_VALIDATION "Sets the CLOVE_AHA_VALIDATION macro to 1. Allowing for extra code to run to validate usage of the CloveAudio library." OFF)
+
 #Library
 add_library(
     CloveAudio STATIC
@@ -33,7 +36,6 @@ target_include_directories(
     
 	PUBLIC
 		include
-
 )
 
 #Libraries
@@ -48,4 +50,12 @@ target_link_libraries(
 
     PRIVATE
         CONAN_PKG::openal
+)
+
+#Preprocessor
+target_compile_definitions(
+	CloveAudio
+
+	PUBLIC
+		CLOVE_AHA_VALIDATION=$<BOOL:${CLOVE_ENABLE_AHA_VALIDATION}>
 )

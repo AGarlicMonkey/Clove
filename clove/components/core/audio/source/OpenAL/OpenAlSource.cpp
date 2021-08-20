@@ -32,7 +32,7 @@ namespace clove {
         alCall(alSourcei(source, AL_BUFFER, alBuffer->getBufferId()));
 
         bufferQueue.clear();
-        bufferQueue.push_back( std::move(buffer) );
+        bufferQueue.push_back(std::move(buffer));
     }
 
     void OpenAlSource::queueBuffers(std::vector<std::unique_ptr<AhaBuffer>> buffers) {
@@ -54,11 +54,16 @@ namespace clove {
         }
     }
 
-    std::vector<std::unique_ptr<AhaBuffer>> OpenAlSource::unQueueBuffers(uint32_t const numToUnqueue) {
-#if CLOVE_DEBUG
-        const uint32_t maxAbleToUnQueue{ getNumBuffersProcessed() };
-        CLOVE_ASSERT(numToUnqueue <= maxAbleToUnQueue, "{0}, Can't unqueue {1} buffers. Only {2} buffers have been processed", CLOVE_FUNCTION_NAME_PRETTY, numToUnqueue, maxAbleToUnQueue);
+    std::vector<std::unique_ptr<AhaBuffer>> OpenAlSource::unQueueBuffers(uint32_t numToUnqueue) {
+        {
+            const uint32_t maxAbleToUnQueue{ getNumBuffersProcessed() };
+#if CLOVE_AHA_VALIDATION
+            CLOVE_ASSERT(numToUnqueue <= maxAbleToUnQueue, "{0}: Can't unqueue {1} buffers. Only {2} buffers have been processed", CLOVE_FUNCTION_NAME_PRETTY, numToUnqueue, maxAbleToUnQueue);
+#else
+            CLOVE_LOG(LOG_CATEGORY_CLOVE, LogLevel::Warning, "{0}: {1} buffers attempted to unqueue but only {2} are avaiable. Clamping to {2}", CLOVE_FUNCTION_NAME_PRETTY, numToUnqueue, maxAbleToUnQueue);
+            numToUnqueue = maxAbleToUnQueue;
 #endif
+        }
 
         auto *buffers{ new ALuint[numToUnqueue] };
         alCall(alSourceUnqueueBuffers(source, numToUnqueue, buffers));

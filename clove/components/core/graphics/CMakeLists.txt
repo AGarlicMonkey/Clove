@@ -2,6 +2,10 @@ set(SOURCE ${CMAKE_CURRENT_SOURCE_DIR}/source)
 set(INCLUDE ${CMAKE_CURRENT_SOURCE_DIR}/include/Clove/Graphics)
 set(ASSETS ${CMAKE_CURRENT_SOURCE_DIR}/assets)
 
+#CMake
+option(CLOVE_ENABLE_GHA_VALIDATION "Sets the CLOVE_GHA_VALIDATION macro to 1. Allowing for extra code to run to validate usage of the CloveGraphics library." OFF)
+option(CLOVE_COMPILE_DEBUG_SHADERS "Compiles shaders in debug mode, disabling optimisations." OFF)
+
 if(CMAKE_SYSTEM_NAME STREQUAL "Windows" OR CMAKE_SYSTEM_NAME STREQUAL "Linux")
 	find_package(Vulkan REQUIRED)
 elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
@@ -258,6 +262,15 @@ target_compile_options(
 	#MacOS
 	PRIVATE
 		$<$<PLATFORM_ID:Darwin>:-fobjc-arc>
+)
+
+#Preprocessor
+target_compile_definitions(
+	CloveGraphics
+
+	PUBLIC
+		CLOVE_GHA_VALIDATION=$<BOOL:${CLOVE_ENABLE_GHA_VALIDATION}>
+		CLOVE_COMPILE_DEBUG_SHADERS=$<BOOL:${CLOVE_COMPILE_DEBUG_SHADERS}>
 )
 
 #Don't compile files not supported on certain platforms

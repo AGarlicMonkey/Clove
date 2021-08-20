@@ -89,7 +89,7 @@ namespace clove {
 
     void DevicePointer::release() {
         if(counter != nullptr && --(*counter) == 0) {
-#if CLOVE_DEBUG
+#if CLOVE_GHA_VALIDATION
             destroyDebugUtilsMessengerEXT(instance, debugMessenger, nullptr);
 #endif
 
