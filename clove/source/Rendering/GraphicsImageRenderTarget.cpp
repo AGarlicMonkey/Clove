@@ -107,16 +107,16 @@ namespace clove {
 
         //Pre-record the transfer command
         ImageMemoryBarrierInfo constexpr layoutTransferInfo{
-            .currentAccess      = AccessFlags::ColourAttachmentWrite,
+            .currentAccess      = AccessFlags::None,
             .newAccess          = AccessFlags::TransferRead,
-            .currentImageLayout = GhaImage::Layout::ColourAttachmentOptimal,
+            .currentImageLayout = GhaImage::Layout::Present,
             .newImageLayout     = GhaImage::Layout::TransferSourceOptimal,
             .sourceQueue        = QueueType::None,
             .destinationQueue   = QueueType::None,
         };
 
         transferCommandBuffer->beginRecording(CommandBufferUsage::Default);
-        transferCommandBuffer->imageMemoryBarrier(*renderTargetImage, layoutTransferInfo, PipelineStage::ColourAttachmentOutput, PipelineStage::Transfer);
+        transferCommandBuffer->imageMemoryBarrier(*renderTargetImage, layoutTransferInfo, PipelineStage::Top, PipelineStage::Transfer);
         transferCommandBuffer->copyImageToBuffer(*renderTargetImage, { 0, 0, 0 }, { imageDescriptor.dimensions, 1 }, *renderTargetBuffer, 0);
         transferCommandBuffer->endRecording();
 
