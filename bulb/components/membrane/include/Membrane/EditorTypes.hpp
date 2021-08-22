@@ -27,6 +27,13 @@ namespace membrane {
         }
     };
 
+    public ref class TransformComponentInitData{
+    public:
+        Vector3 position;
+        Vector3 rotation;
+        Vector3 scale;
+    };
+
     public ref class StaticModelComponentInitData{
     public:
         System::String ^meshPath;

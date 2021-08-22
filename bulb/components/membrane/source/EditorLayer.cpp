@@ -165,22 +165,6 @@ namespace membrane {
     }
 
     void EditorLayer::onUpdate(clove::DeltaTime const deltaTime) {
-        //Broadcast up any transform changes
-        for(auto &entity : currentScene.getKnownEntities()) {
-            if(currentScene.hasComponent<clove::TransformComponent>(entity)) {
-                auto const &pos{ currentScene.getComponent<clove::TransformComponent>(entity).position };
-                auto const &rot{ clove::quaternionToEuler(currentScene.getComponent<clove::TransformComponent>(entity).rotation) };
-                auto const &scale{ currentScene.getComponent<clove::TransformComponent>(entity).scale };
-
-                Engine_OnTransformChanged ^ message { gcnew Engine_OnTransformChanged };
-                message->entity   = entity;
-                message->position = Vector3(pos.x, pos.y, pos.z);
-                message->rotation = Vector3(clove::asDegrees(rot.x), clove::asDegrees(rot.y), clove::asDegrees(rot.z));
-                message->scale    = Vector3(scale.x, scale.y, scale.z);
-                MessageHandler::sendMessage(message);
-            }
-        }
-
         auto &keyBoard{ clove::Application::get().getSurface()->getKeyboard() };
         auto &mouse{ clove::Application::get().getSurface()->getMouse() };
         auto *const entityManager{ clove::Application::get().getEntityManager() };
@@ -249,8 +233,20 @@ namespace membrane {
 
             //Add all of the component types for an entity
             if(currentScene.hasComponent<clove::TransformComponent>(entity)) {
+                auto const &transform{ currentScene.getComponent<clove::TransformComponent>(entity) };
+
+                auto const &pos{ transform.position };
+                auto const &rot{ clove::quaternionToEuler(transform.rotation) };
+                auto const &scale{ transform.scale };
+
+                TransformComponentInitData ^ initData { gcnew TransformComponentInitData{} };
+                initData->position = Vector3(pos.x, pos.y, pos.z);
+                initData->rotation = Vector3(rot.x, rot.y, rot.z);
+                initData->scale    = Vector3(scale.x, scale.y, scale.z);
+
                 Component ^ componentData { gcnew Component{} };
                 componentData->type = ComponentType::Transform;
+                componentData->initData = initData;
 
                 editorEntity->components->Add(componentData);
             }
@@ -436,34 +432,18 @@ namespace membrane {
         if(currentScene.hasComponent<clove::RigidBodyComponent>(entity)) {
             auto &rigidBody{ currentScene.getComponent<clove::RigidBodyComponent>(entity) };
             rigidBody.mass = mass;
-
-            //Pipe back up the change to the editor
-            Engine_OnRigidBodyChanged ^ message { gcnew Engine_OnRigidBodyChanged };
-            message->entity = entity;
-            message->mass   = mass;
-            MessageHandler::sendMessage(message);
         }
     }
 
     void EditorLayer::updateSphereShape(clove::Entity entity, float radius) {
         if(currentScene.hasComponent<clove::CollisionShapeComponent>(entity)) {
             currentScene.getComponent<clove::CollisionShapeComponent>(entity).shape = clove::CollisionShapeComponent::Sphere{ radius };
-
-            Engine_OnSphereShapeChanged ^ message { gcnew Engine_OnSphereShapeChanged };
-            message->entity = entity;
-            message->radius = radius;
-            MessageHandler::sendMessage(message);
         }
     }
 
     void EditorLayer::updateCubeShape(clove::Entity entity, clove::vec3f halfExtents) {
         if(currentScene.hasComponent<clove::CollisionShapeComponent>(entity)) {
             currentScene.getComponent<clove::CollisionShapeComponent>(entity).shape = clove::CollisionShapeComponent::Cube{ halfExtents };
-
-            Engine_OnCubeShapeChanged ^ message { gcnew Engine_OnCubeShapeChanged };
-            message->entity      = entity;
-            message->halfExtents = Vector3{ halfExtents.x, halfExtents.y, halfExtents.z };
-            MessageHandler::sendMessage(message);
         }
     }
 

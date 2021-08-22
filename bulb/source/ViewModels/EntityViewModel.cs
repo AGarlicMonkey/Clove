@@ -94,7 +94,7 @@ namespace Bulb {
 
             switch (type) {
                 case Membrane.ComponentType.Transform: {
-                    var transformComp = new TransformComponentViewModel {
+                    var transformComp = new TransformComponentViewModel(initData as Membrane.TransformComponentInitData) {
                         OnTransformChanged = UpdateTransform
                     };
 

@@ -3,26 +3,34 @@ using Membrane = membrane;
 namespace Bulb {
     public class RigidBodyComponentViewModel : ComponentViewModel {
         public string Mass {
-            get => mass.ToString();
+            get => mass;
             set {
-                float.TryParse(value, out float number);
-                OnRigidBodyChanged?.Invoke(number);
+                mass = value;
+                massNum = EditorPropertyHelper.InputStringToFloat(mass);
+
+                OnRigidBodyChanged?.Invoke(massNum);
+                OnPropertyChanged(nameof(Mass));
             }
         }
-        private float mass;
+        private string mass;
+        private float massNum;
 
         public delegate void RigdBodyChangedHandler(float mass);
         public RigdBodyChangedHandler OnRigidBodyChanged;
 
         public RigidBodyComponentViewModel(Membrane.RigidBodyComponentInitData initData) 
             : base($"{Membrane.ComponentType.RigidBody}", Membrane.ComponentType.RigidBody) {
-            mass = initData.mass;
+            Update(initData.mass);
         }
 
         public void Update(float mass) {
-            this.mass = mass;
-
+            massNum = mass;
+            this.mass = massNum.ToString();
             OnPropertyChanged(nameof(Mass));
+        }
+
+        public void RefreshValues() {
+            Update(massNum);
         }
     }
 }

@@ -65,21 +65,24 @@
 												  CenterFieldText="Y"
 												  CenterFieldValue="{Binding PositionYValue, Mode=TwoWay}"
 												  RightFieldText="Z"
-												  RightFieldValue="{Binding PositionZValue, Mode=TwoWay}"/>
+												  RightFieldValue="{Binding PositionZValue, Mode=TwoWay}"
+												  LostFocus="TransformPropertyLostFocus"/>
 								<local:Vector3Box Label="Rotation"
 												  LeftFieldText="X"
 												  LeftFieldValue="{Binding RotationXValue, Mode=TwoWay}"
 												  CenterFieldText="Y"
 												  CenterFieldValue="{Binding RotationYValue, Mode=TwoWay}"
 												  RightFieldText="Z"
-												  RightFieldValue="{Binding RotationZValue, Mode=TwoWay}"/>
+												  RightFieldValue="{Binding RotationZValue, Mode=TwoWay}"
+												  LostFocus="TransformPropertyLostFocus"/>
 								<local:Vector3Box Label="Scale"
 												  LeftFieldText="X"
 												  LeftFieldValue="{Binding ScaleXValue, Mode=TwoWay}"
 												  CenterFieldText="Y"
 												  CenterFieldValue="{Binding ScaleYValue, Mode=TwoWay}"
 												  RightFieldText="Z"
-												  RightFieldValue="{Binding ScaleZValue, Mode=TwoWay}"/>
+												  RightFieldValue="{Binding ScaleZValue, Mode=TwoWay}"
+												  LostFocus="TransformPropertyLostFocus"/>
 							</StackPanel>
 						</StackPanel>
 					</DataTemplate>
@@ -111,7 +114,8 @@
 								<TextBlock Grid.Column="0"
 										   Text="Mass"/>
 								<TextBox Grid.Column="1"
-										 Text="{Binding Mass, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+										 Text="{Binding Mass, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+										 LostFocus="RigidBodyPropertyLostFocus"/>
 							</Grid>
 						</StackPanel>
 					</DataTemplate>
@@ -150,7 +154,8 @@
 							<StackPanel Orientation="Horizontal"
 										Visibility="{Binding RadiusVisibility}">
 								<TextBlock Text="Radius"/>
-								<TextBox Text="{Binding Radius, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+								<TextBox Text="{Binding Radius, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+										 LostFocus="CollisionShapePropertyLostFocus"/>
 							</StackPanel>
 							<local:Vector3Box Visibility="{Binding HalfExtentsVisibility}"
 											  Label="Half Extents"
@@ -159,7 +164,8 @@
 											  CenterFieldText="Y"
 											  CenterFieldValue="{Binding HalfExtentsY, Mode=TwoWay}"
 											  RightFieldText="Z"
-											  RightFieldValue="{Binding HalfExtentsZ, Mode=TwoWay}"/>
+											  RightFieldValue="{Binding HalfExtentsZ, Mode=TwoWay}"
+											  LostFocus="CollisionShapePropertyLostFocus"/>
 						</StackPanel>
 					</DataTemplate>
 

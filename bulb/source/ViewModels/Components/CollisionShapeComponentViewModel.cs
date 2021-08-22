@@ -19,37 +19,78 @@ namespace Bulb {
             }
         }
 
+        #region Sphere Properties
         public string Radius {
-            get => radius.ToString();
+            get => radius;
             set {
-                float.TryParse(value, out var number);
-                OnSphereShapeChanged?.Invoke(number);
-            }
-        }
-        private float radius = 1.0f;
+                radius = value;
+                radiusNum = EditorPropertyHelper.InputStringToFloat(radius);
 
+                OnSphereShapeChanged?.Invoke(radiusNum);
+                OnPropertyChanged(nameof(Radius));
+            }
+        }
+        private string radius;
+        private float radiusNum;
+
+        public Visibility RadiusVisibility {
+            get => radiusVisibility;
+            private set {
+                radiusVisibility = value;
+                OnPropertyChanged(nameof(RadiusVisibility));
+            }
+        }
+        private Visibility radiusVisibility = Visibility.Visible;
+        #endregion
+
+        #region Cube Properties
         public string HalfExtentsX {
-            get => halfExtents.x.ToString();
+            get => halfExtentsX;
             set {
-                float.TryParse(value, out var number);
-                OnCubeShapeChanged?.Invoke(new Membrane.Vector3(number, halfExtents.y, halfExtents.z));
+                halfExtentsX = value;
+                halfExtents.x = EditorPropertyHelper.InputStringToFloat(halfExtentsX);
+
+                OnCubeShapeChanged?.Invoke(halfExtents);
+                OnPropertyChanged(nameof(HalfExtentsX));
             }
         }
+        private string halfExtentsX;
+
         public string HalfExtentsY {
-            get => halfExtents.y.ToString();
+            get => halfExtentsY;
             set {
-                float.TryParse(value, out var number);
-                OnCubeShapeChanged?.Invoke(new Membrane.Vector3(halfExtents.x, number, halfExtents.z));
+                halfExtentsY = value;
+                halfExtents.y = EditorPropertyHelper.InputStringToFloat(halfExtentsY);
+
+                OnCubeShapeChanged?.Invoke(halfExtents);
+                OnPropertyChanged(nameof(halfExtentsY));
             }
         }
+        private string halfExtentsY;
+
         public string HalfExtentsZ {
-            get => halfExtents.z.ToString();
+            get => halfExtentsZ;
             set {
-                float.TryParse(value, out var number);
-                OnCubeShapeChanged?.Invoke(new Membrane.Vector3(halfExtents.x, halfExtents.y, number));
+                halfExtentsZ = value;
+                halfExtents.x = EditorPropertyHelper.InputStringToFloat(halfExtentsZ);
+
+                OnCubeShapeChanged?.Invoke(halfExtents);
+                OnPropertyChanged(nameof(halfExtentsZ));
             }
         }
+        private string halfExtentsZ;
+
         private Membrane.Vector3 halfExtents = new Membrane.Vector3(0.5f, 0.5f, 0.5f);
+
+        public Visibility HalfExtentsVisibility {
+            get => halfExtentsVisibility;
+            private set {
+                halfExtentsVisibility = value;
+                OnPropertyChanged(nameof(HalfExtentsVisibility));
+            }
+        }
+        private Visibility halfExtentsVisibility = Visibility.Visible;
+        #endregion
 
         public Membrane.ShapeType CurrentShapeType {
             get => currentShapeType;
@@ -61,24 +102,6 @@ namespace Bulb {
         private Membrane.ShapeType currentShapeType;
 
         public ObservableCollection<ShapeTypeViewModel> AvailableShapes { get; } = new ObservableCollection<ShapeTypeViewModel>();
-
-        public Visibility RadiusVisibility {
-            get => radiusVisibility;
-            private set {
-                radiusVisibility = value;
-                OnPropertyChanged(nameof(RadiusVisibility));
-            }
-        }
-        private Visibility radiusVisibility = Visibility.Visible;
-
-        public Visibility HalfExtentsVisibility {
-            get { return halfExtentsVisibility; }
-            private set {
-                halfExtentsVisibility = value;
-                OnPropertyChanged(nameof(HalfExtentsVisibility));
-            }
-        }
-        private Visibility halfExtentsVisibility = Visibility.Visible;
 
         public delegate void CollisionShapeSphereChanged(float radius);
         public delegate void CollisionShapeCubeChanged(Membrane.Vector3 halfExtents);
@@ -100,15 +123,32 @@ namespace Bulb {
         }
 
         public void UpdateSphereShape(float radius) {
-            this.radius = radius;
+            radiusNum = radius;
+            this.radius = radiusNum.ToString();
             OnPropertyChanged(nameof(Radius));
         }
 
         public void UpdateCubeShape(Membrane.Vector3 halfExtents) {
             this.halfExtents = halfExtents;
+
+            halfExtentsX = halfExtents.x.ToString();
+            halfExtentsY = halfExtents.y.ToString();
+            halfExtentsZ = halfExtents.z.ToString();
+
             OnPropertyChanged(nameof(HalfExtentsX));
             OnPropertyChanged(nameof(HalfExtentsY));
             OnPropertyChanged(nameof(HalfExtentsZ));
+        }
+
+        public void RefreshValues() {
+            switch (CurrentShapeType) {
+                case Membrane.ShapeType.Sphere:
+                    UpdateSphereShape(radiusNum);
+                    break;
+                case Membrane.ShapeType.Cube:
+                    UpdateCubeShape(halfExtents);
+                    break;
+            }
         }
 
         private void OnShapeTypeChanged(Membrane.ShapeType newType, bool invokeDelegates = true) {
@@ -119,7 +159,7 @@ namespace Bulb {
                     RadiusVisibility = Visibility.Visible;
                     HalfExtentsVisibility = Visibility.Collapsed;
                     if (invokeDelegates) {
-                        OnSphereShapeChanged?.Invoke(radius);
+                        OnSphereShapeChanged?.Invoke(radiusNum);
                     }
                     break;
                 case Membrane.ShapeType.Cube:
