@@ -27,8 +27,8 @@ namespace clove {
         return createGhaObject<MetalComputeCommandBuffer>();
     }
     
-    void MetalComputeQueue::freeCommandBuffer(GhaComputeCommandBuffer &buffer) {
-        //no op
+    void MetalComputeQueue::freeCommandBuffer(std::unique_ptr<GhaComputeCommandBuffer> &buffer) {
+        buffer.reset();
     }
     
     void MetalComputeQueue::submit(ComputeSubmitInfo const &submission, GhaFence *signalFence) {

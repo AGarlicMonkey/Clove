@@ -34,7 +34,7 @@ namespace clove {
         CommandQueueDescriptor const &getDescriptor() const override;
 
         std::unique_ptr<GhaGraphicsCommandBuffer> allocateCommandBuffer() override;
-        void freeCommandBuffer(GhaGraphicsCommandBuffer &buffer) override;
+        void freeCommandBuffer(std::unique_ptr<GhaGraphicsCommandBuffer> &buffer) override;
 
         void submit(GraphicsSubmitInfo const &submission, GhaFence *signalFence) override;
     };

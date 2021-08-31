@@ -52,10 +52,11 @@ namespace clove {
         return createGhaObject<VulkanTransferCommandBuffer>(commandBuffer, queueFamilyIndices);
     }
 
-    void VulkanTransferQueue::freeCommandBuffer(GhaTransferCommandBuffer &buffer) {
-        VkCommandBuffer const vkbuffer{ polyCast<VulkanTransferCommandBuffer>(&buffer)->getCommandBuffer() };
-
+    void VulkanTransferQueue::freeCommandBuffer(std::unique_ptr<GhaTransferCommandBuffer> &buffer) {
+        VkCommandBuffer const vkbuffer{ polyCast<VulkanTransferCommandBuffer>(buffer.get())->getCommandBuffer() };
         vkFreeCommandBuffers(device.get(), commandPool, 1, &vkbuffer);
+
+        buffer.reset();
     }
 
     void VulkanTransferQueue::submit(TransferSubmitInfo const &submission, GhaFence *signalFence) {

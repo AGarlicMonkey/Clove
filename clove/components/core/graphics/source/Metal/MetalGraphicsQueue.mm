@@ -20,17 +20,17 @@ namespace clove {
     MetalGraphicsQueue& MetalGraphicsQueue::operator=(MetalGraphicsQueue &&other) noexcept = default;
     
     MetalGraphicsQueue::~MetalGraphicsQueue() = default;
-    
-    std::unique_ptr<GhaGraphicsCommandBuffer> MetalGraphicsQueue::allocateCommandBuffer() {
-        return createGhaObject<MetalGraphicsCommandBuffer>();
-    }
 
     CommandQueueDescriptor const &MetalGraphicsQueue::getDescriptor() const {
         return descriptor;
     }
     
-    void MetalGraphicsQueue::freeCommandBuffer(GhaGraphicsCommandBuffer &buffer) {
-        //no op
+    std::unique_ptr<GhaGraphicsCommandBuffer> MetalGraphicsQueue::allocateCommandBuffer() {
+        return createGhaObject<MetalGraphicsCommandBuffer>();
+    }
+    
+    void MetalGraphicsQueue::freeCommandBuffer(std::unique_ptr<GhaGraphicsCommandBuffer> &buffer) {
+        buffer.reset();
     }
     
     void MetalGraphicsQueue::submit(GraphicsSubmitInfo const &submission, GhaFence *signalFence) {

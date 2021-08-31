@@ -29,8 +29,8 @@ namespace clove {
 
         virtual CommandQueueDescriptor const &getDescriptor() const = 0;
 
-        virtual std::unique_ptr<GhaComputeCommandBuffer> allocateCommandBuffer() = 0;
-        virtual void freeCommandBuffer(GhaComputeCommandBuffer &buffer)          = 0;
+        virtual std::unique_ptr<GhaComputeCommandBuffer> allocateCommandBuffer()         = 0;
+        virtual void freeCommandBuffer(std::unique_ptr<GhaComputeCommandBuffer> &buffer) = 0;
 
         /**
          * @brief Submit command buffers to be processed.

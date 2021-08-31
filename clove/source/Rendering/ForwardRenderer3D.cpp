@@ -141,9 +141,9 @@ namespace clove {
         for(auto &imageData : inFlightImageData) {
             imageData.frameDataBuffer.reset();
 
-            graphicsQueue->freeCommandBuffer(*imageData.commandBuffer);
-            graphicsQueue->freeCommandBuffer(*imageData.shadowMapCommandBuffer);
-            graphicsQueue->freeCommandBuffer(*imageData.cubeShadowMapCommandBuffer);
+            graphicsQueue->freeCommandBuffer(imageData.commandBuffer);
+            graphicsQueue->freeCommandBuffer(imageData.shadowMapCommandBuffer);
+            graphicsQueue->freeCommandBuffer(imageData.cubeShadowMapCommandBuffer);
         }
     }
 
@@ -500,10 +500,10 @@ namespace clove {
         frameBuffers.clear();
 
         for(auto &imageData : inFlightImageData) {
-            graphicsQueue->freeCommandBuffer(*imageData.commandBuffer);
-            graphicsQueue->freeCommandBuffer(*imageData.shadowMapCommandBuffer);
-            graphicsQueue->freeCommandBuffer(*imageData.cubeShadowMapCommandBuffer);
-            computeQueue->freeCommandBuffer(*imageData.skinningCommandBuffer);
+            graphicsQueue->freeCommandBuffer(imageData.commandBuffer);
+            graphicsQueue->freeCommandBuffer(imageData.shadowMapCommandBuffer);
+            graphicsQueue->freeCommandBuffer(imageData.cubeShadowMapCommandBuffer);
+            computeQueue->freeCommandBuffer(imageData.skinningCommandBuffer);
         }
     }
 

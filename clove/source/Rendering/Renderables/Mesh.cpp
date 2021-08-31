@@ -22,7 +22,7 @@ namespace clove {
             transferQueue->submit({ TransferSubmitInfo{ .commandBuffers = { transferCommandBuffer.get() } } }, transferQueueFinishedFence.get());
 
             transferQueueFinishedFence->wait();
-            transferQueue->freeCommandBuffer(*transferCommandBuffer);
+            transferQueue->freeCommandBuffer(transferCommandBuffer);
         }
     }
 
@@ -38,8 +38,8 @@ namespace clove {
         vertexOffset = 0;
         indexOffset  = vertexBufferSize;
 
-        auto transferQueue{ *factory.createTransferQueue({ QueueFlags::Transient }) };
-        std::shared_ptr<GhaTransferCommandBuffer> transferCommandBuffer{ transferQueue->allocateCommandBuffer() };
+        std::unique_ptr<GhaTransferQueue> transferQueue{ *factory.createTransferQueue({ QueueFlags::Transient }) };
+        std::unique_ptr<GhaTransferCommandBuffer> transferCommandBuffer{ transferQueue->allocateCommandBuffer() };
 
         //Staging buffer
         auto stagingBuffer{ *factory.createBuffer(GhaBuffer::Descriptor{
@@ -80,7 +80,7 @@ namespace clove {
         transferQueue->submit({ TransferSubmitInfo{ .commandBuffers = { transferCommandBuffer.get() } } }, transferQueueFinishedFence.get());
 
         transferQueueFinishedFence->wait();
-        transferQueue->freeCommandBuffer(*transferCommandBuffer);
+        transferQueue->freeCommandBuffer(transferCommandBuffer);
     }
 
     Mesh::Mesh(Mesh const &other)

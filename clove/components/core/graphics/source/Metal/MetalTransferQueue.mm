@@ -28,8 +28,8 @@ namespace clove {
         return createGhaObject<MetalTransferCommandBuffer>();
     }
     
-    void MetalTransferQueue::freeCommandBuffer(GhaTransferCommandBuffer &buffer) {
-        //no op
+    void MetalTransferQueue::freeCommandBuffer(std::unique_ptr<GhaTransferCommandBuffer> &buffer) {
+        buffer.reset();
     }
     
     void MetalTransferQueue::submit(TransferSubmitInfo const &submission, GhaFence *signalFence) {

@@ -13,7 +13,7 @@ namespace clove {
 
     struct GraphicsSubmitInfo {
         std::vector<std::pair<GhaSemaphore const *, PipelineStage>> waitSemaphores; /**< What semaphores to wait on at what stage */
-        std::vector<GhaGraphicsCommandBuffer *> commandBuffers;             /**< The command buffers to execute */
+        std::vector<GhaGraphicsCommandBuffer *> commandBuffers;                     /**< The command buffers to execute */
         std::vector<GhaSemaphore const *> signalSemaphores;                         /**< The semaphores that will be signaled when completed */
     };
 }
@@ -29,8 +29,8 @@ namespace clove {
 
         virtual CommandQueueDescriptor const &getDescriptor() const = 0;
 
-        virtual std::unique_ptr<GhaGraphicsCommandBuffer> allocateCommandBuffer() = 0;
-        virtual void freeCommandBuffer(GhaGraphicsCommandBuffer &buffer)          = 0;
+        virtual std::unique_ptr<GhaGraphicsCommandBuffer> allocateCommandBuffer()         = 0;
+        virtual void freeCommandBuffer(std::unique_ptr<GhaGraphicsCommandBuffer> &buffer) = 0;
 
         /**
          * @brief Submit command buffers to be processed.

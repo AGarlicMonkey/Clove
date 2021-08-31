@@ -271,10 +271,10 @@ namespace clove {
         graphicsQueue->submit({ GraphicsSubmitInfo{ .commandBuffers = { graphicsCommandBuffer.get() } } }, graphicsQueueFinishedFence.get());
 
         transferQueueFinishedFence->wait();
-        transferQueue->freeCommandBuffer(*transferCommandBuffer);
+        transferQueue->freeCommandBuffer(transferCommandBuffer);
 
         graphicsQueueFinishedFence->wait();
-        graphicsQueue->freeCommandBuffer(*graphicsCommandBuffer);
+        graphicsQueue->freeCommandBuffer(graphicsCommandBuffer);
 
         return image;
     }

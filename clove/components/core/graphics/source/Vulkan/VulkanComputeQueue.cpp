@@ -49,9 +49,11 @@ namespace clove {
         return createGhaObject<VulkanComputeCommandBuffer>(commandBuffer, queueFamilyIndices);
     }
 
-    void VulkanComputeQueue::freeCommandBuffer(GhaComputeCommandBuffer &buffer) {
-        VkCommandBuffer const commandBuffer{ polyCast<VulkanComputeCommandBuffer>(&buffer)->getCommandBuffer() };
+    void VulkanComputeQueue::freeCommandBuffer(std::unique_ptr<GhaComputeCommandBuffer> &buffer) {
+        VkCommandBuffer const commandBuffer{ polyCast<VulkanComputeCommandBuffer>(buffer.get())->getCommandBuffer() };
         vkFreeCommandBuffers(device.get(), commandPool, 1, &commandBuffer);
+
+        buffer.reset();
     }
 
     void VulkanComputeQueue::submit(ComputeSubmitInfo const &submission, GhaFence *signalFence) {
