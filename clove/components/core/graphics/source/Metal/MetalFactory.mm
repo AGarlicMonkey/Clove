@@ -163,6 +163,10 @@ namespace clove {
     }
     
     Expected<std::unique_ptr<GhaPresentQueue>, std::runtime_error> MetalFactory::createPresentQueue() noexcept {
+        if(view == nullptr) {
+            return Unexpected{ std::runtime_error{ "Presentation queue not available. GhaDevice is likely headless" } };
+        }
+        
         return std::unique_ptr<GhaPresentQueue>{ createGhaObject<MetalPresentQueue>(graphicsPresentCommandQueue, view) };
     }
     
@@ -175,6 +179,10 @@ namespace clove {
     }
     
     Expected<std::unique_ptr<GhaSwapchain>, std::runtime_error> MetalFactory::createSwapChain(GhaSwapchain::Descriptor descriptor) noexcept {
+        if(view == nullptr) {
+            return Unexpected{ std::runtime_error{ "GhaSwapchain is not available. GhaDevice is likely headless" } };
+        }
+        
         std::vector<std::unique_ptr<GhaImage>> swapchainImages{};
         GhaImage::Format const drawableFormat{ MetalImage::convertFormat([view.metalLayer pixelFormat]) }; //Needs to be the same as the target for when we blit in the present queue
         
