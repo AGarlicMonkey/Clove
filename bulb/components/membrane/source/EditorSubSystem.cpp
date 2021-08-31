@@ -172,15 +172,13 @@ namespace membrane {
     }
 
     clove::InputResponse EditorSubSystem::onInputEvent(clove::InputEvent const &inputEvent) {
-        if(inputEvent.eventType == clove::InputEvent::Type::Mouse) {
-            auto event{ std::get<clove::Mouse::Event>(inputEvent.event) };
-
-            if(event.getButton() == clove::MouseButton::Right) {
-                if(event.getType() == clove::Mouse::Event::Type::Pressed) {
+        if(auto const *const mouseEvent{ std::get_if<clove::Mouse::Event>(&inputEvent) }) {
+            if(mouseEvent->getButton() == clove::MouseButton::Right) {
+                if(mouseEvent->getType() == clove::Mouse::Event::Type::Pressed) {
                     //Make sure prev + pos gets updated when the event happens.
                     //This fixes situations where the mouse will be up, move and then go down
-                    mousePos     = event.getPos();
-                    prevMousePos = event.getPos();
+                    mousePos     = mouseEvent->getPos();
+                    prevMousePos = mouseEvent->getPos();
 
                     moveMouse = true;
                     return clove::InputResponse::Consumed;
@@ -190,8 +188,8 @@ namespace membrane {
                 }
             }
 
-            if(event.getType() == clove::Mouse::Event::Type::Move && moveMouse) {
-                mousePos = event.getPos();
+            if(mouseEvent->getType() == clove::Mouse::Event::Type::Move && moveMouse) {
+                mousePos = mouseEvent->getPos();
                 return clove::InputResponse::Consumed;
             }
         }
