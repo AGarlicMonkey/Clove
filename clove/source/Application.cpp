@@ -75,7 +75,7 @@ namespace clove {
         renderer->begin();
 
         while(auto keyEvent = surface->getKeyboard().getKeyEvent()) {
-            InputEvent const event{ *keyEvent, InputEvent::Type::Keyboard };
+            InputEvent const event{ *keyEvent };
             for(auto &&[key, group] : subSystems) {
                 for(auto &subSystem : group) {
                     if(subSystem->onInputEvent(event) == InputResponse::Consumed) {
@@ -85,7 +85,7 @@ namespace clove {
             }
         }
         while(auto mouseEvent = surface->getMouse().getEvent()) {
-            InputEvent const event{ *mouseEvent, InputEvent::Type::Mouse };
+            InputEvent const event{ *mouseEvent };
             for(auto &&[key, group] : subSystems) {
                 for(auto &subSystem : group) {
                     if(subSystem->onInputEvent(event) == InputResponse::Consumed) {

@@ -5,13 +5,5 @@
 #include <variant>
 
 namespace clove {
-    struct InputEvent {
-        enum class Type {
-            Keyboard,
-            Mouse
-        };
-
-        std::variant<Keyboard::Event, Mouse::Event> event;
-        Type eventType;
-    };
+    using InputEvent = std::variant<Keyboard::Event, Mouse::Event>;
 }
