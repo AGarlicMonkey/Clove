@@ -36,6 +36,6 @@ namespace clove {
         std::unique_ptr<GhaGraphicsCommandBuffer> allocateCommandBuffer() override;
         void freeCommandBuffer(GhaGraphicsCommandBuffer &buffer) override;
 
-        void submit(std::vector<GraphicsSubmitInfo> const &submissions, GhaFence *signalFence) override;
+        void submit(GraphicsSubmitInfo const &submission, GhaFence *signalFence) override;
     };
 }

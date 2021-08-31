@@ -32,6 +32,6 @@ namespace clove {
         std::unique_ptr<GhaComputeCommandBuffer> allocateCommandBuffer() override;
         void freeCommandBuffer(GhaComputeCommandBuffer &buffer) override;
 
-        void submit(std::vector<ComputeSubmitInfo> const &submissions, GhaFence *signalFence) override;
+        void submit(ComputeSubmitInfo const &submission, GhaFence *signalFence) override;
     };
 }

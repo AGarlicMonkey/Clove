@@ -9,24 +9,20 @@ namespace clove {
         }
 
         template<typename SubmissionType>
-        void validateBuffersUsage(std::vector<SubmissionType> const &submissions) {
-            for(auto const &submitInfo : submissions) {
-                for(auto &commandBuffer : submitInfo.commandBuffers) {
-                    auto *buffer{ dynamic_cast<ValidationCommandBuffer *>(commandBuffer) };
-                    if(buffer->getCommandBufferUsage() == CommandBufferUsage::OneTimeSubmit && buffer->bufferHasBeenUsed()){
-                        CLOVE_ASSERT(false, "GraphicsCommandBuffer recorded with CommandBufferUsage::OneTimeSubmit has already been used. Only buffers recorded with CommandBufferUsage::Default can submitted multiples times after being recorded once.");
-                        break;
-                    }
+        void validateBuffersUsage(SubmissionType const &submission) {
+            for(auto &commandBuffer : submission.commandBuffers) {
+                auto *buffer{ dynamic_cast<ValidationCommandBuffer *>(commandBuffer) };
+                if(buffer->getCommandBufferUsage() == CommandBufferUsage::OneTimeSubmit && buffer->bufferHasBeenUsed()) {
+                    CLOVE_ASSERT(false, "GraphicsCommandBuffer recorded with CommandBufferUsage::OneTimeSubmit has already been used. Only buffers recorded with CommandBufferUsage::Default can submitted multiples times after being recorded once.");
+                    break;
                 }
             }
         }
 
         template<typename SubmissionType>
-        void markBuffersAsUsed(std::vector<SubmissionType> const &submissions) {
-            for(auto const &submitInfo : submissions) {
-                for(auto &commandBuffer : submitInfo.commandBuffers) {
-                    dynamic_cast<ValidationCommandBuffer *>(commandBuffer)->markAsUsed();
-                }
+        void markBuffersAsUsed(SubmissionType const &submission) {
+            for(auto &commandBuffer : submission.commandBuffers) {
+                dynamic_cast<ValidationCommandBuffer *>(commandBuffer)->markAsUsed();
             }
         }
     }
@@ -42,12 +38,12 @@ namespace clove {
     }
 
     template<typename BaseQueueType>
-    void ValidationGraphicsQueue<BaseQueueType>::submit(std::vector<GraphicsSubmitInfo> const &submissions, GhaFence *signalFence) {
-        detail::validateBuffersUsage(submissions);
+    void ValidationGraphicsQueue<BaseQueueType>::submit(GraphicsSubmitInfo const &submission, GhaFence *signalFence) {
+        detail::validateBuffersUsage(submission);
 
-        BaseQueueType::submit(submissions, signalFence);
+        BaseQueueType::submit(submission, signalFence);
 
-        detail::markBuffersAsUsed(submissions);
+        detail::markBuffersAsUsed(submission);
     }
 
     //Compute
@@ -61,12 +57,12 @@ namespace clove {
     }
 
     template<typename BaseQueueType>
-    void ValidationComputeQueue<BaseQueueType>::submit(std::vector<ComputeSubmitInfo> const &submissions, GhaFence *signalFence) {
-        detail::validateBuffersUsage(submissions);
+    void ValidationComputeQueue<BaseQueueType>::submit(ComputeSubmitInfo const &submission, GhaFence *signalFence) {
+        detail::validateBuffersUsage(submission);
 
-        BaseQueueType::submit(submissions, signalFence);
+        BaseQueueType::submit(submission, signalFence);
 
-        detail::markBuffersAsUsed(submissions);
+        detail::markBuffersAsUsed(submission);
     }
 
     //Transfer
@@ -80,11 +76,11 @@ namespace clove {
     }
 
     template<typename BaseQueueType>
-    void ValidationTransferQueue<BaseQueueType>::submit(std::vector<TransferSubmitInfo> const &submissions, GhaFence *signalFence) {
-        detail::validateBuffersUsage(submissions);
-        
-        BaseQueueType::submit(submissions, signalFence);
+    void ValidationTransferQueue<BaseQueueType>::submit(TransferSubmitInfo const &submission, GhaFence *signalFence) {
+        detail::validateBuffersUsage(submission);
 
-        detail::markBuffersAsUsed(submissions);
+        BaseQueueType::submit(submission, signalFence);
+
+        detail::markBuffersAsUsed(submission);
     }
 }

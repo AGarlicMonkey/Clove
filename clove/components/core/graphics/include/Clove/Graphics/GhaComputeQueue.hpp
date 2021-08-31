@@ -37,8 +37,9 @@ namespace clove {
          * @details All buffers in a single submission will start in order but will likely finish out of order.
          * Batch them together like this if they can run at the same time. Each call to this submit function
          * will need to wait on previous submissions.
-         * @param signalFence An optional fence that will be signaled when all submissions are complete.
+         * @param submission
+         * @param signalFence An optional fence that will be signaled when the submission is complete.
          */
-        virtual void submit(std::vector<ComputeSubmitInfo> const &submissions, GhaFence *signalFence) = 0;
+        virtual void submit(ComputeSubmitInfo const &submission, GhaFence *signalFence) = 0;
     };
 }
