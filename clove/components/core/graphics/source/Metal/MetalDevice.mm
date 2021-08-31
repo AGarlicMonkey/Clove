@@ -42,7 +42,10 @@ namespace clove {
     }
     
     GhaDevice::Limits MetalDevice::getLimits() const {
-        //TODO
-        return {};
+        size_t constexpr metalMinUboOffsetAlignment{ 16 };//Hard coding as a minimum of 16 as metal does not provide this data.
+        
+        return Limits {
+            .minUniformBufferOffsetAlignment = metalMinUboOffsetAlignment,
+        };
     }
 }

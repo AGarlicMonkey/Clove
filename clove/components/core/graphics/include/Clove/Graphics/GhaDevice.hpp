@@ -13,8 +13,11 @@ namespace clove {
     class GhaDevice {
         //TYPES
     public:
+        /**
+         * @brief Contains information about the limits of the device used by the GHA.
+         */
         struct Limits {
-            size_t minUniformBufferOffsetAlignment{ 0 };
+            size_t minUniformBufferOffsetAlignment{ 0 }; /**< The minimum offset allowed (if greater than 0) when calling GhaDescriptorSet::map with a GhaBuffer. */
         };
 
         //FUNCTIONS
