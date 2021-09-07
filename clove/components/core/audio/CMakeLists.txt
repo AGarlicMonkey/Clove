@@ -8,14 +8,16 @@ option(CLOVE_ENABLE_AHA_VALIDATION "Sets the CLOVE_AHA_VALIDATION macro to 1. Al
 add_library(
     CloveAudio STATIC
 
-    ${INCLUDE}/Audio.hpp
-	${SOURCE}/Audio.cpp
+    ${INCLUDE}/Aha.hpp
+	${SOURCE}/Aha.cpp
 	${INCLUDE}/AhaBuffer.hpp
 	${INCLUDE}/AhaDevice.hpp
 	${INCLUDE}/AhaFactory.hpp
 	${INCLUDE}/AhaListener.hpp
     ${INCLUDE}/AhaSource.hpp
         
+	${INCLUDE}/OpenAL/OpenAlAha.hpp
+	${SOURCE}/OpenAL/OpenAlAha.cpp
     ${INCLUDE}/OpenAL/OpenAlBuffer.hpp
 	${SOURCE}/OpenAL/OpenAlBuffer.cpp
 	${INCLUDE}/OpenAL/OpenAlDevice.hpp

@@ -34,7 +34,7 @@ namespace clove {
         auto *windowPtr{ window.get() };
 
         auto graphicsDevice{ createGhaDevice(graphicsApi, window->getNativeWindow()).getValue() };
-        auto audioDevice{ createAudioDevice(audioApi) };
+        auto audioDevice{ createAhaDevice(audioApi).getValue() };
 
         auto surface{ std::make_unique<WindowSurface>(std::move(window)) };
 
@@ -50,7 +50,7 @@ namespace clove {
         CLOVE_LOG(CloveApplication, LogLevel::Info, "Creating headless application.");
 
         auto graphicsDevice{ createGhaDevice(graphicsApi, std::any{}).getValue() };
-        auto audioDevice{ createAudioDevice(audioApi) };
+        auto audioDevice{ createAhaDevice(audioApi).getValue() };
 
         auto renderTarget{ std::make_unique<GraphicsImageRenderTarget>(renderTargetDescriptor, graphicsDevice->getGraphicsFactory()) };
         auto *renderTargetPtr{ renderTarget.get() };

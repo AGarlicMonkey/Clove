@@ -18,11 +18,12 @@ namespace clove {
         ALCdevice *alDevice{ nullptr };
         ALCcontext *alContext{ nullptr };
 
-        std::shared_ptr<OpenAlFactory> factory;
+        std::unique_ptr<OpenAlFactory> factory;
 
         //FUNCTIONS
     public:
-        OpenAlDevice();
+        OpenAlDevice() = delete;
+        OpenAlDevice(ALCdevice *alDevice);
 
         OpenAlDevice(OpenAlDevice const &other) = delete;
         OpenAlDevice(OpenAlDevice &&other) noexcept;
@@ -32,6 +33,6 @@ namespace clove {
 
         ~OpenAlDevice();
 
-        std::shared_ptr<AhaFactory> getAudioFactory() const override;
+        AhaFactory *getAudioFactory() const override;
     };
 }

@@ -15,6 +15,6 @@ namespace clove {
     public:
         virtual ~AhaDevice() = default;
 
-        virtual std::shared_ptr<AhaFactory> getAudioFactory() const = 0;
+        virtual AhaFactory *getAudioFactory() const = 0;
     };
 }

@@ -31,14 +31,15 @@ namespace clove {
 #define alcCall(call, device)                         \
     call;                                             \
     {                                                 \
-        ALenum error = alcGetError(device);           \
+        ALenum error{ alcGetError(device) };          \
         if(error != AL_NO_ERROR) {                    \
             printErrorAlc(error, __FILE__, __LINE__); \
         }                                             \
     }
 
-    OpenAlDevice::OpenAlDevice()
-        : factory{ std::make_shared<OpenAlFactory>() } {
+    OpenAlDevice::OpenAlDevice(ALCdevice *alDevice)
+        : alDevice{ alDevice }
+        , factory{ std::make_unique<OpenAlFactory>() } {
         alDevice = alcOpenDevice(nullptr);
         if(alDevice == nullptr) {
             CLOVE_LOG(CloveAhaOpenAl, LogLevel::Error, "Failed to create OpenAL device");
@@ -60,7 +61,7 @@ namespace clove {
         alcCloseDevice(alDevice);
     }
 
-    std::shared_ptr<AhaFactory> OpenAlDevice::getAudioFactory() const {
-        return factory;
+    AhaFactory *OpenAlDevice::getAudioFactory() const {
+        return factory.get();
     }
 }
