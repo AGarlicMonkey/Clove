@@ -15,12 +15,6 @@ namespace clove {
 
 namespace clove {
     class VulkanDevice : public GhaDevice {
-        //TYPES
-    public:
-#if CLOVE_GHA_VALIDATION
-        using FactoryType = VulkanFactory;
-#endif
-
         //VARIABLES
     private:
         DevicePointer devicePtr;
@@ -30,7 +24,7 @@ namespace clove {
         //FUNCTIONS
     public:
         VulkanDevice() = delete;
-        VulkanDevice(std::any nativeWindow);
+        VulkanDevice(DevicePointer devicePtr, std::unique_ptr<VulkanFactory> factory);
 
         VulkanDevice(VulkanDevice const &other) = delete;
         VulkanDevice(VulkanDevice &&other) noexcept;

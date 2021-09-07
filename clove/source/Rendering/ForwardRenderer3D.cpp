@@ -15,7 +15,6 @@
 
 #include <Clove/Graphics/GhaDescriptorSet.hpp>
 #include <Clove/Graphics/GhaImageView.hpp>
-#include <Clove/Graphics/Graphics.hpp>
 #include <Clove/Platform/Window.hpp>
 
 extern "C" const char constants[];

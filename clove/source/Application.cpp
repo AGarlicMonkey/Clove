@@ -12,8 +12,8 @@
 
 #include <Clove/Audio/AhaDevice.hpp>
 #include <Clove/Definitions.hpp>
+#include <Clove/Graphics/Gha.hpp>
 #include <Clove/Graphics/GhaDevice.hpp>
-#include <Clove/Graphics/Graphics.hpp>
 
 namespace clove {
     Application *Application::instance{ nullptr };
@@ -33,7 +33,7 @@ namespace clove {
         auto window{ Window::create(windowDescriptor) };
         auto *windowPtr{ window.get() };
 
-        auto graphicsDevice{ createGraphicsDevice(graphicsApi, window->getNativeWindow()) };
+        auto graphicsDevice{ createGhaDevice(graphicsApi, window->getNativeWindow()).getValue() };
         auto audioDevice{ createAudioDevice(audioApi) };
 
         auto surface{ std::make_unique<WindowSurface>(std::move(window)) };
@@ -49,7 +49,7 @@ namespace clove {
     std::pair<std::unique_ptr<Application>, GraphicsImageRenderTarget *> Application::createHeadless(GraphicsApi graphicsApi, AudioApi audioApi, GhaImage::Descriptor renderTargetDescriptor, std::unique_ptr<Surface> surface) {
         CLOVE_LOG(CloveApplication, LogLevel::Info, "Creating headless application.");
 
-        auto graphicsDevice{ createGraphicsDevice(graphicsApi, std::any{}) };
+        auto graphicsDevice{ createGhaDevice(graphicsApi, std::any{}).getValue() };
         auto audioDevice{ createAudioDevice(audioApi) };
 
         auto renderTarget{ std::make_unique<GraphicsImageRenderTarget>(renderTargetDescriptor, graphicsDevice->getGraphicsFactory()) };

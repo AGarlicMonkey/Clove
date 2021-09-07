@@ -4,9 +4,6 @@
 
 #include <any>
 #include <memory>
-#ifdef __OBJC__
-#include <MetalKit/MetalKit.h>
-#endif
 
 namespace clove {
 	class MetalFactory;
@@ -18,14 +15,14 @@ namespace clove {
 		//VARIABLES
 	private:
 		std::unique_ptr<DeviceWrapper> wrapper{ nullptr };
-		std::unique_ptr<MetalFactory> factory;
-		
-		//FUNCTIONS
+        std::unique_ptr<MetalFactory> factory{ nullptr };
+
+        //FUNCTIONS
 	public:
 		MetalDevice() = delete;
-		MetalDevice(std::any nativeWindow);
-		
-		MetalDevice(MetalDevice const &other) = delete;
+        MetalDevice(std::unique_ptr<DeviceWrapper> deviceWrapper, std::unique_ptr<MetalFactory> factory);
+
+        MetalDevice(MetalDevice const &other) = delete;
 		MetalDevice(MetalDevice &&other) noexcept;
 
 		MetalDevice &operator=(MetalDevice const &other) = delete;
