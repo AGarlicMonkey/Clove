@@ -174,6 +174,8 @@ set(
 		${INCLUDE}/Validation/ValidationCommandBuffer.hpp
 		${INCLUDE}/Validation/ValidationCommandBuffer.inl
 		${SOURCE}/Validation/ValidationCommandBuffer.cpp
+		${INCLUDE}/Validation/ValidationDescriptorPool.hpp
+		${INCLUDE}/Validation/ValidationDescriptorPool.inl
 		${INCLUDE}/Validation/ValidationLog.hpp
 		${INCLUDE}/Validation/ValidationQueue.hpp
 		${INCLUDE}/Validation/ValidationQueue.inl

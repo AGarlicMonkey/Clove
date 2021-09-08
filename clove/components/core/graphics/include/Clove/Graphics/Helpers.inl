@@ -2,6 +2,7 @@
     #include "Clove/Graphics/Validation/ValidationBuffer.hpp"
     #include "Clove/Graphics/Validation/ValidationCommandBuffer.hpp"
     #include "Clove/Graphics/Validation/ValidationQueue.hpp"
+    #include "Clove/Graphics/Validation/ValidationDescriptorPool.hpp"
 
     #include <type_traits>
 #endif
@@ -24,6 +25,8 @@ namespace clove {
             return std::make_unique<ValidationComputeCommandBuffer<GhaObjectType>>(std::forward<Args>(args)...);
         } else if constexpr(std::is_base_of_v<GhaTransferCommandBuffer, GhaObjectType>) {
             return std::make_unique<ValidationTransferCommandBuffer<GhaObjectType>>(std::forward<Args>(args)...);
+        } else if constexpr(std::is_base_of_v<GhaDescriptorPool, GhaObjectType>) {
+            return std::make_unique<ValidationDescriptorPool<GhaObjectType>>(std::forward<Args>(args)...);
         } else {
             return std::make_unique<GhaObjectType>(std::forward<Args>(args)...);
         }
