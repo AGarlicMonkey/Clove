@@ -29,7 +29,6 @@ jobs:
       - name: Setup environment
         run: |
           mkdir build
-          brew update
           brew install conan
           brew install llvm
           ln -s "/usr/local/opt/llvm/bin/clang-tidy" "/usr/local/bin/clang-tidy"

@@ -39,7 +39,6 @@ jobs:
       - name: Setup environment
         run: |
           mkdir build
-          brew update
           brew install conan
       - name: Configure CMake
         working-directory: ${{ github.workspace }}/build
