@@ -117,31 +117,45 @@ namespace clove {
         }
     }
     
-    void MetalDescriptorPool::freeDescriptorSets(GhaDescriptorSet const *const descriptorSet) {
-        freeDescriptorSets(std::vector{ descriptorSet });
+    void MetalDescriptorPool::freeDescriptorSets(std::unique_ptr<GhaDescriptorSet> &descriptorSet) {
+        auto *const mtlDescriptorSet{ polyCast<MetalDescriptorSet>(descriptorSet.get()) };
+        if(mtlDescriptorSet == nullptr) {
+            CLOVE_LOG(CloveGhaMetal, LogLevel::Warning, "{0}: Descriptor set provided is nullptr. Buffers might never be freed", CLOVE_FUNCTION_NAME);
+            return;
+        }
+
+        freeBuffers(*mtlDescriptorSet);
+
+        descriptorSet.reset();
     }
     
-    void MetalDescriptorPool::freeDescriptorSets(std::vector<GhaDescriptorSet const *> const &descriptorSets) {
-        for(auto const &descriptorSet : descriptorSets) {
-            auto const *const mtlDescriptorSet{ polyCast<MetalDescriptorSet const>(descriptorSet) };
+    void MetalDescriptorPool::freeDescriptorSets(std::vector<std::unique_ptr<GhaDescriptorSet>> &descriptorSets) {
+        for(auto &descriptorSet : descriptorSets) {
+            auto *const mtlDescriptorSet{ polyCast<MetalDescriptorSet>(descriptorSet.get()) };
             if(mtlDescriptorSet == nullptr) {
                 CLOVE_LOG(CloveGhaMetal, LogLevel::Warning, "{0}: Descriptor set provided is nullptr. Buffers might never be freed", CLOVE_FUNCTION_NAME);
                 continue;
             }
-            
-            if(id<MTLBuffer> vertexBuffer{ mtlDescriptorSet->getVertexBuffer() }) {
-                bufferPool.freeBuffer(vertexBuffer);
-            }
-            if(id<MTLBuffer> pixelBuffer{ mtlDescriptorSet->getPixelBuffer() }) {
-                bufferPool.freeBuffer(pixelBuffer);
-            }
-            if(id<MTLBuffer> computeBuffer{ mtlDescriptorSet->getComputeBuffer() }) {
-                bufferPool.freeBuffer(computeBuffer);
-            }
+
+            freeBuffers(*mtlDescriptorSet);
+
+            descriptorSet.reset();
         }
     }
     
     void MetalDescriptorPool::reset() {
         bufferPool.reset();
+    }
+
+    void MetalDescriptorPool::freeBuffers(MetalDescriptorSet &descriptorSet) {
+        if(id<MTLBuffer> vertexBuffer{ descriptorSet.getVertexBuffer() }) {
+            bufferPool.freeBuffer(vertexBuffer);
+        }
+        if(id<MTLBuffer> pixelBuffer{ descriptorSet.getPixelBuffer() }) {
+            bufferPool.freeBuffer(pixelBuffer);
+        }
+        if(id<MTLBuffer> computeBuffer{ descriptorSet.getComputeBuffer() }) {
+            bufferPool.freeBuffer(computeBuffer);
+        }
     }
 }

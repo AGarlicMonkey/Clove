@@ -7,6 +7,10 @@
 #include <vector>
 
 namespace clove {
+    class MetalDescriptorSet;
+}
+
+namespace clove {
 	class MetalDescriptorPool : public GhaDescriptorPool {
 		//TYPES
 	private:
@@ -59,9 +63,12 @@ namespace clove {
 		std::unique_ptr<GhaDescriptorSet> allocateDescriptorSets(GhaDescriptorSetLayout const *const layout) override;
 		std::vector<std::unique_ptr<GhaDescriptorSet>> allocateDescriptorSets(std::vector<GhaDescriptorSetLayout const *> const &layouts) override;
 
-		void freeDescriptorSets(GhaDescriptorSet const *const descriptorSet) override;
-		void freeDescriptorSets(std::vector<GhaDescriptorSet const *> const &descriptorSets) override;
+        void freeDescriptorSets(std::unique_ptr<GhaDescriptorSet> &descriptorSet) override;
+        void freeDescriptorSets(std::vector<std::unique_ptr<GhaDescriptorSet>> &descriptorSets) override;
 
-		void reset() override;
-	};
+        void reset() override;
+
+	private:
+        void freeBuffers(MetalDescriptorSet &descriptorSet);
+    };
 }

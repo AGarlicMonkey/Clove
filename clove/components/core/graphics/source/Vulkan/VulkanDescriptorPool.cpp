@@ -56,20 +56,30 @@ namespace clove {
         return descriptorSets;
     }
 
-    void VulkanDescriptorPool::freeDescriptorSets(GhaDescriptorSet const *const descriptorSet) {
-        freeDescriptorSets(std::vector{ descriptorSet });
-    }
+    void VulkanDescriptorPool::freeDescriptorSets(std::unique_ptr<GhaDescriptorSet> &descriptorSet) {
+        VkDescriptorSet vkDescriptorSet{ polyCast<VulkanDescriptorSet const>(descriptorSet.get())->getDescriptorSet() };
 
-    void VulkanDescriptorPool::freeDescriptorSets(std::vector<GhaDescriptorSet const *> const &descriptorSets) {
-        size_t const numSets{ descriptorSets.size() };
-
-        std::vector<VkDescriptorSet> vulkanSets(numSets);
-        for(size_t i = 0; i < numSets; ++i) {
-            vulkanSets[i] = polyCast<VulkanDescriptorSet const>(descriptorSets[i])->getDescriptorSet();
+        if(vkFreeDescriptorSets(device.get(), pool, 1, &vkDescriptorSet) != VK_SUCCESS) {
+            CLOVE_LOG(CloveGhaVulkan, LogLevel::Error, "Unknown error while calling vkFreeDescriptorSets.");
         }
 
-        if(vkFreeDescriptorSets(device.get(), pool, numSets, std::data(vulkanSets)) != VK_SUCCESS) {
-            CLOVE_LOG(CloveGhaVulkan, LogLevel::Error, "Failed to free descriptor sets");
+        descriptorSet.reset();
+    }
+
+    void VulkanDescriptorPool::freeDescriptorSets(std::vector<std::unique_ptr<GhaDescriptorSet>> &descriptorSets) {
+        size_t const numSets{ descriptorSets.size() };
+
+        std::vector<VkDescriptorSet> vulkanSets(static_cast<uint32_t>(numSets));
+        for(size_t i{ 0 }; i < numSets; ++i) {
+            vulkanSets[i] = polyCast<VulkanDescriptorSet const>(descriptorSets[i].get())->getDescriptorSet();
+        }
+
+        if(vkFreeDescriptorSets(device.get(), pool, numSets, vulkanSets.data()) != VK_SUCCESS) {
+            CLOVE_LOG(CloveGhaVulkan, LogLevel::Error, "Unknown error while calling vkFreeDescriptorSets.");
+        }
+
+        for(auto &set : descriptorSets) {
+            set.reset();
         }
     }
 
