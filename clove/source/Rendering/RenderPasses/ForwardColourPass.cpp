@@ -47,28 +47,29 @@ namespace clove {
             .state = ElementState::Dynamic,
         };
 
-        auto vertShader{ *ghaFactory.createShaderFromSource({ mesh_v, mesh_vLength }, shaderIncludes, "Animated Mesh (vertex)", GhaShader::Stage::Vertex) };
-        auto pixelShader{ *ghaFactory.createShaderFromSource({ mesh_p, mesh_pLength }, shaderIncludes, "Mesh (pixel)", GhaShader::Stage::Pixel) };
+        auto vertShader{ ghaFactory.createShaderFromSource({ mesh_v, mesh_vLength }, shaderIncludes, "Animated Mesh (vertex)", GhaShader::Stage::Vertex).getValue() };
+        auto pixelShader{ ghaFactory.createShaderFromSource({ mesh_p, mesh_pLength }, shaderIncludes, "Mesh (pixel)", GhaShader::Stage::Pixel).getValue() };
 
         auto meshLayout{ createMeshDescriptorSetLayout(ghaFactory) };
         auto viewLayout{ createViewDescriptorSetLayout(ghaFactory) };
         auto lightLayout{ createLightingDescriptorSetLayout(ghaFactory) };
 
-        pipeline = *ghaFactory.createGraphicsPipelineObject(GhaGraphicsPipelineObject::Descriptor{
-            .vertexShader         = vertShader.get(),
-            .pixelShader          = pixelShader.get(),
-            .vertexInput          = Vertex::getInputBindingDescriptor(),
-            .vertexAttributes     = vertexAttributes,
-            .viewportDescriptor   = viewScissorArea,
-            .scissorDescriptor    = viewScissorArea,
-            .renderPass           = ghaRenderPass,
-            .descriptorSetLayouts = {
-                meshLayout.get(),
-                viewLayout.get(),
-                lightLayout.get(),
-            },
-            .pushConstants = {},
-        });
+        pipeline = ghaFactory.createGraphicsPipelineObject(GhaGraphicsPipelineObject::Descriptor{
+                                                               .vertexShader         = vertShader.get(),
+                                                               .pixelShader          = pixelShader.get(),
+                                                               .vertexInput          = Vertex::getInputBindingDescriptor(),
+                                                               .vertexAttributes     = vertexAttributes,
+                                                               .viewportDescriptor   = viewScissorArea,
+                                                               .scissorDescriptor    = viewScissorArea,
+                                                               .renderPass           = ghaRenderPass,
+                                                               .descriptorSetLayouts = {
+                                                                   meshLayout.get(),
+                                                                   viewLayout.get(),
+                                                                   lightLayout.get(),
+                                                               },
+                                                               .pushConstants = {},
+                                                           })
+                       .getValue();
     }
 
     ForwardColourPass::ForwardColourPass(ForwardColourPass &&other) noexcept = default;

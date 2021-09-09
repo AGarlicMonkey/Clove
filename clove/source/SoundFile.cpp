@@ -81,10 +81,11 @@ namespace clove {
     }
 
     std::unique_ptr<AhaBuffer> SoundFile::read(uint32_t const frames) {
-        auto audioBuffer  = *Application::get().getAudioDevice()->getAudioFactory()->createAudioBuffer(AhaBuffer::Descriptor{
-            .format     = getBufferFormat(getFormat(), getChannels()),
-            .sampleRate = getSampleRate(),
-        });
+        auto audioBuffer{ Application::get().getAudioDevice()->getAudioFactory()->createAudioBuffer(AhaBuffer::Descriptor{
+                                                                                                        .format     = getBufferFormat(getFormat(), getChannels()),
+                                                                                                        .sampleRate = getSampleRate(),
+                                                                                                    })
+                              .getValue() };
         auto [data, size] = readRaw(frames);
 
         audioBuffer->write(data.get(), size);

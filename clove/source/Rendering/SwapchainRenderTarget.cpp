@@ -19,10 +19,10 @@ namespace clove {
         surfaceSize         = swapchainSurface.getSize();
         surfaceResizeHandle = swapchainSurface.onSurfaceResize().bind(&SwapchainRenderTarget::onSurfaceSizeChanged, this);
 
-        presentQueue = *graphicsFactory->createPresentQueue();
+        presentQueue = graphicsFactory->createPresentQueue().getValue();
 
         //We won't be allocating any buffers from this queue, only using it to submit
-        graphicsQueue = *graphicsFactory->createGraphicsQueue(CommandQueueDescriptor{ .flags = QueueFlags::None });
+        graphicsQueue = graphicsFactory->createGraphicsQueue(CommandQueueDescriptor{ .flags = QueueFlags::None }).getValue();
 
         createSwapchain();
     }
@@ -44,10 +44,10 @@ namespace clove {
         }
 
         if(std::size(imageAvailableSemaphores) <= frameId) {
-            imageAvailableSemaphores.emplace_back(*graphicsFactory->createSemaphore());
+            imageAvailableSemaphores.emplace_back(graphicsFactory->createSemaphore().getValue());
         }
         if(std::size(framesInFlight) <= frameId) {
-            framesInFlight.emplace_back(*graphicsFactory->createFence({ true }));
+            framesInFlight.emplace_back(graphicsFactory->createFence({ true }).getValue());
         }
 
         //Wait for the graphics queue to be finished with the frame we want to render
@@ -72,7 +72,7 @@ namespace clove {
 
     void SwapchainRenderTarget::submit(uint32_t imageIndex, size_t const frameId, GraphicsSubmitInfo submission) {
         if(std::size(renderFinishedSemaphores) <= frameId) {
-            renderFinishedSemaphores.emplace_back(*graphicsFactory->createSemaphore());
+            renderFinishedSemaphores.emplace_back(graphicsFactory->createSemaphore().getValue());
         }
 
         //Inject the sempahores we use to synchronise with the swapchain and present queue
@@ -121,7 +121,7 @@ namespace clove {
         graphicsDevice->waitForIdleDevice();
 
         swapchain.reset();
-        swapchain = *graphicsFactory->createSwapChain({ surfaceSize });
+        swapchain = graphicsFactory->createSwapChain({ surfaceSize }).getValue();
 
         imagesInFlight.resize(std::size(swapchain->getImageViews()));
 

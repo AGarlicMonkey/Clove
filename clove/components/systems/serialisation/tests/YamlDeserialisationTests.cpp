@@ -56,7 +56,7 @@ protected:
 };
 
 TEST_F(YamlDeserialisationTests, CanLoadSimpleValueFromFile) {
-    Node file{ *loadYaml("TestFile.yaml") };
+    Node file{ loadYaml("TestFile.yaml").getValue() };
 
     EXPECT_EQ(file["IntValue"].as<int32_t>(), 3);
     EXPECT_EQ(file["FloatValue"].as<float>(), 4.5f);
@@ -64,14 +64,14 @@ TEST_F(YamlDeserialisationTests, CanLoadSimpleValueFromFile) {
 }
 
 TEST_F(YamlDeserialisationTests, CanLoadNestedValuesFromParentNodes) {
-    Node file{ *loadYaml("TestFile.yaml") };
+    Node file{ loadYaml("TestFile.yaml").getValue() };
 
     EXPECT_EQ(file["Parent"]["ChildOne"].as<int32_t>(), 1);
     EXPECT_EQ(file["Parent"]["ChildTwo"]["Value"].as<int32_t>(), 8);
 }
 
 TEST_F(YamlDeserialisationTests, CannotGetIncorrectType) {
-    Node file{ *loadYaml("TestFile.yaml") };
+    Node file{ loadYaml("TestFile.yaml").getValue() };
 
     EXPECT_ANY_THROW(file["TestType"].as<std::string>());
 }
@@ -121,7 +121,7 @@ namespace clove {
 }
 
 TEST_F(YamlDeserialisationTests, CanLoadSerialisableTypeFromFile) {
-    Node file{ *loadYaml("TestFile.yaml") };
+    Node file{ loadYaml("TestFile.yaml").getValue() };
 
     auto type{ file["TestType"].as<BasicSerialisableType>() };
 
@@ -153,7 +153,7 @@ namespace clove {
 }
 
 TEST_F(YamlDeserialisationTests, CanLoadSerialisableParentTypeFromFile) {
-    Node file{ *loadYaml("TestFile.yaml") };
+    Node file{ loadYaml("TestFile.yaml").getValue() };
 
     auto type{ file["TestParentType"].as<ParentSerialisableType>() };
 
@@ -163,7 +163,7 @@ TEST_F(YamlDeserialisationTests, CanLoadSerialisableParentTypeFromFile) {
 }
 
 TEST_F(YamlDeserialisationTests, CanLoadASequenceFromFile) {
-    Node file{ *loadYaml("TestFile.yaml") };
+    Node file{ loadYaml("TestFile.yaml").getValue() };
 
     Node sequence{ file["TestSequence"] };
     for(size_t index{ 0 }; Node &child : sequence){

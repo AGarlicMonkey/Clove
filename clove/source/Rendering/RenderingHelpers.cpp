@@ -48,15 +48,16 @@ namespace clove {
             .stage     = GhaShader::Stage::Pixel,
         };
 
-        return *factory.createDescriptorSetLayout(GhaDescriptorSetLayout::Descriptor{
-            .bindings = {
-                modelBinding,
-                diffuseTextureBinding,
-                specularTextureBinding,
-                samplerBinding,
-                colourBinding,
-            },
-        });
+        return factory.createDescriptorSetLayout(GhaDescriptorSetLayout::Descriptor{
+                                                     .bindings = {
+                                                         modelBinding,
+                                                         diffuseTextureBinding,
+                                                         specularTextureBinding,
+                                                         samplerBinding,
+                                                         colourBinding,
+                                                     },
+                                                 })
+            .getValue();
     }
 
     std::unique_ptr<GhaDescriptorSetLayout> createViewDescriptorSetLayout(GhaFactory &factory) {
@@ -74,12 +75,13 @@ namespace clove {
             .stage     = GhaShader::Stage::Pixel,
         };
 
-        return *factory.createDescriptorSetLayout(GhaDescriptorSetLayout::Descriptor{
-            .bindings = {
-                viewDataBinding,
-                viewPosBinding,
-            },
-        });
+        return factory.createDescriptorSetLayout(GhaDescriptorSetLayout::Descriptor{
+                                                     .bindings = {
+                                                         viewDataBinding,
+                                                         viewPosBinding,
+                                                     },
+                                                 })
+            .getValue();
     }
 
     std::unique_ptr<GhaDescriptorSetLayout> createLightingDescriptorSetLayout(GhaFactory &factory) {
@@ -125,16 +127,17 @@ namespace clove {
             .stage     = GhaShader::Stage::Pixel,
         };
 
-        return *factory.createDescriptorSetLayout(GhaDescriptorSetLayout::Descriptor{
-            .bindings = {
-                lightDataBinding,
-                numLightBinding,
-                directionalShadowTransformBinding,
-                directionalShadowMapBinding,
-                pointShadowMapBinding,
-                samplerBinding,
-            },
-        });
+        return factory.createDescriptorSetLayout(GhaDescriptorSetLayout::Descriptor{
+                                                     .bindings = {
+                                                         lightDataBinding,
+                                                         numLightBinding,
+                                                         directionalShadowTransformBinding,
+                                                         directionalShadowMapBinding,
+                                                         pointShadowMapBinding,
+                                                         samplerBinding,
+                                                     },
+                                                 })
+            .getValue();
     }
 
     std::unique_ptr<GhaDescriptorSetLayout> createUiDescriptorSetLayout(GhaFactory &factory) {
@@ -152,12 +155,13 @@ namespace clove {
             .stage     = GhaShader::Stage::Pixel,
         };
 
-        return *factory.createDescriptorSetLayout(GhaDescriptorSetLayout::Descriptor{
-            .bindings = {
-                textureBinding,
-                samplerBinding,
-            },
-        });
+        return factory.createDescriptorSetLayout(GhaDescriptorSetLayout::Descriptor{
+                                                     .bindings = {
+                                                         textureBinding,
+                                                         samplerBinding,
+                                                     },
+                                                 })
+            .getValue();
     }
 
     std::unique_ptr<GhaDescriptorSetLayout> createSkinningDescriptorSetLayout(GhaFactory &factory) {
@@ -182,13 +186,14 @@ namespace clove {
             .stage     = GhaShader::Stage::Compute,
         };
 
-        return *factory.createDescriptorSetLayout(GhaDescriptorSetLayout::Descriptor{
-            .bindings = {
-                skeletonBinding,
-                bindPoseBinding,
-                skinedPoseBinding,
-            },
-        });
+        return factory.createDescriptorSetLayout(GhaDescriptorSetLayout::Descriptor{
+                                                     .bindings = {
+                                                         skeletonBinding,
+                                                         bindPoseBinding,
+                                                         skinedPoseBinding,
+                                                     },
+                                                 })
+            .getValue();
     }
 
     std::unordered_map<DescriptorType, uint32_t> countDescriptorBindingTypes(GhaDescriptorSetLayout const &descriptorSetLayout) {
@@ -236,20 +241,21 @@ namespace clove {
         vec3i constexpr imageOffset{ 0, 0, 0 };
         vec3ui const imageExtent{ imageDescriptor.dimensions.x, imageDescriptor.dimensions.y, 1 };
 
-        auto transferQueue{ *factory.createTransferQueue({ QueueFlags::Transient }) };
-        auto graphicsQueue{ *factory.createGraphicsQueue({ QueueFlags::Transient }) };
+        auto transferQueue{ factory.createTransferQueue({ QueueFlags::Transient }).getValue() };
+        auto graphicsQueue{ factory.createGraphicsQueue({ QueueFlags::Transient }).getValue() };
 
         auto transferCommandBuffer{ transferQueue->allocateCommandBuffer() };
         auto graphicsCommandBuffer{ graphicsQueue->allocateCommandBuffer() };
 
-        auto image{ *factory.createImage(imageDescriptor) };
+        auto image{ factory.createImage(imageDescriptor).getValue() };
 
-        auto transferBuffer = *factory.createBuffer(GhaBuffer::Descriptor{
-            .size        = dataSize,
-            .usageFlags  = GhaBuffer::UsageMode::TransferSource,
-            .sharingMode = SharingMode::Exclusive,
-            .memoryType  = MemoryType::SystemMemory,
-        });
+        auto transferBuffer{ factory.createBuffer(GhaBuffer::Descriptor{
+                                                      .size        = dataSize,
+                                                      .usageFlags  = GhaBuffer::UsageMode::TransferSource,
+                                                      .sharingMode = SharingMode::Exclusive,
+                                                      .memoryType  = MemoryType::SystemMemory,
+                                                  })
+                                 .getValue() };
         transferBuffer->write(data, bufferOffset, dataSize);
 
         //Change the layout of the image, write the buffer into it and then release the queue ownership
@@ -264,8 +270,8 @@ namespace clove {
         graphicsCommandBuffer->imageMemoryBarrier(*image, graphicsQueueAcquireInfo, PipelineStage::Transfer, PipelineStage::PixelShader);
         graphicsCommandBuffer->endRecording();
 
-        auto transferQueueFinishedFence{ *factory.createFence({ false }) };
-        auto graphicsQueueFinishedFence{ *factory.createFence({ false }) };
+        auto transferQueueFinishedFence{ factory.createFence({ false }).getValue() };
+        auto graphicsQueueFinishedFence{ factory.createFence({ false }).getValue() };
 
         transferQueue->submit({ TransferSubmitInfo{ .commandBuffers = { transferCommandBuffer.get() } } }, transferQueueFinishedFence.get());
         graphicsQueue->submit({ GraphicsSubmitInfo{ .commandBuffers = { graphicsCommandBuffer.get() } } }, graphicsQueueFinishedFence.get());

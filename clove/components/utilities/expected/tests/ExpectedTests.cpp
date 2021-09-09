@@ -8,7 +8,6 @@ TEST(ExpectedTests, CanConstructWithAValue) {
     Expected<int32_t, std::exception> expectedValue(testValue);
 
     EXPECT_EQ(testValue, expectedValue.getValue());
-    EXPECT_EQ(testValue, *expectedValue);
 }
 
 TEST(ExpectedTests, CanConstructWithAnError) {
@@ -48,7 +47,7 @@ TEST(ExpectedTests, CallsDestructorOnValueType) {
     bool destructorCalled{ false };
 
     {
-        Expected<Helper, std::exception> expected(Helper{ destructorCalled });
+        Expected<Helper, std::exception> expected{ Helper{ destructorCalled } };
     }
 
     EXPECT_TRUE(destructorCalled);
@@ -71,7 +70,7 @@ TEST(ExpectedTests, CallsDestructorOnErrorType) {
     bool destructorCalled{ false };
 
     {
-        Expected<int32_t, Helper> expected(Unexpected<Helper>{ Helper{ destructorCalled } });
+        Expected<int32_t, Helper> expected{ Unexpected<Helper>{ Helper{ destructorCalled } } };
     }
 
     EXPECT_TRUE(destructorCalled);
@@ -160,7 +159,7 @@ TEST(ExpectedTests, MovesValueWhenIsAnRRef) {
     };
 
     Expected<Helper, std::exception> expected{ Helper{} };
-    Helper helper = std::move(expected.getValue());
+    Helper helper{ std::move(expected.getValue()) };
 
     EXPECT_FALSE(helper.copied);
 }
@@ -186,7 +185,7 @@ TEST(ExpectedTests, MovesErrorWhenIsAnRRef) {
     };
 
     Expected<std::string, Helper> expected{ Helper{} };
-    Helper helper = std::move(expected.getError());
+    Helper helper{ std::move(expected.getError()) };
 
     EXPECT_FALSE(helper.copied);
 }
@@ -230,11 +229,11 @@ TEST(ExpectedTests, CanReturnProperlyFromAFunction) {
         }
     };
 
-    ExpectedReturner helper;
+    ExpectedReturner helper{};
 
-    auto value                 = helper.return42();
-    auto error                 = helper.returnException();
-    NotCopyable notCopyableObj = helper.returnNonCopyable().getValue();
+    auto value{ helper.return42() };
+    auto error{ helper.returnException() };
+    NotCopyable notCopyableObj{ helper.returnNonCopyable().getValue() };
 
     EXPECT_TRUE(value.hasValue());
     EXPECT_FALSE(error.hasValue());

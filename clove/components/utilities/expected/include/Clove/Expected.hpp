@@ -78,14 +78,6 @@ namespace clove {
         T &&getValue() &&;
         T const &&getValue() const &&;
 
-        T *operator->();
-        T const *operator->() const;
-
-        T &operator*() &;
-        T const &operator*() const &;
-        T &&operator*() &&;
-        T const &&operator*() const &&;
-
         /**
          * @brief Returns the contained error. If this contains a value 'assert' is called instead.
          */

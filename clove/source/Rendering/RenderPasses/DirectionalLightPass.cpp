@@ -42,27 +42,28 @@ namespace clove {
             .size     = { shadowMapSize, shadowMapSize }
         };
 
-        auto vertShader{ *ghaFactory.createShaderFromSource({ meshshadowmap_v, meshshadowmap_vLength }, shaderIncludes, "Shadow Map - Animated Mesh (vertex)", GhaShader::Stage::Vertex) };
-        auto pixelShader{ *ghaFactory.createShaderFromSource({ meshshadowmap_p, meshshadowmap_pLength }, shaderIncludes, "Shadow Map (pixel)", GhaShader::Stage::Pixel) };
+        auto vertShader{ ghaFactory.createShaderFromSource({ meshshadowmap_v, meshshadowmap_vLength }, shaderIncludes, "Shadow Map - Animated Mesh (vertex)", GhaShader::Stage::Vertex).getValue() };
+        auto pixelShader{ ghaFactory.createShaderFromSource({ meshshadowmap_p, meshshadowmap_pLength }, shaderIncludes, "Shadow Map (pixel)", GhaShader::Stage::Pixel).getValue() };
 
         auto meshLayout{ createMeshDescriptorSetLayout(ghaFactory) };
 
-        pipeline = *ghaFactory.createGraphicsPipelineObject(GhaGraphicsPipelineObject::Descriptor{
-            .vertexShader         = vertShader.get(),
-            .pixelShader          = pixelShader.get(),
-            .vertexInput          = Vertex::getInputBindingDescriptor(),
-            .vertexAttributes     = vertexAttributes,
-            .viewportDescriptor   = viewScissorArea,
-            .scissorDescriptor    = viewScissorArea,
-            .enableBlending       = false,
-            .renderPass           = ghaRenderPass,
-            .descriptorSetLayouts = {
-                meshLayout.get(),
-            },
-            .pushConstants = {
-                pushConstant,
-            },
-        });
+        pipeline = ghaFactory.createGraphicsPipelineObject(GhaGraphicsPipelineObject::Descriptor{
+                                                               .vertexShader         = vertShader.get(),
+                                                               .pixelShader          = pixelShader.get(),
+                                                               .vertexInput          = Vertex::getInputBindingDescriptor(),
+                                                               .vertexAttributes     = vertexAttributes,
+                                                               .viewportDescriptor   = viewScissorArea,
+                                                               .scissorDescriptor    = viewScissorArea,
+                                                               .enableBlending       = false,
+                                                               .renderPass           = ghaRenderPass,
+                                                               .descriptorSetLayouts = {
+                                                                   meshLayout.get(),
+                                                               },
+                                                               .pushConstants = {
+                                                                   pushConstant,
+                                                               },
+                                                           })
+                       .getValue();
     }
 
     DirectionalLightPass::DirectionalLightPass(DirectionalLightPass &&other) noexcept = default;

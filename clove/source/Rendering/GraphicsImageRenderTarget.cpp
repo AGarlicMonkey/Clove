@@ -14,11 +14,11 @@ namespace clove {
         , factory{ factory } {
 
         //We won't be allocating any buffers from this queue, only using it to submit
-        graphicsQueue = *this->factory->createGraphicsQueue(CommandQueueDescriptor{ .flags = QueueFlags::None });
-        transferQueue = *this->factory->createTransferQueue(CommandQueueDescriptor{ .flags = QueueFlags::ReuseBuffers });
+        graphicsQueue = this->factory->createGraphicsQueue(CommandQueueDescriptor{ .flags = QueueFlags::None }).getValue();
+        transferQueue = this->factory->createTransferQueue(CommandQueueDescriptor{ .flags = QueueFlags::ReuseBuffers }).getValue();
 
-        frameInFlight           = *this->factory->createFence({ true });
-        renderFinishedSemaphore = *this->factory->createSemaphore();
+        frameInFlight           = this->factory->createFence({ true }).getValue();
+        renderFinishedSemaphore = this->factory->createSemaphore().getValue();
 
         transferCommandBuffer = transferQueue->allocateCommandBuffer();
 
@@ -89,7 +89,7 @@ namespace clove {
 
         onPropertiesChangedBegin.broadcast();
 
-        renderTargetImage = *factory->createImage(imageDescriptor);
+        renderTargetImage = factory->createImage(imageDescriptor).getValue();
         renderTargetView  = renderTargetImage->createView(GhaImageView::Descriptor{
             .type       = GhaImageView::Type::_2D,
             .layer      = 0,
@@ -98,12 +98,13 @@ namespace clove {
 
         size_t constexpr bytesPerPixel{ 4 };//Assuming image format is 4 bbp
         size_t const bufferSize{ imageDescriptor.dimensions.x * imageDescriptor.dimensions.y * bytesPerPixel };
-        renderTargetBuffer = *factory->createBuffer(GhaBuffer::Descriptor{
-            .size        = bufferSize,
-            .usageFlags  = GhaBuffer::UsageMode::TransferDestination,
-            .sharingMode = SharingMode::Exclusive,
-            .memoryType  = MemoryType::SystemMemory,
-        });
+        renderTargetBuffer = factory->createBuffer(GhaBuffer::Descriptor{
+                                                       .size        = bufferSize,
+                                                       .usageFlags  = GhaBuffer::UsageMode::TransferDestination,
+                                                       .sharingMode = SharingMode::Exclusive,
+                                                       .memoryType  = MemoryType::SystemMemory,
+                                                   })
+                                 .getValue();
 
         //Pre-record the transfer command
         ImageMemoryBarrierInfo constexpr layoutTransferInfo{

@@ -110,42 +110,6 @@ namespace clove {
     }
 
     template<typename T, typename E>
-    T *Expected<T, E>::operator->() {
-        if(!ok) {
-            throw error;
-        }
-        return &value;
-    }
-
-    template<typename T, typename E>
-    T const *Expected<T, E>::operator->() const {
-        if(!ok) {
-            throw error;
-        }
-        return &value;
-    }
-
-    template<typename T, typename E>
-    T &Expected<T, E>::operator*() & {
-        return getValue();
-    }
-
-    template<typename T, typename E>
-    T const &Expected<T, E>::operator*() const & {
-        return getValue();
-    }
-
-    template<typename T, typename E>
-    T &&Expected<T, E>::operator*() && {
-        return std::move(getValue());
-    }
-
-    template<typename T, typename E>
-    T const &&Expected<T, E>::operator*() const && {
-        return std::move(getValue());
-    }
-
-    template<typename T, typename E>
     E &Expected<T, E>::getError() & {
         assert(!ok);
         return error;

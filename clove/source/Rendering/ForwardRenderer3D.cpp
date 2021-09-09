@@ -39,8 +39,8 @@ namespace clove {
         ghaFactory = graphicsDevice->getGraphicsFactory();
 
         //Object initialisation
-        graphicsQueue = *ghaFactory->createGraphicsQueue({ QueueFlags::Transient | QueueFlags::ReuseBuffers });
-        computeQueue  = *ghaFactory->createComputeQueue({ QueueFlags::Transient | QueueFlags::ReuseBuffers });
+        graphicsQueue = ghaFactory->createGraphicsQueue({ QueueFlags::Transient | QueueFlags::ReuseBuffers }).getValue();
+        computeQueue  = ghaFactory->createComputeQueue({ QueueFlags::Transient | QueueFlags::ReuseBuffers }).getValue();
 
         descriptorSetLayouts[DescriptorSetSlots::Mesh]     = createMeshDescriptorSetLayout(*ghaFactory);
         descriptorSetLayouts[DescriptorSetSlots::View]     = createViewDescriptorSetLayout(*ghaFactory);
@@ -50,33 +50,36 @@ namespace clove {
         skinningSetLayout = createSkinningDescriptorSetLayout(*ghaFactory);
 
         float constexpr anisotropy{ 16.0f };
-        textureSampler = *ghaFactory->createSampler(GhaSampler::Descriptor{
-            .minFilter        = GhaSampler::Filter::Linear,
-            .magFilter        = GhaSampler::Filter::Linear,
-            .addressModeU     = GhaSampler::AddressMode::Repeat,
-            .addressModeV     = GhaSampler::AddressMode::Repeat,
-            .addressModeW     = GhaSampler::AddressMode::Repeat,
-            .enableAnisotropy = true,
-            .maxAnisotropy    = anisotropy,
-        });
+        textureSampler = ghaFactory->createSampler(GhaSampler::Descriptor{
+                                                       .minFilter        = GhaSampler::Filter::Linear,
+                                                       .magFilter        = GhaSampler::Filter::Linear,
+                                                       .addressModeU     = GhaSampler::AddressMode::Repeat,
+                                                       .addressModeV     = GhaSampler::AddressMode::Repeat,
+                                                       .addressModeW     = GhaSampler::AddressMode::Repeat,
+                                                       .enableAnisotropy = true,
+                                                       .maxAnisotropy    = anisotropy,
+                                                   })
+                             .getValue();
 
-        uiSampler = *ghaFactory->createSampler(GhaSampler::Descriptor{
-            .minFilter        = GhaSampler::Filter::Nearest,
-            .magFilter        = GhaSampler::Filter::Nearest,
-            .addressModeU     = GhaSampler::AddressMode::ClampToBorder,
-            .addressModeV     = GhaSampler::AddressMode::ClampToBorder,
-            .addressModeW     = GhaSampler::AddressMode::ClampToBorder,
-            .enableAnisotropy = false,
-        });
+        uiSampler = ghaFactory->createSampler(GhaSampler::Descriptor{
+                                                  .minFilter        = GhaSampler::Filter::Nearest,
+                                                  .magFilter        = GhaSampler::Filter::Nearest,
+                                                  .addressModeU     = GhaSampler::AddressMode::ClampToBorder,
+                                                  .addressModeV     = GhaSampler::AddressMode::ClampToBorder,
+                                                  .addressModeW     = GhaSampler::AddressMode::ClampToBorder,
+                                                  .enableAnisotropy = false,
+                                              })
+                        .getValue();
 
-        shadowSampler = *ghaFactory->createSampler(GhaSampler::Descriptor{
-            .minFilter        = GhaSampler::Filter::Linear,
-            .magFilter        = GhaSampler::Filter::Linear,
-            .addressModeU     = GhaSampler::AddressMode::ClampToBorder,
-            .addressModeV     = GhaSampler::AddressMode::ClampToBorder,
-            .addressModeW     = GhaSampler::AddressMode::ClampToBorder,
-            .enableAnisotropy = false,
-        });
+        shadowSampler = ghaFactory->createSampler(GhaSampler::Descriptor{
+                                                      .minFilter        = GhaSampler::Filter::Linear,
+                                                      .magFilter        = GhaSampler::Filter::Linear,
+                                                      .addressModeU     = GhaSampler::AddressMode::ClampToBorder,
+                                                      .addressModeV     = GhaSampler::AddressMode::ClampToBorder,
+                                                      .addressModeW     = GhaSampler::AddressMode::ClampToBorder,
+                                                      .enableAnisotropy = false,
+                                                  })
+                            .getValue();
 
         createRenderpass();
         createShadowMapRenderpass();
@@ -93,7 +96,7 @@ namespace clove {
 
         //Create semaphores for frame synchronisation
         for(auto &skinningFinishedSemaphore : skinningFinishedSemaphores) {
-            skinningFinishedSemaphore = *ghaFactory->createSemaphore();
+            skinningFinishedSemaphore = ghaFactory->createSemaphore().getValue();
         }
 
         std::vector<Vertex> const uiVertices{
@@ -233,7 +236,7 @@ namespace clove {
         std::vector<std::unique_ptr<GhaDescriptorSet>> meshSets;
         if(meshCount > 0) {
             if(currentImageData.meshDescriptorPool == nullptr || currentImageData.meshDescriptorPool->getDescriptor().maxSets < meshCount) {
-                auto meshSetBindingCount = countDescriptorBindingTypes(*descriptorSetLayouts[DescriptorSetSlots::Mesh]);
+                auto meshSetBindingCount{ countDescriptorBindingTypes(*descriptorSetLayouts[DescriptorSetSlots::Mesh]) };
                 for(auto &[key, val] : meshSetBindingCount) {
                     val *= meshCount;
                 }
@@ -253,12 +256,13 @@ namespace clove {
 
         auto const writeObjectBuffer = [&graphicsFactory = ghaFactory](std::unique_ptr<GhaBuffer> &buffer, MeshUBOLayout const &layout) {
             if(buffer == nullptr) {
-                buffer = *graphicsFactory->createBuffer(GhaBuffer::Descriptor{
-                    .size        = sizeof(layout),
-                    .usageFlags  = GhaBuffer::UsageMode::UniformBuffer,
-                    .sharingMode = SharingMode::Exclusive,
-                    .memoryType  = MemoryType::SystemMemory,
-                });
+                buffer = graphicsFactory->createBuffer(GhaBuffer::Descriptor{
+                                                           .size        = sizeof(layout),
+                                                           .usageFlags  = GhaBuffer::UsageMode::UniformBuffer,
+                                                           .sharingMode = SharingMode::Exclusive,
+                                                           .memoryType  = MemoryType::SystemMemory,
+                                                       })
+                             .getValue();
             }
             buffer->write(&layout, 0, sizeof(layout));
         };
@@ -532,23 +536,25 @@ namespace clove {
             imageData.skinningCommandBuffer      = computeQueue->allocateCommandBuffer();
 
             //Create uniform buffers
-            imageData.frameDataBuffer = *ghaFactory->createBuffer(GhaBuffer::Descriptor{
-                .size        = sizeof(FrameData),
-                .usageFlags  = GhaBuffer::UsageMode::UniformBuffer,
-                .sharingMode = SharingMode::Exclusive,
-                .memoryType  = MemoryType::SystemMemory,
-            });
+            imageData.frameDataBuffer = ghaFactory->createBuffer(GhaBuffer::Descriptor{
+                                                                     .size        = sizeof(FrameData),
+                                                                     .usageFlags  = GhaBuffer::UsageMode::UniformBuffer,
+                                                                     .sharingMode = SharingMode::Exclusive,
+                                                                     .memoryType  = MemoryType::SystemMemory,
+                                                                 })
+                                            .getValue();
 
             //Create the shadow maps
             //Directional
-            imageData.shadowMaps     = *ghaFactory->createImage(GhaImage::Descriptor{
-                .type        = GhaImage::Type::_2D,
-                .usageFlags  = GhaImage::UsageMode::Sampled | GhaImage::UsageMode::DepthStencilAttachment,
-                .dimensions  = { shadowMapSize, shadowMapSize },
-                .arrayCount  = MAX_LIGHTS,
-                .format      = GhaImage::Format::D32_SFLOAT,
-                .sharingMode = SharingMode::Exclusive,
-            });
+            imageData.shadowMaps = ghaFactory->createImage(GhaImage::Descriptor{
+                                                               .type        = GhaImage::Type::_2D,
+                                                               .usageFlags  = GhaImage::UsageMode::Sampled | GhaImage::UsageMode::DepthStencilAttachment,
+                                                               .dimensions  = { shadowMapSize, shadowMapSize },
+                                                               .arrayCount  = MAX_LIGHTS,
+                                                               .format      = GhaImage::Format::D32_SFLOAT,
+                                                               .sharingMode = SharingMode::Exclusive,
+                                                           })
+                                       .getValue();
             imageData.shadowMapViews = imageData.shadowMaps->createView(GhaImageView::Descriptor{
                 .type       = GhaImageView::Type::_2D,
                 .layer      = 0,
@@ -556,14 +562,15 @@ namespace clove {
             });
 
             //Point
-            imageData.cubeShadowMaps     = *ghaFactory->createImage(GhaImage::Descriptor{
-                .type        = GhaImage::Type::Cube,
-                .usageFlags  = GhaImage::UsageMode::Sampled | GhaImage::UsageMode::DepthStencilAttachment,
-                .dimensions  = { shadowMapSize, shadowMapSize },
-                .arrayCount  = MAX_LIGHTS,
-                .format      = GhaImage::Format::D32_SFLOAT,
-                .sharingMode = SharingMode::Exclusive,
-            });
+            imageData.cubeShadowMaps = ghaFactory->createImage(GhaImage::Descriptor{
+                                                                   .type        = GhaImage::Type::Cube,
+                                                                   .usageFlags  = GhaImage::UsageMode::Sampled | GhaImage::UsageMode::DepthStencilAttachment,
+                                                                   .dimensions  = { shadowMapSize, shadowMapSize },
+                                                                   .arrayCount  = MAX_LIGHTS,
+                                                                   .format      = GhaImage::Format::D32_SFLOAT,
+                                                                   .sharingMode = SharingMode::Exclusive,
+                                                               })
+                                           .getValue();
             imageData.cubeShadowMapViews = imageData.cubeShadowMaps->createView(GhaImageView::Descriptor{
                 .type       = GhaImageView::Type::Cube,
                 .layer      = 0,
@@ -577,12 +584,13 @@ namespace clove {
                     .layer      = static_cast<uint32_t>(i),
                     .layerCount = 1,
                 });
-                imageData.shadowMapFrameBuffers[i]    = *ghaFactory->createFramebuffer(GhaFramebuffer::Descriptor{
-                    .renderPass  = shadowMapRenderPass.get(),
-                    .attachments = { imageData.shadowMapArrayLayerViews[i].get() },
-                    .width       = shadowMapSize,
-                    .height      = shadowMapSize,
-                });
+                imageData.shadowMapFrameBuffers[i]    = ghaFactory->createFramebuffer(GhaFramebuffer::Descriptor{
+                                                                                       .renderPass  = shadowMapRenderPass.get(),
+                                                                                       .attachments = { imageData.shadowMapArrayLayerViews[i].get() },
+                                                                                       .width       = shadowMapSize,
+                                                                                       .height      = shadowMapSize,
+                                                                                   })
+                                                         .getValue();
 
                 for(size_t j = 0; j < cubeMapLayerCount; ++j) {
                     imageData.cubeShadowMapFaceViews[i][j] = imageData.cubeShadowMaps->createView(GhaImageView::Descriptor{
@@ -591,12 +599,13 @@ namespace clove {
                         .layerCount = 1,
                     });
 
-                    imageData.cubeShadowMapFrameBuffers[i][j] = *ghaFactory->createFramebuffer(GhaFramebuffer::Descriptor{
-                        .renderPass  = shadowMapRenderPass.get(),
-                        .attachments = { imageData.cubeShadowMapFaceViews[i][j].get() },
-                        .width       = shadowMapSize,
-                        .height      = shadowMapSize,
-                    });
+                    imageData.cubeShadowMapFrameBuffers[i][j] = ghaFactory->createFramebuffer(GhaFramebuffer::Descriptor{
+                                                                                                  .renderPass  = shadowMapRenderPass.get(),
+                                                                                                  .attachments = { imageData.cubeShadowMapFaceViews[i][j].get() },
+                                                                                                  .width       = shadowMapSize,
+                                                                                                  .height      = shadowMapSize,
+                                                                                              })
+                                                                    .getValue();
                 }
             }
 
@@ -645,7 +654,7 @@ namespace clove {
             .depthAttachment   = depthAttachment,
         };
 
-        renderPass = *ghaFactory->createRenderPass(std::move(renderPassDescriptor));
+        renderPass = ghaFactory->createRenderPass(std::move(renderPassDescriptor)).getValue();
     }
 
     void ForwardRenderer3D::createShadowMapRenderpass() {
@@ -662,17 +671,18 @@ namespace clove {
             .depthAttachment = depthAttachment,
         };
 
-        shadowMapRenderPass = *ghaFactory->createRenderPass(std::move(renderPassDescriptor));
+        shadowMapRenderPass = ghaFactory->createRenderPass(std::move(renderPassDescriptor)).getValue();
     }
 
     void ForwardRenderer3D::createDepthBuffer() {
-        depthImage     = *ghaFactory->createImage(GhaImage::Descriptor{
-            .type        = GhaImage::Type::_2D,
-            .usageFlags  = GhaImage::UsageMode::DepthStencilAttachment,
-            .dimensions  = renderTarget->getSize(),
-            .format      = GhaImage::Format::D32_SFLOAT,
-            .sharingMode = SharingMode::Exclusive,
-        });
+        depthImage = ghaFactory->createImage(GhaImage::Descriptor{
+                                                 .type        = GhaImage::Type::_2D,
+                                                 .usageFlags  = GhaImage::UsageMode::DepthStencilAttachment,
+                                                 .dimensions  = renderTarget->getSize(),
+                                                 .format      = GhaImage::Format::D32_SFLOAT,
+                                                 .sharingMode = SharingMode::Exclusive,
+                                             })
+                         .getValue();
         depthImageView = depthImage->createView(GhaImageView::Descriptor{
             .type       = GhaImageView::Type::_2D,
             .layer      = 0,
@@ -714,9 +724,9 @@ namespace clove {
             .size   = sizeof(vec4f),
         };
 
-        auto vertShader{ *ghaFactory->createShaderFromSource({ ui_v, ui_vLength }, shaderIncludes, "UI (vertex)", GhaShader::Stage::Vertex) };
-        auto widgetPixelShader{ *ghaFactory->createShaderFromSource({ widget_p, widget_pLength }, shaderIncludes, "Widget (pixel)", GhaShader::Stage::Pixel) };
-        auto textPixelShader{ *ghaFactory->createShaderFromSource({ font_p, font_pLength }, shaderIncludes, "Font (pixel)", GhaShader::Stage::Pixel) };
+        auto vertShader{ ghaFactory->createShaderFromSource({ ui_v, ui_vLength }, shaderIncludes, "UI (vertex)", GhaShader::Stage::Vertex).getValue() };
+        auto widgetPixelShader{ ghaFactory->createShaderFromSource({ widget_p, widget_pLength }, shaderIncludes, "Widget (pixel)", GhaShader::Stage::Pixel).getValue() };
+        auto textPixelShader{ ghaFactory->createShaderFromSource({ font_p, font_pLength }, shaderIncludes, "Font (pixel)", GhaShader::Stage::Pixel).getValue() };
 
         GhaGraphicsPipelineObject::Descriptor pipelineDescriptor{
             .vertexShader         = vertShader.get(),
@@ -731,21 +741,22 @@ namespace clove {
             .pushConstants        = { vertexPushConstant, pixelPushConstant },
         };
 
-        widgetPipelineObject = *ghaFactory->createGraphicsPipelineObject(pipelineDescriptor);
+        widgetPipelineObject = ghaFactory->createGraphicsPipelineObject(pipelineDescriptor).getValue();
 
         pipelineDescriptor.pixelShader = textPixelShader.get();
 
-        textPipelineObject = *ghaFactory->createGraphicsPipelineObject(std::move(pipelineDescriptor));
+        textPipelineObject = ghaFactory->createGraphicsPipelineObject(std::move(pipelineDescriptor)).getValue();
     }
 
     void ForwardRenderer3D::createRenderTargetFrameBuffers() {
         for(auto &imageView : renderTarget->getImageViews()) {
-            frameBuffers.emplace_back(*ghaFactory->createFramebuffer(GhaFramebuffer::Descriptor{
-                .renderPass  = renderPass.get(),
-                .attachments = { imageView, depthImageView.get() },
-                .width       = renderTarget->getSize().x,
-                .height      = renderTarget->getSize().y,
-            }));
+            frameBuffers.emplace_back(ghaFactory->createFramebuffer(GhaFramebuffer::Descriptor{
+                                                                        .renderPass  = renderPass.get(),
+                                                                        .attachments = { imageView, depthImageView.get() },
+                                                                        .width       = renderTarget->getSize().x,
+                                                                        .height      = renderTarget->getSize().y,
+                                                                    })
+                                          .getValue());
         }
     }
 
@@ -766,6 +777,6 @@ namespace clove {
             .maxSets   = setCount,
         };
 
-        return *ghaFactory->createDescriptorPool(std::move(poolDescriptor));
+        return ghaFactory->createDescriptorPool(std::move(poolDescriptor)).getValue();
     }
 }
