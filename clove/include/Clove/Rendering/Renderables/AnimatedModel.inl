@@ -1,5 +1,5 @@
 namespace clove {
-    std::array<mat4f, MAX_JOINTS> AnimatedModel::update(DeltaTime const deltaTime) {
-        return animator.update(deltaTime);
+    std::vector<AnimationClip> const &AnimatedModel::getAnimationClips() const {
+        return animClips;
     }
 }

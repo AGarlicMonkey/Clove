@@ -1,7 +1,7 @@
 #include "Clove/Rendering/Renderables/AnimatedModel.hpp"
 
-#include "Clove/Rendering/Techniques/ForwardLightingTechnique.hpp"
 #include "Clove/Rendering/RenderingLog.hpp"
+#include "Clove/Rendering/Techniques/ForwardLightingTechnique.hpp"
 
 #include <Clove/Log/Log.hpp>
 
@@ -12,31 +12,26 @@ namespace clove {
         , animClips{ std::move(animClips) } {
         if(this->animClips.empty()) {
             CLOVE_LOG(CloveRendering, LogLevel::Warning, "AnimatedModel initialised without any animation clips. Won't be able to play animations");
-        } else {
-            animator.setCurrentClip(&this->animClips[0]);
         }
     }
 
     AnimatedModel::AnimatedModel(AnimatedModel const &other)
-        : StaticModel(other)
-        , skeleton(std::make_unique<Skeleton>(*other.skeleton))
-        , animClips(other.animClips) {
+        : StaticModel{ other }
+        , skeleton{ std::make_unique<Skeleton>(*other.skeleton) }
+        , animClips{ other.animClips } {
         for(auto &clip : animClips) {
             clip.skeleton = skeleton.get();
         }
 
         if(this->animClips.empty()) {
             CLOVE_LOG(CloveRendering, LogLevel::Warning, "AnimatedModel initialised without any animation clips. Won't be able to play animations");
-        } else {
-            animator.setCurrentClip(&animClips[0]);
         }
     }
 
     AnimatedModel::AnimatedModel(AnimatedModel &&other) noexcept
-        : StaticModel(std::move(other))
-        , animator(std::move(other.animator))
-        , skeleton(std::move(other.skeleton))
-        , animClips(std::move(other.animClips)) {
+        : StaticModel{ std::move(other) }
+        , skeleton{ std::move(other.skeleton) }
+        , animClips{ std::move(other.animClips) } {
     }
 
     AnimatedModel &AnimatedModel::operator=(AnimatedModel const &other) {
@@ -50,8 +45,6 @@ namespace clove {
 
         if(std::size(animClips) == 0) {
             CLOVE_LOG(CloveRendering, LogLevel::Warning, "AnimatedModel initialised without any animation clips. Won't be able to play animations");
-        } else {
-            animator.setCurrentClip(&animClips[0]);
         }
 
         return *this;
@@ -59,7 +52,6 @@ namespace clove {
 
     AnimatedModel &AnimatedModel::operator=(AnimatedModel &&other) noexcept {
         StaticModel::operator=(std::move(other));
-        animator             = std::move(other.animator);
         skeleton             = std::move(other.skeleton);
         animClips            = std::move(other.animClips);
 

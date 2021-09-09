@@ -1,7 +1,6 @@
 #pragma once
 
 #include "Clove/Rendering/AnimationTypes.hpp"
-#include "Clove/Rendering/Animator.hpp"
 #include "Clove/Rendering/Renderables/StaticModel.hpp"
 
 #include <Clove/Maths/Vector.hpp>
@@ -16,8 +15,6 @@ namespace clove {
     class AnimatedModel : public StaticModel {
         //VARIABLES
     private:
-        Animator animator;
-
         std::unique_ptr<Skeleton> skeleton;
         std::vector<AnimationClip> animClips;
 
@@ -34,12 +31,7 @@ namespace clove {
 
         ~AnimatedModel();
 
-        /**
-         * @brief Updates the internal animator.
-         * @param deltaTime The time since the last frame
-         * @returns The matrix palette for the skeleton for a given frame
-         */
-        inline std::array<mat4f, MAX_JOINTS> update(DeltaTime const deltaTime);
+        inline std::vector<AnimationClip> const &getAnimationClips() const;
     };
 }
 
