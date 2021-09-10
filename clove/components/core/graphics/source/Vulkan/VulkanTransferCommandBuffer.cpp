@@ -49,16 +49,16 @@ namespace clove {
         vkCmdCopyBuffer(commandBuffer, polyCast<VulkanBuffer>(&source)->getBuffer(), polyCast<VulkanBuffer>(&destination)->getBuffer(), 1, &copyRegion);
     }
 
-    void VulkanTransferCommandBuffer::copyBufferToImage(GhaBuffer &source, size_t const sourceOffset, GhaImage &destination, vec3i const &destinationOffset, vec3ui const &destinationExtent) {
-        VkBufferImageCopy copyRegion{
+    void VulkanTransferCommandBuffer::copyBufferToImage(GhaBuffer &source, size_t const sourceOffset, GhaImage &destination, vec3i const &destinationOffset, vec3ui const &destinationExtent, uint32_t const destinationBaseLayer, uint32_t const destinationLayerCount) {
+        VkBufferImageCopy const copyRegion{
             .bufferOffset      = sourceOffset,
             .bufferRowLength   = 0,//Tightly packed
             .bufferImageHeight = 0,//Tightly packed
             .imageSubresource  = {
                 .aspectMask     = VK_IMAGE_ASPECT_COLOR_BIT,//TODO: Handle other aspect masks
                 .mipLevel       = 0,
-                .baseArrayLayer = 0,
-                .layerCount     = 1,
+                .baseArrayLayer = destinationBaseLayer,
+                .layerCount     = destinationLayerCount,
             },
             .imageOffset = { destinationOffset.x, destinationOffset.y, destinationOffset.z },
             .imageExtent = { destinationExtent.x, destinationExtent.y, destinationExtent.z },
@@ -67,16 +67,16 @@ namespace clove {
         vkCmdCopyBufferToImage(commandBuffer, polyCast<VulkanBuffer>(&source)->getBuffer(), polyCast<VulkanImage>(&destination)->getImage(), VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &copyRegion);
     }
 
-    void VulkanTransferCommandBuffer::copyImageToBuffer(GhaImage &source, vec3i const &sourceOffset, vec3ui const &sourceExtent, GhaBuffer &destination, size_t const destinationOffset) {
-        VkBufferImageCopy copyRegion{
+    void VulkanTransferCommandBuffer::copyImageToBuffer(GhaImage &source, vec3i const &sourceOffset, vec3ui const &sourceExtent, uint32_t const sourceBaseLayer, uint32_t const sourceLayerCount, GhaBuffer &destination, size_t const destinationOffset) {
+        VkBufferImageCopy const copyRegion{
             .bufferOffset      = destinationOffset,
             .bufferRowLength   = 0,//Tightly packed
             .bufferImageHeight = 0,//Tightly packed
             .imageSubresource  = {
                 .aspectMask     = VK_IMAGE_ASPECT_COLOR_BIT,//TODO: Handle other aspect masks
                 .mipLevel       = 0,
-                .baseArrayLayer = 0,
-                .layerCount     = 1,
+                .baseArrayLayer = sourceBaseLayer,
+                .layerCount     = sourceLayerCount,
             },
             .imageOffset = { sourceOffset.x, sourceOffset.y, sourceOffset.z },
             .imageExtent = { sourceExtent.x, sourceExtent.y, sourceExtent.z },

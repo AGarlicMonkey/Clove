@@ -52,8 +52,8 @@ namespace clove {
 		});
 	}
 	
-	void MetalTransferCommandBuffer::copyBufferToImage(GhaBuffer &source, size_t const sourceOffset, GhaImage &destination, vec3i const &destinationOffset, vec3ui const &destinationExtent) {
-		commands.emplace_back([source = &source, sourceOffset, destination = &destination, destinationOffset, destinationExtent](id<MTLBlitCommandEncoder> encoder){
+	void MetalTransferCommandBuffer::copyBufferToImage(GhaBuffer &source, size_t const sourceOffset, GhaImage &destination, vec3i const &destinationOffset, vec3ui const &destinationExtent, uint32_t const destinationBaseLayer, uint32_t const destinationLayerCount) {
+		commands.emplace_back([source = &source, sourceOffset, destination = &destination, destinationOffset, destinationExtent, destinationBaseLayer, destinationLayerCount](id<MTLBlitCommandEncoder> encoder){
 			auto const *const metalImage{ polyCast<MetalImage>(destination) };
             if(metalImage == nullptr){
                 CLOVE_LOG(CloveGhaMetal, LogLevel::Error, "{0}: Source image is nullptr", CLOVE_FUNCTION_NAME);
@@ -65,17 +65,17 @@ namespace clove {
 			[encoder copyFromBuffer:polyCast<MetalBuffer>(source)->getBuffer()
 					   sourceOffset:sourceOffset
 				  sourceBytesPerRow:getBytesPerPixel(imageDescriptor.format) * imageDescriptor.dimensions.x //Always assume the bytes per row is the same as the image's width. Metal does not consider 0 tightly packed like Vulkan does
-				sourceBytesPerImage:0//TODO: For 3D textures and texture arrays
+				sourceBytesPerImage:getBytesPerPixel(imageDescriptor.format) * imageDescriptor.dimensions.x * imageDescriptor.dimensions.y * destinationLayerCount
 						 sourceSize:MTLSizeMake(destinationExtent.x, destinationExtent.y, 1)
 						  toTexture:metalImage->getTexture()
-				   destinationSlice:0
+				   destinationSlice:destinationBaseLayer
 				   destinationLevel:0
 				  destinationOrigin:MTLOriginMake(destinationOffset.x, destinationOffset.y, 0)];
 		});
 	}
 
-	void MetalTransferCommandBuffer::copyImageToBuffer(GhaImage &source, vec3i const &sourceOffset, vec3ui const &sourceExtent, GhaBuffer &destination, size_t const destinationOffset) {
-		commands.emplace_back([source = &source, sourceOffset, sourceExtent, destination = &destination, destinationOffset](id<MTLBlitCommandEncoder> encoder){
+	void MetalTransferCommandBuffer::copyImageToBuffer(GhaImage &source, vec3i const &sourceOffset, vec3ui const &sourceExtent, uint32_t const sourceBaseLayer, uint32_t const sourceLayerCount, GhaBuffer &destination, size_t const destinationOffset) {
+		commands.emplace_back([source = &source, sourceOffset, sourceExtent, destination = &destination, destinationOffset, sourceBaseLayer, sourceLayerCount](id<MTLBlitCommandEncoder> encoder){
 			auto const *const metalImage{ polyCast<MetalImage>(source) };
             if(metalImage == nullptr){
                 CLOVE_LOG(CloveGhaMetal, LogLevel::Error, "{0}: Source image is nullptr", CLOVE_FUNCTION_NAME);
@@ -85,14 +85,14 @@ namespace clove {
 			auto const &imageDescriptor{ metalImage->getDescriptor() };
 			
 			[encoder copyFromTexture:metalImage->getTexture()
-						 sourceSlice:0
+						 sourceSlice:sourceBaseLayer
 						 sourceLevel:0
 						sourceOrigin:MTLOriginMake(sourceOffset.x, sourceOffset.y, 0)
 						  sourceSize:MTLSizeMake(sourceExtent.x, sourceExtent.y, 1)
 							toBuffer:polyCast<MetalBuffer>(destination)->getBuffer()
 				   destinationOffset:destinationOffset
 			  destinationBytesPerRow:getBytesPerPixel(imageDescriptor.format) * imageDescriptor.dimensions.x //Always assume the bytes per row is the same as the image's width. Metal does not consider 0 tightly packed like Vulkan does
-			destinationBytesPerImage:0];//TODO: For 3D textures and texture arrays
+			destinationBytesPerImage:getBytesPerPixel(imageDescriptor.format) * imageDescriptor.dimensions.x * imageDescriptor.dimensions.y * sourceLayerCount];
 		});
 	}
 

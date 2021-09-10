@@ -118,7 +118,7 @@ namespace clove {
 
         transferCommandBuffer->beginRecording(CommandBufferUsage::Default);
         transferCommandBuffer->imageMemoryBarrier(*renderTargetImage, layoutTransferInfo, PipelineStage::Top, PipelineStage::Transfer);
-        transferCommandBuffer->copyImageToBuffer(*renderTargetImage, { 0, 0, 0 }, { imageDescriptor.dimensions, 1 }, *renderTargetBuffer, 0);
+        transferCommandBuffer->copyImageToBuffer(*renderTargetImage, { 0, 0, 0 }, { imageDescriptor.dimensions, 1 }, 0, 1, *renderTargetBuffer, 0);
         transferCommandBuffer->endRecording();
 
         onPropertiesChangedEnd.broadcast();
