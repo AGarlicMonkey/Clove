@@ -261,7 +261,7 @@ namespace clove {
         //Change the layout of the image, write the buffer into it and then release the queue ownership
         transferCommandBuffer->beginRecording(CommandBufferUsage::OneTimeSubmit);
         transferCommandBuffer->imageMemoryBarrier(*image, layoutTransferInfo, PipelineStage::Top, PipelineStage::Transfer);
-        transferCommandBuffer->copyBufferToImage(*transferBuffer, bufferOffset, *image, imageOffset, imageExtent);
+        transferCommandBuffer->copyBufferToImage(*transferBuffer, bufferOffset, *image, imageOffset, imageExtent, 0, imageDescriptor.arrayCount);
         transferCommandBuffer->imageMemoryBarrier(*image, transferQueueReleaseInfo, PipelineStage::Transfer, PipelineStage::Transfer);
         transferCommandBuffer->endRecording();
 

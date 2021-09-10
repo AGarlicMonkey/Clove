@@ -28,10 +28,38 @@ namespace clove {
         virtual void beginRecording(CommandBufferUsage usageFlag) = 0;
         virtual void endRecording()                               = 0;
 
-        virtual void copyBufferToBuffer(GhaBuffer &source, size_t const sourceOffset, GhaBuffer &destination, size_t const destinationOffset, size_t const sizeBytes)        = 0;
-        virtual void copyBufferToImage(GhaBuffer &source, size_t const sourceOffset, GhaImage &destination, vec3i const &destinationOffset, vec3ui const &destinationExtent) = 0;
+        /**
+         * @brief Copy the contents from one buffer to another.
+         * @param source 
+         * @param sourceOffset 
+         * @param destination 
+         * @param destinationOffset 
+         * @param sizeBytes 
+         */
+        virtual void copyBufferToBuffer(GhaBuffer &source, size_t const sourceOffset, GhaBuffer &destination, size_t const destinationOffset, size_t const sizeBytes) = 0;
+        /**
+         * @brief Copy the content from a buffer to an image.
+         * @param source 
+         * @param sourceOffset 
+         * @param destination 
+         * @param destinationOffset 
+         * @param destinationExtent 
+         * @param destinationBaseLayer If the image is an array and/or a cube map, which index to start the copy from. Otherwise will be 0.
+         * @param destinationLayerCount If the image is an array and/or a cube map, how many layers to copy. Otherwise will be 1.
+         */
+        virtual void copyBufferToImage(GhaBuffer &source, size_t const sourceOffset, GhaImage &destination, vec3i const &destinationOffset, vec3ui const &destinationExtent, uint32_t const destinationBaseLayer, uint32_t const destinationLayerCount) = 0;
 
-        virtual void copyImageToBuffer(GhaImage &source, vec3i const &sourceOffset, vec3ui const &sourceExtent, GhaBuffer &destination, size_t const destinationOffset) = 0;
+        /**
+         * @brief Copy the contents of an image to a buffer.
+         * @param source 
+         * @param sourceOffset 
+         * @param sourceExtent 
+         * @param sourceBaseLayer If the image is an array and/or a cube map, which index to start the copy from. Otherwise will be 0.
+         * @param sourceLayerCount If the image is an array and/or a cube map, how many layers to copy. Otherwise will be 1.
+         * @param destination 
+         * @param destinationOffset 
+         */
+        virtual void copyImageToBuffer(GhaImage &source, vec3i const &sourceOffset, vec3ui const &sourceExtent, uint32_t const sourceBaseLayer, uint32_t const sourceLayerCount, GhaBuffer &destination, size_t const destinationOffset) = 0;
 
         /**
          * @brief Creates a memory barrier for a buffer. Controlling execution order of commands on the buffer.
