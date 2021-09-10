@@ -100,7 +100,7 @@ namespace clove {
         return skinningMatrix;
     }
 
-    void Animator::setCurrentClip(AnimationClip *clip) {
+    void Animator::setCurrentClip(AnimationClip const *clip) {
         currentClip = clip;
     }
 

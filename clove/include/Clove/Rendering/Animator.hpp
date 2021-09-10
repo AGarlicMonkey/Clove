@@ -20,7 +20,7 @@ namespace clove {
         //VARIABLES
     private:
         float currentTime{ 0.0f };
-        AnimationClip *currentClip{ nullptr };
+        AnimationClip const *currentClip{ nullptr };
 
         //FUNCTIONS
     public:
@@ -45,7 +45,7 @@ namespace clove {
          * @brief Sets the current clip the Animator will use
          * @param clip Pointer to the new clip
          */
-        void setCurrentClip(AnimationClip *clip);
+        void setCurrentClip(AnimationClip const *clip);
 
     private:
         std::pair<AnimationPose const &, AnimationPose const &> getPrevNextPose(float animationTime);
