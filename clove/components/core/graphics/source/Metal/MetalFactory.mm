@@ -207,7 +207,9 @@ namespace clove {
             }
         }
         
-        return std::unique_ptr<GhaSwapchain>{ createGhaObject<MetalSwapchain>(std::move(swapchainImages), drawableFormat, descriptor.extent) };
+        id<MTLCommandQueue> signalQueue{ [device newCommandQueue] };
+        
+        return std::unique_ptr<GhaSwapchain>{ createGhaObject<MetalSwapchain>(signalQueue, std::move(swapchainImages), drawableFormat, descriptor.extent) };
     }
     
     Expected<std::unique_ptr<GhaShader>, std::runtime_error> MetalFactory::createShaderFromFile(std::filesystem::path const &file, GhaShader::Stage shaderStage) noexcept {

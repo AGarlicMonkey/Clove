@@ -3,6 +3,7 @@
 #include "Clove/Graphics/GhaSwapchain.hpp"
 
 #include <queue>
+#include <MetalKit/MetalKit.h>
 
 namespace clove {
 	class GhaImage;
@@ -19,11 +20,13 @@ namespace clove {
 		vec2ui imageSize{};
 		
 		std::queue<uint32_t> imageQueue{};
+        
+        id<MTLCommandQueue> signalQueue{}; /**< Used to signal the semaphores. See aquireNextImage. */
 		
 		//FUNCTIONS
 	public:
 		MetalSwapchain() = delete;
-		MetalSwapchain(std::vector<std::unique_ptr<GhaImage>> images, GhaImage::Format imageFormat, vec2ui imageSize);
+		MetalSwapchain(id<MTLCommandQueue> signalQueue, std::vector<std::unique_ptr<GhaImage>> images, GhaImage::Format imageFormat, vec2ui imageSize);
 		
 		MetalSwapchain(MetalSwapchain const &other) = delete;
 		MetalSwapchain(MetalSwapchain &&other) noexcept;
