@@ -113,7 +113,7 @@ namespace clove {
 
     Application::Application(std::unique_ptr<GhaDevice> graphicsDevice, std::unique_ptr<AhaDevice> audioDevice, std::unique_ptr<Window> window, std::unique_ptr<RenderTarget> renderTarget)
         : Application{ std::move(graphicsDevice), std::move(audioDevice), &window->getKeyboard(), &window->getMouse(), std::move(renderTarget) } {
-        window = std::move(window);
+        this->window = std::move(window);
     }
 
     Application::Application(std::unique_ptr<GhaDevice> graphicsDevice, std::unique_ptr<AhaDevice> audioDevice, Keyboard *keyboard, Mouse *mouse, std::unique_ptr<RenderTarget> renderTarget)
