@@ -71,7 +71,7 @@ namespace clove {
             return;
         }
 
-        auto const currFrameTime{ std::chrono::system_clock::now() };
+        auto const currFrameTime{ std::chrono::steady_clock::now() };
         std::chrono::duration<float> const deltaSeonds{ currFrameTime - prevFrameTime };
         prevFrameTime = currFrameTime;
 
@@ -125,7 +125,7 @@ namespace clove {
         CLOVE_ASSERT_MSG(instance == nullptr, "Only one Application can be active");
         instance = this;
 
-        prevFrameTime = std::chrono::system_clock::now();
+        prevFrameTime = std::chrono::steady_clock::now();
 
         //Systems
         renderer = std::make_unique<ForwardRenderer3D>(this->graphicsDevice.get(), std::move(renderTarget));

@@ -63,7 +63,7 @@ namespace clove {
         std::unordered_map<std::type_index, std::pair<SubSystemGroup, size_t>> subSystemToIndex; /**< Contains the index for each subsystem in the subSystems array. */
         std::map<SubSystemGroup, std::vector<std::unique_ptr<SubSystem>>> subSystems;
 
-        std::chrono::system_clock::time_point prevFrameTime;
+        std::chrono::steady_clock::time_point prevFrameTime;
 
         //FUNCTIONS
     public:
