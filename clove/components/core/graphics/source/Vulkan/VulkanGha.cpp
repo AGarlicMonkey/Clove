@@ -23,6 +23,7 @@
 #include "Clove/Graphics/Vulkan/VulkanLog.hpp"
 
 #include <Clove/Definitions.hpp>
+#include <map>
 #include <set>
 #include <sstream>
 #include <unordered_set>
@@ -82,8 +83,6 @@ namespace clove {
         }
 
         QueueFamilyIndices findQueueFamilies(VkPhysicalDevice device, VkSurfaceKHR surface) {
-            CLOVE_LOG(CloveGhaVulkan, LogLevel::Trace, "Generating queue family indicies...");
-
             QueueFamilyIndices indices{};
             std::set<uint32_t> graphicsFamilyIndices{};
             std::set<uint32_t> presentFamilyIndices{};
@@ -92,9 +91,6 @@ namespace clove {
 
             uint32_t queueFamilyCount{ 0 };
             vkGetPhysicalDeviceQueueFamilyProperties(device, &queueFamilyCount, nullptr);
-
-            CLOVE_LOG(CloveGhaVulkan, LogLevel::Trace, "{0} queue families available", queueFamilyCount);
-
             std::vector<VkQueueFamilyProperties> queueFamilies(queueFamilyCount);
             vkGetPhysicalDeviceQueueFamilyProperties(device, &queueFamilyCount, queueFamilies.data());
 
@@ -125,14 +121,13 @@ namespace clove {
                 CLOVE_LOG(CloveGhaVulkan, LogLevel::Error, "Some queue types are unsupported. {0} failed.", CLOVE_FUNCTION_NAME);
             }
 
-            CLOVE_LOG(CloveGhaVulkan, LogLevel::Trace, "Distributing family types. Aiming for a unique family per queue type...");
-            //Just taking the first one available for now. Not forcing the present queue to be unique for now.
-            //TODO: Should just make graphics and present the same one?
+            //Forcing present and graphics to be the same.
             if(surface != VK_NULL_HANDLE) {
-                indices.presentFamily = *presentFamilyIndices.begin();
+                indices.presentFamily = *graphicsFamilyIndices.begin();
             }
-
             indices.graphicsFamily = *graphicsFamilyIndices.begin();
+
+            //Try and give each other family a unique ID if possible
             if(transferFamilyIndices.size() > 1) {
                 transferFamilyIndices.erase(*indices.graphicsFamily);
             }
@@ -141,19 +136,12 @@ namespace clove {
             }
 
             indices.transferFamily = *transferFamilyIndices.begin();
+
             if(computeFamilyIndices.size() > 1) {
                 computeFamilyIndices.erase(*indices.transferFamily);
             }
 
             indices.computeFamily = *computeFamilyIndices.begin();
-
-            CLOVE_LOG(CloveGhaVulkan, LogLevel::Debug, "Vulkan queue types successfully distributed!");
-            if(surface != VK_NULL_HANDLE) {
-                CLOVE_LOG(CloveGhaVulkan, LogLevel::Trace, "\tPresent:\tid: {0}, count: {1}", *indices.presentFamily, queueFamilies[*indices.presentFamily].queueCount);
-            }
-            CLOVE_LOG(CloveGhaVulkan, LogLevel::Trace, "\tGraphics:\tid: {0}, count: {1}", *indices.graphicsFamily, queueFamilies[*indices.graphicsFamily].queueCount);
-            CLOVE_LOG(CloveGhaVulkan, LogLevel::Trace, "\tTransfer:\tid: {0}, count: {1}", *indices.transferFamily, queueFamilies[*indices.transferFamily].queueCount);
-            CLOVE_LOG(CloveGhaVulkan, LogLevel::Trace, "\tCompute:\tid: {0}, count: {1}", *indices.computeFamily, queueFamilies[*indices.computeFamily].queueCount);
 
             return indices;
         }
@@ -183,7 +171,9 @@ namespace clove {
             return true;
         }
 
-        bool isDeviceSuitable(VkPhysicalDevice device, VkSurfaceKHR surface, std::vector<char const *> const &extensions) {
+        int32_t getDeviceScore(VkPhysicalDevice device, VkSurfaceKHR surface, std::vector<char const *> const &extensions) {
+            int32_t score{ 0 };
+
             VkPhysicalDeviceFeatures deviceFeatures{};
             vkGetPhysicalDeviceFeatures(device, &deviceFeatures);
 
@@ -207,7 +197,26 @@ namespace clove {
 
             bool const requirePresentFamily{ surface != VK_NULL_HANDLE };
             bool const hasFeatures{ deviceFeatures.samplerAnisotropy == VK_TRUE && deviceFeatures.imageCubeArray == VK_TRUE };
-            return indices.isComplete(requirePresentFamily) && extentionsAreSupported && surfaceIsAdequate.value_or(true) && hasFeatures && devicePoperties.deviceType == VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU;
+            if(indices.isComplete(requirePresentFamily) && extentionsAreSupported && surfaceIsAdequate.value_or(true) && hasFeatures) {
+                switch(devicePoperties.deviceType) {
+                    case VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU:
+                        score += 3;
+                        break;
+                    case VK_PHYSICAL_DEVICE_TYPE_INTEGRATED_GPU:
+                        score += 2;
+                        break;
+                    case VK_PHYSICAL_DEVICE_TYPE_VIRTUAL_GPU:
+                        score += 1;
+                        break;
+                    case VK_PHYSICAL_DEVICE_TYPE_CPU:
+                    case VK_PHYSICAL_DEVICE_TYPE_OTHER:
+                        break;
+                }
+            } else {
+                score = -1;
+            }
+
+            return score;
         }
     }
 
@@ -228,14 +237,14 @@ namespace clove {
             VK_KHR_SURFACE_EXTENSION_NAME,
 
 #if CLOVE_PLATFORM_WINDOWS
-            VK_KHR_WIN32_SURFACE_EXTENSION_NAME,
+                VK_KHR_WIN32_SURFACE_EXTENSION_NAME,
 #elif CLOVE_PLATFORM_MACOS
 #elif CLOVE_PLATFORM_LINUX
-            VK_KHR_XLIB_SURFACE_EXTENSION_NAME,
+                VK_KHR_XLIB_SURFACE_EXTENSION_NAME,
 #endif
 
 #if CLOVE_GHA_VALIDATION
-            VK_EXT_DEBUG_UTILS_EXTENSION_NAME,
+                VK_EXT_DEBUG_UTILS_EXTENSION_NAME,
 #endif
         };
 
@@ -363,7 +372,7 @@ namespace clove {
             VK_KHR_SWAPCHAIN_EXTENSION_NAME,
 
 #if CLOVE_GHA_VALIDATION
-            VK_EXT_MEMORY_BUDGET_EXTENSION_NAME,
+                VK_EXT_MEMORY_BUDGET_EXTENSION_NAME,
 #endif
         };
 
@@ -387,18 +396,45 @@ namespace clove {
                 CLOVE_LOG(CloveGhaVulkan, LogLevel::Trace, "\t{0}", devicePoperties.deviceName);
             }
 
+            //Score avilable devices. Anything below 0 is considered in-complete and shouldn't be selected
+            std::map<int32_t, VkPhysicalDevice> deviceScores;
             for(auto const &device : devices) {
-                if(isDeviceSuitable(device, surface, deviceExtensions)) {
-                    physicalDevice = device;
-                    break;
-                }
+                deviceScores[getDeviceScore(device, surface, deviceExtensions)] = device;
             }
 
+            if(deviceScores.rbegin()->first > 0){
+                physicalDevice = deviceScores.rbegin()->second;
+            }
+            
             if(physicalDevice == VK_NULL_HANDLE) {
-                return Unexpected{ std::runtime_error{ "Failed to create VulkanDevice. Could not find a suitable GPU." } };
+                return Unexpected{ std::runtime_error{ "Failed to create initialise Vulkan. Could not find a suitable device." } };
             }
 
-            CLOVE_LOG(CloveGhaVulkan, LogLevel::Trace, "Device selected.");
+            {
+                VkPhysicalDeviceProperties devicePoperties{};
+                vkGetPhysicalDeviceProperties(physicalDevice, &devicePoperties);
+                CLOVE_LOG(CloveGhaVulkan, LogLevel::Debug, "Selecting '{0}'", devicePoperties.deviceName);
+            }
+
+            {
+                uint32_t queueFamilyCount{ 0 };
+                vkGetPhysicalDeviceQueueFamilyProperties(physicalDevice, &queueFamilyCount, nullptr);
+                std::vector<VkQueueFamilyProperties> queueFamilies(queueFamilyCount);
+                vkGetPhysicalDeviceQueueFamilyProperties(physicalDevice, &queueFamilyCount, queueFamilies.data());
+
+                auto const queueFamilyIndices{ findQueueFamilies(physicalDevice, surface) };
+
+                CLOVE_LOG(CloveGhaVulkan, LogLevel::Trace, "Queue family properties:");
+                CLOVE_LOG(CloveGhaVulkan, LogLevel::Trace, "\tGraphics:\tid: {0}, count: {1}", *queueFamilyIndices.graphicsFamily, queueFamilies[*queueFamilyIndices.graphicsFamily].queueCount);
+                if(queueFamilyIndices.presentFamily.has_value()) {
+                    CLOVE_LOG(CloveGhaVulkan, LogLevel::Trace, "\tPresent:\tid: {0}, count: {1}", *queueFamilyIndices.presentFamily, queueFamilies[*queueFamilyIndices.presentFamily].queueCount);
+                }else{
+                    CLOVE_LOG(CloveGhaVulkan, LogLevel::Trace, "\tPresent:\tNOT REQUIRED");
+                }
+                CLOVE_LOG(CloveGhaVulkan, LogLevel::Trace, "\tCompute:\tid: {0}, count: {1}", *queueFamilyIndices.computeFamily, queueFamilies[*queueFamilyIndices.computeFamily].queueCount);
+                CLOVE_LOG(CloveGhaVulkan, LogLevel::Trace, "\tTransfer:\tid: {0}, count: {1}", *queueFamilyIndices.transferFamily, queueFamilies[*queueFamilyIndices.transferFamily].queueCount);
+            }
+
             {
                 uint32_t extensionCount{ 0 };
                 vkEnumerateDeviceExtensionProperties(physicalDevice, nullptr, &extensionCount, nullptr);
