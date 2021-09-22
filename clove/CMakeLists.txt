@@ -246,6 +246,13 @@ target_link_libraries(
 		stb
 )
 
+target_compile_definitions(
+	Clove
+
+	PUBLIC
+		CLOVE_VERSION="${CMAKE_PROJECT_VERSION}"
+)
+
 if(CLOVE_BUILD_TESTS)
 	add_subdirectory(tests)
 endif()

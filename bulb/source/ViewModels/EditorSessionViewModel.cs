@@ -24,6 +24,8 @@ namespace Bulb {
         public FileExplorerViewModel FileExplorer { get; }
         public LogViewModel Log { get; } = new LogViewModel();
 
+        public string WindowTitle { get; }
+
         public bool IsPlayButtonEnabled {
             get => isPlayButtonEnabled;
             set {
@@ -57,6 +59,8 @@ namespace Bulb {
             StopCommand = new RelayCommand(Stop);
 
             FileExplorer = new FileExplorerViewModel(rootFilePath);
+
+            WindowTitle = $"Clove - {Membrane.Application.getProjectVersion()}";
         }
 
         private void OnSceneLoaded(Membrane.Engine_OnSceneLoaded message) {

@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:Bulb"
 		xmlns:membrane="clr-namespace:membrane;assembly=BulbMembrane"
         mc:Ignorable="d"
-        Title="Clove - 0.4.0" Width="1280" Height="720"
+        Title="{Binding WindowTitle}" Width="1280" Height="720"
 		Style="{StaticResource PrimaryWindowStyle}"
 		MouseMove="Window_MouseMove"
 		KeyUp="Window_KeyUp">

@@ -17,8 +17,9 @@
 			<RowDefinition Height="1*"/>
 		</Grid.RowDefinitions>
 
-		<TextBlock Grid.Row="0"
-				   Text="Clove Engine - 0.4.0"
+		<TextBlock x:Name="SubTitle"
+				   Grid.Row="0"
+				   Text="Clove Engine - X.Y.Z"
 				   HorizontalAlignment="Center"
 				   FontSize="40"/>
 

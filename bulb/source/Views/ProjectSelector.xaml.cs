@@ -2,6 +2,8 @@ using Microsoft.Win32;
 using System.IO;
 using System.Windows;
 
+using Membrane = membrane;
+
 namespace Bulb {
     public partial class ProjectSelector : Window {
         public delegate void ProjectSelectedDelegate(string path);
@@ -9,6 +11,8 @@ namespace Bulb {
 
         public ProjectSelector() {
             InitializeComponent();
+
+            SubTitle.Text = $"Clove Engine - {Membrane.Application.getProjectVersion()}";
         }
 
         private void NewProjectButtonClick(object sender, RoutedEventArgs e) {

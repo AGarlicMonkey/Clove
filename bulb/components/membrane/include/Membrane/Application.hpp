@@ -51,6 +51,8 @@ public ref class Application {
 
         System::String ^resolveVfsPath(System::String ^path);
 
+        static System::String ^getProjectVersion();
+
     private:
         void openProjectInternal(std::filesystem::path const projectPath);
 

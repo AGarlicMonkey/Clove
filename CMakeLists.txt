@@ -2,7 +2,11 @@ cmake_minimum_required(VERSION 3.18.0)
 
 enable_testing()
 
-project(Clove LANGUAGES C CXX)
+project(
+	Clove 
+	VERSION 0.5.0
+	LANGUAGES C CXX
+)
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
