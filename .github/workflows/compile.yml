@@ -8,6 +8,7 @@ env:
 jobs:
   #Windows
   compile-windows-msvc:
+    if: github.event.pull_request.draft == false
     runs-on: windows-latest
     steps:
     - uses: actions/checkout@v2
@@ -31,6 +32,7 @@ jobs:
       run: cmake --build . --target ALL_BUILD --config $env:BUILD_TYPE
   #macOS
   compile-macos-apple_clang:
+    if: github.event.pull_request.draft == false
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v2
@@ -48,6 +50,7 @@ jobs:
         run: cmake --build . --target ALL_BUILD --config $BUILD_TYPE
   #Linux
   compile-linux-gcc:
+    if: github.event.pull_request.draft == false
     runs-on: ubuntu-latest
     container:
       image: ghcr.io/agarlicmonkey/clove/linux_build:1.0
@@ -67,6 +70,7 @@ jobs:
         working-directory: ${{ github.workspace }}/build
         run: cmake --build .
   compile-linux-clang:
+    if: github.event.pull_request.draft == false
     runs-on: ubuntu-latest
     container:
       image: ghcr.io/agarlicmonkey/clove/linux_build:1.0

@@ -8,6 +8,7 @@ env:
 jobs:
   #Windows Jobs
   build-windows-msvc:
+    if: github.event.pull_request.draft == false
     runs-on: windows-latest
     steps:
     - uses: actions/checkout@v2
@@ -36,6 +37,7 @@ jobs:
         path: build/
         retention-days: 1
   unit_test-windows-msvc:
+    if: github.event.pull_request.draft == false
     needs: [build-windows-msvc]
     runs-on: windows-latest
     steps:
@@ -49,6 +51,7 @@ jobs:
         run: ctest -C $env:BUILD_TYPE
   #macOS Jobs
   build-macos-apple_clang:
+    if: github.event.pull_request.draft == false
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v2
@@ -73,6 +76,7 @@ jobs:
           path: build_files.tar
           retention-days: 1
   unit_test-macos-apple_clang:
+    if: github.event.pull_request.draft == false
     needs: [build-macos-apple_clang]
     runs-on: macos-latest
     steps:
@@ -88,6 +92,7 @@ jobs:
         run: ctest -C $BUILD_TYPE
   #Linux Jobs
   build-linux-gcc:
+    if: github.event.pull_request.draft == false
     runs-on: ubuntu-latest
     container:
       image: ghcr.io/agarlicmonkey/clove/linux_build:1.0
@@ -115,6 +120,7 @@ jobs:
           path: build_files.tar
           retention-days: 1
   build-linux-clang:
+    if: github.event.pull_request.draft == false
     runs-on: ubuntu-latest
     container:
       image: ghcr.io/agarlicmonkey/clove/linux_build:1.0
@@ -142,6 +148,7 @@ jobs:
           path: build_files.tar
           retention-days: 1
   unit_test-linux-gcc:
+    if: github.event.pull_request.draft == false
     needs: [build-linux-gcc]
     runs-on: ubuntu-latest
     container:
@@ -161,6 +168,7 @@ jobs:
         working-directory: ${{ github.workspace }}/build
         run: ctest -C $BUILD_TYPE
   unit_test-linux-clang:
+    if: github.event.pull_request.draft == false
     needs: [build-linux-clang]
     runs-on: ubuntu-latest
     container:

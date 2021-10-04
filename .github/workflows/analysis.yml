@@ -7,6 +7,7 @@ env:
   BUILD_TYPE: Release
 jobs:
   cpp_check:
+    if: github.event.pull_request.draft == false
     runs-on: ubuntu-latest
     container:
       image: ghcr.io/agarlicmonkey/clove/linux_analysis:2.0
@@ -21,6 +22,7 @@ jobs:
       - run: cppcheck -iclove/components/core/graphics/external/shaderc -iclove/external/stb ./ --suppress=syntaxError --error-exitcode=1
   #macOS
   clang-tidy-macos:
+    if: github.event.pull_request.draft == false
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v2
@@ -42,6 +44,7 @@ jobs:
         run: python3 run-clang-tidy.py
   #Linux
   clang-tidy-linux:
+    if: github.event.pull_request.draft == false
     runs-on: ubuntu-latest
     container:
       image: ghcr.io/agarlicmonkey/clove/linux_analysis:2.0
