@@ -52,7 +52,7 @@ namespace clove {
         if(index < subSystemGroup.size() - 1) {
             subSystemGroup[index] = std::move(subSystemGroup.back());
 
-            std::type_index const movedSubSystemIndex{ typeid(subSystemGroup[index]) };
+            std::type_index const movedSubSystemIndex{ typeid(*subSystemGroup[index].get()) };
             subSystemToIndex.at(movedSubSystemIndex).second = index;
         }
         subSystemGroup.pop_back();
