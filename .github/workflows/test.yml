@@ -90,7 +90,7 @@ jobs:
   build-linux-gcc:
     runs-on: ubuntu-latest
     container:
-      image: ghcr.io/agarlicmonkey/clove/linux_build:1.0
+      image: ghcr.io/agarlicmonkey/clove/linux_build:1.1
       credentials:
         username: ${{ github.actor }}
         password: ${{ secrets.GITHUB_TOKEN }}
@@ -117,7 +117,7 @@ jobs:
   build-linux-clang:
     runs-on: ubuntu-latest
     container:
-      image: ghcr.io/agarlicmonkey/clove/linux_build:1.0
+      image: ghcr.io/agarlicmonkey/clove/linux_build:1.1
       credentials:
         username: ${{ github.actor }}
         password: ${{ secrets.GITHUB_TOKEN }}
@@ -145,7 +145,7 @@ jobs:
     needs: [build-linux-gcc]
     runs-on: ubuntu-latest
     container:
-      image: ghcr.io/agarlicmonkey/clove/linux_build:1.0
+      image: ghcr.io/agarlicmonkey/clove/linux_build:1.1
       credentials:
         username: ${{ github.actor }}
         password: ${{ secrets.GITHUB_TOKEN }}
@@ -164,7 +164,7 @@ jobs:
     needs: [build-linux-clang]
     runs-on: ubuntu-latest
     container:
-      image: ghcr.io/agarlicmonkey/clove/linux_build:1.0
+      image: ghcr.io/agarlicmonkey/clove/linux_build:1.1
       credentials:
         username: ${{ github.actor }}
         password: ${{ secrets.GITHUB_TOKEN }}
