@@ -76,8 +76,8 @@ CLOVE_DECLARE_LOG_CATEGORY(CloveAssert)
             }                                                                                           \
         }
 #else
-    #define CLOVE_ASSERT(x)
-    #define CLOVE_ASSERT_MSG(x, ...)
+    #define CLOVE_ASSERT(x) x
+    #define CLOVE_ASSERT_MSG(x, ...) x
 #endif
 
 #include "Log.inl"
