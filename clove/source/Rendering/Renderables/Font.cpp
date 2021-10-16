@@ -15,39 +15,38 @@ extern "C" const unsigned char roboto_black[];
 extern "C" const size_t roboto_blackLength;
 
 CLOVE_DECLARE_LOG_CATEGORY(FreeType)
+CLOVE_DECLARE_LOG_CATEGORY(CloveFont)
 
 namespace clove {
     namespace {
         Font::FacePtr makeUniqueFace(FT_Face face) {
-            return Font::FacePtr(face, [](FT_Face face) { FT_Done_Face(face); });
+            return { face, [](FT_Face face) {
+                        FT_Done_Face(face);
+                    } };
         }
 
         Font::FacePtr copyFace(FT_Face face) {
-            if(FT_Reference_Face(face) != FT_Err_Ok) {
-                CLOVE_ASSERT_MSG(false, "Could not reference face");
-            }
+            CLOVE_ASSERT(FT_Reference_Face(face) == FT_Err_Ok);
             return makeUniqueFace(face);
         }
     }
-    
+
     Font::FTLibWeakPtr Font::ftLib = {};
 
     Font::Font()
-        : graphicsFactory(Application::get().getGraphicsDevice()->getGraphicsFactory())
-        , face(nullptr, nullptr) {
+        : graphicsFactory{ Application::get().getGraphicsDevice()->getGraphicsFactory() }
+        , face{ nullptr, nullptr } {
         if(ftLib.use_count() == 0) {
             FT_Library library{ nullptr };
-            if(FT_Init_FreeType(&library) != FT_Err_Ok) {
-                CLOVE_ASSERT_MSG(false, "Could not load freetype");
-            } else {
-                CLOVE_LOG(FreeType, LogLevel::Trace, "Constructed FreeType library");
-            }
+            CLOVE_ASSERT(FT_Init_FreeType(&library) == FT_Err_Ok);
+
+            CLOVE_LOG(FreeType, LogLevel::Debug, "Constructed FreeType library");
 
             auto const libraryDeleter = [](FT_Library lib) {
-                CLOVE_LOG(FreeType, LogLevel::Trace, "FreeType library has been deleted");
+                CLOVE_LOG(FreeType, LogLevel::Debug, "FreeType library has been deleted");
                 FT_Done_FreeType(lib);
             };
-            ftLibReference = FTLibSharedPtr(library, libraryDeleter);
+            ftLibReference = FTLibSharedPtr{ library, libraryDeleter };
             ftLib          = ftLibReference;
         } else {
             ftLibReference = ftLib.lock();
@@ -67,10 +66,9 @@ namespace clove {
     }
 
     Font::Font(Font const &other)
-        : face(nullptr, nullptr) {
-        graphicsFactory = other.graphicsFactory;
-        ftLibReference  = other.ftLibReference;
-
+        : face{ nullptr, nullptr }
+        , graphicsFactory{ other.graphicsFactory }
+        , ftLibReference{ other.ftLibReference } {
         face = copyFace(other.face.get());
     }
 
@@ -104,47 +102,42 @@ namespace clove {
             .advance = { face->glyph->advance.x >> shift, face->glyph->advance.y >> shift },
         };
 
-        unsigned char *faceBuffer = face->glyph->bitmap.buffer;
+        unsigned char *faceBuffer{ face->glyph->bitmap.buffer };
 
-        if(faceBuffer == nullptr) {
-            return glyph;
+        if(faceBuffer != nullptr) {
+            size_t constexpr bytesPerTexel{ 1 };//FT uses 1 byte per texel/pixel
+            size_t const sizeBytes{ static_cast<size_t>(glyph.size.x * glyph.size.y * bytesPerTexel) };
+
+            GhaImage::Descriptor const glyphImageDescriptor{
+                .type        = GhaImage::Type::_2D,
+                .usageFlags  = GhaImage::UsageMode::Sampled | GhaImage::UsageMode::TransferDestination,
+                .dimensions  = glyph.size,
+                .format      = GhaImage::Format::R8_UNORM,//The bitmaps only use the red channel
+                .sharingMode = SharingMode::Exclusive,
+            };
+
+            glyph.character     = createImageWithData(*graphicsFactory, glyphImageDescriptor, faceBuffer, sizeBytes);
+            glyph.characterView = glyph.character->createView(GhaImageView::Descriptor{
+                .type       = GhaImageView::Type::_2D,
+                .layer      = 0,
+                .layerCount = 1,
+            });
         }
-
-        size_t constexpr bytesPerTexel{ 1 };//FT uses 1 byte per texel/pixel
-        size_t const sizeBytes{ static_cast<size_t>(glyph.size.x * glyph.size.y * bytesPerTexel) };
-
-        GhaImage::Descriptor const glyphImageDescriptor{
-            .type        = GhaImage::Type::_2D,
-            .usageFlags  = GhaImage::UsageMode::Sampled | GhaImage::UsageMode::TransferDestination,
-            .dimensions  = glyph.size,
-            .format      = GhaImage::Format::R8_UNORM,//The bitmaps only use the red channel
-            .sharingMode = SharingMode::Exclusive,
-        };
-
-        glyph.character     = createImageWithData(*graphicsFactory, glyphImageDescriptor, faceBuffer, sizeBytes);
-        glyph.characterView = glyph.character->createView(GhaImageView::Descriptor{
-            .type       = GhaImageView::Type::_2D,
-            .layer      = 0,
-            .layerCount = 1,
-        });
 
         return glyph;
     }
 
     Font::FacePtr Font::createFace(std::string const &filePath) {
         FT_Face face{ nullptr };
-        if(FT_New_Face(ftLibReference.get(), filePath.c_str(), 0, &face) != FT_Err_Ok) {
-            CLOVE_ASSERT_MSG(false, "Could not load font");
-        }
+        CLOVE_ASSERT(FT_New_Face(ftLibReference.get(), filePath.c_str(), 0, &face) == FT_Err_Ok);
 
         return makeUniqueFace(face);
     }
 
     Font::FacePtr Font::createFace(std::span<std::byte const> bytes) {
         FT_Face face{ nullptr };
-        if(FT_New_Memory_Face(ftLibReference.get(), reinterpret_cast<unsigned char const *>(bytes.data()), static_cast<FT_Long>(bytes.size_bytes()), 0, &face) != FT_Err_Ok) {
-            CLOVE_ASSERT_MSG(false, "Could not load font");
-        }
+        auto const *ftBytes{ reinterpret_cast<unsigned char const *>(bytes.data()) };
+        CLOVE_ASSERT(FT_New_Memory_Face(ftLibReference.get(), ftBytes, static_cast<FT_Long>(bytes.size_bytes()), 0, &face) == FT_Err_Ok);
 
         return makeUniqueFace(face);
     }
