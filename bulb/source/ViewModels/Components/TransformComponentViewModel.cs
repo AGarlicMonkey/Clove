@@ -130,7 +130,9 @@ namespace Bulb {
 
         public TransformComponentViewModel(Membrane.TransformComponentInitData initData)
             : base($"{Membrane.ComponentType.Transform}", Membrane.ComponentType.Transform) {
-            Update(initData.position, initData.rotation, initData.scale);
+            if (initData != null) {
+                Update(initData.position, initData.rotation, initData.scale);
+            }
         }
 
         public void Update(Membrane.Vector3 position, Membrane.Vector3 rotation, Membrane.Vector3 scale) {
