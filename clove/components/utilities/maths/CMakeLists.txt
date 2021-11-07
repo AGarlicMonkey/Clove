@@ -13,3 +13,7 @@ target_include_directories(
 	INTERFACE 
 		include
 )
+
+if(CLOVE_BUILD_TESTS)
+	add_subdirectory(tests)
+endif()
