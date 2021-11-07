@@ -2,7 +2,6 @@
 assimp/5.0.1
 bullet3/3.07
 freetype/2.10.4
-glm/0.9.9.8
 gtest/1.10.0
 libsndfile/1.0.30
 openal/1.21.0
