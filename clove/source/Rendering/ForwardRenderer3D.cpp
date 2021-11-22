@@ -101,30 +101,26 @@ namespace clove {
 
         std::vector<Vertex> const uiVertices{
             Vertex{
-                .position = { 0.0f, 1.0f, 0.0f },
-                .texCoord = { 0.0f, 0.0f },
-            },
-            Vertex{
                 .position = { 1.0f, 1.0f, 0.0f },
                 .texCoord = { 1.0f, 0.0f },
             },
             Vertex{
-                .position = { 0.0f, 0.0f, 0.0f },
-                .texCoord = { 0.0f, 1.0f },
+                .position = { 0.0f, 1.0f, 0.0f },
+                .texCoord = { 0.0f, 0.0f },
             },
             Vertex{
                 .position = { 1.0f, 0.0f, 0.0f },
                 .texCoord = { 1.0f, 1.0f },
             },
+            Vertex{
+                .position = { 0.0f, 0.0f, 0.0f },
+                .texCoord = { 0.0f, 1.0f },
+            },
         };
 
         std::vector<uint16_t> const uiIndices{
-            0,
-            2,
-            3,
-            0,
-            3,
-            1,
+            0, 2, 3,
+            0, 3, 1,
         };
 
         uiMesh = std::make_unique<Mesh>(uiVertices, uiIndices);
