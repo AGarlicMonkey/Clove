@@ -1,9 +1,9 @@
 #SingleCastDelegate
 add_executable(SingleCastDelegateTest SingleCastDelegateTests.cpp)
-target_link_libraries(SingleCastDelegateTest PRIVATE CONAN_PKG::gtest CloveDelegate)
+target_link_libraries(SingleCastDelegateTest PRIVATE CONAN_PKG::GTest CloveDelegate)
 add_test(NAME SingleCastDelegateTest COMMAND SingleCastDelegateTest)
 
 #MultiCastDelegate
 add_executable(MultiCastDelegateTest MultiCastDelegateTests.cpp)
-target_link_libraries(MultiCastDelegateTest PRIVATE CONAN_PKG::gtest CloveDelegate)
+target_link_libraries(MultiCastDelegateTest PRIVATE CONAN_PKG::GTest CloveDelegate)
 add_test(NAME MultiCastDelegateTest COMMAND MultiCastDelegateTest)
