@@ -1,6 +1,9 @@
 set(INCLUDE ${CMAKE_CURRENT_SOURCE_DIR}/include/Clove/Serialisation)
 set(SOURCE ${CMAKE_CURRENT_SOURCE_DIR}/source)
 
+#CMake
+find_package(yaml-cpp REQUIRED CONFIG)
+
 #Library
 add_library(
     CloveSerialisation STATIC
@@ -29,7 +32,7 @@ target_link_libraries(
         CloveLog
 
     PRIVATE
-        CONAN_PKG::yaml-cpp
+        yaml-cpp::yaml-cpp
 )
 
 if(CLOVE_BUILD_TESTS)

@@ -3,6 +3,9 @@ option(CLOVE_ENABLE_ASSERTIONS "Enables the CLOVE_ASSERT macro. Allowing the pro
 set(INCLUDE ${CMAKE_CURRENT_SOURCE_DIR}/include/Clove/Log)
 set(SOURCE ${CMAKE_CURRENT_SOURCE_DIR}/source)
 
+#CMake
+find_package(spdlog REQUIRED CONFIG)
+
 #Library
 add_library(
     CloveLog STATIC
@@ -26,7 +29,7 @@ target_link_libraries(
     PUBLIC
 		CloveDefinitions
 		
-		CONAN_PKG::spdlog
+		spdlog::spdlog
 )
 
 #Preprocessor

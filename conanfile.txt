@@ -6,10 +6,22 @@ glm/0.9.9.8
 gtest/1.10.0
 libsndfile/1.0.30
 openal/1.21.0
-shaderc/2019.0
+shaderc/2021.1
 spdlog/1.8.2
 spirv-cross/20210115
 yaml-cpp/0.6.3
 
 [generators]
-cmake
+cmake_find_package_multi
+
+[options]
+assimp:shared=False
+bullet3:shared=False
+freetype:shared=False
+gtest:shared=False
+libsndfile:shared=False
+openal:shared=False
+shaderc:shared=False
+spdlog:shared=False
+spirv-cross:shared=False
+yaml-cpp:shared=False

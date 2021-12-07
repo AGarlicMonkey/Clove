@@ -6,6 +6,9 @@ set(ASSETS ${CMAKE_CURRENT_SOURCE_DIR}/assets)
 option(CLOVE_ENABLE_GHA_VALIDATION "Sets the CLOVE_GHA_VALIDATION macro to 1. Allowing for extra code to run to validate usage of the CloveGraphics library." OFF)
 option(CLOVE_COMPILE_DEBUG_SHADERS "Compiles shaders in debug mode, disabling optimisations." OFF)
 
+find_package(shaderc REQUIRED CONFIG)
+find_package(glslang REQUIRED CONFIG)
+find_package(spirv-cross REQUIRED CONFIG)
 if(CMAKE_SYSTEM_NAME STREQUAL "Windows" OR CMAKE_SYSTEM_NAME STREQUAL "Linux")
 	find_package(Vulkan REQUIRED)
 elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
@@ -263,8 +266,16 @@ target_link_libraries(
         CloveMaths
 
     PRIVATE
-        CONAN_PKG::shaderc
-		CONAN_PKG::spirv-cross
+		#Include all glslang libraries to prevent linking errors witrh shaderc
+        glslang::SPVRemapper
+        glslang::HLSL
+        glslang::OGLCompiler
+        glslang::OSDependent
+        glslang::glslang
+        glslang::SPIRV
+
+        shaderc::shaderc
+		spirv-cross::spirv-cross
 
 	#Windows
 	PRIVATE

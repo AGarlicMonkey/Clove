@@ -1,3 +1,6 @@
+#CMake
+find_package(glm REQUIRED CONFIG)
+
 #Library
 add_library(
     CloveMaths INTERFACE
@@ -16,7 +19,7 @@ target_link_libraries(
 	CloveMaths
 
 	INTERFACE
-		CONAN_PKG::glm
+		glm::glm
 )
 
 #Definitions

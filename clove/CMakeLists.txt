@@ -7,6 +7,12 @@ set(ASSETS ${CMAKE_CURRENT_SOURCE_DIR}/assets)
 add_subdirectory(components)
 add_subdirectory(external)
 
+#CMake
+find_package(assimp REQUIRED CONFIG)
+find_package(Bullet REQUIRED CONFIG)
+find_package(Freetype REQUIRED CONFIG)
+find_package(SndFile REQUIRED CONFIG)
+
 #Prepare SOURCEs to be inbedded
 set(
 	ShaderIncludes
@@ -241,10 +247,10 @@ target_link_libraries(
 		CloveTimer
 
 	PRIVATE
-		CONAN_PKG::assimp
-		CONAN_PKG::bullet3
-		CONAN_PKG::freetype
-		CONAN_PKG::libsndfile
+		assimp::assimp
+		Bullet::Bullet
+		Freetype::Freetype
+		SndFile::SndFile
 		stb
 )
 

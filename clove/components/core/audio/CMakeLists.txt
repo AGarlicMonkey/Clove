@@ -4,6 +4,8 @@ set(INCLUDE ${CMAKE_CURRENT_SOURCE_DIR}/include/Clove/Audio)
 #CMake
 option(CLOVE_ENABLE_AHA_VALIDATION "Sets the CLOVE_AHA_VALIDATION macro to 1. Allowing for extra code to run to validate usage of the CloveAudio library." OFF)
 
+find_package(OpenAL CONFIG REQUIRED)
+
 #Library
 add_library(
     CloveAudio STATIC
@@ -52,7 +54,7 @@ target_link_libraries(
         CloveMaths
 
     PRIVATE
-        CONAN_PKG::openal
+        OpenAL::OpenAL
 )
 
 #Preprocessor
