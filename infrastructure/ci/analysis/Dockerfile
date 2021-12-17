@@ -1,4 +1,4 @@
-FROM ghcr.io/agarlicmonkey/clove/linux_build:1.1
+FROM ghcr.io/agarlicmonkey/clove/linux_build:1.2
 
 #Install static analysis tools
 RUN apt-get install -y cppcheck
