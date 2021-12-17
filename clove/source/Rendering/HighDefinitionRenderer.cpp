@@ -1,4 +1,4 @@
-#include "Clove/Rendering/ForwardRenderer3D.hpp"
+#include "Clove/Rendering/HighDefinitionRenderer.hpp"
 
 #include "Clove/Application.hpp"
 #include "Clove/Rendering/Camera.hpp"
@@ -32,7 +32,7 @@ extern "C" const char font_p[];
 extern "C" const size_t font_pLength;
 
 namespace clove {
-    ForwardRenderer3D::ForwardRenderer3D(GhaDevice *ghaDevice, std::unique_ptr<RenderTarget> renderTarget)
+    HighDefinitionRenderer::HighDefinitionRenderer(GhaDevice *ghaDevice, std::unique_ptr<RenderTarget> renderTarget)
         : ghaDevice{ ghaDevice }
         , renderTarget{ std::move(renderTarget) }
         , globalCache{ ghaDevice->getGraphicsFactory() } {
@@ -55,7 +55,7 @@ namespace clove {
             frameCaches.emplace_back(ghaFactory, graphicsQueue.get(), computeQueue.get(), transferQueue.get());
         }
 
-        renderTargetPropertyChangedBeginHandle = this->renderTarget->onPropertiesChangedBegin.bind(&ForwardRenderer3D::resetGraphCaches, this);
+        renderTargetPropertyChangedBeginHandle = this->renderTarget->onPropertiesChangedBegin.bind(&HighDefinitionRenderer::resetGraphCaches, this);
 
         //Create semaphores for frame synchronisation
         for(auto &skinningFinishedSemaphore : skinningFinishedSemaphores) {
@@ -110,17 +110,17 @@ namespace clove {
         uiMesh = std::make_unique<Mesh>(uiVertices, uiIndices);
     }
 
-    ForwardRenderer3D::ForwardRenderer3D(ForwardRenderer3D &&other) noexcept = default;
+    HighDefinitionRenderer::HighDefinitionRenderer(HighDefinitionRenderer &&other) noexcept = default;
 
-    ForwardRenderer3D &ForwardRenderer3D::operator=(ForwardRenderer3D &&other) noexcept = default;
+    HighDefinitionRenderer &HighDefinitionRenderer::operator=(HighDefinitionRenderer &&other) noexcept = default;
 
-    ForwardRenderer3D::~ForwardRenderer3D() {
+    HighDefinitionRenderer::~HighDefinitionRenderer() {
         //Wait for an idle device before implicitly destructing the render graph caches.
         //This prevents issues when trying to destroy objects while they might still be in use.
         ghaDevice->waitForIdleDevice();
     }
 
-    void ForwardRenderer3D::begin() {
+    void HighDefinitionRenderer::begin() {
         currentFrameData.meshes.clear();
         currentFrameData.widgets.clear();
         currentFrameData.text.clear();
@@ -133,40 +133,40 @@ namespace clove {
         }
     }
 
-    void ForwardRenderer3D::submitMesh(MeshInfo meshInfo) {
+    void HighDefinitionRenderer::submitMesh(MeshInfo meshInfo) {
         currentFrameData.meshes.push_back(std::move(meshInfo));
     }
 
-    void ForwardRenderer3D::submitCamera(mat4f const view, mat4f const projection, vec3f const position) {
+    void HighDefinitionRenderer::submitCamera(mat4f const view, mat4f const projection, vec3f const position) {
         currentFrameData.viewData.view       = view;
         currentFrameData.viewData.projection = projection;
 
         currentFrameData.viewPosition = position;
     }
 
-    void ForwardRenderer3D::submitLight(DirectionalLight const &light) {
+    void HighDefinitionRenderer::submitLight(DirectionalLight const &light) {
         uint32_t const lightIndex{ currentFrameData.numLights.numDirectional++ };
 
         currentFrameData.lights.directionalLights[lightIndex]    = light.data;
         currentFrameData.directionalShadowTransforms[lightIndex] = light.shadowTransform;
     }
 
-    void ForwardRenderer3D::submitLight(PointLight const &light) {
+    void HighDefinitionRenderer::submitLight(PointLight const &light) {
         uint32_t const lightIndex{ currentFrameData.numLights.numPoint++ };
 
         currentFrameData.lights.pointLights[lightIndex]    = light.data;
         currentFrameData.pointShadowTransforms[lightIndex] = light.shadowTransforms;
     }
 
-    void ForwardRenderer3D::submitWidget(std::shared_ptr<GhaImage> widget, mat4f const modelProjection) {
+    void HighDefinitionRenderer::submitWidget(std::shared_ptr<GhaImage> widget, mat4f const modelProjection) {
         currentFrameData.widgets.emplace_back(std::move(widget), modelProjection);
     }
 
-    void ForwardRenderer3D::submitText(std::shared_ptr<GhaImage> text, mat4f const modelProjection) {
+    void HighDefinitionRenderer::submitText(std::shared_ptr<GhaImage> text, mat4f const modelProjection) {
         currentFrameData.text.emplace_back(std::move(text), modelProjection);
     }
 
-    void ForwardRenderer3D::end() {
+    void HighDefinitionRenderer::end() {
         framesInFlight[currentFrame]->wait();
 
         //Aquire the next available image from the render target
@@ -528,11 +528,11 @@ namespace clove {
         currentFrame = (currentFrame + 1) % maxFramesInFlight;
     }
 
-    vec2ui ForwardRenderer3D::getRenderTargetSize() const {
+    vec2ui HighDefinitionRenderer::getRenderTargetSize() const {
         return renderTarget->getSize();
     }
 
-    void ForwardRenderer3D::resetGraphCaches() {
+    void HighDefinitionRenderer::resetGraphCaches() {
         ghaDevice->waitForIdleDevice();
 
         for(auto &cache : frameCaches) {

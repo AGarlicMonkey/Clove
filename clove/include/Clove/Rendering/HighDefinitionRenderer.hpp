@@ -18,7 +18,7 @@ namespace clove {
 }
 
 namespace clove {
-    class ForwardRenderer3D : public Renderer{
+    class HighDefinitionRenderer : public Renderer{
         //TYPES
     private:
         //Data for an entire frame
@@ -78,16 +78,16 @@ namespace clove {
 
         //FUNCTIONS
     public:
-        ForwardRenderer3D() = delete;
-        ForwardRenderer3D(GhaDevice *ghaDevice, std::unique_ptr<RenderTarget> renderTarget);
+        HighDefinitionRenderer() = delete;
+        HighDefinitionRenderer(GhaDevice *ghaDevice, std::unique_ptr<RenderTarget> renderTarget);
 
-        ForwardRenderer3D(ForwardRenderer3D const &other) = delete;
-        ForwardRenderer3D(ForwardRenderer3D &&other) noexcept;
+        HighDefinitionRenderer(HighDefinitionRenderer const &other) = delete;
+        HighDefinitionRenderer(HighDefinitionRenderer &&other) noexcept;
 
-        ForwardRenderer3D &operator=(ForwardRenderer3D const &other) = delete;
-        ForwardRenderer3D &operator=(ForwardRenderer3D &&other) noexcept;
+        HighDefinitionRenderer &operator=(HighDefinitionRenderer const &other) = delete;
+        HighDefinitionRenderer &operator=(HighDefinitionRenderer &&other) noexcept;
 
-        ~ForwardRenderer3D();
+        ~HighDefinitionRenderer();
 
         void begin() override;
 

@@ -115,10 +115,10 @@ add_library(
 		${INCLUDE}/Rendering/Camera.hpp
 		${INCLUDE}/Rendering/Camera.inl
 		${SOURCE}/Rendering/Camera.cpp
-		${INCLUDE}/Rendering/ForwardRenderer3D.hpp
-		${SOURCE}/Rendering/ForwardRenderer3D.cpp
 		${INCLUDE}/Rendering/GraphicsImageRenderTarget.hpp
 		${SOURCE}/Rendering/GraphicsImageRenderTarget.cpp
+		${INCLUDE}/Rendering/HighDefinitionRenderer.hpp
+		${SOURCE}/Rendering/HighDefinitionRenderer.cpp
 		${INCLUDE}/Rendering/Material.hpp
 		${INCLUDE}/Rendering/Material.inl
 		${SOURCE}/Rendering/Material.cpp

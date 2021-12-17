@@ -1,7 +1,7 @@
 #include "Clove/UI/Image.hpp"
 
 #include "Clove/Application.hpp"
-#include "Clove/Rendering/ForwardRenderer3D.hpp"
+#include "Clove/Rendering/Renderer.hpp"
 #include "Clove/Rendering/RenderingHelpers.hpp"
 
 #include <Clove/Graphics/GhaDevice.hpp>

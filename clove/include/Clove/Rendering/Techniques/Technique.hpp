@@ -6,7 +6,6 @@
 
 namespace clove {
     class Mesh;
-    class ForwardRenderer3D;
 }
 
 namespace clove {
