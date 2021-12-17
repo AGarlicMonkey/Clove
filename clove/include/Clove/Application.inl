@@ -79,7 +79,7 @@ namespace clove {
         return audioDevice.get();
     }
 
-    ForwardRenderer3D *Application::getRenderer() const {
+    Renderer *Application::getRenderer() const {
         return renderer.get();
     }
 

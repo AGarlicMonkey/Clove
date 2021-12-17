@@ -135,11 +135,5 @@ namespace clove {
 
         //Systems
         renderer = std::make_unique<ForwardRenderer3D>(this->graphicsDevice.get(), std::move(renderTarget));
-
-        //SubSystems
-        //pushSubSystem<TransformSubSystem>(SubSystemGroup::Initialisation, &entityManager);
-        //pushSubSystem<PhysicsSubSystem>(SubSystemGroup::Initialisation, &entityManager);
-        //pushSubSystem<AudioSubSystem>(SubSystemGroup::Render, &entityManager);
-        //pushSubSystem<RenderSubSystem>(SubSystemGroup::Render, renderer.get(), &entityManager);
     }
 }

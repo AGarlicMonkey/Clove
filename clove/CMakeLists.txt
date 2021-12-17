@@ -122,6 +122,7 @@ add_library(
 		${INCLUDE}/Rendering/Material.hpp
 		${INCLUDE}/Rendering/Material.inl
 		${SOURCE}/Rendering/Material.cpp
+		${INCLUDE}/Rendering/Renderer.hpp
 		${INCLUDE}/Rendering/RenderingConstants.hpp
 		${INCLUDE}/Rendering/RenderingHelpers.hpp
 		${SOURCE}/Rendering/RenderingHelpers.cpp

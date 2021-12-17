@@ -2,8 +2,7 @@
 
 #include "Clove/Rendering/RenderGraph/RgFrameCache.hpp"
 #include "Clove/Rendering/RenderGraph/RgGlobalCache.hpp"
-#include "Clove/Rendering/RenderPasses/GeometryPass.hpp"
-#include "Clove/Rendering/ShaderBufferTypes.hpp"
+#include "Clove/Rendering/Renderer.hpp"
 
 #include <Clove/Delegate/DelegateHandle.hpp>
 #include <set>
@@ -19,19 +18,8 @@ namespace clove {
 }
 
 namespace clove {
-    class ForwardRenderer3D {
+    class ForwardRenderer3D : public Renderer{
         //TYPES
-    public:
-        //TODO: Currently transform and matrixPalet are copied per mesh for each model. This should be avoided
-        struct MeshInfo {
-            std::shared_ptr<Mesh> mesh;
-            std::shared_ptr<Material> material;
-            mat4f transform;
-            std::array<mat4f, MAX_JOINTS> matrixPalet;
-
-            std::set<GeometryPass::Id> geometryPassIds;
-        };
-
     private:
         //Data for an entire frame
         struct FrameData {
@@ -101,24 +89,24 @@ namespace clove {
 
         ~ForwardRenderer3D();
 
-        void begin();
+        void begin() override;
 
-        void submitMesh(MeshInfo meshInfo);
+        void submitMesh(MeshInfo meshInfo) override;
 
         /**
          * @brief Submit the active camera the renderer will use.
          */
-        void submitCamera(mat4f const view, mat4f const projection, vec3f const position);
+        void submitCamera(mat4f const view, mat4f const projection, vec3f const position) override;
 
-        void submitLight(DirectionalLight const &light);
-        void submitLight(PointLight const &light);
+        void submitLight(DirectionalLight const &light) override;
+        void submitLight(PointLight const &light) override;
 
-        void submitWidget(std::shared_ptr<GhaImage> widget, mat4f const modelProjection);
-        void submitText(std::shared_ptr<GhaImage> text, mat4f const modelProjection);
+        void submitWidget(std::shared_ptr<GhaImage> widget, mat4f const modelProjection) override;
+        void submitText(std::shared_ptr<GhaImage> text, mat4f const modelProjection) override;
 
-        void end();
+        void end() override;
 
-        vec2ui getRenderTargetSize() const;
+        vec2ui getRenderTargetSize() const override;
 
     private:
         void resetGraphCaches();

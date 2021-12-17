@@ -5,7 +5,7 @@
 #include <Clove/DeltaTime.hpp>
 
 namespace clove {
-    class ForwardRenderer3D;
+    class Renderer;
     class EntityManager;
 }
 
@@ -13,13 +13,13 @@ namespace clove {
     class RenderSubSystem : public SubSystem {
         //VARIABLES
     private:
-        ForwardRenderer3D *renderer{ nullptr };
+        Renderer *renderer{ nullptr };
         EntityManager *entityManager{ nullptr };
 
         //FUNCTIONS
     public:
 		RenderSubSystem() = delete;
-        RenderSubSystem(ForwardRenderer3D *renderer, EntityManager *entityManager);
+        RenderSubSystem(Renderer *renderer, EntityManager *entityManager);
 
         RenderSubSystem(RenderSubSystem const &other) = delete;
         RenderSubSystem(RenderSubSystem &&other) noexcept;

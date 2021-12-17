@@ -7,7 +7,7 @@
 #include "Clove/Components/PointLightComponent.hpp"
 #include "Clove/Components/StaticModelComponent.hpp"
 #include "Clove/Components/TransformComponent.hpp"
-#include "Clove/Rendering/ForwardRenderer3D.hpp"
+#include "Clove/Rendering/Renderer.hpp"
 #include "Clove/Rendering/Renderables/Mesh.hpp"
 
 #include <Clove/ECS/EntityManager.hpp>
@@ -15,7 +15,7 @@
 #include <Clove/Maths/MathsHelpers.hpp>
 
 namespace clove {
-    RenderSubSystem::RenderSubSystem(ForwardRenderer3D *renderer, EntityManager *entityManager)
+    RenderSubSystem::RenderSubSystem(Renderer *renderer, EntityManager *entityManager)
         : SubSystem("Render")
         , renderer{ renderer }
         , entityManager{ entityManager } {
@@ -63,7 +63,7 @@ namespace clove {
                     passIds.insert(technique.passIds.begin(), technique.passIds.end());
                 }
                 for(auto const &mesh : staticModel.model->getMeshes()) {
-                    renderer->submitMesh(ForwardRenderer3D::MeshInfo{ mesh, staticModel.material, modelTransform, matrixPalet, passIds });
+                    renderer->submitMesh(Renderer::MeshInfo{ mesh, staticModel.material, modelTransform, matrixPalet, passIds });
                 }
             }
         });
@@ -78,7 +78,7 @@ namespace clove {
                     passIds.insert(technique.passIds.begin(), technique.passIds.end());
                 }
                 for(auto const &mesh : animatedModel.model->getMeshes()) {
-                    renderer->submitMesh(ForwardRenderer3D::MeshInfo{ mesh, animatedModel.material, modelTransform, matrixPalet, passIds });
+                    renderer->submitMesh(Renderer::MeshInfo{ mesh, animatedModel.material, modelTransform, matrixPalet, passIds });
                 }
             }
         });

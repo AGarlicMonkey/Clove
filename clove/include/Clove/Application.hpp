@@ -19,7 +19,7 @@ namespace clove {
     class Mouse;
     class Keyboard;
     class GhaDevice;
-    class ForwardRenderer3D;
+    class Renderer;
     class GraphicsImageRenderTarget;
     class AhaDevice;
     class PhysicsSubSystem;
@@ -47,7 +47,7 @@ namespace clove {
         Keyboard *keyboard{ nullptr };
         Mouse *mouse{ nullptr };
 
-        std::unique_ptr<ForwardRenderer3D> renderer;
+        std::unique_ptr<Renderer> renderer;
         EntityManager entityManager;
 
         VirtualFileSystem fileSystem{};
@@ -134,7 +134,7 @@ namespace clove {
         inline AhaDevice *getAudioDevice() const;
 
         //Systems
-        inline ForwardRenderer3D *getRenderer() const;
+        inline Renderer *getRenderer() const;
         inline EntityManager *getEntityManager();
 
         inline AssetManager *getAssetManager();
