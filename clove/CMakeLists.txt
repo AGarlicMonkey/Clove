@@ -165,6 +165,7 @@ add_library(
 		${INCLUDE}/Rendering/RenderGraph/RgTransferPass.hpp
 		${INCLUDE}/Rendering/RenderGraph/RgTransferPass.inl
 		${SOURCE}/Rendering/RenderGraph/RgTransferPass.cpp
+		${INCLUDE}/Rendering/RenderGraph/RgTypes.hpp
 		
 		${INCLUDE}/SubSystems/AudioSubSystem.hpp
 		${SOURCE}/SubSystems/AudioSubSystem.cpp

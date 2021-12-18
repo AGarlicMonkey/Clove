@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Clove/Rendering/RenderGraph/RgId.hpp"
+#include "Clove/Rendering/RenderGraph/RgTypes.hpp"
 
 #include <Clove/Graphics/GhaBuffer.hpp>
 #include <Clove/Graphics/GhaComputeCommandBuffer.hpp>
@@ -87,16 +88,18 @@ namespace clove {
 
         GhaGraphicsQueue *graphicsQueue{ nullptr };
         GhaComputeQueue *computeQueue{ nullptr };
+        GhaComputeQueue *asyncComputeQueue{ nullptr };
         GhaTransferQueue *transferQueue{ nullptr };
 
         std::vector<std::unique_ptr<GhaGraphicsCommandBuffer>> allocatedGraphicsCommandBuffers{};
         std::vector<std::unique_ptr<GhaComputeCommandBuffer>> allocatedComputeCommandBuffers{};
+        std::vector<std::unique_ptr<GhaComputeCommandBuffer>> allocatedAsyncComputeCommandBuffers{};
         std::vector<std::unique_ptr<GhaTransferCommandBuffer>> allocatedTransferCommandBuffers{};
 
         //FUNCTIONS
     public:
         RgFrameCache() = delete;
-        RgFrameCache(GhaFactory *ghaFactory, GhaGraphicsQueue *graphicsQueue, GhaComputeQueue *computeQueue, GhaTransferQueue *transferQueue);
+        RgFrameCache(GhaFactory *ghaFactory, GhaGraphicsQueue *graphicsQueue, GhaComputeQueue *computeQueue, GhaComputeQueue *asyncComputeQueue, GhaTransferQueue *transferQueue);
 
         RgFrameCache(RgFrameCache const &other) = delete;
         RgFrameCache(RgFrameCache &&other) noexcept;
@@ -128,10 +131,11 @@ namespace clove {
 
         GhaGraphicsCommandBuffer *allocateGraphicsCommandBuffer();
         GhaComputeCommandBuffer *allocateComputeCommandBuffer();
+        GhaComputeCommandBuffer *allocateAsyncComputeCommandBuffer();
         GhaTransferCommandBuffer *allocateTransferCommandBuffer();
 
         void submit(GraphicsSubmitInfo submitInfo, GhaFence *signalFence);
-        void submit(ComputeSubmitInfo submitInfo, GhaFence *signalFence);
+        void submit(ComputeSubmitInfo submitInfo, GhaFence *signalFence, RgSyncType syncType);
         void submit(TransferSubmitInfo submitInfo, GhaFence *signalFence);
     };
 }

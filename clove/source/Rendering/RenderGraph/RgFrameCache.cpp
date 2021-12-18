@@ -5,10 +5,11 @@
 #include <functional>
 
 namespace clove {
-    RgFrameCache::RgFrameCache(GhaFactory *ghaFactory, GhaGraphicsQueue *graphicsQueue, GhaComputeQueue *computeQueue, GhaTransferQueue *transferQueue)
+    RgFrameCache::RgFrameCache(GhaFactory *ghaFactory, GhaGraphicsQueue *graphicsQueue, GhaComputeQueue *computeQueue, GhaComputeQueue *asyncComputeQueue, GhaTransferQueue *transferQueue)
         : ghaFactory{ ghaFactory }
         , graphicsQueue{ graphicsQueue }
         , computeQueue{ computeQueue }
+        , asyncComputeQueue{ asyncComputeQueue }
         , transferQueue{ transferQueue } {
     }
 
@@ -35,6 +36,11 @@ namespace clove {
             computeQueue->freeCommandBuffer(commandBuffer);
         }
         allocatedComputeCommandBuffers.clear();
+
+        for(auto &commandBuffer : allocatedAsyncComputeCommandBuffers) {
+            asyncComputeQueue->freeCommandBuffer(commandBuffer);
+        }
+        allocatedAsyncComputeCommandBuffers.clear();
 
         for(auto &commandBuffer : allocatedTransferCommandBuffers) {
             transferQueue->freeCommandBuffer(commandBuffer);
@@ -144,6 +150,13 @@ namespace clove {
         return bufferPtr;
     }
 
+    GhaComputeCommandBuffer *RgFrameCache::allocateAsyncComputeCommandBuffer() {
+        std::unique_ptr<GhaComputeCommandBuffer> commandBuffer{ asyncComputeQueue->allocateCommandBuffer() };
+        auto *bufferPtr{ commandBuffer.get() };
+        allocatedAsyncComputeCommandBuffers.push_back(std::move(commandBuffer));
+        return bufferPtr;
+    }
+
     GhaTransferCommandBuffer *RgFrameCache::allocateTransferCommandBuffer() {
         std::unique_ptr<GhaTransferCommandBuffer> commandBuffer{ transferQueue->allocateCommandBuffer() };
         auto *bufferPtr{ commandBuffer.get() };
@@ -155,8 +168,12 @@ namespace clove {
         graphicsQueue->submit({ std::move(submitInfo) }, signalFence);
     }
 
-    void RgFrameCache::submit(ComputeSubmitInfo submitInfo, GhaFence *signalFence) {//NOLINT false positive - thinks submitInfo is copied
-        computeQueue->submit({ std::move(submitInfo) }, signalFence);
+    void RgFrameCache::submit(ComputeSubmitInfo submitInfo, GhaFence *signalFence, RgSyncType syncType) {//NOLINT false positive - thinks submitInfo is copied
+        if(syncType == RgSyncType::Sync) {
+            computeQueue->submit({ std::move(submitInfo) }, signalFence);
+        } else {
+            asyncComputeQueue->submit({ std::move(submitInfo) }, signalFence);
+        }
     }
 
     void RgFrameCache::submit(TransferSubmitInfo submitInfo, GhaFence *signalFence) {//NOLINT false positive - thinks submitInfo is copied

@@ -7,6 +7,7 @@
 #include "Clove/Rendering/RenderGraph/RgSampler.hpp"
 #include "Clove/Rendering/RenderGraph/RgShader.hpp"
 #include "Clove/Rendering/RenderGraph/RgTransferPass.hpp"
+#include "Clove/Rendering/RenderGraph/RgTypes.hpp"
 
 #include <Clove/Graphics/Descriptor.hpp>
 #include <Clove/Graphics/GhaGraphicsQueue.hpp>
@@ -76,6 +77,7 @@ namespace clove {
         //Passes
         std::unordered_map<RgPassId, RgRenderPass> renderPasses{};
         std::unordered_map<RgPassId, RgComputePass> computePasses{};
+        std::unordered_map<RgPassId, RgComputePass> asyncComputePasses{};
         std::unordered_map<RgPassId, RgTransferPass> transferPasses{};
 
         //FUNCTIONS
@@ -159,9 +161,10 @@ namespace clove {
         /**
          * @brief Create a compute pass.
          * @param passDescriptor Descriptor of the pass itself. Contains what shader to run.
+         * @param syncType If this pass should execute asynchronously or not.
          * @return 
          */
-        RgPassId createComputePass(RgComputePass::Descriptor passDescriptor);
+        RgPassId createComputePass(RgComputePass::Descriptor passDescriptor, RgSyncType syncType);
 
         /**
          * @brief Registers a resource as the final output of the graph.
@@ -211,6 +214,7 @@ namespace clove {
 
         RgResource *getResourceFromId(RgResourceId resourceId);
         RgPass *getPassFromId(RgPassId passId);
+        RgComputePass *getComputePassFromId(RgPassId passId);
 
         void generateRenderPassObjects(std::vector<RgPassId> const &passes, std::unordered_map<RgPassId, GhaRenderPass *> &outRenderPasses, std::unordered_map<RgPassId, GhaFramebuffer *> &outFramebuffers, std::unordered_map<RgPassId, GhaGraphicsPipelineObject *> &outGraphicsPipelines, std::unordered_map<RgResourceId, GhaSampler *> &outSamplers, std::unordered_map<RgPassId, GhaDescriptorSetLayout *> &outDescriptorSetLayouts, std::unordered_map<DescriptorType, uint32_t> &totalDescriptorBindingCount, uint32_t &totalDescriptorSets);
         void generateComputePassObjects(std::vector<RgPassId> const &passes, std::unordered_map<RgPassId, GhaComputePipelineObject *> &outComputePipelines, std::unordered_map<RgPassId, GhaDescriptorSetLayout *> &outDescriptorSetLayouts, std::unordered_map<DescriptorType, uint32_t> &totalDescriptorBindingCount, uint32_t &totalDescriptorSets);

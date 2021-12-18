@@ -61,12 +61,13 @@ namespace clove {
         framesInFlight.resize(maxFramesInFlight);
         imagesInFlight.resize(maxImages);
 
-        graphicsQueue = ghaFactory->createGraphicsQueue(CommandQueueDescriptor{ .flags = QueueFlags::ReuseBuffers }).getValue();
-        computeQueue  = ghaFactory->createComputeQueue(CommandQueueDescriptor{ .flags = QueueFlags::ReuseBuffers }).getValue();
-        transferQueue = ghaFactory->createTransferQueue(CommandQueueDescriptor{ .flags = QueueFlags::ReuseBuffers }).getValue();
+        graphicsQueue     = ghaFactory->createGraphicsQueue(CommandQueueDescriptor{ .flags = QueueFlags::ReuseBuffers }).getValue();
+        computeQueue      = ghaFactory->createComputeQueue(CommandQueueDescriptor{ .flags = QueueFlags::ReuseBuffers }).getValue();
+        asyncComputeQueue = ghaFactory->createAsyncComputeQueue(CommandQueueDescriptor{ .flags = QueueFlags::ReuseBuffers }).getValue();
+        transferQueue     = ghaFactory->createTransferQueue(CommandQueueDescriptor{ .flags = QueueFlags::ReuseBuffers }).getValue();
 
         for(size_t i{ 0 }; i < maxFramesInFlight + 1; ++i) {
-            frameCaches.emplace_back(ghaFactory, graphicsQueue.get(), computeQueue.get(), transferQueue.get());
+            frameCaches.emplace_back(ghaFactory, graphicsQueue.get(), computeQueue.get(), asyncComputeQueue.get(), transferQueue.get());
         }
 
         shaderIncludes["Constants.glsl"] = { constants, constantsLength };
@@ -425,7 +426,7 @@ namespace clove {
         RgComputePass::Descriptor passDescriptor{
             .shader = renderGraph.createShader({ skinningcompute, skinningcomputeLength }, shaderIncludes, "Mesh skinner (compute)", GhaShader::Stage::Compute),
         };
-        RgPassId skinningPass{ renderGraph.createComputePass(passDescriptor) };
+        RgPassId skinningPass{ renderGraph.createComputePass(passDescriptor, RgSyncType::Async) };
 
         for(auto &mesh : meshes) {
             if(!currentFrameData.meshes[mesh.meshIndex].matrixPalet.has_value()) {

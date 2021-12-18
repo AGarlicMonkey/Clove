@@ -101,10 +101,14 @@ namespace clove {
         return renderPassId;
     }
 
-    RgPassId RenderGraph::createComputePass(RgComputePass::Descriptor passDescriptor) {
+    RgPassId RenderGraph::createComputePass(RgComputePass::Descriptor passDescriptor, RgSyncType syncType) {
         RgPassId const computePassId{ nextPassId++ };
 
-        computePasses.emplace(std::make_pair(computePassId, RgComputePass{ passDescriptor }));
+        if(syncType == RgSyncType::Sync) {
+            computePasses.emplace(std::make_pair(computePassId, RgComputePass{ passDescriptor }));
+        } else {
+            asyncComputePasses.emplace(std::make_pair(computePassId, RgComputePass{ passDescriptor }));
+        }
 
         return computePassId;
     }
@@ -180,7 +184,11 @@ namespace clove {
     }
 
     void RenderGraph::addComputeSubmission(RgPassId const computePass, RgComputePass::Submission submission) {
-        auto &pass{ computePasses.at(computePass) };
+        RgComputePass *const pass{ getComputePassFromId(computePass) };
+        if(pass == nullptr) {
+            CLOVE_LOG(CloveRenderGraph, LogLevel::Error, "Compute pass with ID {0} does not exist.", computePass);
+            return;
+        }
 
         for(auto const &ubo : submission.readUniformBuffers) {
             RgResourceId const bufferId{ ubo.buffer };
@@ -212,7 +220,7 @@ namespace clove {
             buffer.addWritePass(computePass);
         }
 
-        pass.addSubmission(std::move(submission));
+        pass->addSubmission(std::move(submission));
     }
 
     void RenderGraph::execute(ExecutionInfo const &info) {
@@ -271,14 +279,14 @@ namespace clove {
             }
 
             bool isInGraphics{ false };
-            bool isInCompute{ false };
+            bool isInAsyncCompute{ false };
 
             for(RgPassId passId : buffer.getReadPasses()) {
                 if(renderPasses.contains(passId)) {
                     isInGraphics = true;
                 }
-                if(computePasses.contains(passId)) {
-                    isInCompute = true;
+                if(asyncComputePasses.contains(passId)) {
+                    isInAsyncCompute = true;
                 }
             }
 
@@ -286,12 +294,12 @@ namespace clove {
                 if(renderPasses.contains(passId)) {
                     isInGraphics = true;
                 }
-                if(computePasses.contains(passId)) {
-                    isInCompute = true;
+                if(asyncComputePasses.contains(passId)) {
+                    isInAsyncCompute = true;
                 }
             }
 
-            if(isInGraphics && isInCompute) {
+            if(isInGraphics && isInAsyncCompute) {
                 buffer.setSharingMode(SharingMode::Concurrent);
             }
         }
@@ -377,7 +385,26 @@ namespace clove {
                                       .commandBuffers   = { computeCommandBufffer },
                                       .signalSemaphores = signalSemaphores,
                                   },
-                                  signalFence);
+                                  signalFence,
+                                  RgSyncType::Sync);
+
+                continue;
+            }
+
+            if(asyncComputePasses.contains(passId)) {
+                GhaComputeCommandBuffer *computeCommandBufffer{ frameCache.allocateAsyncComputeCommandBuffer() };
+
+                computeCommandBufffer->beginRecording(CommandBufferUsage::OneTimeSubmit);
+                executeComputePass(passId, *computeCommandBufffer, allocatedComputePipelines, allocatedDescriptorSets);
+                computeCommandBufffer->endRecording();
+
+                frameCache.submit(ComputeSubmitInfo{
+                                      .waitSemaphores   = waitSemaphores,
+                                      .commandBuffers   = { computeCommandBufffer },
+                                      .signalSemaphores = signalSemaphores,
+                                  },
+                                  signalFence,
+                                  RgSyncType::Async);
 
                 continue;
             }
@@ -394,7 +421,7 @@ namespace clove {
 
     void RenderGraph::buildExecutionPasses(std::vector<RgPassId> &outPasses, RgResourceId resourceId) {
         RgResource const *const resource{ getResourceFromId(resourceId) };
-        if(resource == nullptr){
+        if(resource == nullptr) {
             return;
         }
 
@@ -420,6 +447,16 @@ namespace clove {
     std::vector<RenderGraph::PassDependency> RenderGraph::buildDependencies(std::vector<RgPassId> const &passes) {
         std::vector<RenderGraph::PassDependency> dependencies{};
 
+        auto const getRenderOrComputePass = [this](RgPassId const passId) -> RgPass * {
+            if(renderPasses.contains(passId)) {
+                return &renderPasses.at(passId);
+            } else if(computePasses.contains(passId)) {
+                return &computePasses.at(passId);
+            } else {
+                return nullptr;
+            }
+        };
+
         auto const indexOf = [&passes](RgPassId passId) -> size_t {
             for(size_t i{ 0 }; i < passes.size(); ++i) {
                 if(passes[i] == passId) {
@@ -430,12 +467,11 @@ namespace clove {
         };
 
         //Dependecies are built for the closest pass that has an output of the current passes inputs. All queue operations complete in order so we only need to wait on the last one
-        //First pass - Create dependecies for render pass inputs
+        //First pass - Create dependecies for render pass/sync compute inputs
         for(size_t passIndex{ 0 }; passIndex < passes.size(); ++passIndex) {
             RgPassId const passId{ passes[passIndex] };
-            if(renderPasses.contains(passId)) {
-                RgRenderPass const &dependantPass{ renderPasses.at(passId) };
-                for(RgResourceId const resourceId : dependantPass.getInputResources()) {
+            if(RgPass const *const dependantPass{ getRenderOrComputePass(passId) }) {
+                for(RgResourceId const resourceId : dependantPass->getInputResources()) {
                     RgResource const *const resource{ getResourceFromId(resourceId) };
                     if(resource == nullptr) {
                         continue;
@@ -446,15 +482,15 @@ namespace clove {
                     bool hasDependency{ false };
 
                     for(RgPassId const dependencyPassId : resource->getWritePasses()) {
-                        //Only check compute passes for dependencies as all render passes will execute on the same queue.
-                        if(computePasses.contains(dependencyPassId)) {
+                        //Only check async compute passes for dependencies as all passes will execute on the same queue.
+                        if(asyncComputePasses.contains(dependencyPassId)) {
                             size_t const dependencyIndex{ indexOf(dependencyPassId) };
                             //Dependecy needs to be before this pass.
                             if(dependencyIndex > passIndex) {
                                 continue;
                             }
 
-                            //Create a dependency for the closest compute pass to this render pass as the compute pass will
+                            //Create a dependency for the closest async compute pass to this pass as the compute pass will
                             //wait on any prior passes anyway.
                             size_t const distance{ passId - dependencyIndex };
                             if(!hasDependency || distance < currentDistance) {
@@ -467,50 +503,56 @@ namespace clove {
 
                     if(hasDependency) {
                         bool createDependency{ true };
-                        //If a render pass before this one has a dependency then we don't need to wait because all queue submissions are done in order.
+                        //If a pass before this one has a dependency then we don't need to wait because all queue submissions are done in order.
                         for(PassDependency const &dependency : dependencies) {
-                            if(renderPasses.contains(dependency.waitPass) && indexOf(dependency.waitPass) < passIndex) {
+                            if((renderPasses.contains(dependency.waitPass) || computePasses.contains(dependency.waitPass)) && indexOf(dependency.waitPass) < passIndex) {
                                 createDependency = false;
                                 break;
                             }
                         }
 
                         if(createDependency) {
-                            //Get the correct waitstage for the dependency.
-                            //If it's an image we can always assume PipelineStage::PixelShader for now because we only check input resources.
-                            //If it's a buffer we check the submission info if it'll be PipelineStage::VertexShader or PipelineStage::PixelShader
                             PipelineStage waitStage{ PipelineStage::Top };
-                            if(images.contains(resourceId)) {
-                                waitStage = PipelineStage::PixelShader;
-                                //TODO: Might need to use early / late fragment tests if the image is a depth buffer
-                            } else if(buffers.contains(resourceId)) {
-                                for(auto const &submission : dependantPass.getSubmissions()) {
-                                    if(submission.vertexBuffer == resourceId || submission.indexBuffer == resourceId) {
-                                        waitStage = PipelineStage::VertexInput;
-                                        break;
-                                    }
+                            if(renderPasses.contains(passId)) {
+                                //Get the correct waitstage for the dependency.
+                                //If it's an image we can always assume PipelineStage::PixelShader for now because we only check input resources.
+                                //If it's a buffer we check the submission info if it'll be PipelineStage::VertexShader or PipelineStage::PixelShader
+                                if(images.contains(resourceId)) {
+                                    waitStage = PipelineStage::PixelShader;
+                                    //TODO: Might need to use early / late fragment tests if the image is a depth buffer
+                                } else if(buffers.contains(resourceId)) {
+                                    for(auto const &submission : renderPasses.at(passId).getSubmissions()) {
+                                        if(submission.vertexBuffer == resourceId || submission.indexBuffer == resourceId) {
+                                            waitStage = PipelineStage::VertexInput;
+                                            break;
+                                        }
 
-                                    bool found{ false };
-                                    for(auto const &ubo : submission.shaderUbos) {
-                                        if(ubo.slot == resourceId) {
-                                            if(ubo.shaderStage == GhaShader::Stage::Vertex) {
-                                                waitStage = PipelineStage::VertexShader;
-                                                found     = true;
-                                                break;
-                                            } else if(ubo.shaderStage == GhaShader::Stage::Pixel) {
-                                                waitStage = PipelineStage::PixelShader;
-                                                found     = true;
-                                                break;
+                                        bool found{ false };
+                                        for(auto const &ubo : submission.shaderUbos) {
+                                            if(ubo.slot == resourceId) {
+                                                if(ubo.shaderStage == GhaShader::Stage::Vertex) {
+                                                    waitStage = PipelineStage::VertexShader;
+                                                    found     = true;
+                                                    break;
+                                                } else if(ubo.shaderStage == GhaShader::Stage::Pixel) {
+                                                    waitStage = PipelineStage::PixelShader;
+                                                    found     = true;
+                                                    break;
+                                                }
                                             }
                                         }
-                                    }
 
-                                    if(found) {
-                                        break;
+                                        if(found) {
+                                            break;
+                                        }
                                     }
+                                } else {
+                                    CLOVE_LOG(CloveRenderGraph, LogLevel::Warning, "{0}: Could not decide waitStage for resource {1}. Wait stage defaulted to PipelineStage::Top", CLOVE_FUNCTION_NAME_PRETTY, resourceId);
                                 }
+                            } else if(computePasses.contains(passId)) {
+                                waitStage = PipelineStage::ComputeShader;
                             } else {
-                                CLOVE_LOG(CloveRenderGraph, LogLevel::Warning, "{0}: Could not decide waitStage for resource {1}", CLOVE_FUNCTION_NAME_PRETTY, resourceId);
+                                CLOVE_LOG(CloveRenderGraph, LogLevel::Error, "{0}: Pass {0} is not a render passs or a compute pass. Dependecy is likely incorrect", CLOVE_FUNCTION_NAME_PRETTY, passId);
                             }
 
                             dependencies.emplace_back(PassDependency{
@@ -525,7 +567,7 @@ namespace clove {
             }
         }
 
-        //Second pass - create compute pass dependencies.
+        //Second pass - create dependencies for async compute pass inputs.
         for(size_t passIndex{ 0 }; passIndex < passes.size(); ++passIndex) {
             RgPassId const passId{ passes[passIndex] };
             if(computePasses.contains(passId)) {
@@ -540,8 +582,7 @@ namespace clove {
                     bool hasDependency{ false };
 
                     for(RgPassId const dependencyPassId : resource->getWritePasses()) {
-                        //Only check render passes for dependencies as all render passes will execute on the same queue.
-                        if(renderPasses.contains(dependencyPassId)) {
+                        if(renderPasses.contains(dependencyPassId) || computePasses.contains(dependencyPassId)) {
                             size_t const dependencyIndex{ indexOf(dependencyPassId) };
                             //Dependecy needs to be before this pass.
                             if(dependencyIndex > passIndex) {
@@ -555,15 +596,13 @@ namespace clove {
                                 hasDependency   = true;
                             }
                         }
-
-                        //TODO: Will need to check compute when there is both sync / async compute
                     }
 
                     if(hasDependency) {
                         bool createDependency{ true };
                         //If a render pass before this one has a dependency then we don't need to wait because all queue submissions are done in order.
                         for(PassDependency const &dependency : dependencies) {
-                            if(renderPasses.contains(dependency.waitPass) && indexOf(dependency.waitPass) < passIndex) {
+                            if((renderPasses.contains(dependency.waitPass) || computePasses.contains(dependency.waitPass)) && indexOf(dependency.waitPass) < passIndex) {
                                 createDependency = false;
                                 break;
                             }
@@ -585,7 +624,8 @@ namespace clove {
         return dependencies;
     }
 
-    GhaImage::Layout RenderGraph::getPreviousLayout(RgImageView const &imageView, std::vector<RgPassId> const &passes, int32_t const currentPassIndex) {
+    GhaImage::Layout
+    RenderGraph::getPreviousLayout(RgImageView const &imageView, std::vector<RgPassId> const &passes, int32_t const currentPassIndex) {
         for(int32_t i{ currentPassIndex - 1 }; i >= 0; --i) {
             if(!renderPasses.contains(passes[i])) {
                 continue;//Only evaluate renderpasses for now. Images are not supported in compute yet
@@ -640,14 +680,25 @@ namespace clove {
     }
 
     RgPass *RenderGraph::getPassFromId(RgPassId passId) {
+        if(RgComputePass * computePass{ getComputePassFromId(passId) }) {
+            return computePass;
+        }
+
         if(renderPasses.contains(passId)) {
             return &renderPasses.at(passId);
-        } else if(computePasses.contains(passId)) {
-            return &computePasses.at(passId);
         } else if(transferPasses.contains(passId)) {
             return &transferPasses.at(passId);
         } else {
-            CLOVE_ASSERT_MSG(false, "Could not find pass ID");
+            return nullptr;
+        }
+    }
+
+    RgComputePass *RenderGraph::getComputePassFromId(RgPassId passId) {
+        if(computePasses.contains(passId)) {
+            return &computePasses.at(passId);
+        } else if(asyncComputePasses.contains(passId)) {
+            return &asyncComputePasses.at(passId);
+        } else {
             return nullptr;
         }
     }
@@ -811,12 +862,13 @@ namespace clove {
     void RenderGraph::generateComputePassObjects(std::vector<RgPassId> const &passes, std::unordered_map<RgPassId, GhaComputePipelineObject *> &outComputePipelines, std::unordered_map<RgPassId, GhaDescriptorSetLayout *> &outDescriptorSetLayouts, std::unordered_map<DescriptorType, uint32_t> &totalDescriptorBindingCount, uint32_t &totalDescriptorSets) {
         for(int32_t i{ 0 }; i < passes.size(); ++i) {
             RgPassId const passId{ passes[i] };
-            if(!computePasses.contains(passId)) {
+            RgComputePass *const computePass{ getComputePassFromId(passId) };
+            if(computePass == nullptr) {
                 continue;
             }
 
-            RgComputePass::Descriptor const &passDescriptor{ computePasses.at(passId).getDescriptor() };
-            std::vector<RgComputePass::Submission> const &passSubmissions{ computePasses.at(passId).getSubmissions() };
+            RgComputePass::Descriptor const &passDescriptor{ computePass->getDescriptor() };
+            std::vector<RgComputePass::Submission> const &passSubmissions{ computePass->getSubmissions() };
 
             //Build descriptor layouts using the first pass.
             //TODO: Get this infomation from shader reflection
@@ -905,8 +957,13 @@ namespace clove {
             descriptorSets[id] = descriptorPool->allocateDescriptorSets(layouts);
         }
         for(auto &&[id, pipeline] : computePipelines) {
-            std::vector<GhaDescriptorSetLayout const *> layouts(computePasses.at(id).getSubmissions().size(), pipeline->getDescriptor().descriptorSetLayouts[0]);//TEMP: Using first index as we know pipelines always have a single descriptor for now
-            descriptorSets[id] = descriptorPool->allocateDescriptorSets(layouts);
+            if(computePasses.contains(id)) {
+                std::vector<GhaDescriptorSetLayout const *> layouts(computePasses.at(id).getSubmissions().size(), pipeline->getDescriptor().descriptorSetLayouts[0]);//TEMP: Using first index as we know pipelines always have a single descriptor for now
+                descriptorSets[id] = descriptorPool->allocateDescriptorSets(layouts);
+            } else {
+                std::vector<GhaDescriptorSetLayout const *> layouts(asyncComputePasses.at(id).getSubmissions().size(), pipeline->getDescriptor().descriptorSetLayouts[0]);//TEMP: Using first index as we know pipelines always have a single descriptor for now
+                descriptorSets[id] = descriptorPool->allocateDescriptorSets(layouts);
+            }
         }
 
         return descriptorSets;
@@ -966,8 +1023,14 @@ namespace clove {
     }
 
     void RenderGraph::executeComputePass(RgPassId passId, GhaComputeCommandBuffer &computeCommandBufffer, std::unordered_map<RgPassId, GhaComputePipelineObject *> const &allocatedComputePipelines, std::unordered_map<RgPassId, std::vector<std::unique_ptr<GhaDescriptorSet>>> const &allocatedDescriptorSets) {
-        RgComputePass::Descriptor const &passDescriptor{ computePasses.at(passId).getDescriptor() };
-        std::vector<RgComputePass::Submission> const &passSubmissions{ computePasses.at(passId).getSubmissions() };
+        RgComputePass *const computePass{ getComputePassFromId(passId) };
+        if(computePass == nullptr) {
+            CLOVE_ASSERT(false);
+            return;
+        }
+
+        RgComputePass::Descriptor const &passDescriptor{ computePass->getDescriptor() };
+        std::vector<RgComputePass::Submission> const &passSubmissions{ computePass->getSubmissions() };
 
         computeCommandBufffer.bindPipelineObject(*allocatedComputePipelines.at(passId));
 
