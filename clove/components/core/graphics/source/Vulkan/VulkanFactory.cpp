@@ -353,7 +353,35 @@ namespace clove {
     }
 
     Expected<std::unique_ptr<GhaComputeQueue>, std::runtime_error> VulkanFactory::createComputeQueue(CommandQueueDescriptor descriptor) noexcept {
-        uint32_t const familyIndex{ *queueFamilyIndices.computeFamily };
+        uint32_t const familyIndex{ *queueFamilyIndices.graphicsFamily };
+
+        VkCommandPoolCreateInfo const poolInfo{
+            .sType            = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO,
+            .pNext            = nullptr,
+            .flags            = convertCommandPoolCreateFlags(descriptor.flags),
+            .queueFamilyIndex = familyIndex,
+        };
+
+        VkCommandPool commandPool{ nullptr };
+        if(VkResult const result{ vkCreateCommandPool(devicePtr.get(), &poolInfo, nullptr, &commandPool) }; result != VK_SUCCESS) {
+            switch(result) {
+                case VK_ERROR_OUT_OF_HOST_MEMORY:
+                    return Unexpected{ std::runtime_error{ "Failed to create GhaComputeQueue. Out of host memory" } };
+                case VK_ERROR_OUT_OF_DEVICE_MEMORY:
+                    return Unexpected{ std::runtime_error{ "Failed to create GhaComputeQueue. Out of device memory" } };
+                default:
+                    return Unexpected{ std::runtime_error{ "Failed to create GhaComputeQueue. Reason unkown." } };
+            }
+        }
+
+        VkQueue queue{ nullptr };
+        vkGetDeviceQueue(devicePtr.get(), familyIndex, 0, &queue);
+
+        return std::unique_ptr<GhaComputeQueue>{ createGhaObject<VulkanComputeQueue>(descriptor, devicePtr, queue, commandPool, queueFamilyIndices) };
+    }
+
+    Expected<std::unique_ptr<GhaComputeQueue>, std::runtime_error> VulkanFactory::createAsyncComputeQueue(CommandQueueDescriptor descriptor) noexcept {
+        uint32_t const familyIndex{ *queueFamilyIndices.asyncComputeFamily };
 
         VkCommandPoolCreateInfo const poolInfo{
             .sType            = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO,
@@ -1027,7 +1055,7 @@ namespace clove {
     }
 
     Expected<std::unique_ptr<GhaBuffer>, std::runtime_error> VulkanFactory::createBuffer(GhaBuffer::Descriptor descriptor) noexcept {
-        std::array const sharedQueueIndices{ *queueFamilyIndices.graphicsFamily, *queueFamilyIndices.transferFamily, *queueFamilyIndices.computeFamily };
+        std::array const sharedQueueIndices{ *queueFamilyIndices.graphicsFamily, *queueFamilyIndices.transferFamily, *queueFamilyIndices.asyncComputeFamily };
         bool const isExclusive{ descriptor.sharingMode == SharingMode::Exclusive };
 
         VkBufferCreateInfo const createInfo{
@@ -1067,7 +1095,7 @@ namespace clove {
     }
 
     Expected<std::unique_ptr<GhaImage>, std::runtime_error> VulkanFactory::createImage(GhaImage::Descriptor descriptor) noexcept {
-        std::array const sharedQueueIndices{ *queueFamilyIndices.graphicsFamily, *queueFamilyIndices.transferFamily, *queueFamilyIndices.computeFamily };
+        std::array const sharedQueueIndices{ *queueFamilyIndices.graphicsFamily, *queueFamilyIndices.transferFamily, *queueFamilyIndices.asyncComputeFamily };
         bool const isExclusive{ descriptor.sharingMode == SharingMode::Exclusive };
         bool const isCube{ descriptor.type == GhaImage::Type::Cube };
         uint32_t const arrayLayers{ isCube ? descriptor.arrayCount * 6u : descriptor.arrayCount };

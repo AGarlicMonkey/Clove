@@ -148,8 +148,8 @@ namespace clove {
         : device{ device }
         , view{ view } {
         graphicsPresentCommandQueue = [this->device newCommandQueue];
-        transferCommandQueue = [this->device newCommandQueue];
-        computeCommandQueue = [this->device newCommandQueue];
+        transferCommandQueue        = [this->device newCommandQueue];
+        asyncComputeCommandQueue    = [this->device newCommandQueue];
     }
     
     MetalFactory::MetalFactory(MetalFactory &&other) noexcept = default;
@@ -175,7 +175,11 @@ namespace clove {
     }
     
     Expected<std::unique_ptr<GhaComputeQueue>, std::runtime_error> MetalFactory::createComputeQueue(CommandQueueDescriptor descriptor) noexcept {
-        return std::unique_ptr<GhaComputeQueue>{ createGhaObject<MetalComputeQueue>(descriptor, computeCommandQueue) };
+        return std::unique_ptr<GhaComputeQueue>{ createGhaObject<MetalComputeQueue>(descriptor, graphicsPresentCommandQueue) };
+    }
+
+    Expected<std::unique_ptr<GhaComputeQueue>, std::runtime_error> MetalFactory::createAsyncComputeQueue(CommandQueueDescriptor descriptor) noexcept {
+        return std::unique_ptr<GhaComputeQueue>{ createGhaObject<MetalComputeQueue>(descriptor, asyncComputeCommandQueue) };
     }
     
     Expected<std::unique_ptr<GhaSwapchain>, std::runtime_error> MetalFactory::createSwapChain(GhaSwapchain::Descriptor descriptor) noexcept {

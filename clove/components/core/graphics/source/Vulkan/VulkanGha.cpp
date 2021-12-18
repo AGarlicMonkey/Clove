@@ -141,7 +141,7 @@ namespace clove {
                 computeFamilyIndices.erase(*indices.transferFamily);
             }
 
-            indices.computeFamily = *computeFamilyIndices.begin();
+            indices.asyncComputeFamily = *computeFamilyIndices.begin();
 
             return indices;
         }
@@ -431,7 +431,7 @@ namespace clove {
                 }else{
                     CLOVE_LOG(CloveGhaVulkan, LogLevel::Trace, "\tPresent:\tNOT REQUIRED");
                 }
-                CLOVE_LOG(CloveGhaVulkan, LogLevel::Trace, "\tCompute:\tid: {0}, count: {1}", *queueFamilyIndices.computeFamily, queueFamilies[*queueFamilyIndices.computeFamily].queueCount);
+                CLOVE_LOG(CloveGhaVulkan, LogLevel::Trace, "\tCompute:\tid: {0}, count: {1}", *queueFamilyIndices.asyncComputeFamily, queueFamilies[*queueFamilyIndices.asyncComputeFamily].queueCount);
                 CLOVE_LOG(CloveGhaVulkan, LogLevel::Trace, "\tTransfer:\tid: {0}, count: {1}", *queueFamilyIndices.transferFamily, queueFamilies[*queueFamilyIndices.transferFamily].queueCount);
             }
 
@@ -456,7 +456,7 @@ namespace clove {
             std::set<uint32_t> uniqueQueueFamilies{
                 *queueFamilyIndices.graphicsFamily,
                 *queueFamilyIndices.transferFamily,
-                *queueFamilyIndices.computeFamily,
+                *queueFamilyIndices.asyncComputeFamily,
             };
             if(queueFamilyIndices.presentFamily.has_value()) {
                 uniqueQueueFamilies.emplace(*queueFamilyIndices.presentFamily);

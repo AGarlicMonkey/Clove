@@ -13,8 +13,8 @@ namespace clove {
                 return *indices.graphicsFamily;
             case QueueType::Transfer:
                 return *indices.transferFamily;
-            case QueueType::Compute:
-                return *indices.computeFamily;
+            case QueueType::AsyncCompute:
+                return *indices.asyncComputeFamily;
             default:
                 CLOVE_ASSERT_MSG(false, "{0}: Unkown queue type", CLOVE_FUNCTION_NAME);
                 return VK_QUEUE_FAMILY_IGNORED;

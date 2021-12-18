@@ -8,7 +8,7 @@ namespace clove {
         None,
         Graphics,
         Transfer,
-        Compute
+        AsyncCompute
     };
 
     struct BufferMemoryBarrierInfo {

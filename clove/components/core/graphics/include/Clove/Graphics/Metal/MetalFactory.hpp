@@ -16,7 +16,7 @@ namespace clove {
 		
 		id<MTLCommandQueue> graphicsPresentCommandQueue{ nullptr };
 		id<MTLCommandQueue> transferCommandQueue{ nullptr };
-		id<MTLCommandQueue> computeCommandQueue{ nullptr };
+		id<MTLCommandQueue> asyncComputeCommandQueue{ nullptr };
 		
 		//FUNCTIONS
 	public:
@@ -35,8 +35,9 @@ namespace clove {
         Expected<std::unique_ptr<GhaPresentQueue>, std::runtime_error> createPresentQueue() noexcept override;
         Expected<std::unique_ptr<GhaTransferQueue>, std::runtime_error> createTransferQueue(CommandQueueDescriptor descriptor) noexcept override;
         Expected<std::unique_ptr<GhaComputeQueue>, std::runtime_error> createComputeQueue(CommandQueueDescriptor descriptor) noexcept override;
-		
-		Expected<std::unique_ptr<GhaSwapchain>, std::runtime_error> createSwapChain(GhaSwapchain::Descriptor descriptor) noexcept override;
+        Expected<std::unique_ptr<GhaComputeQueue>, std::runtime_error> createAsyncComputeQueue(CommandQueueDescriptor descriptor) noexcept override;
+
+        Expected<std::unique_ptr<GhaSwapchain>, std::runtime_error> createSwapChain(GhaSwapchain::Descriptor descriptor) noexcept override;
 
         Expected<std::unique_ptr<GhaShader>, std::runtime_error> createShaderFromFile(std::filesystem::path const &file, GhaShader::Stage shaderStage) noexcept override;
         Expected<std::unique_ptr<GhaShader>, std::runtime_error> createShaderFromSource(std::string_view source, std::unordered_map<std::string, std::string> includeSources, std::string_view shaderName, GhaShader::Stage shaderStage) noexcept override;

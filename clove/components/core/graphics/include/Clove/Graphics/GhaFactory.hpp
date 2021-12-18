@@ -36,9 +36,20 @@ namespace clove {
         virtual ~GhaFactory() = default;
 
         virtual Expected<std::unique_ptr<GhaGraphicsQueue>, std::runtime_error> createGraphicsQueue(CommandQueueDescriptor descriptor) noexcept = 0;
-        virtual Expected<std::unique_ptr<GhaPresentQueue>, std::runtime_error> createPresentQueue() noexcept                                    = 0;
+        virtual Expected<std::unique_ptr<GhaPresentQueue>, std::runtime_error> createPresentQueue() noexcept = 0;
         virtual Expected<std::unique_ptr<GhaTransferQueue>, std::runtime_error> createTransferQueue(CommandQueueDescriptor descriptor) noexcept = 0;
-        virtual Expected<std::unique_ptr<GhaComputeQueue>, std::runtime_error> createComputeQueue(CommandQueueDescriptor descriptor) noexcept   = 0;
+        /**
+         * @brief Create a compute queue that runs inline with any graphics operations.
+         * @param descriptor 
+         * @return 
+         */
+        virtual Expected<std::unique_ptr<GhaComputeQueue>, std::runtime_error> createComputeQueue(CommandQueueDescriptor descriptor) noexcept = 0;
+        /**
+         * @brief Create a compute queue that runs parallel to any graphics operations.
+         * @param descriptor 
+         * @return 
+         */
+        virtual Expected<std::unique_ptr<GhaComputeQueue>, std::runtime_error> createAsyncComputeQueue(CommandQueueDescriptor descriptor) noexcept = 0;
 
         virtual Expected<std::unique_ptr<GhaSwapchain>, std::runtime_error> createSwapChain(GhaSwapchain::Descriptor descriptor) noexcept = 0;
 
@@ -70,8 +81,8 @@ namespace clove {
         virtual Expected<std::unique_ptr<GhaFence>, std::runtime_error> createFence(GhaFence::Descriptor descriptor) noexcept = 0;
 
         virtual Expected<std::unique_ptr<GhaBuffer>, std::runtime_error> createBuffer(GhaBuffer::Descriptor descriptor) noexcept = 0;
-        
-        virtual Expected<std::unique_ptr<GhaImage>, std::runtime_error> createImage(GhaImage::Descriptor descriptor) noexcept    = 0;
+
+        virtual Expected<std::unique_ptr<GhaImage>, std::runtime_error> createImage(GhaImage::Descriptor descriptor) noexcept = 0;
         /**
          * @brief Creates a view of a GhaImage that can be used in shaders.
          * @param image The image to create a view from.

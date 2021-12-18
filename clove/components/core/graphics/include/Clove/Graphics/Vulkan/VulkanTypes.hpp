@@ -9,10 +9,10 @@ namespace clove {
         std::optional<uint32_t> graphicsFamily;
         std::optional<uint32_t> presentFamily;
         std::optional<uint32_t> transferFamily;
-        std::optional<uint32_t> computeFamily;
+        std::optional<uint32_t> asyncComputeFamily;
 
         bool isComplete(bool const requirePresentFamily) const {
-            return graphicsFamily && (presentFamily || !requirePresentFamily) && transferFamily && computeFamily;
+            return graphicsFamily && (presentFamily || !requirePresentFamily) && transferFamily && asyncComputeFamily;
         }
     };
 
