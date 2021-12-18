@@ -426,7 +426,7 @@ namespace clove {
         RgComputePass::Descriptor passDescriptor{
             .shader = renderGraph.createShader({ skinningcompute, skinningcomputeLength }, shaderIncludes, "Mesh skinner (compute)", GhaShader::Stage::Compute),
         };
-        RgPassId skinningPass{ renderGraph.createComputePass(passDescriptor, RgSyncType::Async) };
+        RgPassId skinningPass{ renderGraph.createComputePass(passDescriptor, RgSyncType::Sync) };
 
         for(auto &mesh : meshes) {
             if(!currentFrameData.meshes[mesh.meshIndex].matrixPalet.has_value()) {
