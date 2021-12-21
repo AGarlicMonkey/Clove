@@ -2,6 +2,16 @@
 
 namespace clove {
     template<number T>
+    constexpr bool operator==(vec<1, T> const &lhs, vec<1, T> const &rhs) {
+        return lhs.x == rhs.x;
+    }
+
+    template<number T>
+    constexpr bool operator!=(vec<1, T> const &lhs, vec<1, T> const &rhs) {
+        return !(lhs == rhs);
+    }
+
+    template<number T>
     constexpr T &vec<1, T>::operator[](size_t const index) {
         return x;
     }
@@ -9,6 +19,17 @@ namespace clove {
     template<number T>
     constexpr T const &vec<1, T>::operator[](size_t const index) const {
         return x;
+    }
+
+
+    template<number T>
+    constexpr bool operator==(vec<2, T> const &lhs, vec<2, T> const &rhs) {
+        return lhs.x == rhs.x && lhs.y == rhs.y;
+    }
+
+    template<number T>
+    constexpr bool operator!=(vec<2, T> const &lhs, vec<2, T> const &rhs) {
+        return !(lhs == rhs);
     }
 
     template<number T>
@@ -32,6 +53,16 @@ namespace clove {
     }
 
     template<number T>
+    constexpr bool operator==(vec<3, T> const &lhs, vec<3, T> const &rhs) {
+        return lhs.x == rhs.x && lhs.y == rhs.y && lhs.z == rhs.z;
+    }
+
+    template<number T>
+    constexpr bool operator!=(vec<3, T> const &lhs, vec<3, T> const &rhs) {
+        return !(lhs == rhs);
+    }
+
+    template<number T>
     constexpr T &vec<3, T>::operator[](size_t const index) {
         if(index <= 2) {
             T *mem{ &x };
@@ -49,6 +80,16 @@ namespace clove {
         } else {
             return z;
         }
+    }
+
+    template<number T>
+    constexpr bool operator==(vec<4, T> const &lhs, vec<4, T> const &rhs) {
+        return lhs.x == rhs.x && lhs.y == rhs.y && lhs.z == rhs.z && lhs.w == rhs.w;
+    }
+
+    template<number T>
+    constexpr bool operator!=(vec<4, T> const &lhs, vec<4, T> const &rhs) {
+        return !(lhs == rhs);
     }
 
     template<number T>

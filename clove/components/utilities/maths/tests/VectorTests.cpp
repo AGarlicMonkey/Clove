@@ -78,6 +78,48 @@ TEST(VectorTests, CanAccessMembersByIndex) {
     EXPECT_EQ(v4.w, v4[4]);
 }
 
+TEST(VectorTests, CanCompareTwoVectors){
+    vec1f v1a{ 1 };
+    vec1f v1b{ 1 };
+    vec1f v1c{ 2 };
+
+    EXPECT_TRUE(v1a == v1b);
+    EXPECT_TRUE(v1b != v1c);
+
+    EXPECT_FALSE(v1a == v1c);
+    EXPECT_FALSE(v1a != v1b);
+
+    vec2f v2a{ 1, 2 };
+    vec2f v2b{ 1, 2 };
+    vec2f v2c{ 4, 3 };
+
+    EXPECT_TRUE(v2a == v2b);
+    EXPECT_TRUE(v2b != v2c);
+
+    EXPECT_FALSE(v2a == v2c);
+    EXPECT_FALSE(v2a != v2b);
+
+    vec3f v3a{ 2, 2, 2 };
+    vec3f v3b{ 2, 2, 2 };
+    vec3f v3c{ 4, 6, 7 };
+
+    EXPECT_TRUE(v3a == v3b);
+    EXPECT_TRUE(v3b != v3c);
+
+    EXPECT_FALSE(v3a == v3c);
+    EXPECT_FALSE(v3a != v3b);
+
+    vec4f v4a{ 3, 2, 1, 6 };
+    vec4f v4b{ 3, 2, 1, 6 };
+    vec4f v4c{ 9, 44, 5, 2 };
+
+    EXPECT_TRUE(v4a == v4b);
+    EXPECT_TRUE(v4b != v4c);
+
+    EXPECT_FALSE(v4a == v4c);
+    EXPECT_FALSE(v4a != v4b);
+}
+
 TEST(VectorTests, CanGetLengthOfAVector) {
     vec1f v1{ 1 };
 
