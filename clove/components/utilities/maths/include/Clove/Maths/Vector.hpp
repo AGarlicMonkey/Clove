@@ -16,6 +16,9 @@ namespace clove {
             T r;
             T u;
         };
+
+        constexpr T &operator[](size_t const index);
+        constexpr T const &operator[](size_t const index) const;
     };
 
     template<number T>
@@ -30,6 +33,9 @@ namespace clove {
             T g;
             T v;
         };
+
+        constexpr T &operator[](size_t const index);
+        constexpr T const &operator[](size_t const index) const;
     };
 
     template<number T>
@@ -46,6 +52,9 @@ namespace clove {
             T z;
             T b;
         };
+
+        constexpr T &operator[](size_t const index);
+        constexpr T const &operator[](size_t const index) const;
     };
 
     template<number T>
@@ -66,6 +75,9 @@ namespace clove {
             T w;
             T a;
         };
+
+        constexpr T &operator[](size_t const index);
+        constexpr T const &operator[](size_t const index) const;
     };
 
     using vec1f = vec<1, float>;
@@ -73,3 +85,10 @@ namespace clove {
     using vec3f = vec<3, float>;
     using vec4f = vec<4, float>;
 }
+
+namespace clove {
+    template<size_t L, typename T>
+    constexpr T length(vec<L, T> const &vec);
+}
+
+#include "Vector.inl"
