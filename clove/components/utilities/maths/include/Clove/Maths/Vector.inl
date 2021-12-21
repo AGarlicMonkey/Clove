@@ -2,6 +2,18 @@
 
 namespace clove {
     template<number T>
+    constexpr vec<1, T> operator+(vec<1, T> const &a, vec<1, T> const &b) {
+        return { a.x + b.x };
+    }
+
+    template<number T>
+    constexpr vec<1, T> &vec<1, T>::operator+=(vec<1, T> const &b) {
+        x += b.x;
+
+        return *this;
+    }
+
+    template<number T>
     constexpr bool operator==(vec<1, T> const &lhs, vec<1, T> const &rhs) {
         return lhs.x == rhs.x;
     }
@@ -21,6 +33,18 @@ namespace clove {
         return x;
     }
 
+    template<number T>
+    constexpr vec<2, T> operator+(vec<2, T> const &a, vec<2, T> const &b) {
+        return { a.x + b.x, a.y + b.y };
+    }
+
+    template<number T>
+    constexpr vec<2, T> &vec<2, T>::operator+=(vec<2, T> const &b) {
+        x += b.x;
+        y += b.y;
+
+        return *this;
+    }
 
     template<number T>
     constexpr bool operator==(vec<2, T> const &lhs, vec<2, T> const &rhs) {
@@ -53,6 +77,20 @@ namespace clove {
     }
 
     template<number T>
+    constexpr vec<3, T> operator+(vec<3, T> const &a, vec<3, T> const &b) {
+        return { a.x + b.x, a.y + b.y, a.z + b.z };
+    }
+
+    template<number T>
+    constexpr vec<3, T> &vec<3, T>::operator+=(vec<3, T> const &b) {
+        x += b.x;
+        y += b.y;
+        z += b.z;
+
+        return *this;
+    }
+
+    template<number T>
     constexpr bool operator==(vec<3, T> const &lhs, vec<3, T> const &rhs) {
         return lhs.x == rhs.x && lhs.y == rhs.y && lhs.z == rhs.z;
     }
@@ -80,6 +118,21 @@ namespace clove {
         } else {
             return z;
         }
+    }
+
+    template<number T>
+    constexpr vec<4, T> operator+(vec<4, T> const &a, vec<4, T> const &b) {
+        return { a.x + b.x, a.y + b.y, a.z + b.z, a.w + b.w };
+    }
+
+    template<number T>
+    constexpr vec<4, T> &vec<4, T>::operator+=(vec<4, T> const &b) {
+        x += b.x;
+        y += b.y;
+        z += b.z;
+        w += b.w;
+
+        return *this;
     }
 
     template<number T>
@@ -123,6 +176,7 @@ namespace clove {
 
     template<size_t L, number T>
     constexpr vec<L, T> normalise(vec<L, T> const &v) {
-        return v / length(v);
+        // return v / length(v);
+        return {};
     }
 }

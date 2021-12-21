@@ -120,6 +120,57 @@ TEST(VectorTests, CanCompareTwoVectors){
     EXPECT_FALSE(v4a != v4b);
 }
 
+TEST(VectorTests, CanAddTwoVectors) {
+    vec1f v1a{ 1 };
+    vec1f v1b{ 3 };
+    vec1f v1c{ v1a };
+
+    vec1f const v1sum{ v1a.x + v1b.x };
+    EXPECT_EQ(v1a + v1b, v1sum);
+
+    v1c += v1b;
+
+    EXPECT_EQ(v1c.x, v1a.x + v1b.x);
+
+    vec2f v2a{ 1, 2 };
+    vec2f v2b{ 1, 2 };
+    vec2f v2c{ v2a };
+
+    vec2f const v2sum{ v2a.x + v2b.x, v2a.y + v2b.y };
+    EXPECT_EQ(v2a + v2b, v2sum);
+
+    v2c += v2b;
+
+    EXPECT_EQ(v2c.x, v2a.x + v2b.x);
+    EXPECT_EQ(v2c.y, v2a.y + v2b.y);
+
+    vec3f v3a{ 2, 2, 2 };
+    vec3f v3b{ 2, 2, 2 };
+    vec3f v3c{ v3a };
+
+    vec3f const v3sum{ v3a.x + v3b.x, v3a.y + v3b.y, v3a.z + v3b.z };
+    EXPECT_EQ(v3a + v3b, v3sum);
+
+    v3c += v3b;
+
+    EXPECT_EQ(v3c.x, v3a.x + v3b.x);
+    EXPECT_EQ(v3c.y, v3a.y + v3b.y);
+    EXPECT_EQ(v3c.z, v3a.z + v3b.z);
+
+    vec4f v4a{ 3, 2, 1, 6 };
+    vec4f v4b{ 2, 2, 2 };
+    vec4f v4c{ v4a };
+
+    vec4f const v4sum{ v4a.x + v4b.x, v4a.y + v4b.y, v4a.z + v4b.z, v4a.w + v4b.w };
+    EXPECT_EQ(v4a + v4b, v4sum);
+
+    v4c += v4b;
+
+    EXPECT_EQ(v4c.x, v4a.x + v4b.x);
+    EXPECT_EQ(v4c.y, v4a.y + v4b.y);
+    EXPECT_EQ(v4c.z, v4a.z + v4b.z);
+    EXPECT_EQ(v4c.w, v4a.w + v4b.w);
+}
 TEST(VectorTests, CanGetLengthOfAVector) {
     vec1f v1{ 1 };
 
