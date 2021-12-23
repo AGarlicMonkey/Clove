@@ -423,6 +423,8 @@ namespace clove {
     }
 
     void HighDefinitionRenderer::skinMeshes(RenderGraph &renderGraph, std::vector<RenderGraphMeshInfo> &meshes) {
+        uint32_t constexpr workgroupSize{ 256 }; //Workgroup size of each dispatch - see SkinningCompute.glsl
+
         RgComputePass::Descriptor passDescriptor{
             .shader = renderGraph.createShader({ skinningcompute, skinningcomputeLength }, shaderIncludes, "Mesh skinner (compute)", GhaShader::Stage::Compute),
         };
@@ -469,7 +471,7 @@ namespace clove {
                                                                        .size   = mesh.vertexBufferSize,
                                                                    },
                                                                },
-                                                               .disptachSize = { (mesh.vertexCount / AVERAGE_WORK_GROUP_SIZE) + 1, 1, 1 },
+                                                               .disptachSize = { (mesh.vertexCount / workgroupSize) + 1, 1, 1 },
                                                            });
 
             mesh.vertexBuffer = skinnedBuffer;
