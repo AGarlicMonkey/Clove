@@ -2,6 +2,7 @@
 
 #include "Clove/Graphics/GhaShader.hpp"
 
+#include <Clove/Maths/Vector.hpp>
 #include <MetalKit/MetalKit.h>
 
 namespace clove {
@@ -9,11 +10,13 @@ namespace clove {
 		//VARIABLES
 	private:
 		id<MTLFunction> function;
+        
+        vec3ui workgroupSize{}; //TEMP: Storing workgroup sizes inside all metal shaders. These are defined outside of the shader unlike D3D and Vulkan (see MetalComputeCommandEncoder.mm)
 		
 		//FUNCTIONS
 	public:
 		MetalShader() = delete;
-		MetalShader(id<MTLFunction> function);
+		MetalShader(id<MTLFunction> function, vec3ui workgroupSize);
 		
 		MetalShader(MetalShader const &other) = delete;
 		MetalShader(MetalShader &&other) noexcept;
@@ -24,6 +27,7 @@ namespace clove {
 		~MetalShader();
 		
 		inline id<MTLFunction> getFunction() const;
+        inline vec3ui const &getWorkgroupSize() const;
 	};
 }
 

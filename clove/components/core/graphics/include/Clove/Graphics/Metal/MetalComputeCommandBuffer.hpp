@@ -7,10 +7,16 @@
 #include <functional>
 
 namespace clove {
+    class MetalComputePipelineObject;
+}
+
+namespace clove {
 	class MetalComputeCommandBuffer : public GhaComputeCommandBuffer {
 		//VARIABLES
 	private:
 		std::vector<std::function<void(id<MTLComputeCommandEncoder>)>> commands{};
+        
+        MetalComputePipelineObject *activePipeline{ nullptr }; //Required to get shader workgroup size
 			
 		//FUNCTIONS
 	public:

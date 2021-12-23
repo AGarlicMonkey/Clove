@@ -6,6 +6,7 @@
 #include "Clove/Graphics/Metal/MetalGlobals.hpp"
 #include "Clove/Graphics/Metal/MetalImage.hpp"
 #include "Clove/Graphics/Metal/MetalLog.hpp"
+#include "Clove/Graphics/Metal/MetalShader.hpp"
 
 #include <Clove/Cast.hpp>
 
@@ -27,8 +28,11 @@ namespace clove {
 	}
 
 	void MetalComputeCommandBuffer::bindPipelineObject(GhaComputePipelineObject &pipelineObject) {
-		commands.emplace_back([pipelineObject = &pipelineObject](id<MTLComputeCommandEncoder> encoder) {
-			[encoder setComputePipelineState:polyCast<MetalComputePipelineObject>(pipelineObject)->getPipelineState()];
+        auto *const metalPipelineObject{ polyCast<MetalComputePipelineObject>(&pipelineObject) };
+        activePipeline = metalPipelineObject;
+        
+		commands.emplace_back([metalPipelineObject](id<MTLComputeCommandEncoder> encoder) {
+			[encoder setComputePipelineState:metalPipelineObject->getPipelineState()];
 		});
 	}
 
@@ -93,26 +97,12 @@ namespace clove {
 	}
 
 	void MetalComputeCommandBuffer::disptach(vec3ui groupCount) {
-		commands.emplace_back([groupCount](id<MTLComputeCommandEncoder> encoder){
-			//TODO: Currently all sizes are hard coded as 256. The threads per group is something that's set inside the shader in DX and Vulkan so there needs to be shader reflection to retrieve it.
-			uint32_t constexpr workGroupSize{ 256 };
-			
-			uint32_t numGroups{ 1 };
-			if(groupCount.y > 1) {
-				++numGroups;
-			}
-			if(groupCount.z > 1 ) {
-				++numGroups;
-			}
-			
-			vec3ui const workGroup{
-				workGroupSize / numGroups,
-				groupCount.y > 1 ? workGroupSize / numGroups : 1,
-				groupCount.z > 1 ? workGroupSize / numGroups : 1
-			};
-			
+        auto const *const metalShader{ polyCast<MetalShader const>(activePipeline->getDescriptor().shader) };
+        vec3ui const &workGroupSize{ metalShader->getWorkgroupSize() };
+        
+		commands.emplace_back([workGroupSize, groupCount](id<MTLComputeCommandEncoder> encoder){
 			[encoder dispatchThreadgroups:MTLSizeMake(groupCount.x, groupCount.y, groupCount.z)
-					threadsPerThreadgroup:MTLSizeMake(workGroup.x, workGroup.y, workGroup.z)];
+					threadsPerThreadgroup:MTLSizeMake(workGroupSize.x, workGroupSize.y, workGroupSize.z)];
 		});
 	}
 
