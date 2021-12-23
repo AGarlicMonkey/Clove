@@ -98,7 +98,7 @@ namespace clove {
 
 	void MetalComputeCommandBuffer::disptach(vec3ui groupCount) {
         auto const *const metalShader{ polyCast<MetalShader const>(activePipeline->getDescriptor().shader) };
-        vec3ui const &workGroupSize{ metalShader->getWorkgroupSize() };
+        vec3ui const workGroupSize{ metalShader != nullptr ? metalShader->getWorkgroupSize() : vec3ui{ 1, 1, 1 } };
         
 		commands.emplace_back([workGroupSize, groupCount](id<MTLComputeCommandEncoder> encoder){
 			[encoder dispatchThreadgroups:MTLSizeMake(groupCount.x, groupCount.y, groupCount.z)
