@@ -87,13 +87,20 @@ namespace clove {
             image.addWritePass(renderPassId);
         }
 
-        if(RgImageId const imageId{ passDescriptor.depthStencil.imageView.image }; imageId != INVALID_RESOURCE_ID) {
-            auto &image{ images.at(imageId) };
+        if(RgDepthStencilBinding const &depthStencil{ passDescriptor.depthStencil }; depthStencil.imageView.image != INVALID_RESOURCE_ID) {
+            auto &image{ images.at(depthStencil.imageView.image) };
 
             if(!image.isExternalImage()) {
                 image.addImageUsage(GhaImage::UsageMode::DepthStencilAttachment);
             }
-            image.addWritePass(renderPassId);
+
+            if(depthStencil.loadOp == LoadOperation::Load) {
+                image.addReadPass(renderPassId);
+            }
+
+            if(depthStencil.storeOp == StoreOperation::Store) {
+                image.addWritePass(renderPassId);
+            }
         }
 
         renderPasses.emplace(std::make_pair(renderPassId, RgRenderPass{ std::move(passDescriptor) }));
@@ -438,8 +445,11 @@ namespace clove {
                 return;
             }
 
-            for(RgResourceId resource : pass->getInputResources()) {
-                buildExecutionPasses(outPasses, resource);
+            for(RgResourceId passInputResource : pass->getInputResources()) {
+                //Some passes can both read and write to it's depth target so we need to make sure we don't hit any infinite loops
+                if(getResourceFromId(passInputResource) != resource) {
+                    buildExecutionPasses(outPasses, passInputResource);
+                }
             }
         }
     }

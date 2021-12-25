@@ -24,6 +24,9 @@ namespace clove {
             for(auto const &image : submission.shaderImages) {
                 inputResources.emplace(image.imageView.image);
             }
+            if(descriptor.depthStencil.imageView.image != INVALID_RESOURCE_ID && descriptor.depthStencil.loadOp == LoadOperation::Load) {
+                inputResources.emplace(descriptor.depthStencil.imageView.image);
+            }
         }
         return inputResources;
     }
@@ -36,6 +39,10 @@ namespace clove {
         if(descriptor.depthStencil.imageView.image != INVALID_RESOURCE_ID) {
             outputResources.emplace(descriptor.depthStencil.imageView.image);
         }
+        if(descriptor.depthStencil.imageView.image != INVALID_RESOURCE_ID && descriptor.depthStencil.storeOp == StoreOperation::Store) {
+            outputResources.emplace(descriptor.depthStencil.imageView.image);
+        }
+
         return outputResources;
     }
 }
