@@ -259,10 +259,6 @@ namespace clove {
         renderSene(renderGraph, renderGraphMeshes, shadowMaps, renderTargetImage, depthTargetImage);
 
         //Execute UI work
-        //TODO: Cache instead of making every frame
-        std::unordered_map<std::string, std::string> shaderIncludes;
-        shaderIncludes["Constants.glsl"] = { constants, constantsLength };
-
         RgRenderPass::Descriptor uiPassDescriptor{
             .vertexShader     = renderGraph.createShader({ uivert, uivertLength }, shaderIncludes, "UI (vertex)", GhaShader::Stage::Vertex),
             .pixelShader      = renderGraph.createShader({ widgetpixel, widgetpixelLength }, shaderIncludes, "Widget (pixel)", GhaShader::Stage::Pixel),
