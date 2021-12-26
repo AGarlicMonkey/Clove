@@ -45,9 +45,11 @@ namespace clove {
             RgResourceId vertexBuffer{};
             RgResourceId indexBuffer{};
 
-            std::vector<RgBufferBinding> shaderUbos{};
-            std::vector<RgImageBinding> shaderImages{};
-            std::vector<RgSamplerBinding> shaderSamplers{};
+            std::vector<RgBufferBinding> readUniformBuffers{};
+            std::vector<RgBufferBinding> readStorageBuffers{};
+
+            std::vector<RgImageBinding> images{};
+            std::vector<RgSamplerBinding> samplers{};
 
             size_t indexCount{ 0 };
         };

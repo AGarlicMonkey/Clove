@@ -25,6 +25,9 @@ namespace clove {
 
             std::vector<RgBufferBinding> writeBuffers{};
 
+            std::vector<RgImageBinding> readImages{};
+            std::vector<RgImageBinding> writeImages{};
+
             vec3ui disptachSize{};
         };
 

@@ -167,7 +167,7 @@ namespace clove {
             buffer.addReadPass(renderPass);
         }
 
-        for(auto const &ubo : submission.shaderUbos) {
+        for(auto const &ubo : submission.readUniformBuffers) {
             RgResourceId const bufferId{ ubo.buffer };
 
             auto &buffer{ buffers.at(bufferId) };
@@ -177,7 +177,17 @@ namespace clove {
             buffer.addReadPass(renderPass);
         }
 
-        for(auto &shaderImage : submission.shaderImages) {
+        for(auto const &sbo : submission.readStorageBuffers) {
+            RgResourceId const bufferId{ sbo.buffer };
+
+            auto &buffer{ buffers.at(bufferId) };
+            if(!buffer.isExternalBuffer()) {
+                buffer.addBufferUsage(GhaBuffer::UsageMode::StorageBuffer);
+            }
+            buffer.addReadPass(renderPass);
+        }
+
+        for(auto &shaderImage : submission.images) {
             RgImageId const imageId{ shaderImage.imageView.image };
             auto &image{ images.at(imageId) };
 
@@ -225,6 +235,26 @@ namespace clove {
                 buffer.addBufferUsage(GhaBuffer::UsageMode::StorageBuffer);
             }
             buffer.addWritePass(computePass);
+        }
+
+        for(auto const &image : submission.readImages) {
+            RgResourceId const imageId{ image.imageView.image };
+
+            auto &image{ images.at(imageId) };
+            if(!image.isExternalImage()) {
+                image.addImageUsage(GhaImage::UsageMode::Sampled);
+            }
+            image.addReadPass(computePass);
+        }
+
+        for(auto const &image : submission.writeImages) {
+            RgResourceId const imageId{ image.imageView.image };
+
+            auto &image{ images.at(imageId) };
+            if(!image.isExternalImage()) {
+                image.addImageUsage(GhaImage::UsageMode::Storage);
+            }
+            image.addReadPass(computePass);
         }
 
         pass->addSubmission(std::move(submission));
@@ -538,13 +568,31 @@ namespace clove {
                                         }
 
                                         bool found{ false };
-                                        for(auto const &ubo : submission.shaderUbos) {
+                                        for(auto const &ubo : submission.readUniformBuffers) {
                                             if(ubo.slot == resourceId) {
                                                 if(ubo.shaderStage == GhaShader::Stage::Vertex) {
                                                     waitStage = PipelineStage::VertexShader;
                                                     found     = true;
                                                     break;
                                                 } else if(ubo.shaderStage == GhaShader::Stage::Pixel) {
+                                                    waitStage = PipelineStage::PixelShader;
+                                                    found     = true;
+                                                    break;
+                                                }
+                                            }
+                                        }
+
+                                        if(found) {
+                                            break;
+                                        }
+
+                                        for(auto const &sbo : submission.readStorageBuffers) {
+                                            if(sbo.slot == resourceId) {
+                                                if(sbo.shaderStage == GhaShader::Stage::Vertex) {
+                                                    waitStage = PipelineStage::VertexShader;
+                                                    found     = true;
+                                                    break;
+                                                } else if(sbo.shaderStage == GhaShader::Stage::Pixel) {
                                                     waitStage = PipelineStage::PixelShader;
                                                     found     = true;
                                                     break;
@@ -768,7 +816,7 @@ namespace clove {
             //Build descriptor layouts using the first pass.
             //TODO: Get this infomation from shader reflection
             std::vector<DescriptorSetBindingInfo> descriptorBindings{};
-            for(auto const &ubo : passSubmissions[0].shaderUbos) {
+            for(auto const &ubo : passSubmissions[0].readUniformBuffers) {
                 descriptorBindings.emplace_back(DescriptorSetBindingInfo{
                     .binding   = ubo.slot,
                     .type      = DescriptorType::UniformBuffer,
@@ -776,7 +824,15 @@ namespace clove {
                     .stage     = ubo.shaderStage,//TODO: provided by shader reflection
                 });
             }
-            for(auto const &image : passSubmissions[0].shaderImages) {
+            for(auto const &sbo : passSubmissions[0].readStorageBuffers) {
+                descriptorBindings.emplace_back(DescriptorSetBindingInfo{
+                    .binding   = sbo.slot,
+                    .type      = DescriptorType::StorageBuffer,
+                    .arraySize = 1,
+                    .stage     = sbo.shaderStage,//TODO: provided by shader reflection
+                });
+            }
+            for(auto const &image : passSubmissions[0].images) {
                 descriptorBindings.emplace_back(DescriptorSetBindingInfo{
                     .binding   = image.slot,
                     .type      = DescriptorType::SampledImage,
@@ -784,7 +840,7 @@ namespace clove {
                     .stage     = GhaShader::Stage::Pixel,//TODO: provided by shader reflection
                 });
             }
-            for(auto const &sampler : passSubmissions[0].shaderSamplers) {
+            for(auto const &sampler : passSubmissions[0].samplers) {
                 descriptorBindings.emplace_back(DescriptorSetBindingInfo{
                     .binding   = sampler.slot,
                     .type      = DescriptorType::Sampler,
@@ -848,21 +904,25 @@ namespace clove {
 
             //Count descriptor sets required for the entire pass
             for(auto const &submission : passSubmissions) {
-                bool const hasUbo{ !submission.shaderUbos.empty() };
-                bool const hasImage{ !submission.shaderImages.empty() };
-                bool const hasImageSampler{ !submission.shaderSamplers.empty() };
+                bool const hasUbo{ !submission.readUniformBuffers.empty() };
+                bool const hasSbo{ !submission.readStorageBuffers.empty() };
+                bool const hasImage{ !submission.images.empty() };
+                bool const hasImageSampler{ !submission.samplers.empty() };
 
                 if(hasUbo) {
-                    totalDescriptorBindingCount[DescriptorType::UniformBuffer] += submission.shaderUbos.size();
+                    totalDescriptorBindingCount[DescriptorType::UniformBuffer] += submission.readUniformBuffers.size();
+                }
+                if(hasSbo) {
+                    totalDescriptorBindingCount[DescriptorType::UniformBuffer] += submission.readStorageBuffers.size();
                 }
                 if(hasImage) {
-                    totalDescriptorBindingCount[DescriptorType::SampledImage] += submission.shaderImages.size();
+                    totalDescriptorBindingCount[DescriptorType::SampledImage] += submission.images.size();
                 }
                 if(hasImageSampler) {
-                    totalDescriptorBindingCount[DescriptorType::Sampler] += submission.shaderSamplers.size();
+                    totalDescriptorBindingCount[DescriptorType::Sampler] += submission.samplers.size();
                 }
 
-                if(hasUbo || hasImage || hasImageSampler) {
+                if(hasUbo || hasSbo || hasImage || hasImageSampler) {
                     ++totalDescriptorSets;//Allocating a single set per submission
                 }
             }
@@ -903,6 +963,22 @@ namespace clove {
                 descriptorBindings.emplace_back(DescriptorSetBindingInfo{
                     .binding   = sbo.slot,
                     .type      = DescriptorType::StorageBuffer,
+                    .arraySize = 1,
+                    .stage     = GhaShader::Stage::Compute,
+                });
+            }
+            for(auto const &image : passSubmissions[0].readImages) {
+                descriptorBindings.emplace_back(DescriptorSetBindingInfo{
+                    .binding   = image.slot,
+                    .type      = DescriptorType::SampledImage,
+                    .arraySize = 1,
+                    .stage     = GhaShader::Stage::Compute,
+                });
+            }
+            for(auto const &image : passSubmissions[0].writeImages) {
+                descriptorBindings.emplace_back(DescriptorSetBindingInfo{
+                    .binding   = image.slot,
+                    .type      = DescriptorType::StorageImage,
                     .arraySize = 1,
                     .stage     = GhaShader::Stage::Compute,
                 });
@@ -1006,14 +1082,18 @@ namespace clove {
         for(size_t index{ 0 }; auto const &submission : passSubmissions) {
             std::unique_ptr<GhaDescriptorSet> const &descriptorSet{ allocatedDescriptorSets.at(passId)[index] };
 
-            for(auto const &ubo : submission.shaderUbos) {
+            for(auto const &ubo : submission.readUniformBuffers) {
                 RgBuffer &buffer{ buffers.at(ubo.buffer) };
                 descriptorSet->write(*buffer.getGhaBuffer(frameCache), buffer.getBufferOffset() + ubo.offset, ubo.size, DescriptorType::UniformBuffer, ubo.slot);
             }
-            for(auto const &image : submission.shaderImages) {
-                descriptorSet->write(*images.at(image.imageView.image).getGhaImageView(frameCache, image.imageView.viewType, image.imageView.arrayIndex, image.imageView.arrayCount), GhaImage::Layout::ShaderReadOnlyOptimal, image.slot);
+            for(auto const &sbo : submission.readStorageBuffers) {
+                RgBuffer &buffer{ buffers.at(sbo.buffer) };
+                descriptorSet->write(*buffer.getGhaBuffer(frameCache), buffer.getBufferOffset() + sbo.offset, sbo.size, DescriptorType::StorageBuffer, sbo.slot);
             }
-            for(auto const &sampler : submission.shaderSamplers) {
+            for(auto const &image : submission.images) {
+                descriptorSet->write(*images.at(image.imageView.image).getGhaImageView(frameCache, image.imageView.viewType, image.imageView.arrayIndex, image.imageView.arrayCount), GhaImage::Layout::ShaderReadOnlyOptimal, DescriptorType::SampledImage, image.slot);
+            }
+            for(auto const &sampler : submission.samplers) {
                 descriptorSet->write(*samplers.at(sampler.sampler), sampler.slot);
             }
 
@@ -1058,6 +1138,12 @@ namespace clove {
             for(auto const &writeSB : submission.writeBuffers) {
                 RgBuffer &buffer{ buffers.at(writeSB.buffer) };
                 descriptorSet->write(*buffer.getGhaBuffer(frameCache), buffer.getBufferOffset() + writeSB.offset, writeSB.size, DescriptorType::StorageBuffer, writeSB.slot);
+            }
+            for(auto const &image : submission.readImages) {
+                descriptorSet->write(*images.at(image.imageView.image).getGhaImageView(frameCache, image.imageView.viewType, image.imageView.arrayIndex, image.imageView.arrayCount), GhaImage::Layout::ShaderReadOnlyOptimal, DescriptorType::SampledImage, image.slot);
+            }
+            for(auto const &image : submission.writeImages) {
+                descriptorSet->write(*images.at(image.imageView.image).getGhaImageView(frameCache, image.imageView.viewType, image.imageView.arrayIndex, image.imageView.arrayCount), GhaImage::Layout::ShaderReadOnlyOptimal, DescriptorType::StorageImage, image.slot);
             }
 
             computeCommandBufffer.bindDescriptorSet(*descriptorSet, 0);
