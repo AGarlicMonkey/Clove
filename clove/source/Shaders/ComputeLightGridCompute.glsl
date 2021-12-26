@@ -3,11 +3,10 @@
 #include "Constants.glsl"
 #include "Common.glsl"
 
-#define MAX_LIGHTS 1024
 #define MAX_LIGHTS_PER_TILE 256
 #define GROUP_SIZE 16
 
-layout(set = 0, binding = 0) uniform writeonly image2D lightGrid;
+layout(set = 0, binding = 0) uniform writeonly uimage2D lightGrid;
 layout(set = 0, binding = 1, r32f) uniform readonly image2D sceneDepth;
 
 layout(std140, set = 0, binding = 2) buffer CulledLights{

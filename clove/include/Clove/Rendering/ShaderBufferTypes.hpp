@@ -22,51 +22,26 @@ namespace clove {
     };
 
     //Lighting data passed to GPU
-    struct DirectionalLightData {
-        alignas(16) vec3f direction{ 0.0f, 0.0f, 0.0f };
+    struct LightData {
+        vec3f direction{ 0.0f, 0.0f, 0.0f };
+        uint32_t shadowIndex{ 0 };
 
-        alignas(16) vec3f ambient{ 0.01f, 0.01f, 0.01f };
-        alignas(16) vec3f diffuse{ 0.75f, 0.75f, 0.75f };
-        alignas(16) vec3f specular{ 1.0f, 1.0f, 1.0f };
-    };
-    struct PointLightData {
         vec3f position{ 0.0f, 0.0f, 0.0f };
-
         float constant{ 1.0f };
+
         vec3f ambient{ 0.01f, 0.01f, 0.01f };
         float linear{ 0.0014f };
+
         vec3f diffuse{ 0.75f, 0.75f, 0.75f };
         float quadratic{ 0.000007f };
+
         vec3f specular{ 1.0f, 1.0f, 1.0f };
+        float radius{ 0 };
 
-        float farPlane{ 0 };
-    };
-    struct LightDataArray {
-        std::array<DirectionalLightData, MAX_LIGHTS> directionalLights{};
-        std::array<PointLightData, MAX_LIGHTS> pointLights{};
-    };
-
-    struct LightCount {
-        uint32_t numDirectional{ 0 };
-        uint32_t numPoint{ 0 };
-    };
-
-    //Lighting data needed shadows
-    struct DirectionalShadowTransformArray {
-        std::array<mat4f, MAX_LIGHTS> transforms;
-        mat4f &operator[](const size_t index) {
-            return transforms[index];
-        }
-    };
-
-    //For renderer - TODO Move into that header
-    struct DirectionalLight {
-        DirectionalLightData data{};
-        mat4f shadowTransform{};
-    };
-    struct PointLight {
-        PointLightData data{};
-        std::array<mat4f, 6> shadowTransforms{};
+        int32_t type{ 0 };
+        float padding_1;
+        float padding_2;
+        float padding_3;
     };
 
     struct SkeletalData {

@@ -7,8 +7,8 @@
 #include "Clove/Components/PointLightComponent.hpp"
 #include "Clove/Components/StaticModelComponent.hpp"
 #include "Clove/Components/TransformComponent.hpp"
-#include "Clove/Rendering/Renderer.hpp"
 #include "Clove/Rendering/Renderables/Mesh.hpp"
+#include "Clove/Rendering/Renderer.hpp"
 
 #include <Clove/ECS/EntityManager.hpp>
 #include <Clove/Maths/Maths.hpp>
@@ -55,7 +55,7 @@ namespace clove {
         entityManager->forEach([this](TransformComponent const &transform, StaticModelComponent const &staticModel) {
             if(staticModel.model.isValid()) {
                 mat4f const modelTransform{ transform.worldMatrix };
-                
+
                 for(auto const &mesh : staticModel.model->getMeshes()) {
                     renderer->submitMesh(Renderer::MeshInfo{ mesh, staticModel.material, modelTransform });
                 }
@@ -81,7 +81,7 @@ namespace clove {
             float constexpr farDist{ 100.0f };
             mat4f const shadowProj{ createOrthographicMatrix(-mapSize, mapSize, -mapSize, mapSize, nearDist, farDist) };
 
-            DirectionalLight lightProxy{
+            Renderer::DirectionalLight lightProxy{
                 .data = {
                     .direction = light.direction,
                     .ambient   = light.ambientColour,
@@ -100,13 +100,13 @@ namespace clove {
 
             vec3f const &position{ transform.position };
 
-            PointLight lightProxy{
+            Renderer::PointLight lightProxy{
                 .data = {
                     .position = position,
                     .ambient  = light.ambientColour,
                     .diffuse  = light.diffuseColour,
                     .specular = light.specularColour,
-                    .farPlane = farDist,
+                    .radius   = farDist,
                 },
                 .shadowTransforms = {
                     shadowProj * lookAt(position, position + vec3f{ 1.0f, 0.0f, 0.0f }, vec3f{ 0.0f, 1.0f, 0.0f }),
