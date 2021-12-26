@@ -30,6 +30,9 @@ set(
 		${SOURCE}/Shaders/PointShadowDepthsVert.glsl
 		${SOURCE}/Shaders/PointShadowDepthsPixel.glsl
 
+		${SOURCE}/Shaders/SceneDepthVert.glsl
+		${SOURCE}/Shaders/SceneDepthPixel.glsl
+
 		${SOURCE}/Shaders/UIVert.glsl
 		${SOURCE}/Shaders/WidgetPixel.glsl
 		${SOURCE}/Shaders/FontPixel.glsl

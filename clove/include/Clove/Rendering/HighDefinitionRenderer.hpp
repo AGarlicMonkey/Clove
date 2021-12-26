@@ -41,6 +41,16 @@ namespace clove {
             std::vector<std::pair<std::shared_ptr<GhaImage>, mat4f>> text;
         };
 
+        struct ViewUniformBufferData{
+            RgBufferId buffer;
+
+            size_t viewDataSize;
+            size_t viewPositionSize;
+
+            size_t viewDataOffset;
+            size_t viewPositionOffset;
+        };
+
         struct RenderGraphMeshInfo {
             size_t meshIndex{};
 
@@ -133,9 +143,13 @@ namespace clove {
         vec2ui getRenderTargetSize() const override;
 
     private:
+        RgImageId renderSceneDepth(RenderGraph &renderGraph, std::vector<RenderGraphMeshInfo> const &meshes, ViewUniformBufferData const &viewUniformBuffer);
+
         void skinMeshes(RenderGraph &renderGraph, std::vector<RenderGraphMeshInfo> &meshes);
+
         RenderGraphShadowMaps renderShadowDepths(RenderGraph &renderGraph, std::vector<RenderGraphMeshInfo> const &meshes);
-        void renderSene(RenderGraph &renderGraph, std::vector<RenderGraphMeshInfo> const &meshes, RenderGraphShadowMaps const shadowMaps, RgImageId const renderTarget, RgImageId const depthTarget);
+
+        void renderSene(RenderGraph &renderGraph, std::vector<RenderGraphMeshInfo> const &meshes, ViewUniformBufferData const &viewUniformBuffer, RenderGraphShadowMaps const shadowMaps, RgImageId const renderTarget, RgImageId const depthTarget);
 
         void resetGraphCaches();
     };

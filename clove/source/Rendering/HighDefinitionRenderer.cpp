@@ -20,6 +20,11 @@
 extern "C" const char constants[];
 extern "C" const size_t constantsLength;
 
+extern "C" const char scenedepthvert[];
+extern "C" const size_t scenedepthvertLength;
+extern "C" const char scenedepthpixel[];
+extern "C" const size_t scenedepthpixelLength;
+
 extern "C" const char skinningcompute[];
 extern "C" const size_t skinningcomputeLength;
 
@@ -196,8 +201,25 @@ namespace clove {
         RenderGraph renderGraph{ frameCaches[imageIndex], globalCache };
 
         RgImageId renderTargetImage{ renderGraph.createImage(renderTarget->getImages()[imageIndex]) };
-        RgImageId depthTargetImage{ renderGraph.createImage(GhaImage::Type::_2D, GhaImage::Format::D32_SFLOAT, renderTarget->getSize()) };// TODO: This will probably be a manually created image.
         renderGraph.registerGraphOutput(renderTargetImage);
+
+        //View uniform buffer
+        size_t const minUboOffsetAlignment{ ghaDevice->getLimits().minUniformBufferOffsetAlignment };
+
+        size_t const viewDataSize{ sizeof(currentFrameData.viewData) };
+        size_t const viewPositionSize{ sizeof(currentFrameData.viewPosition) };
+        size_t const viewPositionOffset{ viewDataSize + (minUboOffsetAlignment - (viewDataSize % minUboOffsetAlignment)) };
+
+        ViewUniformBufferData const viewUniformData{
+            .buffer             = renderGraph.createBuffer(viewPositionOffset + viewPositionSize),
+            .viewDataSize       = viewDataSize,
+            .viewPositionSize   = viewPositionSize,
+            .viewDataOffset     = 0,
+            .viewPositionOffset = viewPositionOffset,
+        };
+
+        renderGraph.writeToBuffer(viewUniformData.buffer, &currentFrameData.viewData, viewUniformData.viewDataOffset, viewUniformData.viewDataSize);
+        renderGraph.writeToBuffer(viewUniformData.buffer, &currentFrameData.viewPosition, viewUniformData.viewPositionOffset, viewUniformData.viewPositionSize);
 
         //Mesh info
         float constexpr anisotropy{ 16.0f };
@@ -255,8 +277,11 @@ namespace clove {
 
         //Execute passes
         skinMeshes(renderGraph, renderGraphMeshes);
+        
+        RgImageId const sceneDepth{ renderSceneDepth(renderGraph, renderGraphMeshes, viewUniformData) };
+        
         RenderGraphShadowMaps const shadowMaps{ renderShadowDepths(renderGraph, renderGraphMeshes) };
-        renderSene(renderGraph, renderGraphMeshes, shadowMaps, renderTargetImage, depthTargetImage);
+        renderSene(renderGraph, renderGraphMeshes, viewUniformData, shadowMaps, renderTargetImage, sceneDepth);
 
         //Execute UI work
         //TODO: Cache instead of making every frame
@@ -295,7 +320,7 @@ namespace clove {
                 .storeOp    = StoreOperation::DontCare,
                 .clearValue = DepthStencilValue{ .depth = 1.0f },
                 .imageView  = {
-                    .image = depthTargetImage,
+                    .image = sceneDepth,
                 },
             },
         };
@@ -420,6 +445,59 @@ namespace clove {
 
     vec2ui HighDefinitionRenderer::getRenderTargetSize() const {
         return renderTarget->getSize();
+    }
+
+    RgImageId HighDefinitionRenderer::renderSceneDepth(RenderGraph &renderGraph, std::vector<RenderGraphMeshInfo> const &meshes, ViewUniformBufferData const &viewUniformBuffer) {
+        vec2ui const textureSize{ renderTarget->getSize() };
+
+        RgImageId const depthTargetImage{ renderGraph.createImage(GhaImage::Type::_2D, GhaImage::Format::D32_SFLOAT, textureSize) };
+
+        RgRenderPass::Descriptor const passDescriptor{
+            .vertexShader     = renderGraph.createShader({ scenedepthvert, scenedepthvertLength }, shaderIncludes, "Scene depth (vertex)", GhaShader::Stage::Vertex),
+            .pixelShader      = renderGraph.createShader({ scenedepthpixel, scenedepthpixelLength }, shaderIncludes, "Scene depth (pixel)", GhaShader::Stage::Pixel),
+            .vertexInput      = Vertex::getInputBindingDescriptor(),
+            .vertexAttributes = {
+                VertexAttributeDescriptor{
+                    .format = VertexAttributeFormat::R32G32B32_SFLOAT,
+                    .offset = offsetof(Vertex, position),
+                },
+            },
+            .viewportSize = textureSize,
+            .depthStencil = {
+                .loadOp     = LoadOperation::Clear,
+                .storeOp    = StoreOperation::Store,
+                .clearValue = DepthStencilValue{ .depth = 1.0f },
+                .imageView  = {
+                    .image = depthTargetImage,
+                },
+            }
+        };
+        RgPassId const depthPrePass{ renderGraph.createRenderPass(passDescriptor) };
+
+        for(auto const &mesh : meshes) {
+            renderGraph.addRenderSubmission(depthPrePass, RgRenderPass::Submission{
+                                                              .vertexBuffer = mesh.vertexBuffer,
+                                                              .indexBuffer  = mesh.indexBuffer,
+                                                              .shaderUbos   = {
+                                                                  RgBufferBinding{
+                                                                      .slot        = 0,//NOLINT
+                                                                      .buffer      = mesh.modelBuffer,
+                                                                      .size        = mesh.modelBufferSize,
+                                                                      .shaderStage = GhaShader::Stage::Vertex,
+                                                                  },
+                                                                  RgBufferBinding{
+                                                                      .slot        = 1,//NOLINT
+                                                                      .buffer      = viewUniformBuffer.buffer,
+                                                                      .offset      = viewUniformBuffer.viewDataOffset,
+                                                                      .size        = viewUniformBuffer.viewDataSize,
+                                                                      .shaderStage = GhaShader::Stage::Vertex,
+                                                                  },
+                                                              },
+                                                              .indexCount = mesh.indexCount,
+                                                          });
+        }
+
+        return depthTargetImage;
     }
 
     void HighDefinitionRenderer::skinMeshes(RenderGraph &renderGraph, std::vector<RenderGraphMeshInfo> &meshes) {
@@ -608,20 +686,8 @@ namespace clove {
         return RenderGraphShadowMaps{ .directionalShadowMap = directionalShadowMap, .pointShadowMap = pointShadowMap };
     }
 
-    void HighDefinitionRenderer::renderSene(RenderGraph &renderGraph, std::vector<RenderGraphMeshInfo> const &meshes, RenderGraphShadowMaps const shadowMaps, RgImageId const renderTarget, RgImageId const depthTarget) {
+    void HighDefinitionRenderer::renderSene(RenderGraph &renderGraph, std::vector<RenderGraphMeshInfo> const &meshes, ViewUniformBufferData const &viewUniformBuffer, RenderGraphShadowMaps const shadowMaps, RgImageId const renderTarget, RgImageId const depthTarget) {
         size_t const minUboOffsetAlignment{ ghaDevice->getLimits().minUniformBufferOffsetAlignment };
-
-        //View uniform buffer
-        size_t const viewDataSize{ sizeof(currentFrameData.viewData) };
-        size_t const viewPositionSize{ sizeof(currentFrameData.viewPosition) };
-
-        size_t const viewDataOffset{ 0 };
-        size_t const viewPositionOffset{ viewDataOffset + viewDataSize + (minUboOffsetAlignment - ((viewDataOffset + viewDataSize) % minUboOffsetAlignment)) };
-
-        RgBufferId viewUniformBuffer{ renderGraph.createBuffer(viewPositionOffset + viewPositionSize) };
-
-        renderGraph.writeToBuffer(viewUniformBuffer, &currentFrameData.viewData, viewDataOffset, viewDataSize);
-        renderGraph.writeToBuffer(viewUniformBuffer, &currentFrameData.viewPosition, viewPositionOffset, viewPositionSize);
 
         //Lights uniform buffer
         size_t const numLightsSize{ sizeof(currentFrameData.numLights) };
@@ -671,6 +737,7 @@ namespace clove {
                 },
             },
             .viewportSize  = getRenderTargetSize(),
+            .depthWrite = false,
             .renderTargets = {
                 RgRenderTargetBinding{
                     .loadOp     = LoadOperation::Clear,
@@ -682,9 +749,8 @@ namespace clove {
                 },
             },
             .depthStencil = {
-                .loadOp     = LoadOperation::Clear,
+                .loadOp     = LoadOperation::Load,
                 .storeOp    = StoreOperation::DontCare,
-                .clearValue = DepthStencilValue{ .depth = 1.0f },
                 .imageView  = {
                     .image = depthTarget,
                 },
@@ -705,9 +771,9 @@ namespace clove {
                                                                 },
                                                                 RgBufferBinding{
                                                                     .slot        = 1,//NOLINT
-                                                                    .buffer      = viewUniformBuffer,
-                                                                    .offset      = viewDataOffset,
-                                                                    .size        = viewDataSize,
+                                                                    .buffer      = viewUniformBuffer.buffer,
+                                                                    .offset      = viewUniformBuffer.viewDataOffset,
+                                                                    .size        = viewUniformBuffer.viewDataSize,
                                                                     .shaderStage = GhaShader::Stage::Vertex,
                                                                 },
                                                                 RgBufferBinding{
@@ -726,9 +792,9 @@ namespace clove {
                                                                 },
                                                                 RgBufferBinding{
                                                                     .slot        = 10,//NOLINT
-                                                                    .buffer      = viewUniformBuffer,
-                                                                    .offset      = viewPositionOffset,
-                                                                    .size        = viewPositionSize,
+                                                                    .buffer      = viewUniformBuffer.buffer,
+                                                                    .offset      = viewUniformBuffer.viewPositionOffset,
+                                                                    .size        = viewUniformBuffer.viewPositionSize,
                                                                     .shaderStage = GhaShader::Stage::Pixel,
                                                                 },
                                                                 RgBufferBinding{
