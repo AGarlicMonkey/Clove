@@ -316,7 +316,7 @@ namespace clove {
         MTLDepthStencilDescriptor *depthStencil{ [[MTLDepthStencilDescriptor alloc] init] };
         depthStencil.depthWriteEnabled = static_cast<BOOL>(descriptor.depthState.depthWrite);
         if(descriptor.depthState.depthTest){
-            depthStencil.depthCompareFunction = MTLCompareFunctionLess;
+            depthStencil.depthCompareFunction = MTLCompareFunctionLessEqual;
         }else{
             depthStencil.depthCompareFunction = MTLCompareFunctionAlways;
         }

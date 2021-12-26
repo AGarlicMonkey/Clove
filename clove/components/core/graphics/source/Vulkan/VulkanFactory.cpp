@@ -804,7 +804,7 @@ namespace clove {
             .flags                 = 0,
             .depthTestEnable       = static_cast<VkBool32>(descriptor.depthState.depthTest ? VK_TRUE : VK_FALSE),
             .depthWriteEnable      = static_cast<VkBool32>(descriptor.depthState.depthWrite ? VK_TRUE : VK_FALSE),
-            .depthCompareOp        = VK_COMPARE_OP_LESS,
+            .depthCompareOp        = VK_COMPARE_OP_LESS_OR_EQUAL,
             .depthBoundsTestEnable = VK_FALSE,
             .stencilTestEnable     = VK_FALSE,
             .front                 = {},
