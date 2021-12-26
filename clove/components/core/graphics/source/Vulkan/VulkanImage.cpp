@@ -61,6 +61,8 @@ namespace clove {
                 return VK_FORMAT_UNDEFINED;
             case Format::R8_UNORM:
                 return VK_FORMAT_R8_UNORM;
+            case Format::R32G32_UINT:
+                return VK_FORMAT_R32G32_UINT;
             case Format::R8G8B8A8_SRGB:
                 return VK_FORMAT_R8G8B8A8_SRGB;
             case Format::B8G8R8A8_SRGB:
