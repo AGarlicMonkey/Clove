@@ -18,7 +18,7 @@ layout(std140, set = 0, binding = 2) uniform NumLights{
 };
 
 layout(std140, set = 0, binding = 3) uniform LightMatrix{
-	mat4 lightSpaceMatrices[];
+	mat4 directionalLightSpaceMatrix;
 };
 
 layout(location = 0) in vec3 position;
@@ -41,7 +41,5 @@ void main(){
 	vertPos = vec3(model * vec4(position, 1.0f));
 	vertNorm = mat3(normalMatrix) * normal;
 
-	for(int i = 0; i < numDirLights; ++i){
-		vertPosLightSpaces[i] = lightSpaceMatrices[i] * vec4(vertPos, 1.0f);
-	}
+	vertPosLightSpaces = directionalLightSpaceMatrix * vec4(vertPos, 1.0f);
 }

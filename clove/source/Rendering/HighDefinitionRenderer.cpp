@@ -164,6 +164,8 @@ namespace clove {
     }
 
     void HighDefinitionRenderer::submitLight(DirectionalLight light) {
+        CLOVE_ASSERT_MSG(currentFrameData.numDirLights == 0, "Currently only supporting a single directional lights");
+
         uint32_t const dirLightIndex{ currentFrameData.numDirLights++ };
 
         light.data.shadowIndex = dirLightIndex;
@@ -693,7 +695,7 @@ namespace clove {
     }
 
     HighDefinitionRenderer::RenderGraphShadowMaps HighDefinitionRenderer::renderShadowDepths(RenderGraph &renderGraph, std::vector<RenderGraphMeshInfo> const &meshes) {
-        RgImageId directionalShadowMap{ renderGraph.createImage(GhaImage::Type::_2D, GhaImage::Format::D32_SFLOAT, { shadowMapSize, shadowMapSize }, currentFrameData.numDirLights) };
+        RgImageId directionalShadowMap{ renderGraph.createImage(GhaImage::Type::_2D, GhaImage::Format::D32_SFLOAT, { shadowMapSize, shadowMapSize }) };
         RgImageId pointShadowMap{ renderGraph.createImage(GhaImage::Type::Cube, GhaImage::Format::D32_SFLOAT, { shadowMapSize, shadowMapSize }, currentFrameData.numPointLights) };
 
         //Directional lights
@@ -722,8 +724,7 @@ namespace clove {
                     .storeOp    = StoreOperation::Store,
                     .clearValue = DepthStencilValue{ .depth = 1.0f },
                     .imageView  = {
-                        .image      = directionalShadowMap,
-                        .arrayIndex = static_cast<uint32_t>(light.shadowIndex),
+                        .image = directionalShadowMap,
                     },
                 }
             };
@@ -957,8 +958,7 @@ namespace clove {
                                                                 RgImageBinding{
                                                                     .slot      = 7,//NOLINT
                                                                     .imageView = {
-                                                                        .image      = shadowMaps.directionalShadowMap,
-                                                                        .arrayCount = currentFrameData.numDirLights,
+                                                                        .image = shadowMaps.directionalShadowMap,
                                                                     },
                                                                 },
                                                                 RgImageBinding{
@@ -966,7 +966,7 @@ namespace clove {
                                                                     .imageView = {
                                                                         .image      = shadowMaps.pointShadowMap,
                                                                         .viewType   = GhaImageView::Type::Cube,
-                                                                        .arrayCount = currentFrameData.numPointLights * cubeMapLayerCount,
+                                                                        .arrayCount = currentFrameData.numPointLights * static_cast<uint32_t>(cubeMapLayerCount),
                                                                     },
                                                                 },
                                                             },

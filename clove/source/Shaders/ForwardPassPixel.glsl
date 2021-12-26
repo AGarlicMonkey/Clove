@@ -9,7 +9,7 @@ layout(set = 0, binding = 4) uniform texture2D diffuseTexture;
 layout(set = 0, binding = 5) uniform texture2D specularTexture;
 layout(set = 0, binding = 6) uniform sampler meshSampler;
 
-layout(set = 0, binding = 7) uniform texture2DArray directionalDepthTexture;
+layout(set = 0, binding = 7) uniform texture2D directionalDepthTexture;
 layout(set = 0, binding = 8) uniform textureCubeArray pointLightDepthTexture;
 layout(Set = 0, binding = 9) uniform sampler shadowSampler;
 
@@ -77,11 +77,11 @@ void getDirectionalLighting(LightingInput lightingInput, inout vec3 outAmbient, 
 	outSpecular += lightingInput.specularColour * light.specular * specIntensity;
 
 	//Shadow
-	vec3 projCoords = fragPosLightSpaces[light.shadowIndex].xyz / fragPosLightSpaces[light.shadowIndex].w;
+	vec3 projCoords = fragPosLightSpaces.xyz / fragPosLightSpaces.w;
 	projCoords.xy = projCoords.xy * 0.5f + 0.5f;
 
 	const float currentDepth = projCoords.z;
-	const float closetDepth  = texture(sampler2DArray(directionalDepthTexture, shadowSampler), vec3(projCoords.xy, light.shadowIndex)).r;
+	const float closetDepth  = texture(sampler2D(directionalDepthTexture, shadowSampler), projCoords.xy).r;
 
 	outShadow += currentDepth - adjustBias(minBias, maxBias, lightingInput.normal, lightDir) > closetDepth ? 1.0f : 0.0f;
 }
