@@ -43,7 +43,7 @@ namespace clove {
         }
     }
     
-    void MetalDescriptorSet::write(GhaImageView const &imageView, GhaImage::Layout const layout, uint32_t const bindingSlot) {
+    void MetalDescriptorSet::write(GhaImageView const &imageView, GhaImage::Layout const layout, DescriptorType const descriptorType, uint32_t const bindingSlot) {
         [pixelEncoder->encoder setTexture:polyCast<MetalImageView const>(&imageView)->getTexture()
                                   atIndex:bindingSlot];
     }

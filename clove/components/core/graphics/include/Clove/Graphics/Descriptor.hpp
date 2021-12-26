@@ -5,6 +5,7 @@ namespace clove {
         UniformBuffer,
         StorageBuffer,
         SampledImage,
+        StorageImage,
         Sampler,
     };
 }

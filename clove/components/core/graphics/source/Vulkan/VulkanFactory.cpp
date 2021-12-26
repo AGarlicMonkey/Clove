@@ -170,6 +170,9 @@ namespace clove {
             if((garlicUsageFlags & GhaImage::UsageMode::Sampled) != 0) {
                 flags |= VK_IMAGE_USAGE_SAMPLED_BIT;
             }
+            if((garlicUsageFlags & GhaImage::UsageMode::Storage) != 0) {
+                flags |= VK_IMAGE_USAGE_STORAGE_BIT;
+            }
             if((garlicUsageFlags & GhaImage::UsageMode::ColourAttachment) != 0) {
                 flags |= VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
             }

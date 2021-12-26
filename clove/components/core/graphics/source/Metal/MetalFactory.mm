@@ -79,6 +79,9 @@ namespace clove {
             if((flags & GhaImage::UsageMode::Sampled) != 0) {
                 mtlFlags |= MTLTextureUsageShaderRead;
             }
+            if((flags & GhaImage::UsageMode::Storage) != 0) {
+                mtlFlags |= MTLTextureUsageShaderWrite;
+            }
             if((flags & GhaImage::UsageMode::ColourAttachment) != 0) {
                 mtlFlags |= MTLTextureUsageRenderTarget;
             }
