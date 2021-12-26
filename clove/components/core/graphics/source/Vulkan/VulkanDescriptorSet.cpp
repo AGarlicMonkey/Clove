@@ -53,8 +53,6 @@ namespace clove {
             .imageLayout = VulkanImage::convertLayout(layout),
         };
 
-        VkDescriptorType const descriptorType{};
-
         VkWriteDescriptorSet writeInfo{
             .sType            = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,
             .pNext            = nullptr,

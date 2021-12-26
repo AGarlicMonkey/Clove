@@ -10,6 +10,7 @@ namespace clove {
         BaseDescriptorSetType::write(buffer, offset, range, descriptorType, bindingSlot);
     }
 
+    template<typename BaseDescriptorSetType>
     void ValidationDescriptorSet<BaseDescriptorSetType>::write(GhaImageView const &imageView, GhaImage::Layout const layout, DescriptorType const descriptorType, uint32_t const bindingSlot) {
         CLOVE_ASSERT_MSG(descriptorType == DescriptorType::SampledImage || descriptorType == DescriptorType::StorageImage, "{0}: Invalid descriptor type for image.", CLOVE_FUNCTION_NAME);
 

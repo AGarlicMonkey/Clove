@@ -1,6 +1,11 @@
 #pragma once
 
 namespace clove {
+    class GhaBuffer;
+    class GhaImageView;
+}
+
+namespace clove {
     template<typename BaseDescriptorSetType>
     class ValidationDescriptorSet : public BaseDescriptorSetType {
         //FUNCTIONS
