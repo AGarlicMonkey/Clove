@@ -197,4 +197,13 @@ namespace clove {
         }
         return result;
     }
+
+    template<number T>
+    constexpr vec<3, T> cross(vec<3, T> const &a, vec<3, T> const &b) {
+        return vec<3, T>{
+            .x = (a.y * b.z) - (a.z * b.y),
+            .y = (a.z * b.x) - (a.x * b.z),
+            .z = (a.x * b.y) - (a.y * b.x),
+        };
+    }
 }

@@ -233,3 +233,16 @@ TEST(VectorTests, CanDotProductTwoVectors) {
     const float v4DotTest{ v4a.x * v4b.x + v4a.y * v4b.y + v4a.z * v4b.z + v4a.w * v4b.w };
     EXPECT_NEAR(v4Dot, v4DotTest, boundsError);
 }
+
+TEST(VectorTests, CanCrossProductTwoVectors) {
+    vec3f v3a{ 2, 7, 3 };
+    vec3f v3b{ 3, 8, 1 };
+
+    const vec3f v3Cross{ cross(v3a, v3b) };
+    const vec3f v3CrossTest{
+        .x = (v3a.y * v3b.z) - (v3a.z * v3b.y),
+        .y = (v3a.z * v3b.x) - (v3a.x * v3b.z),
+        .z = (v3a.x * v3b.y) - (v3a.y * v3b.x),
+    };
+    EXPECT_EQ(v3Cross, v3CrossTest);
+}

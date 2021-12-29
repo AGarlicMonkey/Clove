@@ -103,6 +103,9 @@ namespace clove {
 
     template<size_t L, number T>
     constexpr T dot(vec<L, T> const &a, vec<L, T> const &b);
+
+    template<number T>
+    constexpr vec<3, T> cross(vec<3, T> const &a, vec<3, T> const &b);
 }
 
 #include "Vector.inl"
