@@ -2,38 +2,6 @@
 
 namespace clove {
     template<number T>
-    constexpr vec<1, T> operator+(vec<1, T> const &a, vec<1, T> const &b) {
-        return { a.x + b.x };
-    }
-
-    template<number T>
-    constexpr vec<1, T> &vec<1, T>::operator+=(vec<1, T> const &b) {
-        x += b.x;
-
-        return *this;
-    }
-
-    template<number T>
-    constexpr bool operator==(vec<1, T> const &lhs, vec<1, T> const &rhs) {
-        return lhs.x == rhs.x;
-    }
-
-    template<number T>
-    constexpr bool operator!=(vec<1, T> const &lhs, vec<1, T> const &rhs) {
-        return !(lhs == rhs);
-    }
-
-    template<number T>
-    constexpr T &vec<1, T>::operator[](size_t const index) {
-        return x;
-    }
-
-    template<number T>
-    constexpr T const &vec<1, T>::operator[](size_t const index) const {
-        return x;
-    }
-
-    template<number T>
     constexpr vec<2, T> operator+(vec<2, T> const &a, vec<2, T> const &b) {
         return { a.x + b.x, a.y + b.y };
     }

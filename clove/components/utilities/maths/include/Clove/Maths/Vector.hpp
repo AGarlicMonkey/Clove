@@ -11,25 +11,6 @@ namespace clove {
     struct vec;
 
     template<number T>
-    struct vec<1, T> {
-        // clang-format off
-        union { T x; T r; T u; };
-        // clang-format on
-
-        template<number T>
-        friend constexpr vec<1, T> operator+(vec<1, T> const &a, vec<1, T> const &b);
-        constexpr vec<1, T> &operator+=(vec<1, T> const &b);
-
-        template<number T>
-        friend constexpr bool operator==(vec<1, T> const &lhs, vec<1, T> const &rhs);
-        template<number T>
-        friend constexpr bool operator!=(vec<1, T> const &lhs, vec<1, T> const &rhs);
-
-        constexpr T &operator[](size_t const index);
-        constexpr T const &operator[](size_t const index) const;
-    };
-
-    template<number T>
     struct vec<2, T> {
         // clang-format off
         union { T x; T r; T u; };
@@ -95,7 +76,6 @@ namespace clove {
 
 //Vector aliases
 namespace clove {
-    using vec1f = vec<1, float>;
     using vec2f = vec<2, float>;
     using vec3f = vec<3, float>;
     using vec4f = vec<4, float>;

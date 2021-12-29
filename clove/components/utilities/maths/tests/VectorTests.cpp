@@ -4,12 +4,6 @@
 using namespace clove;
 
 TEST(VectorTests, CanDefaultConstructAVector) {
-    vec<1, float> v1{};
-
-    EXPECT_EQ(v1.x, float{});
-    EXPECT_EQ(v1.r, float{});
-    EXPECT_EQ(v1.u, float{});
-
     vec<2, float> v2{};
 
     EXPECT_EQ(v2.x, float{});
@@ -47,12 +41,6 @@ TEST(VectorTests, CanDefaultConstructAVector) {
 }
 
 TEST(VectorTests, CanAccessMembersByIndex) {
-    vec1f v1{ 0 };
-
-    EXPECT_EQ(v1.x, v1[0]);
-
-    EXPECT_EQ(v1.x, v1[1]);
-
     vec2f v2{ 0, 1 };
 
     EXPECT_EQ(v2.x, v2[0]);
@@ -79,16 +67,6 @@ TEST(VectorTests, CanAccessMembersByIndex) {
 }
 
 TEST(VectorTests, CanCompareTwoVectors){
-    vec1f v1a{ 1 };
-    vec1f v1b{ 1 };
-    vec1f v1c{ 2 };
-
-    EXPECT_TRUE(v1a == v1b);
-    EXPECT_TRUE(v1b != v1c);
-
-    EXPECT_FALSE(v1a == v1c);
-    EXPECT_FALSE(v1a != v1b);
-
     vec2f v2a{ 1, 2 };
     vec2f v2b{ 1, 2 };
     vec2f v2c{ 4, 3 };
@@ -121,17 +99,6 @@ TEST(VectorTests, CanCompareTwoVectors){
 }
 
 TEST(VectorTests, CanAddTwoVectors) {
-    vec1f v1a{ 1 };
-    vec1f v1b{ 3 };
-    vec1f v1c{ v1a };
-
-    vec1f const v1sum{ v1a.x + v1b.x };
-    EXPECT_EQ(v1a + v1b, v1sum);
-
-    v1c += v1b;
-
-    EXPECT_EQ(v1c.x, v1a.x + v1b.x);
-
     vec2f v2a{ 1, 2 };
     vec2f v2b{ 1, 2 };
     vec2f v2c{ v2a };
@@ -171,11 +138,8 @@ TEST(VectorTests, CanAddTwoVectors) {
     EXPECT_EQ(v4c.z, v4a.z + v4b.z);
     EXPECT_EQ(v4c.w, v4a.w + v4b.w);
 }
+
 TEST(VectorTests, CanGetLengthOfAVector) {
-    vec1f v1{ 1 };
-
-    EXPECT_EQ(length(v1), std::sqrt(v1.x));
-
     vec2f v2{ 1, 2 };
 
     EXPECT_EQ(length(v2), std::sqrt(v2.x + v2.y));
