@@ -176,17 +176,20 @@ namespace clove {
     }
 
     template<size_t L, number T>
-    constexpr T length(vec<L, T> const &vec) {
+    constexpr T length(vec<L, T> const &v) {
         T sum{ 0 };
         for(size_t i{ 0 }; i < L; ++i) {
-            sum += vec[i];
+            sum += v[i];
         }
         return std::sqrt(sum);
     }
 
     template<size_t L, number T>
     constexpr vec<L, T> normalise(vec<L, T> const &v) {
-        // return v / length(v);
-        return {};
+        T sum{ 0 };
+        for(size_t i{ 0 }; i < L; ++i) {
+            sum += v[i];
+        }
+        return v / sum;
     }
 }

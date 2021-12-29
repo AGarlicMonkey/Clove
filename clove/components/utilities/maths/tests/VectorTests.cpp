@@ -192,3 +192,17 @@ TEST(VectorTests, CanGetLengthOfAVector) {
 
     EXPECT_EQ(length(v4), std::sqrt(v4.x + v4.y + v4.z + v4.w));
 }
+
+TEST(VectorTests, CanNormaliseAVector) {
+    vec2f v2{ 3, 2 };
+
+    EXPECT_EQ(length(normalise(v2)), 1.0f);
+
+    vec3f v3{ 2, 1, 7 };
+
+    EXPECT_EQ(length(normalise(v3)), 1.0f);
+
+    vec4f v4{ 1, 4, 7, 3 };
+
+    EXPECT_EQ(length(normalise(v4)), 1.0f);
+}

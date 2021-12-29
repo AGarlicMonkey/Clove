@@ -96,7 +96,7 @@ namespace clove {
 //Vector operations
 namespace clove {
     template<size_t L, number T>
-    constexpr T length(vec<L, T> const &vec);
+    constexpr T length(vec<L, T> const &v);
 
     template<size_t L, number T>
     constexpr vec<L, T> normalise(vec<L, T> const &v);
