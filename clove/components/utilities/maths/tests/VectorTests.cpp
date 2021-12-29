@@ -182,27 +182,29 @@ TEST(VectorTests, CanDivideVectorByNumber) {
 TEST(VectorTests, CanGetLengthOfAVector) {
     vec2f v2{ 1, 2 };
 
-    EXPECT_EQ(length(v2), std::sqrt(v2.x + v2.y));
+    EXPECT_EQ(length(v2), std::sqrt(v2.x * v2.x + v2.y * v2.y));
 
     vec3f v3{ 2, 2, 2 };
 
-    EXPECT_EQ(length(v3), std::sqrt(v3.x + v3.y + v3.z));
+    EXPECT_EQ(length(v3), std::sqrt(v3.x * v3.x + v3.y * v3.y + v3.z * v3.z));
 
     vec4f v4{ 3, 2, 1, 6 };
 
-    EXPECT_EQ(length(v4), std::sqrt(v4.x + v4.y + v4.z + v4.w));
+    EXPECT_EQ(length(v4), std::sqrt(v4.x * v4.x + v4.y * v4.y + v4.z * v4.z + v4.w * v4.w));
 }
 
 TEST(VectorTests, CanNormaliseAVector) {
+    float constexpr boundsError{ 0.00001f };
+
     vec2f v2{ 3, 2 };
 
-    EXPECT_EQ(length(normalise(v2)), 1.0f);
+    EXPECT_NEAR(length(normalise(v2)), 1.0f, boundsError);
 
     vec3f v3{ 2, 1, 7 };
 
-    EXPECT_EQ(length(normalise(v3)), 1.0f);
+    EXPECT_NEAR(length(normalise(v3)), 1.0f, boundsError);
 
     vec4f v4{ 1, 4, 7, 3 };
 
-    EXPECT_EQ(length(normalise(v4)), 1.0f);
+    EXPECT_NEAR(length(normalise(v4)), 1.0f, boundsError);
 }
