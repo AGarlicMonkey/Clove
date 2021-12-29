@@ -100,6 +100,9 @@ namespace clove {
 
     template<size_t L, number T>
     constexpr vec<L, T> normalise(vec<L, T> const &v);
+
+    template<size_t L, number T>
+    constexpr T dot(vec<L, T> const &a, vec<L, T> const &b);
 }
 
 #include "Vector.inl"

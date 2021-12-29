@@ -208,3 +208,28 @@ TEST(VectorTests, CanNormaliseAVector) {
 
     EXPECT_NEAR(length(normalise(v4)), 1.0f, boundsError);
 }
+
+TEST(VectorTests, CanDotProductTwoVectors) {
+    float constexpr boundsError{ 0.00001f };
+
+    vec2f v2a{ 3, 2 };
+    vec2f v2b{ 1, 5 };
+
+    const float v2Dot{ dot(v2a, v2b) };
+    const float v2DotTest{ v2a.x * v2b.x + v2a.y * v2b.y };
+    EXPECT_NEAR(v2Dot, v2DotTest, boundsError);
+
+    vec3f v3a{ 2, 1, 7 };
+    vec3f v3b{ 3, 10, 1 };
+
+    const float v3Dot{ dot(v3a, v3b) };
+    const float v3DotTest{ v3a.x * v3b.x + v3a.y * v3b.y + v3a.z * v3b.z };
+    EXPECT_NEAR(v3Dot, v3DotTest, boundsError);
+
+    vec4f v4a{ 1, 4, 7, 3 };
+    vec4f v4b{ 3, 3, 3, 3 };
+
+    const float v4Dot{ dot(v4a, v4b) };
+    const float v4DotTest{ v4a.x * v4b.x + v4a.y * v4b.y + v4a.z * v4b.z + v4a.w * v4b.w };
+    EXPECT_NEAR(v4Dot, v4DotTest, boundsError);
+}

@@ -188,4 +188,13 @@ namespace clove {
     constexpr vec<L, T> normalise(vec<L, T> const &v) {
         return v / length(v);
     }
+
+    template<size_t L, number T>
+    constexpr T dot(vec<L, T> const &a, vec<L, T> const &b) {
+        T result{ 0 };
+        for(size_t i{ 0 }; i < L; ++i) {
+            result += a[i] * b[i];
+        }
+        return result;
+    }
 }
