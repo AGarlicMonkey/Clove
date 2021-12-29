@@ -139,6 +139,46 @@ TEST(VectorTests, CanAddTwoVectors) {
     EXPECT_EQ(v4c.w, v4a.w + v4b.w);
 }
 
+TEST(VectorTests, CanDivideVectorByNumber) {
+    float constexpr divisor{ 3.0f };
+
+    vec2f v2a{ 3, 2 };
+    vec2f v2b{ 1, 2 };
+    vec2f v2c{ v2b };
+
+    vec2f v2Div{ v2a.x / divisor, v2b.y / divisor };
+    EXPECT_EQ(v2a / divisor, v2Div);
+
+    v2b /= divisor;
+    EXPECT_EQ(v2b.x, v2c.x / divisor);
+    EXPECT_EQ(v2b.y, v2c.y / divisor);
+
+    vec3f v3a{ 2, 2, 2 };
+    vec3f v3b{ 1, 2, 3 };
+    vec3f v3c{ v3b };
+
+    vec3f v3Div{ v3a.x / divisor, v3a.y / divisor, v3a.z / divisor };
+    EXPECT_EQ(v3a / divisor, v3Div);
+
+    v3b /= divisor;
+    EXPECT_EQ(v3b.x, v3c.x / divisor);
+    EXPECT_EQ(v3b.y, v3c.y / divisor);
+    EXPECT_EQ(v3b.z, v3c.z / divisor);
+
+    vec4f v4a{ 3, 2, 1, 6 };
+    vec4f v4b{ 2, 1, 3, 6 };
+    vec4f v4c{ v4b };
+
+    vec4f v4Div{ v4a.x / divisor, v4a.y / divisor, v4a.z / divisor, v4a.w / divisor };
+    EXPECT_EQ(v4a / divisor, v4Div);
+
+    v4b /= divisor;
+    EXPECT_EQ(v4b.x, v4c.x / divisor);
+    EXPECT_EQ(v4b.y, v4c.y / divisor);
+    EXPECT_EQ(v4b.z, v4c.z / divisor);
+    EXPECT_EQ(v4b.w, v4c.w / divisor);
+}
+
 TEST(VectorTests, CanGetLengthOfAVector) {
     vec2f v2{ 1, 2 };
 

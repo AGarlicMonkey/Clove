@@ -22,6 +22,10 @@ namespace clove {
         constexpr vec<2, T> &operator+=(vec<2, T> const &b);
 
         template<number T>
+        friend constexpr vec<2, T> operator/(vec<2, T> const &a, T scalar);
+        constexpr vec<2, T> &operator/=(T scalar);
+
+        template<number T>
         friend constexpr bool operator==(vec<2, T> const &lhs, vec<2, T> const &rhs);
         template<number T>
         friend constexpr bool operator!=(vec<2, T> const &lhs, vec<2, T> const &rhs);
@@ -41,6 +45,10 @@ namespace clove {
         template<number T>
         friend constexpr vec<3, T> operator+(vec<3, T> const &a, vec<3, T> const &b);
         constexpr vec<3, T> &operator+=(vec<3, T> const &b);
+
+        template<number T>
+        friend constexpr vec<3, T> operator/(vec<3, T> const &a, T scalar);
+        constexpr vec<3, T> &operator/=(T scalar);
 
         template<number T>
         friend constexpr bool operator==(vec<3, T> const &lhs, vec<3, T> const &rhs);
@@ -63,6 +71,10 @@ namespace clove {
         template<number T>
         friend constexpr vec<4, T> operator+(vec<4, T> const &a, vec<4, T> const &b);
         constexpr vec<4, T> &operator+=(vec<4, T> const &b);
+
+        template<number T>
+        friend constexpr vec<4, T> operator/(vec<4, T> const &a, T scalar);
+        constexpr vec<4, T> &operator/=(T scalar);
 
         template<number T>
         friend constexpr bool operator==(vec<4, T> const &lhs, vec<4, T> const &rhs);

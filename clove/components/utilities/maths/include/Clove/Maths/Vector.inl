@@ -15,6 +15,19 @@ namespace clove {
     }
 
     template<number T>
+    constexpr vec<2, T> operator/(vec<2, T> const &a, T scalar) {
+        return { a.x / scalar, a.y / scalar };
+    }
+
+    template<number T>
+    constexpr vec<2, T> &vec<2, T>::operator/=(T scalar) {
+        x /= scalar;
+        y /= scalar;
+
+        return *this;
+    }
+
+    template<number T>
     constexpr bool operator==(vec<2, T> const &lhs, vec<2, T> const &rhs) {
         return lhs.x == rhs.x && lhs.y == rhs.y;
     }
@@ -54,6 +67,20 @@ namespace clove {
         x += b.x;
         y += b.y;
         z += b.z;
+
+        return *this;
+    }
+
+    template<number T>
+    constexpr vec<3, T> operator/(vec<3, T> const &a, T scalar) {
+        return { a.x / scalar, a.y / scalar, a.z / scalar };
+    }
+
+    template<number T>
+    constexpr vec<3, T> &vec<3, T>::operator/=(T scalar) {
+        x /= scalar;
+        y /= scalar;
+        z /= scalar;
 
         return *this;
     }
@@ -99,6 +126,21 @@ namespace clove {
         y += b.y;
         z += b.z;
         w += b.w;
+
+        return *this;
+    }
+
+    template<number T>
+    constexpr vec<4, T> operator/(vec<4, T> const &a, T scalar) {
+        return { a.x / scalar, a.y / scalar, a.z / scalar, a.w / scalar };
+    }
+
+    template<number T>
+    constexpr vec<4, T> &vec<4, T>::operator/=(T scalar) {
+        x /= scalar;
+        y /= scalar;
+        z /= scalar;
+        w /= scalar;
 
         return *this;
     }
