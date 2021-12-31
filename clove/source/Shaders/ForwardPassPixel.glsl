@@ -17,7 +17,8 @@ layout(set = 0, binding = 10) uniform ViewPosition{
 	vec3 viewPos;
 };
 
-layout(set = 0, binding = 13, rg32ui) uniform readonly uimage2D lightGrid;
+layout(set = 0, binding = 13) uniform utexture2D lightGrid;
+layout(set = 0, binding = 15) uniform sampler lightGridSampler;
 
 layout(std140, set = 0, binding = 14) buffer readonly CulledLights{
 	uint lightIndexList[];
@@ -144,7 +145,7 @@ void main(){
 	float shadow = 0.0f;
 
 	const ivec2 tileIndex 	= ivec2(floor(gl_FragCoord / SCREEN_GRID_SIZE));
-	const uvec2 tileData	= imageLoad(lightGrid, tileIndex).xy;
+	const uvec2 tileData	= texelFetch(usampler2D(lightGrid, lightGridSampler), tileIndex, 0).xy;
 	const uint startOffset 	= tileData.x;
 	const uint lightCount 	= tileData.y;
 
