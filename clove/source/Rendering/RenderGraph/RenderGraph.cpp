@@ -983,6 +983,14 @@ namespace clove {
                     .stage     = GhaShader::Stage::Compute,
                 });
             }
+            for(auto const &sampler : passSubmissions[0].samplers) {
+                descriptorBindings.emplace_back(DescriptorSetBindingInfo{
+                    .binding   = sampler.slot,
+                    .type      = DescriptorType::Sampler,
+                    .arraySize = 1,
+                    .stage     = GhaShader::Stage::Compute,
+                });
+            }
 
             outDescriptorSetLayouts[passId] = globalCache.createDescriptorSetLayout(GhaDescriptorSetLayout::Descriptor{ .bindings = std::move(descriptorBindings) });
 
@@ -998,6 +1006,9 @@ namespace clove {
                 bool const hasUbo{ !submission.readUniformBuffers.empty() };
                 bool const hasSbo{ !submission.readStorageBuffers.empty() };
                 bool const hasWriteBuffer{ !submission.writeBuffers.empty() };
+                bool const hasReadImage{ !submission.readImages.empty() };
+                bool const hasWriteImage{ !submission.writeImages.empty() };
+                bool const hasSampler{ !submission.samplers.empty() };
 
                 if(hasUbo) {
                     totalDescriptorBindingCount[DescriptorType::UniformBuffer] += submission.readUniformBuffers.size();
@@ -1008,8 +1019,17 @@ namespace clove {
                 if(hasWriteBuffer) {
                     totalDescriptorBindingCount[DescriptorType::StorageBuffer] += submission.writeBuffers.size();
                 }
+                if(hasReadImage) {
+                    totalDescriptorBindingCount[DescriptorType::SampledImage] += submission.readImages.size();
+                }
+                if(hasWriteImage) {
+                    totalDescriptorBindingCount[DescriptorType::StorageImage] += submission.writeImages.size();
+                }
+                if(hasSampler) {
+                    totalDescriptorBindingCount[DescriptorType::Sampler] += submission.samplers.size();
+                }
 
-                if(hasUbo || hasSbo || hasWriteBuffer) {
+                if(hasUbo || hasSbo || hasWriteBuffer || hasReadImage || hasWriteImage || hasSampler) {
                     ++totalDescriptorSets;//Allocating a single set per submission
                 }
             }
@@ -1144,6 +1164,9 @@ namespace clove {
             }
             for(auto const &image : submission.writeImages) {
                 descriptorSet->write(*images.at(image.imageView.image).getGhaImageView(frameCache, image.imageView.viewType, image.imageView.arrayIndex, image.imageView.arrayCount), GhaImage::Layout::ShaderReadOnlyOptimal, DescriptorType::StorageImage, image.slot);
+            }
+            for(auto const &sampler : submission.samplers) {
+                descriptorSet->write(*samplers.at(sampler.sampler), sampler.slot);
             }
 
             computeCommandBufffer.bindDescriptorSet(*descriptorSet, 0);
