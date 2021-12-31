@@ -639,7 +639,7 @@ namespace clove {
                                                             },
                                                             .samplers = {
                                                                 RgSamplerBinding{
-                                                                    .slot    = 5,//NOLINT
+                                                                    .slot    = 7,//NOLINT
                                                                     .sampler = sceneDepthSampler,
                                                                 },
                                                             },

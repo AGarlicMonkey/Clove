@@ -22,8 +22,6 @@ layout(std140, set = 0, binding = 4) uniform FrustumData{
 	mat4 inverseProjection;
 };
 
-layout(set = 0, binding = 5) uniform sampler sceneDepthSampler;
-
 //TODO: push constant
 layout(std140, set = 0, binding = 5) uniform NumLights{
 	uint numLights;
@@ -32,6 +30,8 @@ layout(std140, set = 0, binding = 5) uniform NumLights{
 layout(std140, set = 0, binding = 6) buffer readonly Lights{
 	Light lights[];
 };
+
+layout(set = 0, binding = 7) uniform sampler sceneDepthSampler;
 
 shared uint minDepth;
 shared uint maxDepth;
