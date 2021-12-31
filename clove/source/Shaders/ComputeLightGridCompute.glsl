@@ -7,7 +7,7 @@
 #define GROUP_SIZE 16
 
 layout(set = 0, binding = 0) uniform writeonly uimage2D lightGrid;
-layout(set = 0, binding = 1, r32f) uniform readonly image2D sceneDepth;
+layout(set = 0, binding = 1) uniform texture2D sceneDepth;
 
 layout(std140, set = 0, binding = 2) buffer CulledLights{
 	uint lightIndexList[];
@@ -21,6 +21,8 @@ layout(std140, set = 0, binding = 4) uniform FrustumData{
 	vec2 screenDimensions;
 	mat4 inverseProjection;
 };
+
+layout(set = 0, binding = 5) uniform sampler sceneDepthSampler;
 
 //TODO: push constant
 layout(std140, set = 0, binding = 5) uniform NumLights{
@@ -104,7 +106,7 @@ void main(){
 	groupMemoryBarrier();
 
 	{
-		const uint depth = floatBitsToUint(imageLoad(sceneDepth, pixelPos).r);
+		const uint depth = floatBitsToUint(texelFetch(sampler2D(sceneDepth, sceneDepthSampler), pixelPos, 0).r);
 
 		atomicMin(minDepth, depth);
 		atomicMax(maxDepth, depth);

@@ -548,6 +548,15 @@ namespace clove {
     }
 
     HighDefinitionRenderer::LightGrid HighDefinitionRenderer::computeLightGrid(RenderGraph &renderGraph, LightBuffers const &lightBuffers, RgImageId const sceneDepth) {
+        RgSampler const sceneDepthSampler{ renderGraph.createSampler(GhaSampler::Descriptor{
+            .minFilter        = GhaSampler::Filter::Nearest,
+            .magFilter        = GhaSampler::Filter::Nearest,
+            .addressModeU     = GhaSampler::AddressMode::ClampToBorder,
+            .addressModeV     = GhaSampler::AddressMode::ClampToBorder,
+            .addressModeW     = GhaSampler::AddressMode::ClampToBorder,
+            .enableAnisotropy = false,
+        }) };
+
         size_t constexpr gridSize{ 16 };         //How many threads are in the X and Y of a grid
         size_t constexpr maxLightsPerTile{ 256 };//Current total of how many lights a single tile will deal with.
 
@@ -626,6 +635,12 @@ namespace clove {
                                                                     .imageView = RgImageView{
                                                                         .image = lightGrid,
                                                                     },
+                                                                },
+                                                            },
+                                                            .samplers = {
+                                                                RgSamplerBinding{
+                                                                    .slot    = 5,//NOLINT
+                                                                    .sampler = sceneDepthSampler,
                                                                 },
                                                             },
                                                             .disptachSize = vec3ui{ lightGridSize.x, lightGridSize.y, 1 },
