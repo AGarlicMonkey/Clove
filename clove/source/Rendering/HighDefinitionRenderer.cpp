@@ -941,6 +941,12 @@ namespace clove {
                                                                     .size        = lightBuffers.lightsSize,
                                                                     .shaderStage = GhaShader::Stage::Pixel,
                                                                 },
+                                                                RgBufferBinding{
+                                                                    .slot        = 14,//NOLINT
+                                                                    .buffer      = lightGrid.lightIndexList,
+                                                                    .size        = lightGrid.lightIndexListSize,
+                                                                    .shaderStage = GhaShader::Stage::Pixel,
+                                                                },
                                                             },
                                                             .images = {
                                                                 RgImageBinding{
@@ -967,6 +973,12 @@ namespace clove {
                                                                         .image      = shadowMaps.pointShadowMap,
                                                                         .viewType   = GhaImageView::Type::Cube,
                                                                         .arrayCount = currentFrameData.numPointLights * static_cast<uint32_t>(cubeMapLayerCount),
+                                                                    },
+                                                                },
+                                                                RgImageBinding{
+                                                                    .slot      = 13,//NOLINT
+                                                                    .imageView = {
+                                                                        .image = lightGrid.lightGrid,
                                                                     },
                                                                 },
                                                             },
