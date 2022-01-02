@@ -237,8 +237,8 @@ namespace clove {
             buffer.addWritePass(computePass);
         }
 
-        for(auto const &image : submission.readImages) {
-            RgResourceId const imageId{ image.imageView.image };
+        for(auto const &readImage : submission.readImages) {
+            RgResourceId const imageId{ readImage.imageView.image };
 
             auto &image{ images.at(imageId) };
             if(!image.isExternalImage()) {
@@ -247,8 +247,8 @@ namespace clove {
             image.addReadPass(computePass);
         }
 
-        for(auto const &image : submission.writeImages) {
-            RgResourceId const imageId{ image.imageView.image };
+        for(auto const &writeImage : submission.writeImages) {
+            RgResourceId const imageId{ writeImage.imageView.image };
 
             auto &image{ images.at(imageId) };
             if(!image.isExternalImage()) {
