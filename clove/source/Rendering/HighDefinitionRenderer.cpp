@@ -995,7 +995,7 @@ namespace clove {
                                                                     .slot      = 8,//NOLINT
                                                                     .imageView = {
                                                                         .image      = shadowMaps.pointShadowMap,
-                                                                        .viewType   = GhaImageView::Type::Cube,
+                                                                        .viewType   = GhaImageView::Type::CubeArray,
                                                                         .arrayCount = currentFrameData.numPointLights * static_cast<uint32_t>(cubeMapLayerCount),
                                                                     },
                                                                 },
