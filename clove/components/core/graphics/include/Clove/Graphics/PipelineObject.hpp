@@ -21,7 +21,7 @@ namespace clove {
         PixelShader,            /**< Execution of a pixel shader. */
         EarlyPixelTest,         /**< Early depth and stencil tests. */
         LatePixelTest,          /**< Late depth and stencil tests. */
-        ColourAttachmentOutput, /**< After blending where the final colour values are output. */
+        ColourAttachmentOutput, /**< After blending where the final colour values are output. This also includes depth attachments */
     };
 
     struct PushConstantDescriptor {

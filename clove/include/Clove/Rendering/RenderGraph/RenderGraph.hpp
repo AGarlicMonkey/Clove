@@ -221,7 +221,10 @@ namespace clove {
 
         std::unordered_map<RgPassId, std::vector<std::unique_ptr<GhaDescriptorSet>>> createDescriptorSets(std::unordered_map<DescriptorType, uint32_t> const &totalDescriptorBindingCount, uint32_t const totalDescriptorSets, std::unordered_map<RgPassId, GhaGraphicsPipelineObject *> const &graphicsPipelines, std::unordered_map<RgPassId, GhaComputePipelineObject *> &computePipelines);
 
-        void executeGraphicsPass(RgPassId passId, GhaGraphicsCommandBuffer &graphicsCommandBufffer, std::unordered_map<RgPassId, GhaRenderPass *> const &allocatedRenderPasses, std::unordered_map<RgPassId, GhaFramebuffer *> const &allocatedFramebuffers, std::unordered_map<RgPassId, GhaGraphicsPipelineObject *> const &allocatedGraphicsPipelines, std::unordered_map<RgResourceId, GhaSampler *> const &allocatedSamplers, std::unordered_map<RgPassId, std::vector<std::unique_ptr<GhaDescriptorSet>>> const &allocatedDescriptorSets);
-        void executeComputePass(RgPassId passId, GhaComputeCommandBuffer &computeCommandBufffer, std::unordered_map<RgPassId, GhaComputePipelineObject *> const &allocatedComputePipelines, std::unordered_map<RgPassId, std::vector<std::unique_ptr<GhaDescriptorSet>>> const &allocatedDescriptorSets);
+        bool isImageAColourAttachment(RgImageView const &imageView, RgRenderPass const &renderPass) const;
+        bool isImageADepthStencilAttachment(RgImageView const &imageView, RgRenderPass const &renderPass) const;
+
+        void executeGraphicsPass(std::vector<RgPassId> const &passes, int32_t const currentPassIndex, GhaGraphicsCommandBuffer &graphicsCommandBufffer, std::unordered_map<RgPassId, GhaRenderPass *> const &allocatedRenderPasses, std::unordered_map<RgPassId, GhaFramebuffer *> const &allocatedFramebuffers, std::unordered_map<RgPassId, GhaGraphicsPipelineObject *> const &allocatedGraphicsPipelines, std::unordered_map<RgResourceId, GhaSampler *> const &allocatedSamplers, std::unordered_map<RgPassId, std::vector<std::unique_ptr<GhaDescriptorSet>>> const &allocatedDescriptorSets);
+        void executeComputePass(std::vector<RgPassId> const &passes, int32_t const currentPassIndex, GhaComputeCommandBuffer &computeCommandBufffer, std::unordered_map<RgPassId, GhaComputePipelineObject *> const &allocatedComputePipelines, std::unordered_map<RgPassId, std::vector<std::unique_ptr<GhaDescriptorSet>>> const &allocatedDescriptorSets);
     };
 }
