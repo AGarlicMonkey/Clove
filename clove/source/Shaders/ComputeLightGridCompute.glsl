@@ -6,7 +6,7 @@
 #define MAX_LIGHTS_PER_TILE 256
 #define GROUP_SIZE 16
 
-layout(set = 0, binding = 0) uniform writeonly uimage2D lightGrid;
+layout(set = 0, binding = 0, rg32ui) uniform writeonly uimage2D lightGrid;
 layout(set = 0, binding = 1) uniform texture2D sceneDepth;
 
 layout(std140, set = 0, binding = 2) buffer CulledLights{
