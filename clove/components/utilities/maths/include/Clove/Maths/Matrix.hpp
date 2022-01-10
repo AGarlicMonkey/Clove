@@ -10,6 +10,9 @@ namespace clove {
     template<size_t R, size_t C, number T>
     struct mat {
         std::array<vec<C, T>, R> rows{};
+
+        constexpr vec<C, T> &operator[](size_t const index);
+        constexpr vec<C, T> const &operator[](size_t const index) const;
     };
 }
 
@@ -17,3 +20,5 @@ namespace clove {
 namespace clove {
     using mat4f = mat<4, 4, float>;
 }
+
+#include "Matrix.inl"
