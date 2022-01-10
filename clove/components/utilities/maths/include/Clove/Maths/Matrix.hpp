@@ -11,6 +11,9 @@ namespace clove {
     struct mat {
         std::array<vec<C, T>, R> rows{};
 
+        mat() = default;
+        mat(T val);
+
         constexpr vec<C, T> &operator[](size_t const index);
         constexpr vec<C, T> const &operator[](size_t const index) const;
     };
