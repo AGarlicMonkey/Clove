@@ -4,7 +4,7 @@
 
 //Vector types
 namespace clove {
-    template<size_t length, number T>
+    template<size_t L, number T>
     struct vec;
 
     template<number T>

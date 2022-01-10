@@ -7,9 +7,9 @@
 
 //Matrix types
 namespace clove {
-    template<size_t rows, size_t columns, number T>
+    template<size_t R, size_t C, number T>
     struct mat {
-        std::array<vec<columns, T>, rows> rows{};
+        std::array<vec<C, T>, R> rows{};
     };
 }
 
