@@ -1,12 +1,9 @@
 #pragma once
 
-#include <concepts>
+#include "Concepts.hpp"
 
 //Vector types
 namespace clove {
-    template<typename T>
-    concept number = std::integral<T> || std::floating_point<T>;
-
     template<size_t length, number T>
     struct vec;
 
