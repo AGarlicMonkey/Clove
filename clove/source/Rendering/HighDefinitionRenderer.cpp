@@ -570,9 +570,10 @@ namespace clove {
 
         RgBufferId const lightCountBuffer{ renderGraph.createBuffer(sizeof(uint32_t)) };
 
+        size_t constexpr memberAlignment{ 16 };
         struct {
-            alignas(16) vec2ui screenDimensions;
-            alignas(16) mat4f inverseProjection;
+            alignas(memberAlignment) vec2ui screenDimensions;
+            alignas(memberAlignment) mat4f inverseProjection;
         } const frustumData{
             .screenDimensions  = screenSize,
             .inverseProjection = inverse(currentFrameData.viewData.projection),
