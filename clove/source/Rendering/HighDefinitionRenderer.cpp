@@ -148,6 +148,7 @@ namespace clove {
         currentFrameData.widgets.clear();
         currentFrameData.text.clear();
 
+        currentFrameData.lights.clear();
         currentFrameData.numDirLights   = 0;
         currentFrameData.numPointLights = 0;
     }
