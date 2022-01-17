@@ -321,9 +321,9 @@ namespace clove {
         }
 
         //Execute passes
-        RgImageId const sceneDepth{ renderSceneDepth(renderGraph, renderGraphMeshes, viewUniformData) };
-
         skinMeshes(renderGraph, renderGraphMeshes);
+
+        RgImageId const sceneDepth{ renderSceneDepth(renderGraph, renderGraphMeshes, viewUniformData) };
         LightGrid const lightGrid{ computeLightGrid(renderGraph, lightBuffers, sceneDepth) };
 
         RenderGraphShadowMaps const shadowMaps{ renderShadowDepths(renderGraph, renderGraphMeshes) };
