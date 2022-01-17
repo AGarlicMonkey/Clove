@@ -170,8 +170,8 @@ namespace clove {
 
         light.data.shadowIndex = dirLightIndex;
 
-        currentFrameData.lights.push_back(std::move(light.data));
-        currentFrameData.directionalShadowTransforms.push_back(std::move(light.shadowTransform));
+        currentFrameData.lights.push_back(light.data);
+        currentFrameData.directionalShadowTransforms.push_back(light.shadowTransform);
     }
 
     void HighDefinitionRenderer::submitLight(PointLight light) {
@@ -179,8 +179,8 @@ namespace clove {
 
         light.data.shadowIndex = pointLightIndex;
 
-        currentFrameData.lights.push_back(std::move(light.data));
-        currentFrameData.pointShadowTransforms.push_back(std::move(light.shadowTransforms));
+        currentFrameData.lights.push_back(light.data);
+        currentFrameData.pointShadowTransforms.push_back(light.shadowTransforms);
     }
 
     void HighDefinitionRenderer::submitWidget(std::shared_ptr<GhaImage> widget, mat4f const modelProjection) {
