@@ -17,6 +17,28 @@
 #include <unordered_set>
 
 namespace clove {
+    namespace {
+        bool isImageAColourAttachment(RgImageView const &imageView, RgRenderPass const &renderPass) {
+            if(renderPass.getOutputResources().contains(imageView.image)) {
+                for(auto const &renderTarget : renderPass.getDescriptor().renderTargets) {
+                    if(renderTarget.imageView == imageView) {
+                        return true;
+                    }
+                }
+            }
+
+            return false;
+        }
+
+        bool isImageADepthStencilAttachment(RgImageView const &imageView, RgRenderPass const &renderPass) {
+            if(renderPass.getOutputResources().contains(imageView.image)) {
+                return renderPass.getDescriptor().depthStencil.imageView == imageView;
+            }
+
+            return false;
+        }
+    }
+
     RenderGraph::RenderGraph(RgFrameCache &frameCache, RgGlobalCache &globalCache)
         : frameCache{ frameCache }
         , globalCache{ globalCache } {
@@ -651,26 +673,6 @@ namespace clove {
         }
 
         return dependencies;
-    }
-
-    bool RenderGraph::isImageAColourAttachment(RgImageView const &imageView, RgRenderPass const &renderPass) const {
-        if(renderPass.getOutputResources().contains(imageView.image)) {
-            for(auto const &renderTarget : renderPass.getDescriptor().renderTargets) {
-                if(renderTarget.imageView == imageView) {
-                    return true;
-                }
-            }
-        }
-
-        return false;
-    }
-
-    bool RenderGraph::isImageADepthStencilAttachment(RgImageView const &imageView, RgRenderPass const &renderPass) const {
-        if(renderPass.getOutputResources().contains(imageView.image)) {
-            return renderPass.getDescriptor().depthStencil.imageView == imageView;
-        }
-
-        return false;
     }
 
     GhaImage::Layout RenderGraph::getPreviousLayout(RgImageView const &imageView, std::vector<RgPassId> const &passes, int32_t const currentPassIndex) {
