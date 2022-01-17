@@ -170,6 +170,7 @@ namespace clove {
         uint32_t const dirLightIndex{ currentFrameData.numDirLights++ };
 
         light.data.shadowIndex = dirLightIndex;
+        light.data.type        = LIGHT_TYPE_DIRECTIONAL;
 
         currentFrameData.lights.push_back(light.data);
         currentFrameData.directionalShadowTransforms.push_back(light.shadowTransform);
@@ -179,6 +180,7 @@ namespace clove {
         uint32_t const pointLightIndex{ currentFrameData.numPointLights++ };
 
         light.data.shadowIndex = pointLightIndex;
+        light.data.type        = LIGHT_TYPE_POINT;
 
         currentFrameData.lights.push_back(light.data);
         currentFrameData.pointShadowTransforms.push_back(light.shadowTransforms);
