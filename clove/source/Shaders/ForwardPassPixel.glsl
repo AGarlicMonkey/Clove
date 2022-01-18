@@ -145,7 +145,7 @@ void main(){
 
 	//Compute lighting
 	for(int i = 0; i < lightCount; ++i) {
-		const Light light = lights[startOffset + i];
+		const Light light = lights[lightIndexList[startOffset + i]];
 
 		switch(light.type) {
 			case LIGHT_TYPE_DIRECTIONAL:
