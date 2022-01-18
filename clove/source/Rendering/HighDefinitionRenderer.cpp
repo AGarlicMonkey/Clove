@@ -851,8 +851,6 @@ namespace clove {
     }
 
     void HighDefinitionRenderer::renderSene(RenderGraph &renderGraph, std::vector<RenderGraphMeshInfo> const &meshes, ViewUniformBufferData const &viewUniformBuffer, LightGrid const &lightGrid, LightBuffers const &lightBuffers, RenderGraphShadowMaps const shadowMaps, RgImageId const renderTarget, RgImageId const depthTarget) {
-        size_t const minUboOffsetAlignment{ ghaDevice->getLimits().minUniformBufferOffsetAlignment };
-
         RgSampler const shadowMapSampler{ renderGraph.createSampler(GhaSampler::Descriptor{
             .minFilter        = GhaSampler::Filter::Linear,
             .magFilter        = GhaSampler::Filter::Linear,
