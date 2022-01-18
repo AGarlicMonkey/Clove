@@ -715,7 +715,7 @@ namespace clove {
 
     HighDefinitionRenderer::RenderGraphShadowMaps HighDefinitionRenderer::renderShadowDepths(RenderGraph &renderGraph, std::vector<RenderGraphMeshInfo> const &meshes) {
         RgImageId directionalShadowMap{ renderGraph.createImage(GhaImage::Type::_2D, GhaImage::Format::D32_SFLOAT, { shadowMapSize, shadowMapSize }) };
-        RgImageId pointShadowMap{ renderGraph.createImage(GhaImage::Type::Cube, GhaImage::Format::D32_SFLOAT, { shadowMapSize, shadowMapSize }, currentFrameData.numPointLights) };
+        RgImageId pointShadowMap{ renderGraph.createImage(GhaImage::Type::Cube, GhaImage::Format::D32_SFLOAT, { shadowMapSize, shadowMapSize }, std::max(currentFrameData.numPointLights, minShadowMapNum)) };
 
         //Directional lights
         for(auto const &light : currentFrameData.lights) {
@@ -998,7 +998,7 @@ namespace clove {
                                                                     .imageView = {
                                                                         .image      = shadowMaps.pointShadowMap,
                                                                         .viewType   = GhaImageView::Type::CubeArray,
-                                                                        .arrayCount = currentFrameData.numPointLights * static_cast<uint32_t>(cubeMapLayerCount),
+                                                                        .arrayCount = std::max(currentFrameData.numPointLights, minShadowMapNum) * static_cast<uint32_t>(cubeMapLayerCount),
                                                                     },
                                                                 },
                                                                 RgImageBinding{

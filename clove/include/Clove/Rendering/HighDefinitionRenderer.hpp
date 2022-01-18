@@ -103,6 +103,8 @@ namespace clove {
 
         //VARIABLES
     private:
+        static inline uint32_t constexpr minShadowMapNum{ 1 };//Require at least a single map to be created so we have something to bind. TODO: Having shader permutations can avoid this.
+        
         size_t maxFramesInFlight{};
         size_t currentFrame{ 0 };//The current frame we're operating on
 
