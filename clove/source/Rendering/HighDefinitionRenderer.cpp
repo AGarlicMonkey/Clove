@@ -173,7 +173,7 @@ namespace clove {
         light.data.type        = LIGHT_TYPE_DIRECTIONAL;
 
         currentFrameData.lights.push_back(light.data);
-        currentFrameData.directionalShadowTransforms.push_back(light.shadowTransform);
+        currentFrameData.directionalShadowTransform = light.shadowTransform;
     }
 
     void HighDefinitionRenderer::submitLight(PointLight light) {
@@ -244,7 +244,7 @@ namespace clove {
         size_t const dirlightCountSize{ sizeof(uint32_t) };
 
         size_t const dirShadowTransformOffset{ dirlightCountSize + (minUboOffsetAlignment - (dirlightCountSize % minUboOffsetAlignment)) };
-        size_t const dirShadowTransformSize{ currentFrameData.directionalShadowTransforms.size() };
+        size_t const dirShadowTransformSize{ sizeof(currentFrameData.directionalShadowTransform) };
 
         size_t const totalLightOffset{ (dirShadowTransformOffset + dirShadowTransformSize) + (minUboOffsetAlignment - ((dirShadowTransformOffset + dirShadowTransformSize) % minUboOffsetAlignment)) };
         size_t const totalLightSize{ sizeof(uint32_t) };
@@ -266,7 +266,7 @@ namespace clove {
         renderGraph.writeToBuffer(lightBuffers.lightsBuffer, currentFrameData.lights.data(), 0, lightsSize);
 
         renderGraph.writeToBuffer(lightBuffers.lightDataBuffer, &currentFrameData.numDirLights, dirLightCountOffset, dirlightCountSize);
-        renderGraph.writeToBuffer(lightBuffers.lightDataBuffer, currentFrameData.directionalShadowTransforms.data(), dirShadowTransformOffset, dirShadowTransformSize);
+        renderGraph.writeToBuffer(lightBuffers.lightDataBuffer, &currentFrameData.directionalShadowTransform, dirShadowTransformOffset, dirShadowTransformSize);
         renderGraph.writeToBuffer(lightBuffers.lightDataBuffer, &totalLightCount, totalLightOffset, totalLightSize);
 
         //Mesh info
@@ -724,7 +724,7 @@ namespace clove {
             }
 
             RgBufferId lightSpaceBuffer{ renderGraph.createBuffer(sizeof(mat4f)) };
-            renderGraph.writeToBuffer(lightSpaceBuffer, &currentFrameData.directionalShadowTransforms[light.shadowIndex], 0, sizeof(mat4f));
+            renderGraph.writeToBuffer(lightSpaceBuffer, &currentFrameData.directionalShadowTransform, 0, sizeof(mat4f));
 
             //NOTE: Need this as a separate thing otherwise there is an internal compiler error. I think it's because of the clearValue variant
             RgRenderPass::Descriptor passDescriptor{

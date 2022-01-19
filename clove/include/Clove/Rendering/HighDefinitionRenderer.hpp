@@ -32,7 +32,7 @@ namespace clove {
             uint32_t numPointLights{ 0 };
 
             std::vector<LightData> lights;
-            std::vector<mat4f> directionalShadowTransforms;
+            mat4f directionalShadowTransform{ 1.0f };
             std::vector<std::array<mat4f, 6>> pointShadowTransforms;
 
             std::vector<MeshInfo> meshes;
