@@ -390,7 +390,7 @@ namespace clove {
                 GhaGraphicsCommandBuffer *graphicsCommandBufffer{ frameCache.allocateGraphicsCommandBuffer() };
 
                 graphicsCommandBufffer->beginRecording(CommandBufferUsage::OneTimeSubmit);
-                executeGraphicsPass(executionPasses, passIndex, *graphicsCommandBufffer, allocatedRenderPasses, allocatedFramebuffers, allocatedGraphicsPipelines, allocatedSamplers, allocatedDescriptorSets);
+                executeGraphicsPass(executionPasses, static_cast<int32_t>(passIndex), *graphicsCommandBufffer, allocatedRenderPasses, allocatedFramebuffers, allocatedGraphicsPipelines, allocatedSamplers, allocatedDescriptorSets);
                 graphicsCommandBufffer->endRecording();
 
                 frameCache.submit(GraphicsSubmitInfo{
@@ -407,7 +407,7 @@ namespace clove {
                 GhaComputeCommandBuffer *computeCommandBufffer{ frameCache.allocateComputeCommandBuffer() };
 
                 computeCommandBufffer->beginRecording(CommandBufferUsage::OneTimeSubmit);
-                executeComputePass(executionPasses, passIndex, *computeCommandBufffer, allocatedComputePipelines, allocatedDescriptorSets);
+                executeComputePass(executionPasses, static_cast<int32_t>(passIndex), *computeCommandBufffer, allocatedComputePipelines, allocatedDescriptorSets);
                 computeCommandBufffer->endRecording();
 
                 frameCache.submit(ComputeSubmitInfo{
@@ -425,7 +425,7 @@ namespace clove {
                 GhaComputeCommandBuffer *computeCommandBufffer{ frameCache.allocateAsyncComputeCommandBuffer() };
 
                 computeCommandBufffer->beginRecording(CommandBufferUsage::OneTimeSubmit);
-                executeComputePass(executionPasses, passIndex, *computeCommandBufffer, allocatedComputePipelines, allocatedDescriptorSets);
+                executeComputePass(executionPasses, static_cast<int32_t>(passIndex), *computeCommandBufffer, allocatedComputePipelines, allocatedDescriptorSets);
                 computeCommandBufffer->endRecording();
 
                 frameCache.submit(ComputeSubmitInfo{
