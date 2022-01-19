@@ -243,22 +243,22 @@ namespace clove {
         size_t const dirLightCountOffset{ 0 };
         size_t const dirlightCountSize{ sizeof(uint32_t) };
 
-        size_t const dirShadowTransformsOffset{ dirlightCountSize + (minUboOffsetAlignment - (dirlightCountSize % minUboOffsetAlignment)) };
-        size_t const dirShadowTransformsSize{ sizeof(currentFrameData.directionalShadowTransforms) };
+        size_t const dirShadowTransformOffset{ dirlightCountSize + (minUboOffsetAlignment - (dirlightCountSize % minUboOffsetAlignment)) };
+        size_t const dirShadowTransformSize{ currentFrameData.directionalShadowTransforms.size() };
 
-        size_t const totalLightOffset{ (dirShadowTransformsOffset + dirShadowTransformsSize) + (minUboOffsetAlignment - ((dirShadowTransformsOffset + dirShadowTransformsSize) % minUboOffsetAlignment)) };
+        size_t const totalLightOffset{ (dirShadowTransformOffset + dirShadowTransformSize) + (minUboOffsetAlignment - ((dirShadowTransformOffset + dirShadowTransformSize) % minUboOffsetAlignment)) };
         size_t const totalLightSize{ sizeof(uint32_t) };
 
         LightBuffers const lightBuffers{
-            .lightsBuffer              = renderGraph.createBuffer(lightsSize),
-            .lightDataBuffer           = renderGraph.createBuffer(totalLightOffset + totalLightSize),
-            .lightsSize                = lightsSize,
-            .dirLightCountOffset       = dirLightCountOffset,
-            .dirLightCountSize         = dirlightCountSize,
-            .dirShadowTransformsOffset = dirShadowTransformsOffset,
-            .dirShadowTransformsSize   = dirShadowTransformsSize,
-            .totalLightOffset          = totalLightOffset,
-            .totalLightSize            = totalLightSize,
+            .lightsBuffer             = renderGraph.createBuffer(lightsSize),
+            .lightDataBuffer          = renderGraph.createBuffer(totalLightOffset + totalLightSize),
+            .lightsSize               = lightsSize,
+            .dirLightCountOffset      = dirLightCountOffset,
+            .dirLightCountSize        = dirlightCountSize,
+            .dirShadowTransformOffset = dirShadowTransformOffset,
+            .dirShadowTransformSize   = dirShadowTransformSize,
+            .totalLightOffset         = totalLightOffset,
+            .totalLightSize           = totalLightSize,
         };
 
         size_t const totalLightCount{ currentFrameData.numDirLights + currentFrameData.numPointLights };
@@ -266,7 +266,7 @@ namespace clove {
         renderGraph.writeToBuffer(lightBuffers.lightsBuffer, currentFrameData.lights.data(), 0, lightsSize);
 
         renderGraph.writeToBuffer(lightBuffers.lightDataBuffer, &currentFrameData.numDirLights, dirLightCountOffset, dirlightCountSize);
-        renderGraph.writeToBuffer(lightBuffers.lightDataBuffer, currentFrameData.directionalShadowTransforms.data(), dirShadowTransformsOffset, dirShadowTransformsSize);
+        renderGraph.writeToBuffer(lightBuffers.lightDataBuffer, currentFrameData.directionalShadowTransforms.data(), dirShadowTransformOffset, dirShadowTransformSize);
         renderGraph.writeToBuffer(lightBuffers.lightDataBuffer, &totalLightCount, totalLightOffset, totalLightSize);
 
         //Mesh info
@@ -935,15 +935,8 @@ namespace clove {
                                                                 RgBufferBinding{
                                                                     .slot        = 2,//NOLINT
                                                                     .buffer      = lightBuffers.lightDataBuffer,
-                                                                    .offset      = lightBuffers.dirLightCountOffset,
-                                                                    .size        = lightBuffers.dirLightCountSize,
-                                                                    .shaderStage = GhaShader::Stage::Vertex,
-                                                                },
-                                                                RgBufferBinding{
-                                                                    .slot        = 3,//NOLINT
-                                                                    .buffer      = lightBuffers.lightDataBuffer,
-                                                                    .offset      = lightBuffers.dirShadowTransformsOffset,
-                                                                    .size        = lightBuffers.dirShadowTransformsSize,
+                                                                    .offset      = lightBuffers.dirShadowTransformOffset,
+                                                                    .size        = lightBuffers.dirShadowTransformSize,
                                                                     .shaderStage = GhaShader::Stage::Vertex,
                                                                 },
                                                                 RgBufferBinding{

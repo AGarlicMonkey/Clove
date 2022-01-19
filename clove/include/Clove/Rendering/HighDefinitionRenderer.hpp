@@ -60,8 +60,8 @@ namespace clove {
             size_t dirLightCountOffset{};
             size_t dirLightCountSize{};
 
-            size_t dirShadowTransformsOffset{};
-            size_t dirShadowTransformsSize{};
+            size_t dirShadowTransformOffset{};
+            size_t dirShadowTransformSize{};
 
             size_t totalLightOffset{};
             size_t totalLightSize{};

@@ -36,7 +36,7 @@ layout(location = 0) in vec3 fragColour;
 layout(location = 1) in vec2 fragTexCoord;
 layout(location = 2) in vec3 fragPos;
 layout(location = 3) in vec3 fragNorm;
-layout(location = 4) in vec4 fragPosLightSpaces;
+layout(location = 4) in vec4 fragPosLightSpace;
 
 layout(location = 0) out vec4 outColour;
 
@@ -74,7 +74,7 @@ void getDirectionalLighting(Light light, MaterialInput materialInput, inout vec3
 	outSpecular += materialInput.specularColour * light.specular * specIntensity;
 
 	//Shadow
-	vec3 projCoords = fragPosLightSpaces.xyz / fragPosLightSpaces.w;
+	vec3 projCoords = fragPosLightSpace.xyz / fragPosLightSpace.w;
 	projCoords.xy = projCoords.xy * 0.5f + 0.5f;
 
 	const float currentDepth = projCoords.z;

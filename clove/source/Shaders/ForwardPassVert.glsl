@@ -12,12 +12,7 @@ layout(std140, set = 0, binding = 1) uniform ViewProj{
 	mat4 proj;
 };
 
-//TODO: Push constant
-layout(std140, set = 0, binding = 2) uniform NumLights{
-	int numDirLights;
-};
-
-layout(std140, set = 0, binding = 3) uniform LightMatrix{
+layout(std140, set = 0, binding = 2) uniform LightMatrix{
 	mat4 directionalLightSpaceMatrix;
 };
 
@@ -30,7 +25,7 @@ layout(location = 0) out vec3 fragColour;
 layout(location = 1) out vec2 fragTexCoord;
 layout(location = 2) out vec3 vertPos;
 layout(location = 3) out vec3 vertNorm;
-layout(location = 4) out vec4 vertPosLightSpaces;
+layout(location = 4) out vec4 vertPosLightSpace;
 
 void main(){
 	gl_Position = proj * view * model * vec4(position, 1.0f);
@@ -41,5 +36,5 @@ void main(){
 	vertPos = vec3(model * vec4(position, 1.0f));
 	vertNorm = mat3(normalMatrix) * normal;
 
-	vertPosLightSpaces = directionalLightSpaceMatrix * vec4(vertPos, 1.0f);
+	vertPosLightSpace = directionalLightSpaceMatrix * vec4(vertPos, 1.0f);
 }
