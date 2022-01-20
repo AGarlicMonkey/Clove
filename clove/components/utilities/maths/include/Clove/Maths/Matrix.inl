@@ -1,6 +1,6 @@
 namespace clove {
     template<size_t C, size_t R, number T>
-    mat<C, R, T>::mat(T val) {
+    constexpr mat<C, R, T>::mat(T val) {
         for(size_t r{ 0 }; r < R; ++r) {
             for(size_t c{ 0 }; c < C; ++c) {
                 if(r == c){
