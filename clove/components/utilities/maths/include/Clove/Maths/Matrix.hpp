@@ -14,8 +14,8 @@ namespace clove {
         constexpr mat() = default;
         constexpr mat(T val);
 
-        constexpr vec<R, T> &operator[](size_t const index);
-        constexpr vec<R, T> const &operator[](size_t const index) const;
+        template<size_t R, size_t C, /* number */ typename T> //TODO: should be number but compiler issue is preventing that
+        friend constexpr vec<C, T> operator*(mat<R, C, T> const &a, vec<C, T> const &b);
 
         constexpr vec<C, T> &operator[](size_t const index);
         constexpr vec<C, T> const &operator[](size_t const index) const;

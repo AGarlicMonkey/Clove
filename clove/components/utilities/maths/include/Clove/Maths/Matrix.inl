@@ -12,6 +12,18 @@ namespace clove {
 
     template<size_t C, size_t R, number T>
     constexpr vec<R, T> &mat<C, R, T>::operator[](size_t const index) {
+
+    template<size_t R, size_t C, number T>
+    constexpr vec<C, T> operator*(mat<R, C, T> const &m, vec<C, T> const &v) {
+        vec<C, T> result{};
+
+        for(size_t i{ 0 }; i < C; ++i) {
+            result[i] = dot(m[i], v);
+        }
+
+        return result;
+    }
+
     template<size_t R, size_t C, number T>
     constexpr vec<C, T> &mat<R, C, T>::operator[](size_t const index) {
         if(index <= R) {

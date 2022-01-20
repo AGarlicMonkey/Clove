@@ -6,8 +6,8 @@ using namespace clove;
 TEST(MatrixTests, CanCreateDefaultMatrix) {
     mat4f matrix{};
 
-    for(size_t i{ 0 }; i < 4; ++i){
-        for(size_t j{ 0 }; j < 4; ++j){
+    for(size_t i{ 0 }; i < 4; ++i) {
+        for(size_t j{ 0 }; j < 4; ++j) {
             EXPECT_EQ(matrix.value[i][j], 0.0f);
         }
     }
@@ -25,7 +25,7 @@ TEST(MatrixTests, CanUseIndexOperator) {
     EXPECT_EQ(matrix[3][3], matrix[32][99]);
 }
 
-TEST(MatrixTests, CanCreateIdentityMatrix){
+TEST(MatrixTests, CanCreateIdentityMatrix) {
     mat4f identity{ 1.0f };
 
     EXPECT_EQ(identity[0][0], 1.0f);
@@ -47,6 +47,23 @@ TEST(MatrixTests, CanCreateIdentityMatrix){
     EXPECT_NE(identity[3][1], 1.0f);
     EXPECT_NE(identity[3][2], 1.0f);
     EXPECT_EQ(identity[3][3], 1.0f);
+}
+
+TEST(MatrixTests, CanMultiplyMatrixByVector) {
+    mat4f matrix{};
+    matrix[0] = { 1, 0, 0, 0 };
+    matrix[1] = { 0, 2, 4, 1 };
+    matrix[2] = { 0, 0, 1, 0 };
+    matrix[3] = { 9, 8, 1, 3 };
+
+    vec4f const vector{ 2, 3, 4, 5 };
+
+    vec4f const result{ matrix * vector };
+
+    EXPECT_EQ(result[0], 2);
+    EXPECT_EQ(result[1], 27);
+    EXPECT_EQ(result[2], 4);
+    EXPECT_EQ(result[3], 61);
 }
 
 TEST(MatrixTests, CanTransposeAMatrix) {
