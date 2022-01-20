@@ -8,7 +8,7 @@ TEST(MatrixTests, CanCreateDefaultMatrix) {
 
     for(size_t i{ 0 }; i < 4; ++i){
         for(size_t j{ 0 }; j < 4; ++j){
-            EXPECT_EQ(matrix.rows[i][j], 0.0f);
+            EXPECT_EQ(matrix.value[i][j], 0.0f);
         }
     }
 }
@@ -18,7 +18,7 @@ TEST(MatrixTests, CanUseIndexOperator) {
 
     for(size_t i{ 0 }; i < 4; ++i) {
         for(size_t j{ 0 }; j < 4; ++j) {
-            EXPECT_EQ(matrix.rows[i][j], matrix[i][j]);
+            EXPECT_EQ(matrix.value[i][j], matrix[i][j]);
         }
     }
 

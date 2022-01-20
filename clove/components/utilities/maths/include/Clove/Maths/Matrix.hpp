@@ -7,15 +7,15 @@
 
 //Matrix types
 namespace clove {
-    template<size_t R, size_t C, number T>
+    template<size_t C, size_t R, number T>
     struct mat {
-        std::array<vec<C, T>, R> rows{};
+        std::array<vec<R, T>, C> value{};
 
         mat() = default;
         mat(T val);
 
-        constexpr vec<C, T> &operator[](size_t const index);
-        constexpr vec<C, T> const &operator[](size_t const index) const;
+        constexpr vec<R, T> &operator[](size_t const index);
+        constexpr vec<R, T> const &operator[](size_t const index) const;
     };
 }
 
