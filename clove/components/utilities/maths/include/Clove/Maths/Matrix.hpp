@@ -7,15 +7,18 @@
 
 //Matrix types
 namespace clove {
-    template<size_t C, size_t R, number T>
+    template<size_t R, size_t C, number T> 
     struct mat {
-        std::array<vec<R, T>, C> value{};
+        std::array<vec<C, T>, R> value{};
 
         constexpr mat() = default;
         constexpr mat(T val);
 
         constexpr vec<R, T> &operator[](size_t const index);
         constexpr vec<R, T> const &operator[](size_t const index) const;
+
+        constexpr vec<C, T> &operator[](size_t const index);
+        constexpr vec<C, T> const &operator[](size_t const index) const;
     };
 }
 
@@ -26,8 +29,9 @@ namespace clove {
 
 //Matrix operations
 namespace clove {
-    template<size_t C, size_t R, number T>
-    constexpr mat<C, R, T> transpose(mat<C, R, T> const &m);
+    template<size_t R, size_t C, number T>
+    constexpr mat<R, C, T> transpose(mat<R, C, T> const &m);
+
 }
 
 #include "Matrix.inl"
