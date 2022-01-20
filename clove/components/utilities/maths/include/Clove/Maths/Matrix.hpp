@@ -24,4 +24,10 @@ namespace clove {
     using mat4f = mat<4, 4, float>;
 }
 
+//Matrix operations
+namespace clove {
+    template<size_t C, size_t R, number T>
+    constexpr mat<C, R, T> transpose(mat<C, R, T> const &m);
+}
+
 #include "Matrix.inl"

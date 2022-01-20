@@ -27,4 +27,17 @@ namespace clove {
             return value[R - 1];
         }
     }
+
+    template<size_t C, size_t R, number T>
+    constexpr mat<C, R, T> transpose(mat<C, R, T> const &m) {
+        mat<C, R, T> transposed{};
+       
+        for(size_t c{ 0 }; c < C; ++c) {
+            for(size_t r{ 0 }; r < R; ++r){
+                transposed[r][c] = m[c][r];
+            }
+        }
+
+        return transposed;
+    }
 }
