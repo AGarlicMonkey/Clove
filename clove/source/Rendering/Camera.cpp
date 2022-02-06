@@ -1,20 +1,18 @@
 #include "Clove/Rendering/Camera.hpp"
 
+#include "Clove/ReflectionAttributes.hpp"
 #include "Clove/Rendering/RenderingLog.hpp"
 
 #include <Clove/Maths/MathsHelpers.hpp>
 
 namespace clove {
-    Camera::Camera(Viewport viewport, ProjectionMode const projection)
-        : viewport{ viewport }
-        , currentProjectionMode{ projection } {
-        setProjectionMode(projection);
-    }
-
     Camera::Camera(ProjectionMode const projection)
         : currentProjectionMode{ projection } {
-        viewport = { 0.0f, 0.0f, 1.0f, 1.0f };
-        setProjectionMode(projection);
+    }
+
+    Camera::Camera(ProjectionMode const projection, Viewport const viewport)
+        : currentProjectionMode{ projection }
+        , viewport{ viewport } {
     }
 
     mat4f Camera::getProjection(vec2ui const screenSize) const {
@@ -37,3 +35,34 @@ namespace clove {
         }
     }
 }
+
+CLOVE_REFLECT_BEGIN(clove::Camera)
+CLOVE_REFLECT_MEMBER(currentProjectionMode, clove::EditorEditableDropdown{
+                                                .name               = "Projection Mode",
+                                                .getDropdownMembers = []() -> std::vector<std::string> {
+                                                    return { "Orthographic", "Perspective" };
+                                                },
+                                                .setSelectedItem  = [](uint8_t *const memory, size_t offset, size_t size, std::string_view selection) {
+                                                    CLOVE_ASSERT(size == sizeof(clove::Camera::ProjectionMode));
+                                                    auto *const mode{ reinterpret_cast<clove::Camera::ProjectionMode *const>(memory) };
+
+                                                    if(selection == "Orthographic"){
+                                                        *mode = clove::Camera::ProjectionMode::Orthographic;
+                                                    } else if(selection == "Perspective") {
+                                                        *mode = clove::Camera::ProjectionMode::Perspective;
+                                                    } 
+                                                },
+                                                .getSelectedIndex = [](uint8_t const *const memory, size_t offset, size_t size) -> size_t {
+                                                    CLOVE_ASSERT(size == sizeof(clove::Camera::ProjectionMode));
+                                                    auto *const mode{ reinterpret_cast<clove::Camera::ProjectionMode const *const>(memory) };
+
+                                                    switch(*mode) {
+                                                        case clove::Camera::ProjectionMode::Orthographic:
+                                                            return 0;
+                                                        case clove::Camera::ProjectionMode::Perspective:
+                                                        default:
+                                                            return 1;
+                                                    }
+                                                },
+                                            })
+CLOVE_REFLECT_END

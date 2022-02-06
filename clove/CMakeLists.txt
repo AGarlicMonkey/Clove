@@ -77,6 +77,7 @@ add_library(
 		${INCLUDE}/Components/AudioListenerComponent.hpp
 		${INCLUDE}/Components/AudioSourceComponent.hpp
 		${INCLUDE}/Components/CameraComponent.hpp
+		${SOURCE}/Components/CameraComponent.cpp
 		${INCLUDE}/Components/CollisionResponseComponent.hpp
 		${INCLUDE}/Components/CollisionShapeComponent.hpp
 		${SOURCE}/Components/CollisionShapeComponent.cpp
