@@ -175,9 +175,6 @@ namespace membrane {
     }
 
     void Application::shutdown() {
-        if(isInEditorMode) {
-            //app->getSubSystem<EditorSubSystem>().saveScene();
-        }
         app->shutdown();
     }
 
@@ -199,17 +196,11 @@ namespace membrane {
     }
 
     void Application::setEditorMode(Editor_Stop ^ message) {
-        /*app->popSubSystem<RuntimeSubSystem>();
-        app->pushSubSystem<EditorSubSystem>();
-        isInEditorMode = true;*/
+        app->pushSubSystem<EditorSubSystem>(app->getEntityManager());
     }
 
     void Application::setRuntimeMode(Editor_Play ^ message) {
-        /*app->getSubSystem<EditorSubSystem>().saveScene();
-
         app->popSubSystem<EditorSubSystem>();
-        app->pushSubSystem<RuntimeSubSystem>();
-        isInEditorMode = false;*/
     }
 
     bool Application::tryLoadGameDll(std::string_view path) {

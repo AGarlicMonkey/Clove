@@ -58,7 +58,7 @@ namespace {
                 memberInfo->offset      = totalMemberOffset;
                 memberInfo->type        = EditorTypeType::Dropdown;
 
-                EditorTypeDropdown ^dropdownData{ gcnew EditorTypeDropdown };
+                EditorTypeDropdown ^ dropdownData { gcnew EditorTypeDropdown };
                 dropdownData->currentSelection = attribute->getSelectedIndex(reinterpret_cast<uint8_t const *const>(memory), totalMemberOffset, member.size);
                 dropdownData->dropdownItems    = gcnew System::Collections::Generic::List<System::String ^>{};
                 for(auto item : attribute->getDropdownMembers()) {
@@ -83,9 +83,9 @@ namespace {
 
                     dropdownData->dropdownTypeInfos = constructMembers(dropdownMemberInfos, memory, totalMemberOffset);
                 }
-                
+
                 memberInfo->typeData = dropdownData;
-                
+
                 editorVisibleMembers->Add(memberInfo);
             }
         }
@@ -105,7 +105,7 @@ namespace {
         return editorTypeInfo;
     }
 
-    void modifyComponentMember(uint8_t *const memory, clove::reflection::TypeInfo const *typeInfo, std::string_view value, size_t const requiredOffset, size_t currentOffset) {
+        void modifyComponentMember(uint8_t *const memory, clove::reflection::TypeInfo const *typeInfo, std::string_view value, size_t const requiredOffset, size_t currentOffset) {
         for(auto const &member : typeInfo->members) {
             size_t const totalMemberOffset{ currentOffset + member.offset };
             reflection::TypeInfo const *memberTypeInfo{ reflection::getTypeInfo(member.id) };
@@ -295,14 +295,15 @@ namespace membrane {
     void EditorSubSystem::onAttach() {
         auto &app{ clove::Application::get() };
 
-        //Add the editor camera outside of the current scene
-        if(editorCamera == clove::NullEntity) {
-            auto *const entityManager{ app.getEntityManager() };
+        entityManager->destroyAll();
 
-            editorCamera                                                                  = entityManager->create();
-            entityManager->addComponent<clove::TransformComponent>(editorCamera).position = clove::vec3f{ 0.0f, 0.0f, -10.0f };
-            entityManager->addComponent<clove::CameraComponent>(editorCamera, clove::Camera{ clove::Camera::ProjectionMode::Perspective });
-        }
+        //Add the editor camera outside of the current scene
+        editorCamera = entityManager->create();
+
+        bool constexpr makePriority{ true };
+
+        entityManager->addComponent<clove::TransformComponent>(editorCamera).position = clove::vec3f{ 0.0f, 0.0f, -10.0f };
+        entityManager->addComponent<clove::CameraComponent>(editorCamera, clove::Camera{ clove::Camera::ProjectionMode::Perspective }, makePriority);
 
         loadScene();
     }
@@ -381,7 +382,7 @@ namespace membrane {
 
     void EditorSubSystem::onDetach() {
         saveScene();
-        entityManager->destroyAll();
+        entityManager->destroy(editorCamera);
     }
 
     void EditorSubSystem::saveScene() {
@@ -406,7 +407,7 @@ namespace membrane {
 
     void EditorSubSystem::loadScene() {
         for(auto &&[entity, components] : trackedComponents) {
-            entityManager->destroy(entity);    
+            entityManager->destroy(entity);
         }
         trackedComponents.clear();
 
