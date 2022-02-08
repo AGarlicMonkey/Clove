@@ -83,7 +83,7 @@ void getDirectionalLighting(Light light, MaterialInput materialInput, inout vec3
 	outShadow += currentDepth - adjustBias(minBias, maxBias, materialInput.normal, lightDir) > closetDepth ? 1.0f : 0.0f;
 }
 
-void getPointLighting(Light light, MaterialInput materialInput, inout vec3 outAmbient, inout vec3 outDiffuse, inout vec3 outSpecular, in out float outShadow){
+void getPointLighting(Light light, MaterialInput materialInput, inout vec3 outAmbient, inout vec3 outDiffuse, inout vec3 outSpecular, inout float outShadow){
 	const float minBias = 0.0005f;
 	const float maxBias = 0.025f;
 
