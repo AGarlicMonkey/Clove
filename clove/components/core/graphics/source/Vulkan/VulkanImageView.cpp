@@ -26,7 +26,7 @@ namespace clove {
         return viewedDimensions;
     }
 
-    VkImageViewType VulkanImageView::convertType(GhaImageView::Type garlicImageType, uint32_t const layerCount) {
+    VkImageViewType VulkanImageView::convertType(GhaImageView::Type const garlicImageType) {
         switch(garlicImageType) {
             case GhaImageView::Type::_2D:
                 return VK_IMAGE_VIEW_TYPE_2D;

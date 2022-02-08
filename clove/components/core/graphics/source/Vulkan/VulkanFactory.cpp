@@ -243,7 +243,7 @@ namespace clove {
                 .pNext      = nullptr,
                 .flags      = 0,
                 .image      = image,
-                .viewType   = VulkanImageView::convertType(viewdescriptor.type, viewdescriptor.layerCount),
+                .viewType   = VulkanImageView::convertType(viewdescriptor.type),
                 .format     = VulkanImage::convertFormat(imageFormat),
                 .components = {
                     .r = VK_COMPONENT_SWIZZLE_IDENTITY,

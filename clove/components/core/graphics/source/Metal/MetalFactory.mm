@@ -452,7 +452,7 @@ namespace clove {
 
 		id<MTLTexture> mtlTexture{ polyCast<MetalImage const>(&image)->getTexture() };
 		id<MTLTexture> textureView{ [mtlTexture newTextureViewWithPixelFormat:MetalImage::convertFormat(imageDescriptor.format)
-                                                                  textureType:MetalImageView::convertType(descriptor.type, descriptor.layerCount)
+                                                                  textureType:MetalImageView::convertType(descriptor.type)
                                                                        levels:mipLevels
                                                                        slices:arraySlices] };
 		

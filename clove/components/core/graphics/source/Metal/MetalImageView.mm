@@ -27,7 +27,7 @@ namespace clove {
         return texture;
     }
 
-	MTLTextureType MetalImageView::convertType(GhaImageView::Type type, uint32_t const arrayCount) {
+	MTLTextureType MetalImageView::convertType(GhaImageView::Type const type) {
 		switch (type) {
             case GhaImageView::Type::_2D:
                 return MTLTextureType2D;
