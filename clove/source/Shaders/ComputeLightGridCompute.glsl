@@ -5,6 +5,7 @@
 
 #define MAX_LIGHTS_PER_TILE 256
 #define GROUP_SIZE 16
+#define NUM_FRUSTUM_PLANES 4
 
 layout(set = 0, binding = 0, rg32ui) uniform writeonly uimage2D lightGrid;
 layout(set = 0, binding = 1) uniform texture2D sceneDepth;
@@ -18,8 +19,9 @@ layout(std140, set = 0, binding = 3) buffer LightCounter{
 };
 
 layout(std140, set = 0, binding = 4) uniform FrustumData{
-	vec2 screenDimensions;
-	mat4 inverseProjection;
+	uvec2 screenDimensions;
+	mat4 projection;
+	mat4 view;
 };
 
 //TODO: push constant
@@ -43,40 +45,9 @@ shared uint lightList[MAX_LIGHTS_PER_TILE];
 layout(local_size_x = GROUP_SIZE) in;
 layout(local_size_y = GROUP_SIZE) in;
 
-struct Plane {
-	vec3 normal;
-	float dist;
-};
-
 struct Frustum {
-	Plane planes[6];
+	vec4 planes[NUM_FRUSTUM_PLANES];
 };
-
-Plane computePlane(vec3 p0, vec3 p1, vec3 p2) {
-	Plane plane;
-
-	const vec3 v0 = p1 - p0;
-	const vec3 v1 = p2 - p0;
-
-	plane.normal = normalize(cross(v0, v1));
-	plane.dist	 = dot(plane.normal, p0);
-
-	return plane;
-}
-
-vec4 clipToView(vec4 clip) {
-	vec4 view = inverseProjection *clip;
-    view = view / view.w;
-
-    return view;
-}
-
-vec4 screenToView(vec4 screen) {
-    const vec2 texCoord = screen.xy / screenDimensions;
-    const vec4 clip = vec4(vec2(texCoord.x, 1.0f - texCoord.y) * 2.0f - 1.0f, screen.z, screen.w);
-
-    return clipToView(clip);
-}
 
 bool isLightInsideFrustum(Light light, Frustum frustum) {
 	switch(light.type) {
@@ -84,9 +55,12 @@ bool isLightInsideFrustum(Light light, Frustum frustum) {
 			return true; //Directional lights will always pass as they take up the entire view
 		case LIGHT_TYPE_POINT: {
 			bool isInside = true;
-			for(int i = 0; i < 6 && isInside; ++i){
-				const Plane plane = frustum.planes[i];
-				isInside = dot(plane.normal, light.position) - plane.dist < -light.radius;
+			for(int i = 0; i < NUM_FRUSTUM_PLANES && isInside; ++i){
+				const vec4 plane 		= frustum.planes[i];
+				const vec4 lightViewPos = view * vec4(light.position, 1.0f);
+
+				const float distFromPlane = dot(plane, lightViewPos);
+				isInside = distFromPlane >= -light.radius;
 			}
 			return isInside;
 		}
@@ -94,8 +68,6 @@ bool isLightInsideFrustum(Light light, Frustum frustum) {
 }
 
 void main(){
-	const ivec2 pixelPos = ivec2(gl_GlobalInvocationID.xy);
-
 	if(gl_LocalInvocationIndex == 0) {
 		minDepth = 0xFFFFFFFF;
 		maxDepth = 0;
@@ -106,6 +78,7 @@ void main(){
 	groupMemoryBarrier();
 
 	{
+		const ivec2 pixelPos = ivec2(gl_GlobalInvocationID.xy);
 		const uint depth = floatBitsToUint(texelFetch(sampler2D(sceneDepth, sceneDepthSampler), pixelPos, 0).r);
 
 		atomicMin(minDepth, depth);
@@ -117,28 +90,23 @@ void main(){
 	//Compute frustum - TODO: Only needs to be calculated if screen changes size (min and max will always need to be calculated)
     Frustum frustum;
 	{
-		const vec3 eyePos = vec3(0.0f);
+		const vec2 centerGroup = vec2(screenDimensions.xy) / float(2 * GROUP_SIZE);
+    	const vec2 groupOffset = centerGroup - vec2(gl_WorkGroupID.xy);
 
-		vec4 screenSpace[4];
-    	screenSpace[0] = vec4(pixelPos.xy * GROUP_SIZE, -1.0f, 1.0f); 								
-    	screenSpace[1] = vec4(vec2(pixelPos.x + 1, 	pixelPos.y) 		* GROUP_SIZE, -1.0f, 1.0f); 
-    	screenSpace[2] = vec4(vec2(pixelPos.x, 		pixelPos.y + 1) 	* GROUP_SIZE, -1.0f, 1.0f); 
-    	screenSpace[3] = vec4(vec2(pixelPos.x + 1, 	pixelPos.y + 1) 	* GROUP_SIZE, -1.0f, 1.0f); 
+		const vec4 column0 = vec4(-projection[0][0] * centerGroup.x,	 projection[0][1],					groupOffset.x, 	projection[0][3]);
+    	const vec4 column1 = vec4( projection[1][0],					-projection[1][1] * centerGroup.y, 	groupOffset.y, 	projection[1][3]);
+    	const vec4 column3 = vec4( projection[3][0],				 	 projection[3][1],					1.0f, 			projection[3][3]);
 
-		vec3 viewSpace[4];
-		for(int i = 0; i < 4; ++i){
-			viewSpace[i] = screenToView(screenSpace[i]).xyz;
-		}
+    	frustum.planes[0] = column3 + column0; //Left
+    	frustum.planes[1] = column3 - column0; //Right
+    	frustum.planes[2] = column3 - column1; //Top
+    	frustum.planes[3] = column3 + column1; //Bottom
+		//frustum.planes[4] = vec4(0.0f, 0.0f,  1.0f, -uintBitsToFloat(minDepth)); //Near
+		//frustum.planes[5] = vec4(0.0f, 0.0f, -1.0f,  uintBitsToFloat(maxDepth)); //Far
 
-		const float minDepthVs = clipToView(vec4(0.0f, 0.0f, uintBitsToFloat(minDepth), 1.0f)).z;
-		const float maxDepthVs = clipToView(vec4(0.0f, 0.0f, uintBitsToFloat(maxDepth), 1.0f)).z;
-
-    	frustum.planes[0] = computePlane(eyePos, viewSpace[2], viewSpace[0]); 	//Top left
-    	frustum.planes[1] = computePlane(eyePos, viewSpace[1], viewSpace[3]); 	//Top right
-    	frustum.planes[2] = computePlane(eyePos, viewSpace[0], viewSpace[1]); 	//Bottom left
-    	frustum.planes[3] = computePlane(eyePos, viewSpace[3], viewSpace[2]); 	//Bottom right
-		frustum.planes[4] = Plane(vec3(0.0f, 0.0f, -1.0f), -minDepthVs); 		//Near
-		frustum.planes[5] = Plane(vec3(0.0f, 0.0f,  1.0f),  maxDepthVs);		//Far
+		for (int i = 0; i < 4; ++i) {
+        	frustum.planes[i] /= length(frustum.planes[i].xyz);
+    	}
 	}
 
 	groupMemoryBarrier();

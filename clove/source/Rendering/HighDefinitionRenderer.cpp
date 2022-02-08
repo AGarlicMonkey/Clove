@@ -361,7 +361,7 @@ namespace clove {
                     .storeOp    = StoreOperation::Store,
                     .clearValue = ColourValue{ 0.0f, 0.0, 0.0f, 1.0f },
                     .imageView  = {
-                        .image = renderTargetImage,
+                         .image = renderTargetImage,
                     },
                 },
             },
@@ -370,7 +370,7 @@ namespace clove {
                 .storeOp    = StoreOperation::DontCare,
                 .clearValue = DepthStencilValue{ .depth = 1.0f },
                 .imageView  = {
-                    .image = sceneDepth,
+                     .image = sceneDepth,
                 },
             },
         };
@@ -518,7 +518,7 @@ namespace clove {
                 .storeOp    = StoreOperation::Store,
                 .clearValue = DepthStencilValue{ .depth = 1.0f },
                 .imageView  = {
-                    .image = depthTargetImage,
+                     .image = depthTargetImage,
                 },
             }
         };
@@ -576,10 +576,12 @@ namespace clove {
         size_t constexpr memberAlignment{ 16 };
         struct {
             alignas(memberAlignment) vec2ui screenDimensions;
-            alignas(memberAlignment) mat4f inverseProjection;
+            alignas(memberAlignment) mat4f projection;
+            alignas(memberAlignment) mat4f view;
         } const frustumData{
-            .screenDimensions  = screenSize,
-            .inverseProjection = inverse(currentFrameData.viewData.projection),
+            .screenDimensions = screenSize,
+            .projection       = currentFrameData.viewData.projection,
+            .view             = currentFrameData.viewData.view,
         };
 
         size_t const frustumDataSize{ sizeof(frustumData) };
@@ -743,7 +745,7 @@ namespace clove {
                     .storeOp    = StoreOperation::Store,
                     .clearValue = DepthStencilValue{ .depth = 1.0f },
                     .imageView  = {
-                        .image = directionalShadowMap,
+                         .image = directionalShadowMap,
                     },
                 }
             };
@@ -810,8 +812,8 @@ namespace clove {
                         .storeOp    = StoreOperation::Store,
                         .clearValue = DepthStencilValue{ .depth = 1.0f },
                         .imageView  = {
-                            .image      = pointShadowMap,
-                            .arrayIndex = static_cast<uint32_t>((light.shadowIndex * cubeFaces) + j),
+                             .image      = pointShadowMap,
+                             .arrayIndex = static_cast<uint32_t>((light.shadowIndex * cubeFaces) + j),
                         },
                     }
                 };
@@ -900,7 +902,7 @@ namespace clove {
                     .storeOp    = StoreOperation::Store,
                     .clearValue = ColourValue{ 0.0f, 0.0, 0.0f, 1.0f },
                     .imageView  = {
-                        .image = renderTarget,
+                         .image = renderTarget,
                     },
                 },
             },
