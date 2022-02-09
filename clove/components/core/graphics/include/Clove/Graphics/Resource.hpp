@@ -23,9 +23,10 @@ namespace clove {
         TransferRead                = 1 << 0,
         TransferWrite               = 1 << 1,
         ShaderRead                  = 1 << 2,
-        ColourAttachmentWrite       = 1 << 3,
-        DepthStencilAttachmentRead  = 1 << 4,
-        DepthStencilAttachmentWrite = 1 << 5
+        ShaderWrite                 = 1 << 3,
+        ColourAttachmentWrite       = 1 << 4,
+        DepthStencilAttachmentRead  = 1 << 5,
+        DepthStencilAttachmentWrite = 1 << 6
     };
     CLOVE_ENUM_BIT_FLAG_OPERATORS(AccessFlags, AccessFlagsType)
 }
