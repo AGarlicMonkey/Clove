@@ -1234,7 +1234,7 @@ namespace clove {
                         .baseArrayLayer     = imageView.arrayIndex,
                         .layerCount         = imageView.arrayCount,
                     };
-                    computeCommandBufffer.imageMemoryBarrier(*images.at(imageView.image).getGhaImage(frameCache), memoryBarrier, sourcePipelineStage, PipelineStage::PixelShader);
+                    computeCommandBufffer.imageMemoryBarrier(*images.at(imageView.image).getGhaImage(frameCache), memoryBarrier, sourcePipelineStage, PipelineStage::ComputeShader);
                 }
 
                 transitionedImages.emplace(imageView.image);
