@@ -27,21 +27,16 @@ namespace clove {
         uint32_t shadowIndex{ 0 };
 
         vec3f position{ 0.0f, 0.0f, 0.0f };
-        float constant{ 1.0f };
-
-        vec3f ambient{ 0.01f, 0.01f, 0.01f };
-        float linear{ 0.0014f };
-
-        vec3f diffuse{ 0.75f, 0.75f, 0.75f };
-        float quadratic{ 0.000007f };
-
-        vec3f specular{ 1.0f, 1.0f, 1.0f };
         float radius{ 0 };
 
+        vec3f ambient{ 0.01f, 0.01f, 0.01f };
         int32_t type{ 0 };
+
+        vec3f diffuse{ 0.75f, 0.75f, 0.75f };
         float padding_1;
+
+        vec3f specular{ 1.0f, 1.0f, 1.0f };
         float padding_2;
-        float padding_3;
     };
 
     struct SkeletalData {

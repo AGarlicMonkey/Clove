@@ -3,19 +3,14 @@ struct Light {
     int shadowIndex;
 
 	vec3 position;
-	float constant;
-
-	vec3 ambient;
-	float linearV;
-
-	vec3 diffuse;
-	float quadratic;
-
-	vec3 specular;
 	float radius;
 
+	vec3 ambient;
     int type;
-    float padding_1;
-    float padding_2;
-    float padding_3;
+
+	vec3 diffuse;
+	float padding_1;
+
+	vec3 specular;
+	float padding_2;
 };

@@ -103,7 +103,7 @@ void getPointLighting(Light light, MaterialInput materialInput, inout vec3 outAm
 
 	//Attenuation
 	const float dist 		= length(light.position - fragPos);
-	const float attenuation = 1.0f / (light.constant + (light.linearV * dist) + (light.quadratic * (dist * dist)));
+	const float attenuation = max((1.0f / sqrt(dist)) - (1.0f / sqrt(light.radius)), 0.0f);
 
 	ambient		*= attenuation;
 	diffuse		*= attenuation;
@@ -157,7 +157,7 @@ void main(){
 		}
 	}
 
-	shadow /= (lightCount);
+	shadow /= lightCount;
 
 	const vec3 lighting = (totalAmbient + ((1.0f - shadow) * (totalDiffuse + totalSpecular)));
 

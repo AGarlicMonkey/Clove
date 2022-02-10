@@ -96,19 +96,18 @@ namespace clove {
             renderer->submitLight(lightProxy);
         });
         //Submit point lights
-        entityManager->forEach([this](TransformComponent const &transform, PointLightComponent &light) {
-            float constexpr farDist{ 100.0f };
-            mat4f const shadowProj{ createPerspectiveMatrix(asRadians(90.0f), 1.0f, 0.5f, farDist) };
+        entityManager->forEach([this](TransformComponent const &transform, PointLightComponent const &light) {
+            mat4f const shadowProj{ createPerspectiveMatrix(asRadians(90.0f), 1.0f, 0.5f, light.radius) };
 
             vec3f const &position{ transform.position };
 
             Renderer::PointLight lightProxy{
                 .data = {
                     .position = position,
+                    .radius   = light.radius,
                     .ambient  = light.ambientColour,
                     .diffuse  = light.diffuseColour,
                     .specular = light.specularColour,
-                    .radius   = farDist,
                 },
                 .shadowTransforms = {
                     shadowProj * lookAt(position, position + vec3f{ 1.0f, 0.0f, 0.0f }, vec3f{ 0.0f, 1.0f, 0.0f }),
