@@ -68,6 +68,11 @@ bool isLightInsideFrustum(Light light, Frustum frustum) {
 }
 
 void main(){
+	if(gl_GlobalInvocationID.xy == uvec2(0)){
+		//When using render graph this buffer can persist through frames. Infinitely accumulating
+		lightCounter = 0;
+	}
+
 	if(gl_LocalInvocationIndex == 0) {
 		minDepth = 0xFFFFFFFF;
 		maxDepth = 0;
