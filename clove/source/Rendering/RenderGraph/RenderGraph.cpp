@@ -18,10 +18,25 @@
 
 namespace clove {
     namespace {
+        bool DoViewsOverlap(RgImageView const &a, RgImageView const &b) {
+            if(a.image != b.image) {
+                return false;
+            }
+
+            uint32_t const aStart{ a.arrayIndex };
+            uint32_t const aEnd{ a.arrayIndex + (a.arrayCount - 1) };
+
+            uint32_t const bStart{ b.arrayIndex };
+            uint32_t const bEnd{ b.arrayIndex + (b.arrayCount - 1) };
+
+            return ((aStart >= bStart && aStart <= bEnd) ||
+                    (aEnd >= bStart && aEnd <= bEnd));
+        }
+
         bool isImageAColourAttachment(RgImageView const &imageView, RgRenderPass const &renderPass) {
             if(renderPass.getOutputResources().contains(imageView.image)) {
                 for(auto const &renderTarget : renderPass.getDescriptor().renderTargets) {
-                    if(renderTarget.imageView == imageView) {
+                    if(DoViewsOverlap(renderTarget.imageView, imageView)) {
                         return true;
                     }
                 }
@@ -32,7 +47,7 @@ namespace clove {
 
         bool isImageADepthStencilAttachment(RgImageView const &imageView, RgRenderPass const &renderPass) {
             if(renderPass.getOutputResources().contains(imageView.image)) {
-                return renderPass.getDescriptor().depthStencil.imageView == imageView;
+                return DoViewsOverlap(renderPass.getDescriptor().depthStencil.imageView, imageView);
             }
 
             return false;
@@ -867,8 +882,8 @@ namespace clove {
                 .viewportDescriptor = viewScissorArea,
                 .scissorDescriptor  = viewScissorArea,
                 .depthState         = {
-                    .depthTest  = passDescriptor.depthTest,
-                    .depthWrite = passDescriptor.depthWrite,
+                            .depthTest  = passDescriptor.depthTest,
+                            .depthWrite = passDescriptor.depthWrite,
                 },
                 .enableBlending       = passDescriptor.enableBlending,
                 .renderPass           = outRenderPasses.at(passId),
@@ -1108,7 +1123,7 @@ namespace clove {
 
                 GhaImage::Layout const currentLayout{ getPreviousLayout(imageView, passes, currentPassIndex) };
                 //Renderpasses transition resources for us so if the previous layout is an attachment we can skip it
-                if(currentLayout == GhaImage::Layout::ColourAttachmentOptimal || currentLayout == GhaImage::Layout::DepthStencilAttachmentOptimal){
+                if(currentLayout == GhaImage::Layout::ColourAttachmentOptimal || currentLayout == GhaImage::Layout::DepthStencilAttachmentOptimal) {
                     continue;
                 }
 
@@ -1117,20 +1132,21 @@ namespace clove {
                 if(currentLayout != requiredLayout) {
                     PipelineStage sourcePipelineStage{ PipelineStage::Top };
                     if(currentPassIndex > 0) {
-                        int32_t const previousPassIndex{ currentPassIndex - 1 };
+                        int32_t previousPassIndex{ currentPassIndex };
+                        do {
+                            --previousPassIndex;
+                        } while(transferPasses.contains(previousPassIndex));
+
                         if(renderPasses.contains(previousPassIndex)) {
-                            RgRenderPass const &previousRenderPass{ renderPasses.at(previousPassIndex) };
-                            if(isImageAColourAttachment(imageView, previousRenderPass) || isImageADepthStencilAttachment(imageView, previousRenderPass)) {
-                                sourcePipelineStage = PipelineStage::ColourAttachmentOutput;
-                            } else {
-                                sourcePipelineStage = PipelineStage::PixelShader;
-                            }
+                            sourcePipelineStage = PipelineStage::PixelShader;
                         } else if(computePasses.contains(previousPassIndex)) {
                             sourcePipelineStage = PipelineStage::ComputeShader;
                         }
                     }
 
                     ImageMemoryBarrierInfo const memoryBarrier{
+                        .currentAccess      = currentLayout == GhaImage::Layout::General ? AccessFlags::ShaderWrite : AccessFlags::ShaderRead,
+                        .newAccess          = AccessFlags::ShaderRead,
                         .currentImageLayout = currentLayout,
                         .newImageLayout     = requiredLayout,
                         .baseArrayLayer     = imageView.arrayIndex,
@@ -1215,20 +1231,21 @@ namespace clove {
                 if(currentLayout != requiredLayout) {
                     PipelineStage sourcePipelineStage{ PipelineStage::Top };
                     if(currentPassIndex > 0) {
-                        int32_t const previousPassIndex{ currentPassIndex - 1 };
+                        int32_t previousPassIndex{ currentPassIndex };
+                        do {
+                            --previousPassIndex;
+                        } while(transferPasses.contains(previousPassIndex));
+
                         if(renderPasses.contains(previousPassIndex)) {
-                            RgRenderPass const &previousRenderPass{ renderPasses.at(previousPassIndex) };
-                            if(isImageAColourAttachment(imageView, previousRenderPass) || isImageADepthStencilAttachment(imageView, previousRenderPass)) {
-                                sourcePipelineStage = PipelineStage::ColourAttachmentOutput;
-                            } else {
-                                sourcePipelineStage = PipelineStage::PixelShader;
-                            }
+                            sourcePipelineStage = PipelineStage::PixelShader;
                         } else if(computePasses.contains(previousPassIndex)) {
                             sourcePipelineStage = PipelineStage::ComputeShader;
                         }
                     }
 
                     ImageMemoryBarrierInfo const memoryBarrier{
+                        .currentAccess      = currentLayout == GhaImage::Layout::General ? AccessFlags::ShaderWrite : AccessFlags::ShaderRead,
+                        .newAccess          = requiredLayout == GhaImage::Layout::General ? AccessFlags::ShaderWrite : AccessFlags::ShaderRead,
                         .currentImageLayout = currentLayout,
                         .newImageLayout     = requiredLayout,
                         .baseArrayLayer     = imageView.arrayIndex,
