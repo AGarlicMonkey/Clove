@@ -1,16 +1,16 @@
 #pragma once
 
-#include "Clove/AI/BlackBoard.hpp"
 #include "Clove/AI/Task.hpp"
 
-#include <memory>
+#include <Clove/Blackboard.hpp>
 #include <Clove/DeltaTime.hpp>
+#include <memory>
 
 namespace clove {
     class BehaviourTree {
         //VARIABLES
     private:
-        BlackBoard blackboard;
+        Blackboard blackboard;
         std::unique_ptr<Task> rootTask;
 
         //FUNCTIONS
@@ -27,7 +27,7 @@ namespace clove {
 
         void setRootTask(std::unique_ptr<Task> task);
 
-        BlackBoard &getBlackBoard();
+        Blackboard &getBlackboard();
 
         void run(DeltaTime deltaTime);
     };

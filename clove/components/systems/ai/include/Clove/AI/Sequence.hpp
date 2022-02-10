@@ -18,6 +18,6 @@ namespace clove {
 
         ~Sequence();
 
-        Status activate(DeltaTime const deltaTime, BlackBoard &blackboard) override;
+        Status activate(DeltaTime const deltaTime, Blackboard &blackboard) override;
     };
 }

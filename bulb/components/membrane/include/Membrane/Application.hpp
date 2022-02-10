@@ -40,6 +40,7 @@ public ref class Application {
         !Application();
 
         void loadGameDll();
+        void startSession();
 
         bool isRunning();
         void tick();

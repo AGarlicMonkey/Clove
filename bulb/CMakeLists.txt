@@ -42,16 +42,12 @@ add_executable(
 		${SOURCE}/Views/EntityInfo.xaml.cs
 		${SOURCE}/Views/MainWindow.xaml
 		${SOURCE}/Views/MainWindow.xaml.cs
+		${SOURCE}/Views/TypeView.xaml
+		${SOURCE}/Views/TypeView.xaml.cs
 		${SOURCE}/Views/Vector3Box.xaml
 		${SOURCE}/Views/Vector3Box.xaml.cs
 		${SOURCE}/Views/Viewport.xaml
 		${SOURCE}/Views/Viewport.xaml.cs
-		
-		${SOURCE}/ViewModels/Components/ComponentViewModel.cs
-		${SOURCE}/ViewModels/Components/CollisionShapeComponentViewModel.cs
-		${SOURCE}/ViewModels/Components/RigidBodyComponentViewModel.cs
-		${SOURCE}/ViewModels/Components/StaticModelComponentViewModel.cs
-		${SOURCE}/ViewModels/Components/TransformComponentViewModel.cs
 
 		${SOURCE}/ViewModels/FileExplorer/DirectoryItemViewModel.cs
 		${SOURCE}/ViewModels/FileExplorer/FileExplorerViewModel.cs
@@ -59,10 +55,12 @@ add_executable(
 		${SOURCE}/ViewModels/FileExplorer/FolderViewModel.cs
 
 		${SOURCE}/ViewModels/ComponentMenuItemViewModel.cs
+		${SOURCE}/ViewModels/ComponentViewModel.cs
 		${SOURCE}/ViewModels/EditorSessionViewModel.cs
 		${SOURCE}/ViewModels/SceneViewModel.cs
 		${SOURCE}/ViewModels/EntityViewModel.cs
 		${SOURCE}/ViewModels/LogViewModel.cs
+		${SOURCE}/ViewModels/TypeViewModel.cs
 		
 
 		${RESOURCES}
@@ -107,6 +105,9 @@ csharp_set_xaml_cs_properties(
 	${SOURCE}/Views/MainWindow.xaml
     ${SOURCE}/Views/MainWindow.xaml.cs
 
+	${SOURCE}/Views/TypeView.xaml
+    ${SOURCE}/Views/TypeView.xaml.cs
+
 	${SOURCE}/Views/ProjectSelector.xaml
 	${SOURCE}/Views/ProjectSelector.xaml.cs
 	
@@ -125,3 +126,5 @@ set_property(SOURCE ${RESOURCES} PROPERTY VS_TOOL_OVERRIDE "Resource")
 set_target_properties(Bulb PROPERTIES
         VS_DOTNET_REFERENCES "Microsoft.CSharp;PresentationCore;PresentationFramework;System;System.Core;System.Data;System.Xaml;System.Xml;WindowsBase"
 )
+
+target_compile_options(Bulb PUBLIC "/unsafe")

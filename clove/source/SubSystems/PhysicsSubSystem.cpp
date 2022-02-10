@@ -167,6 +167,7 @@ namespace clove {
 
             if(needsNewShape) {
                 createProxyShape(proxy, shape);
+                proxy.collisionObject->setCollisionShape(proxy.collisionShape.get());
             }
         });
 

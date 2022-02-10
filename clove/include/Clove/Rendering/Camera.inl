@@ -1,4 +1,6 @@
 namespace clove {
+    Camera::Camera() = default;
+
     Camera::Camera(Camera &&other) noexcept = default;
 
     Camera &Camera::operator=(Camera &&other) noexcept = default;

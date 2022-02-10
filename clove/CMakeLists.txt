@@ -83,14 +83,18 @@ add_library(
 		${INCLUDE}/Components/AudioListenerComponent.hpp
 		${INCLUDE}/Components/AudioSourceComponent.hpp
 		${INCLUDE}/Components/CameraComponent.hpp
+		${SOURCE}/Components/CameraComponent.cpp
 		${INCLUDE}/Components/CollisionResponseComponent.hpp
 		${INCLUDE}/Components/CollisionShapeComponent.hpp
+		${SOURCE}/Components/CollisionShapeComponent.cpp
 		${INCLUDE}/Components/DirectionalLightComponent.hpp
 		${INCLUDE}/Components/ParentComponent.hpp
 		${INCLUDE}/Components/PointLightComponent.hpp
+		${SOURCE}/Components/PointLightComponent.cpp
 		${INCLUDE}/Components/RigidBodyComponent.hpp
 		${SOURCE}/Components/RigidBodyComponent.cpp
 		${INCLUDE}/Components/StaticModelComponent.hpp
+		${SOURCE}/Components/StaticModelComponent.cpp
 		${INCLUDE}/Components/TransformComponent.hpp
 		${SOURCE}/Components/TransformComponent.cpp
 
@@ -206,7 +210,9 @@ add_library(
 		${INCLUDE}/ModelLoader.hpp
 		${SOURCE}/ModelLoader.cpp
 
-		${INCLUDE}/SerialisationCommon.hpp
+		${SOURCE}/ReflectionCommon.cpp
+
+		${INCLUDE}/ReflectionAttributes.hpp
 
 		${INCLUDE}/SoundFile.hpp
 		${SOURCE}/SoundFile.cpp
@@ -244,10 +250,12 @@ target_link_libraries(
 		#Systems
 		CloveAI
 		CloveECS
+		CloveReflection
 		CloveSerialisation
 		CloveStateMachine
 		 
 		#Utilities
+		CloveBlackboard
 		CloveCast 
 		CloveDefinitions 
 		CloveDelegate 

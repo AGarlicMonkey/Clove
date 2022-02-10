@@ -1,14 +1,19 @@
 #pragma once
 
-#include "Membrane/EditorTypes.hpp"
-#include "Membrane/Scene.hpp"
-
 #include <Clove/ECS/Entity.hpp>
-#include <Clove/SubSystem.hpp>
 #include <Clove/Rendering/Camera.hpp>
+#include <Clove/SubSystem.hpp>
 #include <msclr/gcroot.h>
 #include <string_view>
+#include <unordered_map>
 #include <vector>
+
+namespace clove {
+    class EntityManager;
+    namespace reflection {
+        class TypeInfo;
+    }
+}
 
 namespace membrane {
     /**
@@ -22,7 +27,8 @@ namespace membrane {
     private:
         msclr::gcroot<EditorSubSystemMessageProxy ^> proxy;
 
-        Scene currentScene;
+        clove::EntityManager *entityManager{ nullptr };
+        std::unordered_map<clove::Entity, std::vector<clove::reflection::TypeInfo const *>> trackedComponents;
 
         clove::Entity editorCamera{};
 
@@ -34,7 +40,7 @@ namespace membrane {
 
         //FUNCTIONS
     public:
-        EditorSubSystem();
+        EditorSubSystem(clove::EntityManager *entityManager);
         ~EditorSubSystem();
 
         Group getGroup() const override;
@@ -44,8 +50,6 @@ namespace membrane {
         void onUpdate(clove::DeltaTime const deltaTime) override;
         void onDetach() override;
 
-    //private:
-        //TODO: Save and load scene to custom file
         void saveScene();
         void loadScene();
 
@@ -53,14 +57,10 @@ namespace membrane {
         clove::Entity createEntity(std::string_view name = "New Entity");
         void deleteEntity(clove::Entity entity);
 
-        void addComponent(clove::Entity entity, ComponentType componentType);
-        void removeComponent(clove::Entity entity, ComponentType componentType);
+        void addComponent(clove::Entity entity, std::string_view typeName);
+        void modifyComponent(clove::Entity entity, std::string_view typeName, size_t offset, std::string_view value);
+        void removeComponent(clove::Entity entity, std::string_view typeName);
 
-        void updateTransform(clove::Entity entity, clove::vec3f position, clove::vec3f rotation, clove::vec3f scale);
-        void updateStaticModel(clove::Entity entity, std::string meshPath, std::string diffusePath, std::string specularPath);
-        void updateRigidBody(clove::Entity entity, float mass);
-        void updateSphereShape(clove::Entity entity, float radius);
-        void updateCubeShape(clove::Entity entity, clove::vec3f halfExtents);
         void updateName(clove::Entity entity, std::string name);
     };
 }

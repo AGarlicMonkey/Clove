@@ -1,6 +1,9 @@
 #include "Clove/Components/TransformComponent.hpp"
 
+#include "Clove/ReflectionAttributes.hpp"
+
 #include <Clove/Definitions.hpp>
+#include <Clove/ECS/EntityManager.hpp>
 #include <Clove/Log/Log.hpp>
 #include <Clove/Maths/Maths.hpp>
 #include <Clove/Maths/MathsHelpers.hpp>
@@ -32,3 +35,14 @@ namespace clove {
         return normalise(cross(getLeft(), getForward()));
     }
 }
+
+CLOVE_REFLECT_BEGIN(clove::TransformComponent, clove::EditorVisibleComponent{
+                                                   .name                     = "Transform Component",
+                                                   .onEditorCreateComponent  = &createComponentHelper<clove::TransformComponent>,
+                                                   .onEditorGetComponent     = &getComponentHelper<clove::TransformComponent>,
+                                                   .onEditorDestroyComponent = &destroyComponentHelper<clove::TransformComponent>,
+                                               })
+CLOVE_REFLECT_MEMBER(position, clove::EditorEditableMember{})
+CLOVE_REFLECT_MEMBER(rotation, clove::EditorEditableMember{})
+CLOVE_REFLECT_MEMBER(scale, clove::EditorEditableMember{})
+CLOVE_REFLECT_END

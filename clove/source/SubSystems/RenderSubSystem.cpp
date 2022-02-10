@@ -38,17 +38,19 @@ namespace clove {
 
         //Transform and submit cameras
         entityManager->forEach([this, &activeCamera](Entity entity, TransformComponent const &transform, CameraComponent &camera) {
-            vec3f const position{ transform.getWorldPosition() };
+            if(camera.isPriority || activeCamera == NullEntity) {
+                vec3f const position{ transform.getWorldPosition() };
 
-            vec3f const camFront{ transform.getForward() };
-            vec3f const camUp{ transform.getUp() };
+                vec3f const camFront{ transform.getForward() };
+                vec3f const camUp{ transform.getUp() };
 
-            mat4f const view{ lookAt(position, position + camFront, camUp) };
-            mat4f const projection{ camera.camera.getProjection(renderer->getRenderTargetSize()) };
+                mat4f const view{ lookAt(position, position + camFront, camUp) };
+                mat4f const projection{ camera.camera.getProjection(renderer->getRenderTargetSize()) };
 
-            renderer->submitCamera(view, projection, position);
+                renderer->submitCamera(view, projection, position);
 
-            activeCamera = entity;
+                activeCamera = entity;
+            }
         });
 
         //Submit static meshes

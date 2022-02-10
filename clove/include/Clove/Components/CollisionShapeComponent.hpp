@@ -1,9 +1,8 @@
 #pragma once
 
-#include "Clove/SerialisationCommon.hpp"
-
 #include <Clove/Maths/Vector.hpp>
 #include <variant>
+#include <Clove/Reflection/Reflection.hpp>
 
 namespace clove {
     /**
@@ -28,39 +27,6 @@ namespace clove {
     };
 }
 
-namespace clove {
-    enum class ShapeSeralisationType : uint32_t {
-        Sphere = 0,
-        Cube   = 1,
-    };
-
-    template<>
-    inline serialiser::Node serialise(CollisionShapeComponent const &object) {
-        serialiser::Node node{};
-        if(auto *sphere{ std::get_if<CollisionShapeComponent::Sphere>(&object.shape) }) {
-            node["type"]  = static_cast<uint32_t>(ShapeSeralisationType::Sphere);
-            node["value"] = sphere->radius;
-        } else if(auto *cube{ std::get_if<CollisionShapeComponent::Cube>(&object.shape) }) {
-            node["type"]  = static_cast<uint32_t>(ShapeSeralisationType::Cube);
-            node["value"] = cube->halfExtents;
-        }
-        return node;
-    }
-
-    template<>
-    inline CollisionShapeComponent deserialise(serialiser::Node const &node) {
-        CollisionShapeComponent component{};
-        ShapeSeralisationType const shapeType{ node["type"].as<uint32_t>() };
-        switch(shapeType) {
-            case ShapeSeralisationType::Sphere:
-                component.shape = CollisionShapeComponent::Sphere{ node["value"].as<float>() };
-                break;
-            case ShapeSeralisationType::Cube:
-                component.shape = CollisionShapeComponent::Cube{ node["value"].as<vec3f>() };
-                break;
-            default:
-                break;
-        }
-        return component;
-    }
-}
+CLOVE_REFLECT_DECLARE_TYPE(clove::CollisionShapeComponent::Sphere)
+CLOVE_REFLECT_DECLARE_TYPE(clove::CollisionShapeComponent::Cube)
+CLOVE_REFLECT_DECLARE_TYPE(clove::CollisionShapeComponent)

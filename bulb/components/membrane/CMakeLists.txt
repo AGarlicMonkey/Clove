@@ -11,8 +11,6 @@ add_library(
         ${SOURCE}/Log.cpp
         ${INCLUDE}/MembraneLog.hpp
 
-        ${INCLUDE}/EditorTypes.hpp
-
         ${INCLUDE}/MessageBase.hpp
         ${INCLUDE}/MessageHandler.hpp
         ${SOURCE}/MessageHandler.cpp
@@ -20,17 +18,14 @@ add_library(
 
         ${INCLUDE}/NameComponent.hpp
 
+        ${INCLUDE}/ReflectionHelper.hpp
+        ${SOURCE}/ReflectionHelper.cpp
+
         ${INCLUDE}/EditorSubSystem.hpp
         ${SOURCE}/EditorSubSystem.cpp
-        ${INCLUDE}/RuntimeSubSystem.hpp
-        ${SOURCE}/RuntimeSubSystem.cpp
         
         ${INCLUDE}/EditorViewport.hpp
         ${SOURCE}/EditorViewport.cpp
-
-        ${INCLUDE}/Scene.hpp
-		${INCLUDE}/Scene.inl
-		${SOURCE}/Scene.cpp
 )
 
 #Include

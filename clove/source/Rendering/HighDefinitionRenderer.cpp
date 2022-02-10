@@ -195,6 +195,12 @@ namespace clove {
     }
 
     void HighDefinitionRenderer::end() {
+        //Prevent render graph execution if we do not have anything to render.
+        //TODO: This can be removed once shader reflection is in.
+        if(currentFrameData.meshes.empty()){
+            return;
+        }
+
         framesInFlight[currentFrame]->wait();
 
         //Aquire the next available image from the render target
@@ -285,7 +291,7 @@ namespace clove {
                 .model                 = meshInfo.transform,
                 .inverseTransposeModel = inverse(transpose(meshInfo.transform)),
             };
-            vec4f const colourData{ meshInfo.material->getColour() };
+            vec4f const colourData{ meshInfo.material.getColour() };
 
             size_t const modelBufferSize{ sizeof(modelData) };
             size_t const colourBufferSize{ sizeof(colourData) };
@@ -294,8 +300,8 @@ namespace clove {
             renderGraph.writeToBuffer(colourBuffer, &colourData, 0, sizeof(colourData));
 
             //Textures
-            RgImageId diffuseTexture{ renderGraph.createImage(meshInfo.material->getDiffuseImage()) };
-            RgImageId specularTexture{ renderGraph.createImage(meshInfo.material->getSpecularImage()) };
+            RgImageId diffuseTexture{ renderGraph.createImage(meshInfo.material.getDiffuseImage()) };
+            RgImageId specularTexture{ renderGraph.createImage(meshInfo.material.getSpecularImage()) };
             RgSampler materialSampler{ renderGraph.createSampler(GhaSampler::Descriptor{
                 .minFilter        = GhaSampler::Filter::Linear,
                 .magFilter        = GhaSampler::Filter::Linear,
@@ -334,10 +340,6 @@ namespace clove {
         renderSene(renderGraph, renderGraphMeshes, viewUniformData, lightGrid, lightBuffers, shadowMaps, renderTargetImage, sceneDepth);
 
         //Execute UI work
-        //TODO: Cache instead of making every frame
-        std::unordered_map<std::string, std::string> shaderIncludes;
-        shaderIncludes["Constants.glsl"] = { constants, constantsLength };
-
         RgRenderPass::Descriptor uiPassDescriptor{
             .vertexShader     = renderGraph.createShader({ uivert, uivertLength }, shaderIncludes, "UI (vertex)", GhaShader::Stage::Vertex),
             .pixelShader      = renderGraph.createShader({ widgetpixel, widgetpixelLength }, shaderIncludes, "Widget (pixel)", GhaShader::Stage::Pixel),

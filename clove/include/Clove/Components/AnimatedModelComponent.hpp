@@ -7,7 +7,7 @@
 namespace clove {
     struct AnimatedModelComponent {
         AssetPtr<AnimatedModel> model;
-        std::shared_ptr<Material> material{ std::make_shared<Material>() };
+        Material material{};
         Animator animator;
     };
 }

@@ -3,7 +3,7 @@
 #include <Clove/DeltaTime.hpp>
 
 namespace clove {
-    class BlackBoard;
+    class Blackboard;
 }
 
 namespace clove {
@@ -26,6 +26,6 @@ namespace clove {
     public:
         virtual ~Task() = default;
 
-        virtual Status activate(DeltaTime const deltaTime, BlackBoard &blackboard) = 0;
+        virtual Status activate(DeltaTime const deltaTime, Blackboard &blackboard) = 0;
     };
 }

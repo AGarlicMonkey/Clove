@@ -26,6 +26,7 @@ namespace Bulb {
             //Initialise the engine
             engineApp = new Membrane.Application((int)size.Width, (int)size.Height);
             engineApp.loadGameDll();
+            engineApp.startSession();
 
             StartEditorSession();
         }

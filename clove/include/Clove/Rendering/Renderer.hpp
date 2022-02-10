@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Clove/Rendering/ShaderBufferTypes.hpp"
+#include "Clove/Rendering/Material.hpp"
 
 #include <memory>
 #include <set>
@@ -29,7 +30,7 @@ namespace clove {
         //TODO: Currently transform and matrixPalet are copied per mesh for each model. This should be avoided
         struct MeshInfo {
             std::shared_ptr<Mesh> mesh;
-            std::shared_ptr<Material> material;
+            Material material;
             mat4f transform;
             std::optional<std::array<mat4f, MAX_JOINTS>> matrixPalet;
         };

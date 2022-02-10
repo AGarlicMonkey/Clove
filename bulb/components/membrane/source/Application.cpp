@@ -4,11 +4,8 @@
 #include "Membrane/EditorViewport.hpp"
 #include "Membrane/MessageHandler.hpp"
 #include "Membrane/Messages.hpp"
-#include "Membrane/RuntimeSubSystem.hpp"
 
 #include <Clove/Application.hpp>
-#include <Clove/Components/StaticModelComponent.hpp>
-#include <Clove/Components/TransformComponent.hpp>
 #include <Clove/ECS/EntityManager.hpp>
 #include <Clove/Graphics/GhaBuffer.hpp>
 #include <Clove/Graphics/GhaImage.hpp>
@@ -19,6 +16,8 @@
 #include <Clove/Serialisation/Yaml.hpp>
 #include <filesystem>
 #include <msclr/marshal_cppstd.h>
+
+#include <Clove/Reflection/Reflection.hpp>
 
 CLOVE_DECLARE_LOG_CATEGORY(Membrane)
 
@@ -37,6 +36,8 @@ CLOVE_DECLARE_LOG_CATEGORY(Membrane)
 
 typedef void (*setUpEditorApplicationFn)(clove::Application *app);
 typedef void (*tearDownEditorApplicationFn)(clove::Application *app);
+
+typedef void (*setUpReflectorFn)(clove::reflection::internal::Registry *reg);
 
 namespace {
     std::string_view constexpr dllPath{ GAME_MODULE_DIR "/" GAME_NAME ".dll" };
@@ -67,8 +68,6 @@ namespace membrane {
         auto *vfs{ app->getFileSystem() };
         vfs->mount(GAME_DIR "/content", ".");
         std::filesystem::create_directories(vfs->resolve("."));
-
-        app->pushSubSystem<EditorSubSystem>();
 
         MessageHandler::bindToMessage(gcnew MessageSentHandler<Editor_Stop ^>(this, &Application::setEditorMode));
         MessageHandler::bindToMessage(gcnew MessageSentHandler<Editor_Play ^>(this, &Application::setRuntimeMode));
@@ -156,6 +155,10 @@ namespace membrane {
         CLOVE_LOG(Membrane, clove::LogLevel::Info, "Successfully loaded {0} dll", gameName);
     }
 
+    void Application::startSession() {
+        app->pushSubSystem<EditorSubSystem>(app->getEntityManager());
+    }
+
     bool Application::isRunning() {
         return app->getState() != clove::Application::State::Stopped;
     }
@@ -172,9 +175,6 @@ namespace membrane {
     }
 
     void Application::shutdown() {
-        if(isInEditorMode) {
-            app->getSubSystem<EditorSubSystem>().saveScene();
-        }
         app->shutdown();
     }
 
@@ -196,22 +196,23 @@ namespace membrane {
     }
 
     void Application::setEditorMode(Editor_Stop ^ message) {
-        app->popSubSystem<RuntimeSubSystem>();
-        app->pushSubSystem<EditorSubSystem>();
-        isInEditorMode = true;
+        app->pushSubSystem<EditorSubSystem>(app->getEntityManager());
     }
 
     void Application::setRuntimeMode(Editor_Play ^ message) {
-        app->getSubSystem<EditorSubSystem>().saveScene();
-
         app->popSubSystem<EditorSubSystem>();
-        app->pushSubSystem<RuntimeSubSystem>();
-        isInEditorMode = false;
     }
 
     bool Application::tryLoadGameDll(std::string_view path) {
         if(gameLibrary = LoadLibrary(path.data()); gameLibrary != nullptr) {
             if(setUpEditorApplicationFn setUpEditorApplication{ (setUpEditorApplicationFn)GetProcAddress(gameLibrary, "setUpEditorApplication") }; setUpEditorApplication != nullptr) {
+                //Set up reflection system in module
+                {
+                    setUpReflectorFn proc{ (setUpReflectorFn)GetProcAddress(gameLibrary, "setUpReflector") };
+                    CLOVE_ASSERT(proc);
+                    proc(&clove::reflection::internal::Registry::get());
+                }
+
                 (setUpEditorApplication)(app);
             } else {
                 CLOVE_LOG(Membrane, clove::LogLevel::Error, "Could not load game initialise function. Please provide 'setUpEditorApplication' in client code.");

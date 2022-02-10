@@ -46,6 +46,18 @@ namespace clove {
         ~ListAllocator();
 
         /**
+         * @brief Returns the total size that can be allocated.
+         * @return 
+         */
+        inline size_t getSize() const;
+
+        /**
+         * @brief Returns a pointer to the memory in use by this allocator
+         * @return 
+         */
+        inline std::byte const *getMemory() const;
+
+        /**
          * @brief Allocates size amounts of bytes from the list.
          * @param size
          * @param alignment
