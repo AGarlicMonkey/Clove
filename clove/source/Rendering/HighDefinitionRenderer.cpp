@@ -246,10 +246,7 @@ namespace clove {
         //Lights uniform buffer
         size_t const lightsSize{ currentFrameData.lights.size() * sizeof(LightData) };
 
-        size_t const dirLightCountOffset{ 0 };
-        size_t const dirlightCountSize{ sizeof(uint32_t) };
-
-        size_t const dirShadowTransformOffset{ dirlightCountSize + (minUboOffsetAlignment - (dirlightCountSize % minUboOffsetAlignment)) };
+        size_t const dirShadowTransformOffset{ 0 };
         size_t const dirShadowTransformSize{ sizeof(currentFrameData.directionalShadowTransform) };
 
         size_t const totalLightOffset{ (dirShadowTransformOffset + dirShadowTransformSize) + (minUboOffsetAlignment - ((dirShadowTransformOffset + dirShadowTransformSize) % minUboOffsetAlignment)) };
@@ -259,8 +256,6 @@ namespace clove {
             .lightsBuffer             = renderGraph.createBuffer(lightsSize),
             .lightDataBuffer          = renderGraph.createBuffer(totalLightOffset + totalLightSize),
             .lightsSize               = lightsSize,
-            .dirLightCountOffset      = dirLightCountOffset,
-            .dirLightCountSize        = dirlightCountSize,
             .dirShadowTransformOffset = dirShadowTransformOffset,
             .dirShadowTransformSize   = dirShadowTransformSize,
             .totalLightOffset         = totalLightOffset,
@@ -271,7 +266,6 @@ namespace clove {
 
         renderGraph.writeToBuffer(lightBuffers.lightsBuffer, currentFrameData.lights.data(), 0, lightsSize);
 
-        renderGraph.writeToBuffer(lightBuffers.lightDataBuffer, &currentFrameData.numDirLights, dirLightCountOffset, dirlightCountSize);
         renderGraph.writeToBuffer(lightBuffers.lightDataBuffer, &currentFrameData.directionalShadowTransform, dirShadowTransformOffset, dirShadowTransformSize);
         renderGraph.writeToBuffer(lightBuffers.lightDataBuffer, &totalLightCount, totalLightOffset, totalLightSize);
 
