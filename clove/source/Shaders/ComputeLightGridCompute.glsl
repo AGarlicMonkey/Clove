@@ -101,10 +101,8 @@ void main(){
     	frustum.planes[1] = column3 - column0; //Right
     	frustum.planes[2] = column3 - column1; //Top
     	frustum.planes[3] = column3 + column1; //Bottom
-		//frustum.planes[4] = vec4(0.0f, 0.0f,  1.0f, -uintBitsToFloat(minDepth)); //Near
-		//frustum.planes[5] = vec4(0.0f, 0.0f, -1.0f,  uintBitsToFloat(maxDepth)); //Far
 
-		for (int i = 0; i < 4; ++i) {
+		for (int i = 0; i < NUM_FRUSTUM_PLANES; ++i) {
         	frustum.planes[i] /= length(frustum.planes[i].xyz);
     	}
 	}
