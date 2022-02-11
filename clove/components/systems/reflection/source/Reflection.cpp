@@ -8,7 +8,7 @@ static clove::reflection::internal::Registry *instance{ nullptr };
 
 #if CLOVE_PLATFORM_WINDOWS
 extern "C" {
-__declspec(dllexport) void setUpReflector(clove::reflection::internal::Registry *reg) {
+__declspec(dllexport) void linkReflection(clove::reflection::internal::Registry *reg) {
     std::unordered_map<clove::reflection::TypeId, clove::reflection::TypeInfo> types{ clove::reflection::internal::Registry::get().getRegisteredTypes() };
 
     for(auto &&[id, info] : types) {

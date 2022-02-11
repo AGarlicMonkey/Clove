@@ -34,10 +34,11 @@ CLOVE_DECLARE_LOG_CATEGORY(Membrane)
     #define GAME_DIR ""
 #endif
 
-typedef void (*setUpEditorApplicationFn)(clove::Application *app);
-typedef void (*tearDownEditorApplicationFn)(clove::Application *app);
+typedef void (*OnModuleLoadedFn)();
+typedef void (*OnModuleRemovedFn)();
 
-typedef void (*setUpReflectorFn)(clove::reflection::internal::Registry *reg);
+typedef void (*LinkApplicationFn)(clove::Application *app);
+typedef void (*LinkReflectionFn)(clove::reflection::internal::Registry *reg);
 
 namespace {
     std::string_view constexpr dllPath{ GAME_MODULE_DIR "/" GAME_NAME ".dll" };
@@ -104,11 +105,10 @@ namespace membrane {
         if(gameLibrary != nullptr) {
             CLOVE_LOG(Membrane, clove::LogLevel::Trace, "Unloading {0} to prepare for compilation and reload", gameName);
 
-            if(tearDownEditorApplicationFn tearDownEditorApplication{ (tearDownEditorApplicationFn)GetProcAddress(gameLibrary, "tearDownEditorApplication") }; tearDownEditorApplication != nullptr) {
-                (tearDownEditorApplication)(app);
+            if(OnModuleRemovedFn onModuleRemoved{ (OnModuleRemovedFn)GetProcAddress(gameLibrary, "onModuleRemoved") }; onModuleRemoved != nullptr) {
+                (onModuleRemoved)();
             } else {
-                CLOVE_LOG(Membrane, clove::LogLevel::Error, "Could not load game tear down function. Please provide 'tearDownEditorApplication' in client code.");
-                return;
+                throw gcnew System::Exception{ "Could not load onModuleRemoved function. Please provide 'onModuleRemoved' in client code." };
             }
 
             FreeLibrary(gameLibrary);
@@ -117,8 +117,9 @@ namespace membrane {
                 fallbackDll = gameModuleDir / (gameName + "_copy.dll");
                 std::filesystem::copy_file(dllPath, fallbackDll.value(), std::filesystem::copy_options::overwrite_existing);
             } catch(std::exception e) {
-                CLOVE_LOG(Membrane, clove::LogLevel::Error, "{0}", e.what());
-                return;
+                CLOVE_LOG(Membrane, clove::LogLevel::Warning, "Could not create fallback dll:");
+                CLOVE_LOG(Membrane, clove::LogLevel::Warning, "\t{0}", e.what());
+                CLOVE_LOG(Membrane, clove::LogLevel::Warning, "Compilation failure of new module will result cause the editor to crash.");
             }
         }
 
@@ -148,7 +149,7 @@ namespace membrane {
                     throw gcnew System::Exception{ "Loading of backup game Dll failed." };
                 }
             } else {
-                throw gcnew System::Exception{ "Loading of game Dll failed." };
+                throw gcnew System::Exception{ "Loading of game Dll failed. Unable to fall back onto a previously compiled Dll." };
             }
         }
 
@@ -205,17 +206,24 @@ namespace membrane {
 
     bool Application::tryLoadGameDll(std::string_view path) {
         if(gameLibrary = LoadLibrary(path.data()); gameLibrary != nullptr) {
-            if(setUpEditorApplicationFn setUpEditorApplication{ (setUpEditorApplicationFn)GetProcAddress(gameLibrary, "setUpEditorApplication") }; setUpEditorApplication != nullptr) {
-                //Set up reflection system in module
+            if(OnModuleLoadedFn onModuleLoaded{ (OnModuleLoadedFn)GetProcAddress(gameLibrary, "onModuleLoaded") }; onModuleLoaded != nullptr) {
+                //Set up module's application
                 {
-                    setUpReflectorFn proc{ (setUpReflectorFn)GetProcAddress(gameLibrary, "setUpReflector") };
+                    LinkApplicationFn proc{ (LinkApplicationFn)GetProcAddress(gameLibrary, "linkApplication") };
+                    CLOVE_ASSERT(proc);
+                    proc(&clove::Application::get());
+                }
+
+                //Set up module's reflection system
+                {
+                    LinkReflectionFn proc{ (LinkReflectionFn)GetProcAddress(gameLibrary, "linkReflection") };
                     CLOVE_ASSERT(proc);
                     proc(&clove::reflection::internal::Registry::get());
                 }
 
-                (setUpEditorApplication)(app);
+                (onModuleLoaded)();
             } else {
-                CLOVE_LOG(Membrane, clove::LogLevel::Error, "Could not load game initialise function. Please provide 'setUpEditorApplication' in client code.");
+                CLOVE_LOG(Membrane, clove::LogLevel::Error, "Could not load onModuleLoaded function. Please provide 'onModuleLoaded' in client code.");
                 return false;
             }
         } else {
