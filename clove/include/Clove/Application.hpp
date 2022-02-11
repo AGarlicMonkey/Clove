@@ -37,7 +37,6 @@ namespace clove {
 
         //VARIABLES
     private:
-        static Application *instance;
         State currentState{ State::Running };//Assumed to be initialised to the running state.
 
         std::unique_ptr<GhaDevice> graphicsDevice;
@@ -89,12 +88,6 @@ namespace clove {
          * @return A pair with the created application instance and a pointer to the render target of the application.
          */
         static std::pair<std::unique_ptr<Application>, GraphicsImageRenderTarget *> createHeadless(GraphicsApi graphicsApi, AudioApi audioApi, GhaImage::Descriptor renderTargetDescriptor, Keyboard *keyboard, Mouse *mouse);
-
-        /**
-         * @brief Set the static application instance with an existing one.
-         * @param app 
-         */
-        static void set(Application *app);
 
         static Application &get();
 

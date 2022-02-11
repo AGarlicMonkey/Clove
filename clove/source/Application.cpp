@@ -14,9 +14,20 @@
 #include <Clove/Graphics/Gha.hpp>
 #include <Clove/Graphics/GhaDevice.hpp>
 
-namespace clove {
-    Application *Application::instance{ nullptr };
+clove::Application *instance{ nullptr };
 
+#if CLOVE_PLATFORM_WINDOWS
+extern "C" {
+__declspec(dllexport) void linkApplication(clove::Application *app) {
+    if(instance != nullptr){
+        delete instance;
+    }
+    instance = app;
+}
+}
+#endif
+
+namespace clove {
     Application::~Application() {
         //Tell all subSystems they have been detached when the application is shutdown
         for(auto &&[key, group] : subSystems) {
@@ -56,10 +67,6 @@ namespace clove {
         std::unique_ptr<Application> app{ new Application{ std::move(graphicsDevice), std::move(audioDevice), keyboard, mouse, std::move(renderTarget) } };
 
         return { std::move(app), renderTargetPtr };
-    }
-
-    void Application::set(Application *app) {
-        instance = app;
     }
 
     Application &Application::get() {
