@@ -38,6 +38,7 @@ typedef void (*OnModuleLoadedFn)();
 typedef void (*OnModuleRemovedFn)();
 
 typedef void (*LinkApplicationFn)(clove::Application *app);
+typedef void (*LinkLoggerFn)(clove::Logger *logger);
 typedef void (*LinkReflectionFn)(clove::reflection::internal::Registry *reg);
 
 namespace {
@@ -212,6 +213,13 @@ namespace membrane {
                     LinkApplicationFn proc{ (LinkApplicationFn)GetProcAddress(gameLibrary, "linkApplication") };
                     CLOVE_ASSERT(proc);
                     proc(&clove::Application::get());
+                }
+
+                //Set up module's logger
+                {
+                    LinkLoggerFn proc{ (LinkLoggerFn)GetProcAddress(gameLibrary, "linkLogger") };
+                    CLOVE_ASSERT(proc);
+                    proc(&clove::Logger::get());
                 }
 
                 //Set up module's reflection system
