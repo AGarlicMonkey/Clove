@@ -256,6 +256,7 @@ target_link_libraries(
 		CloveDeltaTime 
 		CloveEvent 
 		CloveExpected 
+		CloveGuid
 		CloveLog 
 		CloveMaths 
 		CloveMemory 
