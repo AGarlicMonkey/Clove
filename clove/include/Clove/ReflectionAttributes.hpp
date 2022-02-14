@@ -80,4 +80,11 @@ namespace clove {
 
         std::function<reflection::TypeInfo const *(std::string_view)> getTypeInfoForMember{ nullptr }; /**< OPTIONAL. If set then when a member is selected this type info will also display.*/
     };
+
+    /**
+     * @brief Specifies that this type wants to be displayed in the editor as a subsystem.
+     */
+    struct EditorVisibleSubSystem {
+        std::optional<std::string> name{};
+    };
 }
