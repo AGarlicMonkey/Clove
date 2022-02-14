@@ -118,7 +118,8 @@
 										<ColumnDefinition/>
 									</Grid.ColumnDefinitions>
 
-									<CheckBox Grid.Column="0"/>
+									<CheckBox IsChecked="{Binding IsEnabled, Mode=TwoWay}"
+											  Grid.Column="0"/>
 									<TextBlock Text="{Binding DisplayName}"
 											   Grid.Column="1"/>
 								</Grid>

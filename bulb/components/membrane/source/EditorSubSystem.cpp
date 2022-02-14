@@ -201,6 +201,9 @@ namespace membrane {
     public:
         EditorSubSystemMessageProxy(EditorSubSystem *layer)
             : subSystem{ layer } {
+            MessageHandler::bindToMessage(gcnew MessageSentHandler<Editor_AddSubSystem ^>(this, &EditorSubSystemMessageProxy::addSubSystem));
+            MessageHandler::bindToMessage(gcnew MessageSentHandler<Editor_RemoveSubSystem ^>(this, &EditorSubSystemMessageProxy::removeSubSystem));
+
             MessageHandler::bindToMessage(gcnew MessageSentHandler<Editor_CreateEntity ^>(this, &EditorSubSystemMessageProxy::createEntity));
             MessageHandler::bindToMessage(gcnew MessageSentHandler<Editor_DeleteEntity ^>(this, &EditorSubSystemMessageProxy::deleteEntity));
 
@@ -220,6 +223,20 @@ namespace membrane {
         }
 
     private:
+        void addSubSystem(Editor_AddSubSystem ^message) {
+            if (subSystem){
+                System::String ^subSystemName{ message->name };
+                subSystem->addSubSystem(msclr::interop::marshal_as<std::string>(subSystemName));
+            }
+        }
+
+        void removeSubSystem(Editor_RemoveSubSystem ^message) {
+            if (subSystem){
+                System::String ^subSystemName{ message->name };
+                subSystem->removeSubSystem(msclr::interop::marshal_as<std::string>(subSystemName));
+            }
+        }
+
         void createEntity(Editor_CreateEntity ^ message) {
             if (subSystem){
                 subSystem->createEntity();
@@ -382,11 +399,18 @@ namespace membrane {
 
     void EditorSubSystem::onDetach() {
         saveScene();
-        entityManager->destroy(editorCamera);
+        entityManager->destroyAll();
     }
 
     void EditorSubSystem::saveScene() {
         serialiser::Node rootNode{};
+
+        rootNode["sceneVersion"] = 1;
+
+        for(auto const &subSystem : enabledSubSystems) {
+            rootNode["subSystems"].pushBack(subSystem);
+        }
+
         for(auto &&[entity, components] : trackedComponents) {
             serialiser::Node entityNode{};
             entityNode["id"]   = entity;
@@ -472,6 +496,14 @@ namespace membrane {
         MessageHandler::sendMessage(message);
 
         trackedComponents.erase(entity);
+    }
+
+    void EditorSubSystem::addSubSystem(std::string name) {
+        enabledSubSystems.push_back(name);
+    }
+
+    void EditorSubSystem::removeSubSystem(std::string name) {
+        enabledSubSystems.erase(std::remove(enabledSubSystems.begin(), enabledSubSystems.end(), name), enabledSubSystems.end());
     }
 
     void EditorSubSystem::addComponent(clove::Entity entity, std::string_view typeName) {

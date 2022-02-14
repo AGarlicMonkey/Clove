@@ -16,6 +16,15 @@ namespace membrane {
     };
 
     //Messages sent from Bulb
+    public ref class Editor_AddSubSystem : public EditorMessage {
+    public:
+        System::String ^name;
+    };
+    public ref class Editor_RemoveSubSystem : public EditorMessage {
+    public:
+        System::String ^name;
+    };
+
     public ref class Editor_CreateEntity : public EditorMessage {};
     public ref class Editor_DeleteEntity : public EditorMessage {
     public:

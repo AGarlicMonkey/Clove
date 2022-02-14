@@ -40,7 +40,10 @@ namespace Bulb {
             //Populate available sub systems
             List<Membrane.AvailableTypeInfo> subSystems = Membrane.ReflectionHelper.getEditorVisibleSubSystems();
             foreach(var typeInfo in subSystems) {
-                SubSystems.Add(new SubSystemViewModel(typeInfo.displayName, typeInfo.typeName));
+                var vm = new SubSystemViewModel(typeInfo.displayName, typeInfo.typeName);
+                vm.OnToggled += OnSubSystemToggled;
+
+                SubSystems.Add(vm);
             }
         }
 
@@ -82,6 +85,14 @@ namespace Bulb {
 
         private void SelectEntity(EntityViewModel entity) {
             SelectedEntity = entity;
+        }
+
+        private void OnSubSystemToggled(SubSystemViewModel viewModel, bool value) {
+            if (value) {
+                Membrane.MessageHandler.sendMessage(new Membrane.Editor_AddSubSystem() { name = viewModel.TypeName });
+            } else {
+                Membrane.MessageHandler.sendMessage(new Membrane.Editor_RemoveSubSystem() { name = viewModel.TypeName });
+            }
         }
     }
 }
