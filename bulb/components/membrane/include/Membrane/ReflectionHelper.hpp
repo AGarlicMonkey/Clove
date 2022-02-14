@@ -41,6 +41,8 @@ namespace membrane {
     public ref class ReflectionHelper {
         //FUNCTIONS
     public:
-        static System::Collections::Generic::List<AvailableTypeInfo ^> ^getAvailableTypes();
+        static System::Collections::Generic::List<AvailableTypeInfo ^> ^getEditorVisibleComponents();
+
+        static System::Collections::Generic::List<AvailableTypeInfo ^> ^getEditorVisibleSubSystems();
     };
 }

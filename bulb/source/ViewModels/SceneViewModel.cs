@@ -14,6 +14,7 @@ namespace Bulb {
         public ICommand DeleteEntityCommand { get; }
 
         public ObservableCollection<EntityViewModel> Entities { get; } = new ObservableCollection<EntityViewModel>();
+        public ObservableCollection<SubSystemViewModel> SubSystems { get; } = new ObservableCollection<SubSystemViewModel>();
 
         public EntityViewModel SelectedEntity {
             get => selectedEntity;
@@ -35,6 +36,12 @@ namespace Bulb {
             //Set up commands
             CreateEntityCommand = new RelayCommand(() => Membrane.MessageHandler.sendMessage(new Membrane.Editor_CreateEntity()));
             DeleteEntityCommand = new RelayCommand<uint>((id) => Membrane.MessageHandler.sendMessage(new Membrane.Editor_DeleteEntity() { entity = id }));
+
+            //Populate available sub systems
+            List<Membrane.AvailableTypeInfo> subSystems = Membrane.ReflectionHelper.getEditorVisibleSubSystems();
+            foreach(var typeInfo in subSystems) {
+                SubSystems.Add(new SubSystemViewModel(typeInfo.displayName, typeInfo.typeName));
+            }
         }
 
         public SceneViewModel(List<Membrane.Entity> entities) : this() {
