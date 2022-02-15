@@ -23,6 +23,13 @@ namespace clove {
     }
 
     template<typename SubSystemType>
+    bool Application::hasSubSystem() const {
+        std::type_index const subSystemIndex{ typeid(SubSystemType) };
+
+        return subSystemToIndex.find(subSystemIndex) != subSystemToIndex.end();
+    }
+
+    template<typename SubSystemType>
     SubSystemType &Application::getSubSystem() {
         std::type_index const subSystemIndex{ typeid(SubSystemType) };
 

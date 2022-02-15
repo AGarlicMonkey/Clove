@@ -95,6 +95,9 @@ namespace clove {
         void pushSubSystem(Args &&...args);
 
         template<typename SubSystemType>
+        bool hasSubSystem() const;
+
+        template<typename SubSystemType>
         SubSystemType &getSubSystem();
 
         template<typename SubSystemType>

@@ -4,6 +4,7 @@
 #include "Membrane/EditorViewport.hpp"
 #include "Membrane/MessageHandler.hpp"
 #include "Membrane/Messages.hpp"
+#include "Membrane/RuntimeSubSystem.hpp"
 
 #include <Clove/Application.hpp>
 #include <Clove/ECS/EntityManager.hpp>
@@ -198,11 +199,13 @@ namespace membrane {
     }
 
     void Application::setEditorMode(Editor_Stop ^ message) {
+        app->popSubSystem<RuntimeSubSystem>();
         app->pushSubSystem<EditorSubSystem>(app->getEntityManager());
     }
 
     void Application::setRuntimeMode(Editor_Play ^ message) {
         app->popSubSystem<EditorSubSystem>();
+        app->pushSubSystem<RuntimeSubSystem>(app->getEntityManager());
     }
 
     bool Application::tryLoadGameDll(std::string_view path) {

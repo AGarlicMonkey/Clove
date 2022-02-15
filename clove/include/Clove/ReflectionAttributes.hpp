@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Clove/Application.hpp"
+
 #include <Clove/ECS/Entity.hpp>
 #include <Clove/ECS/EntityManager.hpp>
 #include <Clove/Log/Log.hpp>
@@ -26,7 +28,7 @@ namespace clove {
             float const floatValue{ std::stof(std::string{ value }) };
             std::memcpy(memory + offset, &floatValue, size);
         } catch(std::exception e) {
-            CLOVE_LOG(CloveReflection, LogLevel::Error, "Could not convert value {0} to float", value);
+            CLOVE_LOG(CloveReflection, LogLevel::Error, "Could not convert value {0} to float: \n{1}", value, e.what());
         }
     }
 
@@ -43,6 +45,16 @@ namespace clove {
     template<typename ComponentType>
     void destroyComponentHelper(clove::Entity entity, clove::EntityManager &manager) {
         manager.removeComponent<ComponentType>(entity);
+    }
+
+    template<typename SubSystemType>
+    void createSubSystemHelper(Application &app) {
+        app.pushSubSystem<SubSystemType>();
+    }
+
+    template<typename SubSystemType>
+    void destroySubSystemHelper(Application &app) {
+        app.popSubSystem<SubSystemType>();
     }
 }
 
@@ -86,5 +98,8 @@ namespace clove {
      */
     struct EditorVisibleSubSystem {
         std::optional<std::string> name{};
+
+        std::function<void(Application &)> onEditorCreateSubSystem{};
+        std::function<void(Application &)> onEditorDestroySubSystem{};
     };
 }
