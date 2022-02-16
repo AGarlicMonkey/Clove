@@ -20,6 +20,11 @@ namespace clove {
         template<size_t R1, size_t R2, size_t C, /* number */ typename T>//TODO: should be number but compiler issue is preventing that
         friend constexpr mat<R1, R2, T> operator*(mat<R1, C, T> const &a, mat<C, R2, T> const &b);
 
+        template<size_t R, size_t C, /* number */ typename T>//TODO: should be number but compiler issue is preventing that
+        friend constexpr bool operator==(mat<R, C, T> const &lhs, mat<R, C, T> const &rhs);
+        template<size_t R, size_t C, /* number */ typename T>//TODO: should be number but compiler issue is preventing that
+        friend constexpr bool operator!=(mat<R, C, T> const &lhs, mat<R, C, T> const &rhs);
+
         constexpr vec<C, T> &operator[](size_t const index);
         constexpr vec<C, T> const &operator[](size_t const index) const;
     };

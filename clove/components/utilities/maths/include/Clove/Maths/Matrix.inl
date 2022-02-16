@@ -37,6 +37,24 @@ namespace clove {
     }
 
     template<size_t R, size_t C, number T>
+    constexpr bool operator==(mat<R, C, T> const &lhs, mat<R, C, T> const &rhs) {
+        for(size_t r{ 0 }; r < R; ++r) {
+            for(size_t c{ 0 }; c < C; ++c) {
+                if(lhs[r][c] != rhs[r][c]){
+                    return false;
+                }
+            }
+        }
+
+        return true;
+    }
+
+    template<size_t R, size_t C, number T>
+    constexpr bool operator!=(mat<R, C, T> const &lhs, mat<R, C, T> const &rhs){
+        return !(lhs == rhs);
+    }
+
+    template<size_t R, size_t C, number T>
     constexpr vec<C, T> &mat<R, C, T>::operator[](size_t const index) {
         if(index <= R) {
             return value[index];
