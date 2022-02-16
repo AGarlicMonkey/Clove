@@ -66,6 +66,24 @@ TEST(MatrixTests, CanMultiplyMatrixByVector) {
     EXPECT_EQ(result[3], 61);
 }
 
+TEST(MatrixTests, CanMultiplyMatrixByMatrix) {
+    mat<2, 3, float> a{};
+    a[0] = { 0, 3, 5 };
+    a[1] = { 5, 5, 2 };
+
+    mat<3, 2, float> b{};
+    b[0] = { 3, 4 };
+    b[1] = { 3, -2 };
+    b[2] = { 4, -2 };
+
+    mat<2, 2, float> result{ a * b };
+
+    EXPECT_EQ(result[0][0], 29);
+    EXPECT_EQ(result[0][1], -16);
+    EXPECT_EQ(result[1][0], 38);
+    EXPECT_EQ(result[1][1], 6);
+}
+
 TEST(MatrixTests, CanTransposeAMatrix) {
     mat4f matrix{};
 
