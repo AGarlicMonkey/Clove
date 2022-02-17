@@ -5,6 +5,8 @@ namespace clove {
             for(size_t c{ 0 }; c < C; ++c) {
                 if(r == c) {
                     value[r][c] = val;
+                } else {
+                    value[r][c] = T{};
                 }
             }
         }
