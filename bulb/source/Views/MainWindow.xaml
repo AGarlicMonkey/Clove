@@ -114,11 +114,12 @@
 							<DataTemplate>
 								<Grid>
 									<Grid.ColumnDefinitions>
-										<ColumnDefinition/>
-										<ColumnDefinition/>
+										<ColumnDefinition Width="Auto"/>
+										<ColumnDefinition Width="*"/>
 									</Grid.ColumnDefinitions>
 
 									<CheckBox IsChecked="{Binding IsEnabled, Mode=TwoWay}"
+											  Margin="0 0 5 0"
 											  Grid.Column="0"/>
 									<TextBlock Text="{Binding DisplayName}"
 											   Grid.Column="1"/>
