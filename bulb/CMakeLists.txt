@@ -58,6 +58,7 @@ add_executable(
 		${SOURCE}/ViewModels/ComponentViewModel.cs
 		${SOURCE}/ViewModels/EditorSessionViewModel.cs
 		${SOURCE}/ViewModels/SceneViewModel.cs
+		${SOURCE}/ViewModels/SubSystemViewModel.cs
 		${SOURCE}/ViewModels/EntityViewModel.cs
 		${SOURCE}/ViewModels/LogViewModel.cs
 		${SOURCE}/ViewModels/TypeViewModel.cs

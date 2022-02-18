@@ -1,5 +1,8 @@
 #pragma once
 
+#include <Clove/Serialisation/Node.hpp>
+#include <Clove/Reflection/Reflection.hpp>
+
 namespace membrane {
     public enum class EditorTypeType{
         Value,
@@ -41,6 +44,16 @@ namespace membrane {
     public ref class ReflectionHelper {
         //FUNCTIONS
     public:
-        static System::Collections::Generic::List<AvailableTypeInfo ^> ^getAvailableTypes();
+        static System::Collections::Generic::List<AvailableTypeInfo ^> ^getEditorVisibleComponents();
+
+        static System::Collections::Generic::List<AvailableTypeInfo ^> ^getEditorVisibleSubSystems();
     };
+
+    System::Collections::Generic::List<EditorTypeInfo ^> ^ constructMembers(std::vector<clove::reflection::MemberInfo> const &members, void const *const memory, size_t offsetIntoParent);
+    EditorTypeInfo ^ constructComponentEditorTypeInfo(clove::reflection::TypeInfo const *typeInfo, void const *const memory);
+
+    void modifyComponentMember(uint8_t *const memory, clove::reflection::TypeInfo const *typeInfo, std::string_view value, size_t const requiredOffset, size_t currentOffset);
+
+    clove::serialiser::Node serialiseComponent(clove::reflection::TypeInfo const *const componentTypeInfo, uint8_t const *const componentMemory, size_t currentOffset = 0);
+    void deserialiseComponent(clove::reflection::TypeInfo const *const componentTypeInfo, uint8_t *const componentMemory, clove::serialiser::Node const &componentNode, size_t currentOffset = 0);
 }

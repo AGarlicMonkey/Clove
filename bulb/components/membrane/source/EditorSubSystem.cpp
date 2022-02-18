@@ -4,7 +4,7 @@
 #include "Membrane/MessageHandler.hpp"
 #include "Membrane/Messages.hpp"
 #include "Membrane/NameComponent.hpp"
-#include "Membrane/ReflectionHelper.hpp"
+#include "Membrane/ReflectionHelpers.hpp"
 
 #include <Clove/Application.hpp>
 #include <Clove/Components/CameraComponent.hpp>
@@ -17,175 +17,14 @@
 #include <Clove/ReflectionAttributes.hpp>
 #include <Clove/Serialisation/Node.hpp>
 #include <Clove/Serialisation/Yaml.hpp>
+#include <Clove/SubSystems/AudioSubSystem.hpp>
 #include <Clove/SubSystems/PhysicsSubSystem.hpp>
+#include <Clove/SubSystems/RenderSubSystem.hpp>
+#include <Clove/SubSystems/TransformSubSystem.hpp>
 #include <msclr/marshal_cppstd.h>
 
 using namespace clove;
 using namespace membrane;
-
-namespace {
-    System::Collections::Generic::List<EditorTypeInfo ^> ^ constructMembers(std::vector<reflection::MemberInfo> const &members, void const *const memory, size_t offsetIntoParent) {
-        auto editorVisibleMembers{ gcnew System::Collections::Generic::List<EditorTypeInfo ^>{} };
-
-        for(auto const &member : members) {
-            size_t const totalMemberOffset{ offsetIntoParent + member.offset };
-
-            if(std::optional<EditorEditableMember> attribute{ member.attributes.get<EditorEditableMember>() }) {
-                auto memberInfo{ gcnew EditorTypeInfo{} };
-                memberInfo->typeName    = gcnew System::String{ member.name.c_str() };
-                memberInfo->displayName = gcnew System::String{ attribute->name.value_or(member.name).c_str() };
-                memberInfo->offset      = totalMemberOffset;
-                if(reflection::TypeInfo const *memberTypeInfo{ reflection::getTypeInfo(member.id) }) {
-                    memberInfo->type     = EditorTypeType::Parent;
-                    memberInfo->typeData = constructMembers(memberTypeInfo->members, memory, totalMemberOffset);
-                } else {
-                    memberInfo->type = EditorTypeType::Value;
-
-                    if(attribute->onEditorGetValue != nullptr) {
-                        std::string value{ attribute->onEditorGetValue(reinterpret_cast<uint8_t const *const>(memory), totalMemberOffset, member.size) };
-                        memberInfo->typeData = gcnew System::String{ value.c_str() };
-                    } else {
-                        CLOVE_LOG(Membrane, clove::LogLevel::Error, "EditorEditableMember {0} does not provide an implementation for onEditorGetValue", member.name);
-                        memberInfo->typeData = gcnew System::String{ "" };
-                    }
-                }
-
-                editorVisibleMembers->Add(memberInfo);
-            } else if(std::optional<EditorEditableDropdown> attribute{ member.attributes.get<EditorEditableDropdown>() }) {
-                auto memberInfo{ gcnew EditorTypeInfo{} };
-                memberInfo->typeName    = gcnew System::String{ member.name.c_str() };
-                memberInfo->displayName = gcnew System::String{ attribute->name.value_or(member.name).c_str() };
-                memberInfo->offset      = totalMemberOffset;
-                memberInfo->type        = EditorTypeType::Dropdown;
-
-                EditorTypeDropdown ^ dropdownData { gcnew EditorTypeDropdown };
-                dropdownData->currentSelection = attribute->getSelectedIndex(reinterpret_cast<uint8_t const *const>(memory), totalMemberOffset, member.size);
-                dropdownData->dropdownItems    = gcnew System::Collections::Generic::List<System::String ^>{};
-                for(auto item : attribute->getDropdownMembers()) {
-                    dropdownData->dropdownItems->Add(gcnew System::String{ item.c_str() });
-                }
-                if(attribute->getTypeInfoForMember != nullptr) {
-                    std::vector<reflection::MemberInfo> dropdownMemberInfos{};
-                    for(auto item : attribute->getDropdownMembers()) {
-                        //Construct member infos in order to call this function again. This is a bit hacky but allows us to reuse a lot of code and handle all cases
-                        reflection::TypeInfo const *itemTypeInfo{ attribute->getTypeInfoForMember(item) };
-
-                        reflection::MemberInfo info{
-                            itemTypeInfo->name,
-                            itemTypeInfo->id,
-                            0,
-                            itemTypeInfo->size
-                        };
-                        info.attributes.add(EditorEditableMember{ item });
-
-                        dropdownMemberInfos.push_back(std::move(info));
-                    }
-
-                    dropdownData->dropdownTypeInfos = constructMembers(dropdownMemberInfos, memory, totalMemberOffset);
-                }
-
-                memberInfo->typeData = dropdownData;
-
-                editorVisibleMembers->Add(memberInfo);
-            }
-        }
-
-        return editorVisibleMembers;
-    }
-
-    EditorTypeInfo^ constructComponentEditorTypeInfo(reflection::TypeInfo const *typeInfo, void const *const memory) {
-        EditorVisibleComponent const visibleAttribute{ typeInfo->attributes.get<EditorVisibleComponent>().value() };
-
-        auto editorTypeInfo{ gcnew EditorTypeInfo{} };
-        editorTypeInfo->typeName    = gcnew System::String{ typeInfo->name.c_str() };
-        editorTypeInfo->displayName = gcnew System::String{ visibleAttribute.name.value_or(typeInfo->name).c_str() };
-        editorTypeInfo->type        = EditorTypeType::Parent;
-        editorTypeInfo->typeData    = constructMembers(typeInfo->members, memory, 0);
-
-        return editorTypeInfo;
-    }
-
-        void modifyComponentMember(uint8_t *const memory, clove::reflection::TypeInfo const *typeInfo, std::string_view value, size_t const requiredOffset, size_t currentOffset) {
-        for(auto const &member : typeInfo->members) {
-            size_t const totalMemberOffset{ currentOffset + member.offset };
-            reflection::TypeInfo const *memberTypeInfo{ reflection::getTypeInfo(member.id) };
-
-            if(memberTypeInfo != nullptr) {
-                modifyComponentMember(memory, memberTypeInfo, value, requiredOffset, totalMemberOffset);
-            } else if(totalMemberOffset == requiredOffset) {
-                if(std::optional<EditorEditableMember> attribute{ member.attributes.get<EditorEditableMember>() }) {
-                    attribute->onEditorSetValue(memory, totalMemberOffset, member.size, value);
-                } else if(std::optional<EditorEditableDropdown> attribute{ member.attributes.get<EditorEditableDropdown>() }) {
-                    attribute->setSelectedItem(memory, totalMemberOffset, member.size, value);
-                } else {
-                    CLOVE_LOG(Membrane, LogLevel::Error, "{0}: Reached required member but it does not have an editable attribute.", CLOVE_FUNCTION_NAME);
-                }
-                return;
-            }
-        }
-    }
-
-    serialiser::Node serialiseComponent(reflection::TypeInfo const *const componentTypeInfo, uint8_t const *const componentMemory, size_t currentOffset = 0) {
-        if(componentTypeInfo == nullptr) {
-            return {};
-        }
-
-        serialiser::Node members{};
-
-        for(auto const &member : componentTypeInfo->members) {
-            size_t const totalMemberOffset{ currentOffset + member.offset };
-
-            if(reflection::TypeInfo const *memberType{ reflection::getTypeInfo(member.id) }) {
-                members[member.name] = serialiseComponent(memberType, componentMemory, totalMemberOffset);
-            } else {
-                if(std::optional<EditorEditableMember> attribute{ member.attributes.get<EditorEditableMember>() }) {
-                    members[member.name] = attribute->onEditorGetValue(componentMemory, totalMemberOffset, member.size);
-                } else if(std::optional<EditorEditableDropdown> attribute{ member.attributes.get<EditorEditableDropdown>() }) {
-                    size_t const index{ attribute->getSelectedIndex(componentMemory, totalMemberOffset, member.size) };
-                    if(attribute->getTypeInfoForMember != nullptr) {
-                        reflection::TypeInfo const *const selectedTypeInfo{ attribute->getTypeInfoForMember(attribute->getDropdownMembers()[index]) };
-
-                        members[member.name]["selection"] = index;
-                        members[member.name]["value"]     = serialiseComponent(selectedTypeInfo, componentMemory, totalMemberOffset);
-                    } else {
-                        members[member.name] = index;
-                    }
-                }
-            }
-        }
-
-        return members;
-    }
-
-    void deserialiseComponent(reflection::TypeInfo const *const componentTypeInfo, uint8_t *const componentMemory, serialiser::Node const &componentNode, size_t currentOffset = 0) {
-        for(auto const &member : componentTypeInfo->members) {
-            size_t const totalMemberOffset{ currentOffset + member.offset };
-
-            if(reflection::TypeInfo const *memberType{ reflection::getTypeInfo(member.id) }) {
-                deserialiseComponent(memberType, componentMemory, componentNode[member.name], totalMemberOffset);
-            } else {
-                if(std::optional<EditorEditableMember> attribute{ member.attributes.get<EditorEditableMember>() }) {
-                    attribute->onEditorSetValue(componentMemory, totalMemberOffset, member.size, componentNode[member.name].as<std::string>());
-                } else if(std::optional<EditorEditableDropdown> attribute{ member.attributes.get<EditorEditableDropdown>() }) {
-                    std::vector<std::string> const dropdownMembers{ attribute->getDropdownMembers() };
-                    serialiser::Node const &dropdownNode{ componentNode[member.name] };
-
-                    bool const isOnlyIndex{ dropdownNode.getType() == serialiser::Node::Type::Scalar };
-                    if(isOnlyIndex) {
-                        size_t const index{ dropdownNode.as<size_t>() };
-                        attribute->setSelectedItem(componentMemory, totalMemberOffset, member.size, dropdownMembers[index]);
-                    } else {
-                        size_t const index{ dropdownNode["selection"].as<size_t>() };
-                        attribute->setSelectedItem(componentMemory, totalMemberOffset, member.size, dropdownMembers[index]);
-
-                        reflection::TypeInfo const *const selectedTypeInfo{ attribute->getTypeInfoForMember(dropdownMembers[index]) };
-                        deserialiseComponent(selectedTypeInfo, componentMemory, dropdownNode["value"], totalMemberOffset);
-                    }
-                }
-            }
-        }
-    }
-}
 
 namespace membrane {
     // clang-format off
@@ -201,6 +40,9 @@ namespace membrane {
     public:
         EditorSubSystemMessageProxy(EditorSubSystem *layer)
             : subSystem{ layer } {
+            MessageHandler::bindToMessage(gcnew MessageSentHandler<Editor_AddSubSystem ^>(this, &EditorSubSystemMessageProxy::addSubSystem));
+            MessageHandler::bindToMessage(gcnew MessageSentHandler<Editor_RemoveSubSystem ^>(this, &EditorSubSystemMessageProxy::removeSubSystem));
+
             MessageHandler::bindToMessage(gcnew MessageSentHandler<Editor_CreateEntity ^>(this, &EditorSubSystemMessageProxy::createEntity));
             MessageHandler::bindToMessage(gcnew MessageSentHandler<Editor_DeleteEntity ^>(this, &EditorSubSystemMessageProxy::deleteEntity));
 
@@ -220,6 +62,20 @@ namespace membrane {
         }
 
     private:
+        void addSubSystem(Editor_AddSubSystem ^message) {
+            if (subSystem){
+                System::String ^subSystemName{ message->name };
+                subSystem->addSubSystem(msclr::interop::marshal_as<std::string>(subSystemName));
+            }
+        }
+
+        void removeSubSystem(Editor_RemoveSubSystem ^message) {
+            if (subSystem){
+                System::String ^subSystemName{ message->name };
+                subSystem->removeSubSystem(msclr::interop::marshal_as<std::string>(subSystemName));
+            }
+        }
+
         void createEntity(Editor_CreateEntity ^ message) {
             if (subSystem){
                 subSystem->createEntity();
@@ -296,6 +152,14 @@ namespace membrane {
         auto &app{ clove::Application::get() };
 
         entityManager->destroyAll();
+
+        //Make sure we add any default sub systems.
+        if(!app.hasSubSystem<RenderSubSystem>()) {
+            app.pushSubSystem<RenderSubSystem>(app.getRenderer(), app.getEntityManager());
+        }
+        if(!app.hasSubSystem<TransformSubSystem>()) {
+            app.pushSubSystem<TransformSubSystem>(app.getEntityManager());
+        }
 
         //Add the editor camera outside of the current scene
         editorCamera = entityManager->create();
@@ -382,11 +246,18 @@ namespace membrane {
 
     void EditorSubSystem::onDetach() {
         saveScene();
-        entityManager->destroy(editorCamera);
+        entityManager->destroyAll();
     }
 
     void EditorSubSystem::saveScene() {
         serialiser::Node rootNode{};
+
+        rootNode["sceneVersion"] = 1;
+
+        for(auto const &subSystem : enabledSubSystems) {
+            rootNode["subSystems"].pushBack(subSystem);
+        }
+
         for(auto &&[entity, components] : trackedComponents) {
             serialiser::Node entityNode{};
             entityNode["id"]   = entity;
@@ -414,6 +285,18 @@ namespace membrane {
         auto loadResult{ loadYaml(clove::Application::get().getFileSystem()->resolve("./scene.clvscene")) };
         serialiser::Node rootNode{ loadResult.getValue() };
 
+        //Load sub systems
+        System::Collections::Generic::List<System::String ^> ^ subSystems { gcnew System::Collections::Generic::List<System::String ^> };
+
+        for(auto const &subSystemNode : rootNode["subSystems"]) {
+            std::string const subSystemName{ subSystemNode.as<std::string>() };
+
+            enabledSubSystems.push_back(subSystemName);
+
+            subSystems->Add(gcnew System::String(subSystemName.c_str()));
+        }
+
+        //Load entities
         System::Collections::Generic::List<Entity ^> ^ entities { gcnew System::Collections::Generic::List<Entity ^> };
 
         for(auto const &entityNode : rootNode["entities"]) {
@@ -448,7 +331,8 @@ namespace membrane {
         }
 
         Engine_OnSceneLoaded ^ message { gcnew Engine_OnSceneLoaded };
-        message->entities = entities;
+        message->enabledSubSystems = subSystems;
+        message->entities          = entities;
         MessageHandler::sendMessage(message);
     }
 
@@ -472,6 +356,14 @@ namespace membrane {
         MessageHandler::sendMessage(message);
 
         trackedComponents.erase(entity);
+    }
+
+    void EditorSubSystem::addSubSystem(std::string name) {
+        enabledSubSystems.push_back(name);
+    }
+
+    void EditorSubSystem::removeSubSystem(std::string name) {
+        enabledSubSystems.erase(std::remove(enabledSubSystems.begin(), enabledSubSystems.end(), name), enabledSubSystems.end());
     }
 
     void EditorSubSystem::addComponent(clove::Entity entity, std::string_view typeName) {

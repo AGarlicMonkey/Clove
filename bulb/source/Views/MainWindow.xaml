@@ -78,39 +78,57 @@
 					</ScrollViewer>
 				</TabItem>
 			</TabControl>
-			
-			<StackPanel x:Name="SceneView"
-						DockPanel.Dock="Left"
-						Width="{Binding Converter={StaticResource SizePercentageConverter}, ElementName=Dock, Path=ActualWidth, ConverterParameter=0.15}">
-				<TextBlock Grid.Column="0"
-						   Text="Scene"
-						   FontWeight="Bold"
-						   HorizontalAlignment="Center"
-						   Margin="0 0 0 5"/>
 
-				<ListBox x:Name="EntityListBox"
-						 ItemsSource="{Binding Scene.Entities}"
-						 BorderThickness="0 2"
-						 KeyUp="EntityListBox_KeyUp">
-					<ListBox.ItemTemplate>
-						<DataTemplate>
-							<Grid Background="Transparent"
-								  MouseDown="EntityListItem_MouseDown">
-								<TextBlock Text="{Binding Name}"/>
-								<TextBox x:Name="EditTextBox"
-										 Text="{Binding Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-										 Visibility="Collapsed"/>
-							</Grid>
-						</DataTemplate>
-					</ListBox.ItemTemplate>
-				</ListBox>
+			<TabControl x:Name="SceneView"
+						Width="{Binding Converter={StaticResource SizePercentageConverter}, ElementName=Dock, Path=ActualWidth, ConverterParameter=0.15}"
+						DockPanel.Dock="Left">
+				<TabItem Header="Entities">
+					<StackPanel>
+						<ListBox x:Name="EntityListBox"
+								 ItemsSource="{Binding Scene.Entities}"
+								 BorderThickness="0 2"
+								 KeyUp="EntityListBox_KeyUp">
+							<ListBox.ItemTemplate>
+								<DataTemplate>
+									<Grid Background="Transparent"
+										  MouseDown="EntityListItem_MouseDown">
+										<TextBlock Text="{Binding Name}"/>
+											<TextBox x:Name="EditTextBox"
+													 Text="{Binding Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+													 Visibility="Collapsed"/>
+									</Grid>
+								</DataTemplate>
+							</ListBox.ItemTemplate>
+						</ListBox>
 
-				<Button Grid.Column="1"
-						Content="Create Entity"
-						Command="{Binding Scene.CreateEntityCommand}"
-						HorizontalAlignment="Center"
-						Padding="1"/>
-			</StackPanel>
+						<Button Grid.Column="1"
+								Content="Create Entity"
+								Command="{Binding Scene.CreateEntityCommand}"
+								HorizontalAlignment="Center"
+								Padding="1"/>
+						</StackPanel>
+				</TabItem>
+				<TabItem Header="Sub Systems">
+					<ListBox ItemsSource="{Binding Scene.SubSystems}">
+						<ListBox.ItemTemplate>
+							<DataTemplate>
+								<Grid>
+									<Grid.ColumnDefinitions>
+										<ColumnDefinition Width="Auto"/>
+										<ColumnDefinition Width="*"/>
+									</Grid.ColumnDefinitions>
+
+									<CheckBox IsChecked="{Binding IsEnabled, Mode=TwoWay}"
+											  Margin="0 0 5 0"
+											  Grid.Column="0"/>
+									<TextBlock Text="{Binding DisplayName}"
+											   Grid.Column="1"/>
+								</Grid>
+							</DataTemplate>
+						</ListBox.ItemTemplate>
+					</ListBox>
+				</TabItem>
+			</TabControl>
 			
 			<local:EntityInfo x:Name="EntityView"
 							  DockPanel.Dock="Right"

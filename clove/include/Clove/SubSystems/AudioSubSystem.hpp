@@ -2,6 +2,8 @@
 
 #include "Clove/SubSystem.hpp"
 
+#include <Clove/Reflection/Reflection.hpp>
+
 namespace clove {
     class EntityManager;
 }
@@ -17,8 +19,7 @@ namespace clove {
         
         //FUNCTIONS
     public:
-		AudioSubSystem() = delete;
-        AudioSubSystem(EntityManager *entityManager);
+		AudioSubSystem();
 
         AudioSubSystem(AudioSubSystem const &other) = delete;
         AudioSubSystem(AudioSubSystem &&other) noexcept;
@@ -36,3 +37,5 @@ namespace clove {
         void onDetach() override{};
     };
 }
+
+CLOVE_REFLECT_DECLARE_TYPE(clove::AudioSubSystem)
