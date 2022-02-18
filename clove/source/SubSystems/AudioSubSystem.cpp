@@ -9,11 +9,12 @@
 #include <Clove/Audio/AhaSource.hpp>
 #include <Clove/ECS/EntityManager.hpp>
 #include <Clove/Log/Log.hpp>
+#include <Clove/ReflectionAttributes.hpp>
 
 namespace clove {
-    AudioSubSystem::AudioSubSystem(EntityManager *entityManager)
+    AudioSubSystem::AudioSubSystem()
         : SubSystem("Audio")
-        , entityManager{ entityManager } {
+        , entityManager{ Application::get().getEntityManager() } {
     }
 
     AudioSubSystem::AudioSubSystem(AudioSubSystem &&other) noexcept = default;
@@ -48,3 +49,9 @@ namespace clove {
         });
     }
 }
+
+CLOVE_REFLECT_BEGIN(clove::AudioSubSystem, clove::EditorVisibleSubSystem{
+                                               .onEditorCreateSubSystem  = &createSubSystemHelper<clove::AudioSubSystem>,
+                                               .onEditorDestroySubSystem = &destroySubSystemHelper<clove::AudioSubSystem>,
+                                           })
+CLOVE_REFLECT_END
