@@ -17,9 +17,10 @@ namespace Bulb {
         public delegate void ToggledHandler(SubSystemViewModel viewModel, bool value);
         public ToggledHandler OnToggled;
 
-        public SubSystemViewModel(string displayName, string typeName) {
+        public SubSystemViewModel(string displayName, string typeName, bool isEnabled) {
             DisplayName = displayName;
             TypeName = typeName;
+            this.isEnabled = isEnabled;
         }
     }
 }

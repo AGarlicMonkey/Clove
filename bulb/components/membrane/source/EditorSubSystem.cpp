@@ -17,11 +17,11 @@
 #include <Clove/ReflectionAttributes.hpp>
 #include <Clove/Serialisation/Node.hpp>
 #include <Clove/Serialisation/Yaml.hpp>
-#include <Clove/SubSystems/PhysicsSubSystem.hpp>
-#include <msclr/marshal_cppstd.h>
-#include <Clove/SubSystems/RenderSubSystem.hpp>
 #include <Clove/SubSystems/AudioSubSystem.hpp>
+#include <Clove/SubSystems/PhysicsSubSystem.hpp>
+#include <Clove/SubSystems/RenderSubSystem.hpp>
 #include <Clove/SubSystems/TransformSubSystem.hpp>
+#include <msclr/marshal_cppstd.h>
 
 using namespace clove;
 using namespace membrane;
@@ -160,12 +160,6 @@ namespace membrane {
         if(!app.hasSubSystem<TransformSubSystem>()) {
             app.pushSubSystem<TransformSubSystem>(app.getEntityManager());
         }
-        if(!app.hasSubSystem<AudioSubSystem>()) {
-            app.pushSubSystem<AudioSubSystem>(app.getEntityManager());
-        }
-        /*if(!app.hasSubSystem<PhysicsSubSystem>()) {
-            app.pushSubSystem<PhysicsSubSystem>(app.getEntityManager());
-        }*/
 
         //Add the editor camera outside of the current scene
         editorCamera = entityManager->create();
@@ -291,6 +285,18 @@ namespace membrane {
         auto loadResult{ loadYaml(clove::Application::get().getFileSystem()->resolve("./scene.clvscene")) };
         serialiser::Node rootNode{ loadResult.getValue() };
 
+        //Load sub systems
+        System::Collections::Generic::List<System::String ^> ^ subSystems { gcnew System::Collections::Generic::List<System::String ^> };
+
+        for(auto const &subSystemNode : rootNode["subSystems"]) {
+            std::string const subSystemName{ subSystemNode.as<std::string>() };
+
+            enabledSubSystems.push_back(subSystemName);
+
+            subSystems->Add(gcnew System::String(subSystemName.c_str()));
+        }
+
+        //Load entities
         System::Collections::Generic::List<Entity ^> ^ entities { gcnew System::Collections::Generic::List<Entity ^> };
 
         for(auto const &entityNode : rootNode["entities"]) {
@@ -325,7 +331,8 @@ namespace membrane {
         }
 
         Engine_OnSceneLoaded ^ message { gcnew Engine_OnSceneLoaded };
-        message->entities = entities;
+        message->enabledSubSystems = subSystems;
+        message->entities          = entities;
         MessageHandler::sendMessage(message);
     }
 

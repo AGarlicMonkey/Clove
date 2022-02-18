@@ -49,7 +49,9 @@ namespace clove {
 
     template<typename SubSystemType>
     void createSubSystemHelper(Application &app) {
-        app.pushSubSystem<SubSystemType>();
+        if(!app.hasSubSystem<SubSystemType>()) {
+            app.pushSubSystem<SubSystemType>();
+        }
     }
 
     template<typename SubSystemType>

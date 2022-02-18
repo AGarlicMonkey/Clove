@@ -115,6 +115,7 @@ namespace membrane {
 
     public ref class Engine_OnSceneLoaded : public EngineMessage {
     public:
+        System::Collections::Generic::List<System::String^> ^enabledSubSystems;
         System::Collections::Generic::List<Entity^> ^entities;
     };
     // clang-format on
