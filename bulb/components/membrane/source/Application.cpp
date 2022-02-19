@@ -20,8 +20,6 @@
 #include <filesystem>
 #include <msclr/marshal_cppstd.h>
 
-CLOVE_DECLARE_LOG_CATEGORY(Membrane)
-
 #ifndef GAME_OUTPUT_DIR
     #define GAME_OUTPUT_DIR ""
 #endif
