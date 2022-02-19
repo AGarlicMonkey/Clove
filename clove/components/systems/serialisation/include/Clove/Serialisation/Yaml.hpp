@@ -8,6 +8,7 @@
 
 namespace clove{
     enum class LoadError {
+        Unknown,
         BadFile,
         WrongType,
         WrongVersion,

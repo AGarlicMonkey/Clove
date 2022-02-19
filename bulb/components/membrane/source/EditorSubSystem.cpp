@@ -282,8 +282,25 @@ namespace membrane {
         }
         trackedComponents.clear();
 
-        auto loadResult{ loadYaml(clove::Application::get().getFileSystem()->resolve("./scene.clvscene")) };
-        serialiser::Node rootNode{ loadResult.getValue() };
+        std::filesystem::path const scenePath{ clove::Application::get().getFileSystem()->resolve("./scene.clvscene") };
+        if(!std::filesystem::exists(scenePath)) {
+            CLOVE_LOG(Membrane, LogLevel::Warning, "Could not locate 'scene.clvscene' file in game root directory.");
+            return;
+        }
+
+        auto loadResult{ loadYaml(scenePath) };
+        if(!loadResult.hasValue()) {
+            if(loadResult.getError() == clove::LoadError::BadFile) {
+                CLOVE_LOG(Membrane, LogLevel::Error, "Bad scene provided. Scene cannot be loaded.");
+            } else {
+                CLOVE_LOG(Membrane, LogLevel::Error, "Could not load scene file. Error code: {0}", loadResult.getError());
+                throw gcnew System::Exception{ "Scene file could not be loaded. See log for details." };
+            }
+
+            return;
+        }
+
+        serialiser::Node rootNode{ std::move(loadResult.getValue()) };
 
         //Load sub systems
         System::Collections::Generic::List<System::String ^> ^ subSystems { gcnew System::Collections::Generic::List<System::String ^> };
