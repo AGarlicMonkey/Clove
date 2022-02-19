@@ -5,6 +5,7 @@
 #include "Membrane/MessageHandler.hpp"
 #include "Membrane/Messages.hpp"
 #include "Membrane/RuntimeSubSystem.hpp"
+#include "Membrane/MembraneLog.hpp"
 
 #include <Clove/Application.hpp>
 #include <Clove/ECS/EntityManager.hpp>
@@ -210,24 +211,30 @@ namespace membrane {
     bool Application::tryLoadGameDll(std::string_view path) {
         if(gameLibrary = LoadLibrary(path.data()); gameLibrary != nullptr) {
             //Set up module's application
-            {
-                LinkApplicationFn proc{ (LinkApplicationFn)GetProcAddress(gameLibrary, "linkApplication") };
-                CLOVE_ASSERT(proc);
-                proc(&clove::Application::get());
+            if(LinkApplicationFn linkAppProc{ (LinkApplicationFn)GetProcAddress(gameLibrary, "linkApplication") }) {
+                linkAppProc(&clove::Application::get());
+
+                CLOVE_LOG(Membrane, clove::LogLevel::Trace, "'linkApplication' was successfully called.");
+            } else {
+                CLOVE_LOG(Membrane, clove::LogLevel::Trace, "'linkApplication' was skipped. Likely not used in client code.");
             }
 
             //Set up module's logger
-            {
-                LinkLoggerFn proc{ (LinkLoggerFn)GetProcAddress(gameLibrary, "linkLogger") };
-                CLOVE_ASSERT(proc);
-                proc(&clove::Logger::get());
+            if(LinkLoggerFn linkLogProc{ (LinkLoggerFn)GetProcAddress(gameLibrary, "linkLogger") }) {
+                linkLogProc(&clove::Logger::get());
+
+                CLOVE_LOG(Membrane, clove::LogLevel::Trace, "'linkLogger' was successfully called.");
+            } else {
+                CLOVE_LOG(Membrane, clove::LogLevel::Trace, "'linkLogger' was skipped. Likely not used in client code.");
             }
 
             //Set up module's reflection system
-            {
-                LinkReflectionFn proc{ (LinkReflectionFn)GetProcAddress(gameLibrary, "linkReflection") };
-                CLOVE_ASSERT(proc);
-                proc(&clove::reflection::internal::Registry::get());
+            if(LinkReflectionFn linkReflecProc{ (LinkReflectionFn)GetProcAddress(gameLibrary, "linkReflection") }) {
+                linkReflecProc(&clove::reflection::internal::Registry::get());
+
+                CLOVE_LOG(Membrane, clove::LogLevel::Trace, "'linkReflection' was successfully called.");
+            } else {
+                CLOVE_LOG(Membrane, clove::LogLevel::Trace, "'linkReflection' was skipped. Likely not used in client code.");
             }
 
             if(OnModuleLoadedFn onModuleLoaded{ (OnModuleLoadedFn)GetProcAddress(gameLibrary, "onModuleLoaded") }; onModuleLoaded != nullptr) {
