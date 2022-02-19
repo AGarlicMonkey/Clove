@@ -110,20 +110,24 @@ namespace clove {
         YAML::Node file{};
         try {
             file = YAML::LoadFile(filePath.string());
+
+            if(file["type"].as<std::string>() != "yaml") {
+                return Unexpected{ LoadError::WrongType };
+            }
+
+            int32_t const version{ file["version"].as<int32_t>() };
+            switch(version) {
+                case 1:
+                    return v1::build(file);
+                default:
+                    return Unexpected{ LoadError::WrongVersion };
+            }
         } catch(YAML::BadFile e) {
             return Unexpected{ LoadError::BadFile };
-        }
-
-        if(file["type"].as<std::string>() != "yaml") {
-            return Unexpected{ LoadError::WrongType };
-        }
-
-        int32_t const version{ file["version"].as<int32_t>() };
-        switch(version) {
-            case 1:
-                return v1::build(file);
-            default:
-                return Unexpected{ LoadError::WrongVersion };
+        } catch(YAML::BadConversion e) {
+            return Unexpected{ LoadError::BadFile };
+        } catch(...) {
+            return Unexpected{ LoadError::Unknown };
         }
     }
 }
