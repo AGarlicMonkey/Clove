@@ -104,7 +104,7 @@ namespace Bulb {
 
             ComponentMenuItems.Clear();
 
-            List<Membrane.AvailableTypeInfo> types = Membrane.ReflectionHelper.getAvailableTypes();
+            List<Membrane.AvailableTypeInfo> types = Membrane.ReflectionHelper.getEditorVisibleComponents();
 
             foreach (Membrane.AvailableTypeInfo type in types) {
                 if (!entitiesComponents.Contains(type.displayName)) {

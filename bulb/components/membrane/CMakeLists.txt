@@ -18,14 +18,17 @@ add_library(
 
         ${INCLUDE}/NameComponent.hpp
 
-        ${INCLUDE}/ReflectionHelper.hpp
-        ${SOURCE}/ReflectionHelper.cpp
+        ${INCLUDE}/ReflectionHelpers.hpp
+        ${SOURCE}/ReflectionHelpers.cpp
 
         ${INCLUDE}/EditorSubSystem.hpp
         ${SOURCE}/EditorSubSystem.cpp
         
         ${INCLUDE}/EditorViewport.hpp
         ${SOURCE}/EditorViewport.cpp
+
+        ${INCLUDE}/RuntimeSubSystem.hpp
+        ${SOURCE}/RuntimeSubSystem.cpp
 )
 
 #Include

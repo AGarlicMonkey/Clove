@@ -4,6 +4,8 @@
 #include "Membrane/EditorViewport.hpp"
 #include "Membrane/MessageHandler.hpp"
 #include "Membrane/Messages.hpp"
+#include "Membrane/RuntimeSubSystem.hpp"
+#include "Membrane/MembraneLog.hpp"
 
 #include <Clove/Application.hpp>
 #include <Clove/ECS/EntityManager.hpp>
@@ -11,15 +13,12 @@
 #include <Clove/Graphics/GhaImage.hpp>
 #include <Clove/Graphics/GraphicsAPI.hpp>
 #include <Clove/Log/Log.hpp>
+#include <Clove/Reflection/Reflection.hpp>
 #include <Clove/Rendering/GraphicsImageRenderTarget.hpp>
 #include <Clove/Serialisation/Node.hpp>
 #include <Clove/Serialisation/Yaml.hpp>
 #include <filesystem>
 #include <msclr/marshal_cppstd.h>
-
-#include <Clove/Reflection/Reflection.hpp>
-
-CLOVE_DECLARE_LOG_CATEGORY(Membrane)
 
 #ifndef GAME_OUTPUT_DIR
     #define GAME_OUTPUT_DIR ""
@@ -34,10 +33,12 @@ CLOVE_DECLARE_LOG_CATEGORY(Membrane)
     #define GAME_DIR ""
 #endif
 
-typedef void (*setUpEditorApplicationFn)(clove::Application *app);
-typedef void (*tearDownEditorApplicationFn)(clove::Application *app);
+typedef void (*OnModuleLoadedFn)();
+typedef void (*OnModuleRemovedFn)();
 
-typedef void (*setUpReflectorFn)(clove::reflection::internal::Registry *reg);
+typedef void (*LinkApplicationFn)(clove::Application *app);
+typedef void (*LinkLoggerFn)(clove::Logger *logger);
+typedef void (*LinkReflectionFn)(clove::reflection::internal::Registry *reg);
 
 namespace {
     std::string_view constexpr dllPath{ GAME_MODULE_DIR "/" GAME_NAME ".dll" };
@@ -84,7 +85,7 @@ namespace membrane {
     void Application::loadGameDll() {
         std::filesystem::path const gameOutputDir{ GAME_OUTPUT_DIR };
         if(gameOutputDir.empty()) {
-            CLOVE_LOG(Membrane, clove::LogLevel::Error, "GAME_OUTPUT_DIR is not defined. Please define this for BulbMembrane and point it to build output location."); 
+            CLOVE_LOG(Membrane, clove::LogLevel::Error, "GAME_OUTPUT_DIR is not defined. Please define this for BulbMembrane and point it to build output location.");
             return;
         }
 
@@ -95,7 +96,7 @@ namespace membrane {
         }
 
         std::filesystem::path const gameModuleDir{ GAME_MODULE_DIR };
-        if(gameModuleDir.empty()){
+        if(gameModuleDir.empty()) {
             CLOVE_LOG(Membrane, clove::LogLevel::Error, "GAME_MODULE_DIR is not defined. Please define this for BulbMembrane and point it to the game dll to load.");
             return;
         }
@@ -104,11 +105,10 @@ namespace membrane {
         if(gameLibrary != nullptr) {
             CLOVE_LOG(Membrane, clove::LogLevel::Trace, "Unloading {0} to prepare for compilation and reload", gameName);
 
-            if(tearDownEditorApplicationFn tearDownEditorApplication{ (tearDownEditorApplicationFn)GetProcAddress(gameLibrary, "tearDownEditorApplication") }; tearDownEditorApplication != nullptr) {
-                (tearDownEditorApplication)(app);
+            if(OnModuleRemovedFn onModuleRemoved{ (OnModuleRemovedFn)GetProcAddress(gameLibrary, "onModuleRemoved") }; onModuleRemoved != nullptr) {
+                (onModuleRemoved)();
             } else {
-                CLOVE_LOG(Membrane, clove::LogLevel::Error, "Could not load game tear down function. Please provide 'tearDownEditorApplication' in client code.");
-                return;
+                CLOVE_LOG(Membrane, clove::LogLevel::Trace, "onModuleRemoved function not defined in client application.");
             }
 
             FreeLibrary(gameLibrary);
@@ -117,8 +117,9 @@ namespace membrane {
                 fallbackDll = gameModuleDir / (gameName + "_copy.dll");
                 std::filesystem::copy_file(dllPath, fallbackDll.value(), std::filesystem::copy_options::overwrite_existing);
             } catch(std::exception e) {
-                CLOVE_LOG(Membrane, clove::LogLevel::Error, "{0}", e.what());
-                return;
+                CLOVE_LOG(Membrane, clove::LogLevel::Warning, "Could not create fallback dll:");
+                CLOVE_LOG(Membrane, clove::LogLevel::Warning, "\t{0}", e.what());
+                CLOVE_LOG(Membrane, clove::LogLevel::Warning, "Compilation failure of new module will result cause the editor to crash.");
             }
         }
 
@@ -148,7 +149,7 @@ namespace membrane {
                     throw gcnew System::Exception{ "Loading of backup game Dll failed." };
                 }
             } else {
-                throw gcnew System::Exception{ "Loading of game Dll failed." };
+                throw gcnew System::Exception{ "Loading of game Dll failed. Unable to fall back onto a previously compiled Dll." };
             }
         }
 
@@ -196,27 +197,48 @@ namespace membrane {
     }
 
     void Application::setEditorMode(Editor_Stop ^ message) {
+        app->popSubSystem<RuntimeSubSystem>();
         app->pushSubSystem<EditorSubSystem>(app->getEntityManager());
     }
 
     void Application::setRuntimeMode(Editor_Play ^ message) {
         app->popSubSystem<EditorSubSystem>();
+        app->pushSubSystem<RuntimeSubSystem>(app->getEntityManager());
     }
 
     bool Application::tryLoadGameDll(std::string_view path) {
         if(gameLibrary = LoadLibrary(path.data()); gameLibrary != nullptr) {
-            if(setUpEditorApplicationFn setUpEditorApplication{ (setUpEditorApplicationFn)GetProcAddress(gameLibrary, "setUpEditorApplication") }; setUpEditorApplication != nullptr) {
-                //Set up reflection system in module
-                {
-                    setUpReflectorFn proc{ (setUpReflectorFn)GetProcAddress(gameLibrary, "setUpReflector") };
-                    CLOVE_ASSERT(proc);
-                    proc(&clove::reflection::internal::Registry::get());
-                }
+            //Set up module's application
+            if(LinkApplicationFn linkAppProc{ (LinkApplicationFn)GetProcAddress(gameLibrary, "linkApplication") }) {
+                linkAppProc(&clove::Application::get());
 
-                (setUpEditorApplication)(app);
+                CLOVE_LOG(Membrane, clove::LogLevel::Trace, "'linkApplication' was successfully called.");
             } else {
-                CLOVE_LOG(Membrane, clove::LogLevel::Error, "Could not load game initialise function. Please provide 'setUpEditorApplication' in client code.");
-                return false;
+                CLOVE_LOG(Membrane, clove::LogLevel::Trace, "'linkApplication' was skipped. Likely not used in client code.");
+            }
+
+            //Set up module's logger
+            if(LinkLoggerFn linkLogProc{ (LinkLoggerFn)GetProcAddress(gameLibrary, "linkLogger") }) {
+                linkLogProc(&clove::Logger::get());
+
+                CLOVE_LOG(Membrane, clove::LogLevel::Trace, "'linkLogger' was successfully called.");
+            } else {
+                CLOVE_LOG(Membrane, clove::LogLevel::Trace, "'linkLogger' was skipped. Likely not used in client code.");
+            }
+
+            //Set up module's reflection system
+            if(LinkReflectionFn linkReflecProc{ (LinkReflectionFn)GetProcAddress(gameLibrary, "linkReflection") }) {
+                linkReflecProc(&clove::reflection::internal::Registry::get());
+
+                CLOVE_LOG(Membrane, clove::LogLevel::Trace, "'linkReflection' was successfully called.");
+            } else {
+                CLOVE_LOG(Membrane, clove::LogLevel::Trace, "'linkReflection' was skipped. Likely not used in client code.");
+            }
+
+            if(OnModuleLoadedFn onModuleLoaded{ (OnModuleLoadedFn)GetProcAddress(gameLibrary, "onModuleLoaded") }; onModuleLoaded != nullptr) {
+                (onModuleLoaded)();
+            } else {
+                CLOVE_LOG(Membrane, clove::LogLevel::Trace, "onModuleLoaded function not defined in client application.");
             }
         } else {
             CLOVE_LOG(Membrane, clove::LogLevel::Error, "Could not load game dll. File does not exist");

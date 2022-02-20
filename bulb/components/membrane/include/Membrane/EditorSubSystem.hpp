@@ -30,6 +30,8 @@ namespace membrane {
         clove::EntityManager *entityManager{ nullptr };
         std::unordered_map<clove::Entity, std::vector<clove::reflection::TypeInfo const *>> trackedComponents;
 
+        std::vector<std::string> enabledSubSystems{};
+
         clove::Entity editorCamera{};
 
         bool moveMouse{ false };
@@ -56,6 +58,9 @@ namespace membrane {
     private:
         clove::Entity createEntity(std::string_view name = "New Entity");
         void deleteEntity(clove::Entity entity);
+
+        void addSubSystem(std::string name);
+        void removeSubSystem(std::string name);
 
         void addComponent(clove::Entity entity, std::string_view typeName);
         void modifyComponent(clove::Entity entity, std::string_view typeName, size_t offset, std::string_view value);

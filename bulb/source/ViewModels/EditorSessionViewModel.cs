@@ -70,7 +70,7 @@ namespace Bulb {
         }
 
         private void OnSceneLoaded(Membrane.Engine_OnSceneLoaded message) {
-            Scene = new SceneViewModel(message.entities);
+            Scene = new SceneViewModel(message.enabledSubSystems, message.entities);
         }
 
         private void Play() {
