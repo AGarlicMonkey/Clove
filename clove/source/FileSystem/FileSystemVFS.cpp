@@ -9,13 +9,13 @@ namespace clove {
         mountedPaths[alias] = systemPath.make_preferred();
     }
 
-    std::filesystem::path FileSystemVFS::resolve(std::filesystem::path const &vfsPath) {
-        std::string const vfsRoot{ vfsPath.begin()->string() };
+    std::filesystem::path FileSystemVFS::resolve(Path const &path) {
+        std::string const vfsRoot{ path.begin()->string() };
         std::filesystem::path fullPath{};
 
         if(mountedPaths.contains(vfsRoot)) {
             fullPath = mountedPaths.at(vfsRoot);
-            auto const relPath{ vfsPath.lexically_relative(vfsRoot) };
+            auto const relPath{ path.lexically_relative(vfsRoot) };
             if(!relPath.empty() && relPath.string() != ".") {
                 fullPath /= relPath;
             }

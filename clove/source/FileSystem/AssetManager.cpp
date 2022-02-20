@@ -19,7 +19,7 @@ namespace clove {
 
     AssetManager::~AssetManager() = default;
 
-    AssetPtr<StaticModel> AssetManager::getStaticModel(std::filesystem::path const &filePath) {
+    AssetPtr<StaticModel> AssetManager::getStaticModel(VirtualFileSystem::Path const &filePath) {
         std::filesystem::path const fullSystemPath{ vfs->resolve(filePath) };
         if(!std::filesystem::exists(fullSystemPath)){
             CLOVE_LOG(CloveAssetManager, LogLevel::Error, "{0} does not resolve to a file that exists on disk.", filePath.string());
@@ -37,7 +37,7 @@ namespace clove {
         return staticModels.at(pathString);
     }
 
-    AssetPtr<AnimatedModel> AssetManager::getAnimatedModel(std::filesystem::path const &filePath) {
+    AssetPtr<AnimatedModel> AssetManager::getAnimatedModel(VirtualFileSystem::Path const &filePath) {
         std::filesystem::path const fullSystemPath{ vfs->resolve(filePath) };
         if(!std::filesystem::exists(fullSystemPath)) {
             CLOVE_LOG(CloveAssetManager, LogLevel::Error, "{0} does not resolve to a file that exists on disk.", filePath.string());
@@ -55,7 +55,7 @@ namespace clove {
         return animatedModels.at(pathString);
     }
 
-    AssetPtr<Texture> AssetManager::getTexture(std::filesystem::path const &filePath) {
+    AssetPtr<Texture> AssetManager::getTexture(VirtualFileSystem::Path const &filePath) {
         std::filesystem::path const fullSystemPath{ vfs->resolve(filePath) };
         if(!std::filesystem::exists(fullSystemPath)) {
             CLOVE_LOG(CloveAssetManager, LogLevel::Error, "{0} does not resolve to a file that exists on disk.", filePath.string());
@@ -73,7 +73,7 @@ namespace clove {
         return textures.at(pathString);
     }
 
-    AssetPtr<SoundFile> AssetManager::getSound(std::filesystem::path const &filePath) {
+    AssetPtr<SoundFile> AssetManager::getSound(VirtualFileSystem::Path const &filePath) {
         std::filesystem::path const fullSystemPath{ vfs->resolve(filePath) };
         if(!std::filesystem::exists(fullSystemPath)) {
             CLOVE_LOG(CloveAssetManager, LogLevel::Error, "{0} does not resolve to a file that exists on disk.", filePath.string());

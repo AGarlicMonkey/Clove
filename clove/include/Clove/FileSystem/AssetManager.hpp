@@ -5,13 +5,10 @@
 #include "Clove/Rendering/Renderables/StaticModel.hpp"
 #include "Clove/Rendering/Renderables/Texture.hpp"
 #include "Clove/SoundFile.hpp"
+#include "Clove/FileSystem/VirtualFileSystem.hpp"
 
 #include <filesystem>
 #include <unordered_map>
-
-namespace clove {
-    class VirtualFileSystem;
-}
 
 namespace clove {
     /**
@@ -44,29 +41,29 @@ namespace clove {
 
         /**
          * @brief Get a StaticModel
-         * @param filePath A VirtualFileSystem friendly file path
+         * @param filePath
          * @return An AssetPtr to the StaticModel
          */
-        AssetPtr<StaticModel> getStaticModel(std::filesystem::path const &filePath);
+        AssetPtr<StaticModel> getStaticModel(VirtualFileSystem::Path const &filePath);
         /**
          * @brief Get an AnimatedModel
-         * @param filePath A VirtualFileSystem friendly file path
+         * @param filePath
          * @return An AssetPtr to the AnimatedModel
          */
-        AssetPtr<AnimatedModel> getAnimatedModel(std::filesystem::path const &filePath);
+        AssetPtr<AnimatedModel> getAnimatedModel(VirtualFileSystem::Path const &filePath);
 
         /**
          * @brief Get a Texture
-         * @param filePath A VirtualFileSystem friendly file path
+         * @param filePath
          * @return An AssetPtr to the Texture
          */
-        AssetPtr<Texture> getTexture(std::filesystem::path const &filePath);
+        AssetPtr<Texture> getTexture(VirtualFileSystem::Path const &filePath);
 
         /**
          * @brief Get a SoundFile
-         * @param filePath A VirtualFileSystem friendly file path
+         * @param filePath
          * @return An AssetPtr to the SoundFile
          */
-        AssetPtr<SoundFile> getSound(std::filesystem::path const &filePath);
+        AssetPtr<SoundFile> getSound(VirtualFileSystem::Path const &filePath);
     };
 }

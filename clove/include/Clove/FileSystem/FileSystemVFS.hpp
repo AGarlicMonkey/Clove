@@ -31,7 +31,7 @@ namespace clove {
          */
         void mount(std::filesystem::path systemPath, std::string const &alias);
 
-        std::filesystem::path resolve(std::filesystem::path const &vfsPath) override;
+        std::filesystem::path resolve(Path const &path) override;
     };
 }
 
