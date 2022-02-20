@@ -98,6 +98,6 @@ namespace clove {
     }
 
     VirtualFileSystem *Application::getFileSystem() {
-        return &fileSystem;
+        return fileSystem.get();
     }
 }

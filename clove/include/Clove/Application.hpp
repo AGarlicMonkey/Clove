@@ -49,7 +49,7 @@ namespace clove {
         std::unique_ptr<Renderer> renderer;
         EntityManager entityManager;
 
-        VirtualFileSystem fileSystem{};
+        std::unique_ptr<VirtualFileSystem> fileSystem{};
         AssetManager assetManager;
 
         std::unordered_map<std::type_index, std::pair<SubSystem::Group, size_t>> subSystemToIndex; /**< Contains the index for each subsystem in the subSystems array. */
@@ -76,7 +76,7 @@ namespace clove {
          * @param windowDescriptor A descriptor describing the properties of the window.
          * @return The created application instance.
          */
-        static std::unique_ptr<Application> create(GraphicsApi graphicsApi, AudioApi audioApi, Window::Descriptor const &windowDescriptor);
+        static std::unique_ptr<Application> create(GraphicsApi graphicsApi, AudioApi audioApi, Window::Descriptor const &windowDescriptor, std::unique_ptr<VirtualFileSystem> fileSystem);
 
         /**
          * @brief Create a Garlic application without a window that is capable of offscreen rendering.
@@ -87,7 +87,7 @@ namespace clove {
          * @param mouse A mouse object the application will quiery for input every frame.
          * @return A pair with the created application instance and a pointer to the render target of the application.
          */
-        static std::pair<std::unique_ptr<Application>, GraphicsImageRenderTarget *> createHeadless(GraphicsApi graphicsApi, AudioApi audioApi, GhaImage::Descriptor renderTargetDescriptor, Keyboard *keyboard, Mouse *mouse);
+        static std::pair<std::unique_ptr<Application>, GraphicsImageRenderTarget *> createHeadless(GraphicsApi graphicsApi, AudioApi audioApi, GhaImage::Descriptor renderTargetDescriptor, Keyboard *keyboard, Mouse *mouse, std::unique_ptr<VirtualFileSystem> fileSystem);
 
         static Application &get();
 
@@ -137,8 +137,8 @@ namespace clove {
         inline VirtualFileSystem *getFileSystem();
 
     private:
-        Application(std::unique_ptr<GhaDevice> graphicsDevice, std::unique_ptr<AhaDevice> audioDevice, std::unique_ptr<Window> window, std::unique_ptr<RenderTarget> renderTarget);
-        Application(std::unique_ptr<GhaDevice> graphicsDevice, std::unique_ptr<AhaDevice> audioDevice, Keyboard *keyboard, Mouse *mouse, std::unique_ptr<RenderTarget> renderTarget);
+        Application(std::unique_ptr<GhaDevice> graphicsDevice, std::unique_ptr<AhaDevice> audioDevice, std::unique_ptr<Window> window, std::unique_ptr<RenderTarget> renderTarget, std::unique_ptr<VirtualFileSystem> fileSystem);
+        Application(std::unique_ptr<GhaDevice> graphicsDevice, std::unique_ptr<AhaDevice> audioDevice, Keyboard *keyboard, Mouse *mouse, std::unique_ptr<RenderTarget> renderTarget, std::unique_ptr<VirtualFileSystem> fileSystem);
     };
 }
 

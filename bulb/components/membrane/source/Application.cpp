@@ -19,6 +19,7 @@
 #include <Clove/Serialisation/Yaml.hpp>
 #include <filesystem>
 #include <msclr/marshal_cppstd.h>
+#include <Clove/FileSystem/FileSystemVFS.hpp>
 
 #ifndef GAME_OUTPUT_DIR
     #define GAME_OUTPUT_DIR ""
@@ -61,14 +62,14 @@ namespace membrane {
 
         viewport = gcnew EditorViewport{};
 
-        //Use pair as there seems to be an issue when using structured bindings
-        auto pair{ clove::Application::createHeadless(GraphicsApi::Vulkan, AudioApi::OpenAl, std::move(renderTargetImageDescriptor), viewport->getKeyboard(), viewport->getMouse()) };
-        app          = pair.first.release();
-        renderTarget = pair.second;
-
-        auto *vfs{ app->getFileSystem() };
+        auto vfs{ std::make_unique<FileSystemVFS>() };
         vfs->mount(GAME_DIR "/content", ".");
         std::filesystem::create_directories(vfs->resolve("."));
+
+        //Use pair as there seems to be an issue when using structured bindings
+        auto pair{ clove::Application::createHeadless(GraphicsApi::Vulkan, AudioApi::OpenAl, std::move(renderTargetImageDescriptor), viewport->getKeyboard(), viewport->getMouse(), std::move(vfs)) };
+        app          = pair.first.release();
+        renderTarget = pair.second;
 
         MessageHandler::bindToMessage(gcnew MessageSentHandler<Editor_Stop ^>(this, &Application::setEditorMode));
         MessageHandler::bindToMessage(gcnew MessageSentHandler<Editor_Play ^>(this, &Application::setRuntimeMode));
