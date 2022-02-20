@@ -3,13 +3,12 @@
 namespace clove {
     template<typename AssetType>
     AssetPtr<AssetType>::AssetPtr()
-        : assetPath{ std::make_shared<std::filesystem::path>() }
-        , asset{ std::make_shared<std::optional<AssetType>>() } {
+        : asset{ std::make_shared<std::optional<AssetType>>() } {
     }
 
     template<typename AssetType>
-    AssetPtr<AssetType>::AssetPtr(std::filesystem::path assetVfsPath, std::function<AssetType()> loadFunction)
-        : assetPath{ std::make_shared<std::filesystem::path>(std::move(assetVfsPath)) }
+    AssetPtr<AssetType>::AssetPtr(size_t hash, std::function<AssetType()> loadFunction)
+        : assetHash{ hash }
         , loadFunction{ std::move(loadFunction) }
         , asset{ std::make_shared<std::optional<AssetType>>() } {
     }
@@ -31,7 +30,7 @@ namespace clove {
 
     template<typename AssetType>
     bool AssetPtr<AssetType>::isValid() const {
-        return !assetPath->empty() && loadFunction != nullptr;
+        return assetHash != 0 && loadFunction != nullptr;
     }
 
     template<typename AssetType>
@@ -62,8 +61,8 @@ namespace clove {
     }
 
     template<typename AssetType>
-    std::filesystem::path const &AssetPtr<AssetType>::getPath() const {
-        return *assetPath;
+    size_t AssetPtr<AssetType>::getHash() const {
+        return assetHash;
     }
 
     template<typename AssetType>

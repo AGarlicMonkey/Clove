@@ -14,15 +14,15 @@ namespace clove {
     class AssetPtr {
         //VARIABLES
     private:
-        std::shared_ptr<std::filesystem::path> assetPath{};
-        std::function<AssetType()> loadFunction{};
-
+        size_t assetHash{};
         std::shared_ptr<std::optional<AssetType>> asset{};
+
+        std::function<AssetType()> loadFunction{};
 
         //FUNCTIONS
     public:
         AssetPtr();
-        AssetPtr(std::filesystem::path assetVfsPath, std::function<AssetType()> loadFunction);
+        AssetPtr(size_t hash, std::function<AssetType()> loadFunction);
 
         AssetPtr(AssetPtr const &other);
         AssetPtr(AssetPtr &&other) noexcept;
@@ -56,11 +56,10 @@ namespace clove {
         [[nodiscard]] AssetType const &get() const;
 
         /**
-         * @brief Returns the path of the asset.
-         * @details Path will be in the VirtualFileSystem format.
+         * @brief Returns the hash used to identify this pointer's asset.
          * @return 
          */
-        [[nodiscard]] std::filesystem::path const &getPath() const;
+        [[nodiscard]] size_t getHash() const;
 
         AssetType *operator->();
         AssetType const *operator->() const;

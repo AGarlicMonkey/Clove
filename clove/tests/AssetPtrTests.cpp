@@ -22,18 +22,18 @@ TEST(AssetPtrTest, ProperlyDefaultInitialises) {
 }
 
 TEST(AssetPtrTest, CanInitialiseWithAFilePath) {
-    std::filesystem::path path{ "random/file/path.txt" };
-    AssetPtr<MockFile> asset{ path, &loadMockFile };
+    size_t const randomHash{ 1234 };
+    AssetPtr<MockFile> asset{ randomHash, &loadMockFile };
 
     EXPECT_TRUE(asset.isValid());
     EXPECT_FALSE(asset.isLoaded());
 }
 
-TEST(AssetPtrTest, CanGetFilePath) {
-    std::filesystem::path path{ "random/file/path.txt" };
-    AssetPtr<MockFile> asset{ path, &loadMockFile };
+TEST(AssetPtrTest, CanGetAssetPtrHash) {
+    size_t const randomHash{ 1234 };
+    AssetPtr<MockFile> asset{ randomHash, &loadMockFile };
 
-    EXPECT_EQ(path, asset.getPath());
+    EXPECT_EQ(asset.getHash(), randomHash);
 }
 
 TEST(AssetPtrTest, CanLoadFileWhenRequested) {
@@ -41,8 +41,10 @@ TEST(AssetPtrTest, CanLoadFileWhenRequested) {
 
     EXPECT_DEATH(MockFile const &invalidFile{ emptyPtr.get() }, "");
 
-    AssetPtr<MockFile> asset{ "random/file/path.txt", &loadMockFile };
-    AssetPtr<MockFile> const constAsset{ "random/file/path.txt", &loadMockFile };
+    size_t const randomHash{ 1234 };
+
+    AssetPtr<MockFile> asset{ randomHash, &loadMockFile };
+    AssetPtr<MockFile> const constAsset{ randomHash, &loadMockFile };
 
     ASSERT_TRUE(asset.isValid());
     ASSERT_FALSE(asset.isLoaded());
@@ -73,7 +75,9 @@ TEST(AssetPtrTest, CanPointToSameAssetButOnlyLoadOnce) {
         return MockFile{ true };
     };
 
-    AssetPtr<MockFile> asset{ "random/file/path.txt", loadMockFileCount };
+    size_t const randomHash{ 1234 };
+
+    AssetPtr<MockFile> asset{ randomHash, loadMockFileCount };
     AssetPtr<MockFile> assetCopy{ asset };
 
     ASSERT_TRUE(asset.isValid());

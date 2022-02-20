@@ -9,32 +9,36 @@
 CLOVE_DECLARE_LOG_CATEGORY(CloveAssetManager)
 
 namespace clove {
-    AssetManager::AssetManager(VirtualFileSystem *vfs)
-        : vfs{ vfs } {
-    }
-
-    AssetManager::AssetManager(AssetManager &&other) noexcept = default;
-
-    AssetManager &AssetManager::operator=(AssetManager &&other) noexcept = default;
-
-    AssetManager::~AssetManager() = default;
-
     AssetPtr<StaticModel> AssetManager::getStaticModel(VirtualFileSystem::Path const &filePath) {
         std::filesystem::path const fullSystemPath{ vfs->resolve(filePath) };
-        if(!std::filesystem::exists(fullSystemPath)){
+        if(!std::filesystem::exists(fullSystemPath)) {
             CLOVE_LOG(CloveAssetManager, LogLevel::Error, "{0} does not resolve to a file that exists on disk.", filePath.string());
             return {};
         }
 
-        std::string const pathString{ filePath.string() };
+        size_t const pathHash{ std::hash<std::string>{}(filePath.string()) };
 
-        if(!staticModels.contains(pathString)) {
-            staticModels[pathString] = AssetPtr<StaticModel>{ filePath, [fullSystemPath]() {
-                                                                 return ModelLoader::loadStaticModel(fullSystemPath);
-                                                             } };
+        AssetEntry<StaticModel> &model{ staticModels[pathHash] };
+        if(!model.asset.isValid()) {
+            model.path  = filePath;
+            model.asset = AssetPtr<StaticModel>{ pathHash, [fullSystemPath]() {
+                                                    return ModelLoader::loadStaticModel(fullSystemPath);
+                                                } };
         }
 
-        return staticModels.at(pathString);
+        return model.asset;
+    }
+
+    AssetPtr<StaticModel> AssetManager::getStaticModel(size_t const assetHash) {
+        AssetPtr<StaticModel> asset{};
+
+        if(staticModels.contains(assetHash)) {
+            asset = staticModels.at(assetHash).asset;
+        }else{
+            CLOVE_LOG(CloveAssetManager, LogLevel::Error, "Could not find StaticModel with hash {0}.", assetHash);
+        }
+
+        return asset;
     }
 
     AssetPtr<AnimatedModel> AssetManager::getAnimatedModel(VirtualFileSystem::Path const &filePath) {
@@ -44,15 +48,29 @@ namespace clove {
             return {};
         }
 
-        std::string const pathString{ filePath.string() };
+        size_t const pathHash{ std::hash<std::string>{}(filePath.string()) };
 
-        if(!animatedModels.contains(pathString)) {
-            animatedModels[pathString] = AssetPtr<AnimatedModel>{ filePath, [fullSystemPath]() {
-                                                                     return ModelLoader::loadAnimatedModel(fullSystemPath);
-                                                                 } };
+        AssetEntry<AnimatedModel> &model{ animatedModels[pathHash] };
+        if(!model.asset.isValid()) {
+            model.path  = filePath;
+            model.asset = AssetPtr<AnimatedModel>{ pathHash, [fullSystemPath]() {
+                                                      return ModelLoader::loadAnimatedModel(fullSystemPath);
+                                                  } };
         }
 
-        return animatedModels.at(pathString);
+        return model.asset;
+    }
+
+    AssetPtr<AnimatedModel> AssetManager::getAnimatedModel(size_t const assetHash) {
+        AssetPtr<AnimatedModel> asset{};
+
+        if(animatedModels.contains(assetHash)) {
+            asset = animatedModels.at(assetHash).asset;
+        } else {
+            CLOVE_LOG(CloveAssetManager, LogLevel::Error, "Could not find AnimatedModel with hash {0}.", assetHash);
+        }
+
+        return asset;
     }
 
     AssetPtr<Texture> AssetManager::getTexture(VirtualFileSystem::Path const &filePath) {
@@ -62,15 +80,29 @@ namespace clove {
             return {};
         }
 
-        std::string const pathString{ filePath.string() };
+        size_t const pathHash{ std::hash<std::string>{}(filePath.string()) };
 
-        if(!textures.contains(pathString)) {
-            textures[pathString] = AssetPtr<Texture>{ filePath, [fullSystemPath]() {
-                                                         return TextureLoader::loadTexture(fullSystemPath).getValue();
-                                                     } };
+        AssetEntry<Texture> &model{ textures[pathHash] };
+        if(!model.asset.isValid()) {
+            model.path  = filePath;
+            model.asset = AssetPtr<Texture>{ pathHash, [fullSystemPath]() {
+                                                return TextureLoader::loadTexture(fullSystemPath).getValue();
+                                            } };
         }
 
-        return textures.at(pathString);
+        return model.asset;
+    }
+
+    AssetPtr<Texture> AssetManager::getTexture(size_t const assetHash) {
+        AssetPtr<Texture> asset{};
+
+        if(textures.contains(assetHash)) {
+            asset = textures.at(assetHash).asset;
+        } else {
+            CLOVE_LOG(CloveAssetManager, LogLevel::Error, "Could not find Texture with hash {0}.", assetHash);
+        }
+
+        return asset;
     }
 
     AssetPtr<SoundFile> AssetManager::getSound(VirtualFileSystem::Path const &filePath) {
@@ -79,15 +111,29 @@ namespace clove {
             CLOVE_LOG(CloveAssetManager, LogLevel::Error, "{0} does not resolve to a file that exists on disk.", filePath.string());
             return {};
         }
-        
-        std::string const pathString{ filePath.string() };
 
-        if(!sounds.contains(pathString)) {
-            sounds[pathString] = AssetPtr<SoundFile>{ filePath, [fullSystemPath]() {
-                                                         return SoundFile{ fullSystemPath.string() };
-                                                     } };
+        size_t const pathHash{ std::hash<std::string>{}(filePath.string()) };
+
+        AssetEntry<SoundFile> &model{ sounds[pathHash] };
+        if(!model.asset.isValid()) {
+            model.path  = filePath;
+            model.asset = AssetPtr<SoundFile>{ pathHash, [fullSystemPath]() {
+                                                  return SoundFile{ fullSystemPath.string() };
+                                              } };
         }
 
-        return sounds.at(pathString);
+        return model.asset;
+    }
+
+    AssetPtr<SoundFile> AssetManager::getSound(size_t const assetHash) {
+        AssetPtr<SoundFile> asset{};
+
+        if(sounds.contains(assetHash)) {
+            asset = sounds.at(assetHash).asset;
+        } else {
+            CLOVE_LOG(CloveAssetManager, LogLevel::Error, "Could not find SoundFile with hash {0}.", assetHash);
+        }
+
+        return asset;
     }
 }
