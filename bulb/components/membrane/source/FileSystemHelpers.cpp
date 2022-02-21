@@ -9,6 +9,10 @@
 #include <msclr/marshal_cppstd.h>
 #include <Clove/Application.hpp>
 
+#ifndef GAME_DIR
+#define GAME_DIR
+#endif
+
 namespace {
     int32_t convertFileTypeToInt(membrane::FileType type) {
         switch (type) {
