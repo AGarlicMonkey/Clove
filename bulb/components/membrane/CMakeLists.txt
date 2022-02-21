@@ -6,6 +6,19 @@ add_library(
     BulbMembrane SHARED
         ${INCLUDE}/Application.hpp
         ${SOURCE}/Application.cpp
+        
+        ${INCLUDE}/EditorSubSystem.hpp
+        ${SOURCE}/EditorSubSystem.cpp
+        
+        ${INCLUDE}/EditorVFS.hpp
+        ${INCLUDE}/EditorVFS.inl
+        ${SOURCE}/EditorVFS.cpp
+
+        ${INCLUDE}/EditorViewport.hpp
+        ${SOURCE}/EditorViewport.cpp
+
+        ${INCLUDE}/FileSystemHelpers.hpp
+        ${SOURCE}/FileSystemHelpers.cpp
 
         ${INCLUDE}/Log.hpp
         ${SOURCE}/Log.cpp
@@ -20,16 +33,6 @@ add_library(
 
         ${INCLUDE}/ReflectionHelpers.hpp
         ${SOURCE}/ReflectionHelpers.cpp
-
-        ${INCLUDE}/EditorSubSystem.hpp
-        ${SOURCE}/EditorSubSystem.cpp
-        
-        ${INCLUDE}/EditorVFS.hpp
-        ${INCLUDE}/EditorVFS.inl
-        ${SOURCE}/EditorVFS.cpp
-
-        ${INCLUDE}/EditorViewport.hpp
-        ${SOURCE}/EditorViewport.cpp
 
         ${INCLUDE}/RuntimeSubSystem.hpp
         ${SOURCE}/RuntimeSubSystem.cpp

@@ -2,10 +2,11 @@
 
 #include "Membrane/EditorSubSystem.hpp"
 #include "Membrane/EditorViewport.hpp"
+#include "Membrane/MembraneLog.hpp"
 #include "Membrane/MessageHandler.hpp"
 #include "Membrane/Messages.hpp"
 #include "Membrane/RuntimeSubSystem.hpp"
-#include "Membrane/MembraneLog.hpp"
+#include "Membrane/EditorVFS.hpp"
 
 #include <Clove/Application.hpp>
 #include <Clove/ECS/EntityManager.hpp>
@@ -15,11 +16,8 @@
 #include <Clove/Log/Log.hpp>
 #include <Clove/Reflection/Reflection.hpp>
 #include <Clove/Rendering/GraphicsImageRenderTarget.hpp>
-#include <Clove/Serialisation/Node.hpp>
-#include <Clove/Serialisation/Yaml.hpp>
-#include <filesystem>
 #include <msclr/marshal_cppstd.h>
-#include <Clove/FileSystem/FileSystemVFS.hpp>
+#include <sstream>
 
 #ifndef GAME_OUTPUT_DIR
     #define GAME_OUTPUT_DIR ""
@@ -62,9 +60,11 @@ namespace membrane {
 
         viewport = gcnew EditorViewport{};
 
-        auto vfs{ std::make_unique<FileSystemVFS>() };
-        vfs->mount(GAME_DIR "/content", ".");
-        std::filesystem::create_directories(vfs->resolve("."));
+        std::filesystem::path const contentDir{ GAME_DIR "/content" };
+        auto vfs{ std::make_unique<EditorVFS>(contentDir) };
+        if(!std::filesystem::exists(contentDir)) {
+            std::filesystem::create_directories(contentDir);
+        }
 
         //Use pair as there seems to be an issue when using structured bindings
         auto pair{ clove::Application::createHeadless(GraphicsApi::Vulkan, AudioApi::OpenAl, std::move(renderTargetImageDescriptor), viewport->getKeyboard(), viewport->getMouse(), std::move(vfs)) };
@@ -185,12 +185,6 @@ namespace membrane {
 
         this->width  = width;
         this->height = height;
-    }
-
-    System::String ^ Application::resolveVfsPath(System::String ^ path) {
-        System::String ^ managedPath { path };
-        std::string unManagedPath{ msclr::interop::marshal_as<std::string>(managedPath) };
-        return gcnew System::String(app->getFileSystem()->resolve(unManagedPath).c_str());
     }
 
     System::String ^ Application::getProjectVersion() {

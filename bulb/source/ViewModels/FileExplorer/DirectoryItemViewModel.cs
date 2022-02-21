@@ -1,6 +1,3 @@
-using System.Diagnostics;
-using System.IO;
-using System.Windows;
 using System.Windows.Input;
 
 namespace Bulb {
@@ -26,21 +23,16 @@ namespace Bulb {
         private string name;
 
         /// <summary>
-        /// The Virtual File System path of this item.
-        /// </summary>
-        public string VfsPath { get; protected set; }
-
-        /// <summary>
         /// Full system path of this item.
         /// </summary>
-        public string FullPath => ConvertVfsPathToSystemPath(VfsPath);
-
-        public abstract ObjectType Type { get; }
+        public string FullPath { get; }
 
         /// <summary>
         /// Parent directory of this item.
         /// </summary>
-        public DirectoryItemViewModel Parent { get; private set; }
+        public DirectoryItemViewModel Parent { get; }
+
+        public abstract ObjectType Type { get; }
 
         public ICommand OpenCommand { get; }
         public ICommand DeleteCommand { get; }
@@ -49,36 +41,25 @@ namespace Bulb {
         public ItemEventHandler OnOpened;
         public ItemEventHandler OnDeleted;
 
-        protected DirectoryItemViewModel(DirectoryItemViewModel parent) {
+        protected DirectoryItemViewModel(string itemName, string itemFullPath, DirectoryItemViewModel parent) {
+            Name = itemName;
+            FullPath = itemFullPath;
             OpenCommand = new RelayCommand(() => OnOpened?.Invoke(this));
             DeleteCommand = new RelayCommand(() => OnDeleted?.Invoke(this));
             Parent = parent;
         }
 
         /// <summary>
+        /// Called by the view to check if a file can be dropped onto it
+        /// </summary>
+        /// <param name="file"></param>
+        /// <returns></returns>
+        public abstract bool CanDropFile(string file);
+
+        /// <summary>
         /// Called by the view when a file has been dropped onto it. Only works if this item is a directory.
         /// </summary>
         /// <param name="file">The full path of the file</param>
-        public void OnFileDropped(string file) {
-            Debug.Assert(Type == ObjectType.Directory, "Cannot perform a drop operation on a file");
-
-            var fileInfo = new FileInfo(file);
-            string originalPath = file;
-            string newPath = Path.Combine(FullPath, fileInfo.Name);
-
-            File.Copy(originalPath, newPath);
-        }
-
-        public void UpdateName(string name, string vfsPath) {
-            Name = name;
-            VfsPath = vfsPath;
-        }
-
-        protected static string ConvertVfsPathToSystemPath(string vfsPath) => ((EditorApp)Application.Current).resolveVfsPath(vfsPath);
-
-        protected static string ConvertSystemPathToVfsPath(string systemPath) {
-            string rootSystem = ConvertVfsPathToSystemPath(".");
-            return systemPath.Remove(0, rootSystem.Length).Replace("\\", "/").Insert(0, ".");
-        }
+        public abstract void OnFileDropped(string file);
     }
 }

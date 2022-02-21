@@ -49,8 +49,6 @@ public ref class Application {
 
         void resize(int width, int height);
 
-        System::String ^resolveVfsPath(System::String ^path);
-
         static System::String ^getProjectVersion();
 
     private:

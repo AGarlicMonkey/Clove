@@ -33,7 +33,7 @@ namespace Bulb {
 
         private void StartEditorSession() {
             //Set up the engine session
-            sessionViewModel = new EditorSessionViewModel(".");
+            sessionViewModel = new EditorSessionViewModel(Membrane.FileSystemHelpers.getContentPath());
             sessionViewModel.OnCompileGame = () => {
                 lock (editorWindow.EditorViewport.ResizeMutex) { //TEMP: Using this lock to make sure we're not in mid loop
                     engineApp.loadGameDll();
@@ -56,11 +56,6 @@ namespace Bulb {
                 Name = "Garlic application thread"
             };
             engineThread.Start();
-        }
-
-        public string resolveVfsPath(string path) {
-            //TODO: Currently no thread locking here. Will be fine in most situations as the mounted paths are unlikely to change once the app has initialised
-            return engineApp.resolveVfsPath(path);
         }
 
         private void StopEngine(object sender, CancelEventArgs e) {

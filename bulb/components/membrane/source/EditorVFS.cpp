@@ -19,7 +19,6 @@ namespace membrane {
             return assetPath.lexically_normal();
         }
 
-        std::string const fileExtension{ path.extension().string() };
         assetPath.replace_extension(".clvasset");
 
         if(std::filesystem::exists(assetPath)) {

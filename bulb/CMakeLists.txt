@@ -63,7 +63,6 @@ add_executable(
 		${SOURCE}/ViewModels/LogViewModel.cs
 		${SOURCE}/ViewModels/TypeViewModel.cs
 		
-
 		${RESOURCES}
 )
 

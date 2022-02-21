@@ -11,16 +11,16 @@ namespace Bulb {
         protected override void OnMouseMove(MouseEventArgs e) {
             base.OnMouseMove(e);
 
-            if (e.LeftButton == MouseButtonState.Pressed) {
-                var viewModel = (DirectoryItemViewModel)DataContext;
-                //Only drag-drop files for now
-                if (viewModel.Type == ObjectType.File) {
-                    DataObject data = new DataObject();
-                    data.SetData(DataFormats.StringFormat, viewModel.VfsPath);
+            //if (e.LeftButton == MouseButtonState.Pressed) {
+            //    var viewModel = (DirectoryItemViewModel)DataContext;
+            //    //Only drag-drop files for now
+            //    if (viewModel.Type == ObjectType.File) {
+            //        DataObject data = new DataObject();
+            //        //data.SetData(DataFormats.StringFormat, viewModel.VfsPath);
 
-                    DragDrop.DoDragDrop(this, data, DragDropEffects.Copy);
-                }
-            }
+            //        DragDrop.DoDragDrop(this, data, DragDropEffects.Copy);
+            //    }
+            //}
         }
     }
 }
