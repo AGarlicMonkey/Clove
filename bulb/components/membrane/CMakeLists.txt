@@ -24,6 +24,10 @@ add_library(
         ${INCLUDE}/EditorSubSystem.hpp
         ${SOURCE}/EditorSubSystem.cpp
         
+        ${INCLUDE}/EditorVFS.hpp
+        ${INCLUDE}/EditorVFS.inl
+        ${SOURCE}/EditorVFS.cpp
+
         ${INCLUDE}/EditorViewport.hpp
         ${SOURCE}/EditorViewport.cpp
 
