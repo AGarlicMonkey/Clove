@@ -3,10 +3,6 @@
 #include <Clove/Application.hpp>
 #include <Clove/ECS/Entity.hpp>
 
-namespace clove {
-    class GraphicsImageRenderTarget;
-}
-
 namespace membrane {
     class EditorSubSystem;
     class RuntimeSubSystem;
@@ -44,10 +40,7 @@ public ref class Application {
 
         bool isRunning();
         void tick();
-        void render(System::IntPtr backBuffer);
         void shutdown();
-
-        void resize(int width, int height);
 
         System::String ^resolveVfsPath(System::String ^path);
 

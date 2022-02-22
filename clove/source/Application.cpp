@@ -2,7 +2,6 @@
 
 #include "Clove/InputEvent.hpp"
 #include "Clove/Rendering/HighDefinitionRenderer.hpp"
-#include "Clove/Rendering/GraphicsImageRenderTarget.hpp"
 #include "Clove/Rendering/SwapchainRenderTarget.hpp"
 #include "Clove/SubSystems/AudioSubSystem.hpp"
 #include "Clove/SubSystems/PhysicsSubSystem.hpp"

@@ -13,7 +13,6 @@
 #include <Clove/Graphics/GraphicsAPI.hpp>
 #include <Clove/Log/Log.hpp>
 #include <Clove/Reflection/Reflection.hpp>
-#include <Clove/Rendering/GraphicsImageRenderTarget.hpp>
 #include <Clove/Serialisation/Node.hpp>
 #include <Clove/Serialisation/Yaml.hpp>
 #include <filesystem>
@@ -168,21 +167,8 @@ namespace membrane {
         app->tick();
     }
 
-    void Application::render(System::IntPtr backBuffer) {
-        auto const renderTargetBuffer{ renderTarget->getNextReadyBuffer() };
-        size_t constexpr bbp{ 4 };
-        renderTargetBuffer->read(backBuffer.ToPointer(), 0, width * height * bbp);
-    }
-
     void Application::shutdown() {
         app->shutdown();
-    }
-
-    void Application::resize(int width, int height) {
-        renderTarget->resize({ width, height });
-
-        this->width  = width;
-        this->height = height;
     }
 
     System::String ^ Application::resolveVfsPath(System::String ^ path) {
