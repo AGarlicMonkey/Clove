@@ -206,6 +206,7 @@ add_library(
 		${INCLUDE}/ModelLoader.hpp
 		${SOURCE}/ModelLoader.cpp
 
+		${INCLUDE}/ReflectionCommon.hpp
 		${SOURCE}/ReflectionCommon.cpp
 
 		${INCLUDE}/ReflectionAttributes.hpp

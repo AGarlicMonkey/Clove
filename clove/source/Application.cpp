@@ -9,6 +9,7 @@
 #include "Clove/SubSystems/PhysicsSubSystem.hpp"
 #include "Clove/SubSystems/RenderSubSystem.hpp"
 #include "Clove/SubSystems/TransformSubSystem.hpp"
+#include "Clove/ReflectionCommon.hpp" //Include this file somewhere to make sure the types get added to the registry.
 
 #include <Clove/Audio/AhaDevice.hpp>
 #include <Clove/Definitions.hpp>
