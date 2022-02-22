@@ -53,6 +53,10 @@ public ref class Application {
 
         static System::String ^getProjectVersion();
 
+        //HACK TEMP STUFF - just to test this hosting buisness
+        System::IntPtr createWindow(System::IntPtr host, int32_t width, int32_t height);
+        void destroyWindow();
+
     private:
         void setEditorMode(Editor_Stop ^message);
         void setRuntimeMode(Editor_Play ^message);

@@ -22,7 +22,7 @@ namespace Bulb {
         }
         private SceneViewModel scene = new SceneViewModel();
 
-        public FileExplorerViewModel FileExplorer { get; }
+        public FileExplorerViewModel FileExplorer { get; /*temp*/ private set; }
         public LogViewModel Log { get; } = new LogViewModel();
 
         public string WindowTitle { get; }
@@ -64,9 +64,14 @@ namespace Bulb {
 
             CompileCommand = new RelayCommand(() => OnCompileGame?.Invoke());
 
-            FileExplorer = new FileExplorerViewModel(rootFilePath);
+            //FileExplorer = new FileExplorerViewModel(rootFilePath);
 
             WindowTitle = $"Clove - {Membrane.Application.getProjectVersion()}";
+        }
+
+        //TEMP HACK - just to stuff doesn't get called before the engine has been initialise
+        public void Start(string rootFilePath) {
+            FileExplorer = new FileExplorerViewModel(rootFilePath);
         }
 
         private void OnSceneLoaded(Membrane.Engine_OnSceneLoaded message) {

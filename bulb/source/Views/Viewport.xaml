@@ -6,5 +6,4 @@
         xmlns:local="clr-namespace:Bulb"
 		xmlns:membrane="clr-namespace:membrane;assembly=BulbMembrane"
         mc:Ignorable="d">
-	<Image x:Name="Image" x:FieldModifier="private" Stretch="Fill"/>
 </UserControl>

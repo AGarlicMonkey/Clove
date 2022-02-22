@@ -31,6 +31,7 @@ namespace clove {
         : Window(keyboardDispatcher, mouseDispatcher) {
         instance = GetModuleHandle(nullptr);
 
+
         WNDCLASSEX windowClass {
             .cbSize        = sizeof(windowClass),
             .style         = CS_OWNDC,
@@ -48,7 +49,7 @@ namespace clove {
 
         std::string const wideTitle(descriptor.title.begin(), descriptor.title.end());
 
-        DWORD const windowStyle{ WS_CAPTION | WS_MAXIMIZEBOX | WS_MINIMIZEBOX | WS_SIZEBOX | WS_SYSMENU | WS_VISIBLE };
+        DWORD windowStyle{  WS_VISIBLE /*| WS_OVERLAPPEDWINDOW*/  };
 
         RECT windowRect {
             .left   = 0,
@@ -56,20 +57,28 @@ namespace clove {
             .right  = descriptor.width,
             .bottom = descriptor.height,
         };
-        AdjustWindowRect(&windowRect, windowStyle, FALSE);
+        //AdjustWindowRect(&windowRect, windowStyle, FALSE);
+
+        HWND parent{ nullptr };
+        if(descriptor.parent.has_value()) {
+            parent = std::any_cast<HWND>(descriptor.parent);
+            windowStyle |= WS_CHILD;
+        }
 
         windowsHandle = CreateWindow(
             windowClass.lpszClassName,
-            wideTitle.c_str(),
+            /*wideTitle.c_str() */"",
             windowStyle,
-            CW_USEDEFAULT,
-            CW_USEDEFAULT,
+            /*CW_USEDEFAULT*/ 0,
+            /*CW_USEDEFAULT*/ 0,
             windowRect.right - windowRect.left,
             windowRect.bottom - windowRect.top,
-            nullptr,
-            nullptr,
-            instance,
+            parent,
+            0,
+            instance/* nullptr*/,
             this);
+
+        CLOVE_ASSERT(windowsHandle);
 
         open = true;
     }
@@ -223,6 +232,7 @@ namespace clove {
 
             case WM_LBUTTONUP:
                 mouseDispatcher.onButtonReleased(MouseButton::Left, pos);
+                //SetForegroundWindow(windowsHandle);
                 break;
 
             case WM_RBUTTONDOWN:

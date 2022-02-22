@@ -1,56 +1,71 @@
 using System;
+using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Interop;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Threading;
 
 namespace Bulb {
-    public partial class Viewport : UserControl {
-        public delegate void RenderDelegate(IntPtr backBuffer);
+    
 
-        public object ResizeMutex { get; } = new object();
+    public class EngineWindowHost : HwndHost {
+        private readonly int width;
+        private readonly int height;
 
-        public Size Size { get; private set; }
+        private IntPtr hwnd;
 
-        private WriteableBitmap imageSource;
-        private IntPtr backBuffer; //Keep our own reference to back buffer to work around thread ownership issues
+        public EngineWindowHost(int width, int height) {
+            this.width = width;
+            this.height = height;
+        }
+
+        protected override HandleRef BuildWindowCore(HandleRef hwndParent) {
+            hwnd = (Application.Current as EditorApp).Start(hwndParent.Handle, width, height);
+            return new HandleRef(this, hwnd);
+        }
+
+        protected override IntPtr WndProc(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled) {
+            handled = false;
+            return IntPtr.Zero;
+        }
+
+        protected override void DestroyWindowCore(HandleRef hwnd) {
+            //TODO: Clean up window here - will get destroyed with the app so for now it's fine
+            //DestroyWindow(hwnd.Handle);
+        }
+    }
+
+    public partial class Viewport : UserControl, IDisposable {
+        private EngineWindowHost windowHost;
+        private bool disposedValue;
 
         public Viewport() {
             InitializeComponent();
-
-            SizeChanged += OnSizeChanged;
-
-            UpdateBackBufferSize(new Size(1, 1));
+            Loaded += OnViewportLoaded;
         }
 
-        public void WriteToBackBuffer(RenderDelegate writeFunction) {
-            writeFunction(backBuffer);
-
-            Application.Current.Dispatcher.BeginInvoke(DispatcherPriority.Render, (Action)(() => {
-                imageSource.Lock();
-                imageSource.AddDirtyRect(new Int32Rect(0, 0, (int)imageSource.Width, (int)imageSource.Height));
-                imageSource.Unlock();
-            }));
+        public void Dispose() {
+            Dispose(disposing: true);
+            GC.SuppressFinalize(this);
         }
 
-        private void OnSizeChanged(object sender, SizeChangedEventArgs e) => UpdateBackBufferSize(e.NewSize);
-
-        private void UpdateBackBufferSize(Size size) {
-            lock (ResizeMutex) {
-                if(size.Width < 1) {
-                    size.Width = 1;
+        protected virtual void Dispose(bool disposing) {
+            if (!disposedValue) {
+                if (disposing) {
+                    windowHost.Dispose();
                 }
-                if(size.Height < 1) {
-                    size.Height = 1;
-                }
-                Size = size;
 
-                imageSource = new WriteableBitmap((int)size.Width, (int)size.Height, 96, 96, PixelFormats.Pbgra32, null);
-
-                Image.Source = imageSource;
-                backBuffer = imageSource.BackBuffer;
+                disposedValue = true;
             }
+        }
+
+        private void OnViewportLoaded(object sender, RoutedEventArgs e) {
+            Loaded -= OnViewportLoaded;
+
+            windowHost = new EngineWindowHost((int)ActualWidth, (int)ActualHeight);
+            Content = windowHost;
         }
     }
 }

@@ -52,26 +52,26 @@ namespace membrane {
         , height{ height } {
         using namespace clove;
 
-        GhaImage::Descriptor renderTargetImageDescriptor{};
-        renderTargetImageDescriptor.type        = GhaImage::Type::_2D;
-        renderTargetImageDescriptor.usageFlags  = GhaImage::UsageMode::ColourAttachment | GhaImage::UsageMode::TransferSource;
-        renderTargetImageDescriptor.dimensions  = { width, height };
-        renderTargetImageDescriptor.format      = GhaImage::Format::B8G8R8A8_SRGB;//Hard coding format to B8G8R8A8_SRGB as that is what the WriteableBitmap is set to
-        renderTargetImageDescriptor.sharingMode = SharingMode::Concurrent;
+        //GhaImage::Descriptor renderTargetImageDescriptor{};
+        //renderTargetImageDescriptor.type        = GhaImage::Type::_2D;
+        //renderTargetImageDescriptor.usageFlags  = GhaImage::UsageMode::ColourAttachment | GhaImage::UsageMode::TransferSource;
+        //renderTargetImageDescriptor.dimensions  = { width, height };
+        //renderTargetImageDescriptor.format      = GhaImage::Format::B8G8R8A8_SRGB;//Hard coding format to B8G8R8A8_SRGB as that is what the WriteableBitmap is set to
+        //renderTargetImageDescriptor.sharingMode = SharingMode::Concurrent;
 
-        viewport = gcnew EditorViewport{};
+        //viewport = gcnew EditorViewport{};
 
-        //Use pair as there seems to be an issue when using structured bindings
-        auto pair{ clove::Application::createHeadless(GraphicsApi::Vulkan, AudioApi::OpenAl, std::move(renderTargetImageDescriptor), viewport->getKeyboard(), viewport->getMouse()) };
-        app          = pair.first.release();
-        renderTarget = pair.second;
+        ////Use pair as there seems to be an issue when using structured bindings
+        //auto pair{ clove::Application::createHeadless(GraphicsApi::Vulkan, AudioApi::OpenAl, std::move(renderTargetImageDescriptor), viewport->getKeyboard(), viewport->getMouse()) };
+        //app          = pair.first.release();
+        //renderTarget = pair.second;
 
-        auto *vfs{ app->getFileSystem() };
-        vfs->mount(GAME_DIR "/content", ".");
-        std::filesystem::create_directories(vfs->resolve("."));
+        //auto *vfs{ app->getFileSystem() };
+        //vfs->mount(GAME_DIR "/content", ".");
+        //std::filesystem::create_directories(vfs->resolve("."));
 
-        MessageHandler::bindToMessage(gcnew MessageSentHandler<Editor_Stop ^>(this, &Application::setEditorMode));
-        MessageHandler::bindToMessage(gcnew MessageSentHandler<Editor_Play ^>(this, &Application::setRuntimeMode));
+        //MessageHandler::bindToMessage(gcnew MessageSentHandler<Editor_Stop ^>(this, &Application::setEditorMode));
+        //MessageHandler::bindToMessage(gcnew MessageSentHandler<Editor_Play ^>(this, &Application::setRuntimeMode));
     }
 
     Application::~Application() {
@@ -165,7 +165,7 @@ namespace membrane {
     }
 
     void Application::tick() {
-        viewport->processInput();
+        //viewport->processInput();
         app->tick();
     }
 
@@ -194,6 +194,25 @@ namespace membrane {
 
     System::String ^ Application::getProjectVersion() {
         return gcnew System::String{ CLOVE_VERSION };
+    }
+
+    System::IntPtr Application::createWindow(System::IntPtr host, int32_t width, int32_t height) {
+        using namespace clove;
+
+        app = clove::Application::create(GraphicsApi::Vulkan, AudioApi::OpenAl, Window::Descriptor{ "test", width, height, reinterpret_cast<HWND>(host.ToPointer()) }).release();
+
+        auto *vfs{ app->getFileSystem() };
+        vfs->mount(GAME_DIR "/content", ".");
+        std::filesystem::create_directories(vfs->resolve("."));
+
+        MessageHandler::bindToMessage(gcnew MessageSentHandler<Editor_Stop ^>(this, &Application::setEditorMode));
+        MessageHandler::bindToMessage(gcnew MessageSentHandler<Editor_Play ^>(this, &Application::setRuntimeMode));
+
+        return System::IntPtr{ std::any_cast<HWND>(app->getWindow()->getNativeWindow()) };
+    }
+
+    void Application::destroyWindow() {
+        //Anything to do here?
     }
 
     void Application::setEditorMode(Editor_Stop ^ message) {

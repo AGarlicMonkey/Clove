@@ -19,6 +19,8 @@ namespace clove {
             std::string title{ "Clove window" };
             int32_t width{ 800 }; /**< Width of the client region. */
             int32_t height{ 600 }; /**< Height of the client region. */
+
+            std::any parent{};
         };
 
         //VARIABLES
