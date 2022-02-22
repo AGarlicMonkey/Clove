@@ -23,9 +23,6 @@ add_library(
 
         ${INCLUDE}/EditorSubSystem.hpp
         ${SOURCE}/EditorSubSystem.cpp
-        
-        ${INCLUDE}/EditorViewport.hpp
-        ${SOURCE}/EditorViewport.cpp
 
         ${INCLUDE}/RuntimeSubSystem.hpp
         ${SOURCE}/RuntimeSubSystem.cpp

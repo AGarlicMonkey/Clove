@@ -1,7 +1,6 @@
 #include "Membrane/Application.hpp"
 
 #include "Membrane/EditorSubSystem.hpp"
-#include "Membrane/EditorViewport.hpp"
 #include "Membrane/MessageHandler.hpp"
 #include "Membrane/Messages.hpp"
 #include "Membrane/RuntimeSubSystem.hpp"
