@@ -28,14 +28,13 @@ namespace clove {
     }
 
     WindowsWindow::WindowsWindow(Descriptor const &descriptor)
-        : Window(keyboardDispatcher, mouseDispatcher) {
-        instance = GetModuleHandle(nullptr);
+        : Window{ keyboardDispatcher, mouseDispatcher } {
+        HINSTANCE instance{ GetModuleHandle(nullptr) };
 
-
-        WNDCLASSEX windowClass {
+        WNDCLASSEX windowClass{
             .cbSize        = sizeof(windowClass),
             .style         = CS_OWNDC,
-            .lpfnWndProc   = HandleMsgSetup,
+            .lpfnWndProc   = WindowsWindow::HandleMsgSetup,
             .cbClsExtra    = 0,
             .cbWndExtra    = 0,
             .hInstance     = instance,
@@ -43,39 +42,40 @@ namespace clove {
             .hCursor       = nullptr,
             .hbrBackground = nullptr,
             .lpszMenuName  = nullptr,
-            .lpszClassName = className,
+            .lpszClassName = WindowsWindow::className,
         };
         RegisterClassEx(&windowClass);
 
-        std::string const wideTitle(descriptor.title.begin(), descriptor.title.end());
-
-        DWORD windowStyle{  WS_VISIBLE /*| WS_OVERLAPPEDWINDOW*/  };
-
-        RECT windowRect {
+        DWORD windowStyle{ WS_VISIBLE };
+        RECT windowRect{
             .left   = 0,
             .top    = 0,
             .right  = descriptor.width,
             .bottom = descriptor.height,
         };
-        //AdjustWindowRect(&windowRect, windowStyle, FALSE);
+        HWND windowParent{ nullptr };
+        LONG windowPosXY{ 0 };
 
-        HWND parent{ nullptr };
         if(descriptor.parent.has_value()) {
-            parent = std::any_cast<HWND>(descriptor.parent);
             windowStyle |= WS_CHILD;
+            windowParent = std::any_cast<HWND>(descriptor.parent);
+        } else {
+            windowStyle |= WS_OVERLAPPEDWINDOW;
+            AdjustWindowRect(&windowRect, windowStyle, FALSE);
+            windowPosXY     = CW_USEDEFAULT;
         }
 
         windowsHandle = CreateWindow(
             windowClass.lpszClassName,
-            /*wideTitle.c_str() */"",
+            descriptor.title.c_str(),
             windowStyle,
-            /*CW_USEDEFAULT*/ 0,
-            /*CW_USEDEFAULT*/ 0,
+            windowPosXY,
+            windowPosXY,
             windowRect.right - windowRect.left,
             windowRect.bottom - windowRect.top,
-            parent,
+            windowParent,
             0,
-            instance/* nullptr*/,
+            instance,
             this);
 
         CLOVE_ASSERT(windowsHandle);
@@ -88,7 +88,7 @@ namespace clove {
             close();
         }
 
-        UnregisterClass(className, instance);
+        UnregisterClass(className, GetModuleHandle(nullptr));
         DestroyWindow(windowsHandle);
     }
 
@@ -232,7 +232,6 @@ namespace clove {
 
             case WM_LBUTTONUP:
                 mouseDispatcher.onButtonReleased(MouseButton::Left, pos);
-                //SetForegroundWindow(windowsHandle);
                 break;
 
             case WM_RBUTTONDOWN:
