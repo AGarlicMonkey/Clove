@@ -69,12 +69,12 @@ bool isLightInsideFrustum(Light light, Frustum frustum) {
 
 void main(){
 	if(gl_GlobalInvocationID.xy == uvec2(0)){
-		//When using render graph this buffer can persist through frames. Infinitely accumulating
+		//Make sure this buffer does not contain data from the previous frame
 		lightCounter = 0;
 	}
 
 	if(gl_LocalInvocationIndex == 0) {
-		minDepth = 0xFFFFFFFF;
+		minDepth = 0x7F7FFFFF;
 		maxDepth = 0;
 
 		lightCount = 0;
@@ -96,11 +96,11 @@ void main(){
     Frustum frustum;
 	{
 		const vec2 centerGroup = vec2(screenDimensions.xy) / float(2 * GROUP_SIZE);
-    	const vec2 groupOffset = centerGroup - vec2(gl_WorkGroupID.xy);
+    	const vec2 groupOffset = centerGroup - gl_WorkGroupID.xy;
 
-		const vec4 column0 = vec4(-projection[0][0] * centerGroup.x,	 projection[0][1],					groupOffset.x, 	projection[0][3]);
-    	const vec4 column1 = vec4( projection[1][0],					-projection[1][1] * centerGroup.y, 	groupOffset.y, 	projection[1][3]);
-    	const vec4 column3 = vec4( projection[3][0],				 	 projection[3][1],					1.0f, 			projection[3][3]);
+		const vec4 column0 = vec4(projection[0][0] * centerGroup.x,	 0.0f,								projection[2][0] * centerGroup.x + groupOffset.x, 	0.0f);
+    	const vec4 column1 = vec4(0.0f,								-projection[1][1] * centerGroup.y, 	projection[2][1] * centerGroup.x + groupOffset.y, 	0.0f);
+    	const vec4 column3 = vec4(0.0f,				 	 			 0.0f,								1.0f, 												0.0f);
 
     	frustum.planes[0] = column3 + column0; //Left
     	frustum.planes[1] = column3 - column0; //Right
