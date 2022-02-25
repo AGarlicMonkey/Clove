@@ -28,13 +28,14 @@ layout(location = 3) out vec3 vertNorm;
 layout(location = 4) out vec4 vertPosLightSpace;
 
 void main(){
-	gl_Position = proj * view * model * vec4(position, 1.0f);
+	const vec4 worldPos = model * vec4(position, 1.0f);
+
+	gl_Position = proj * view * worldPos;
 	
-	fragColour = colour;
+	fragColour   = colour;
 	fragTexCoord = texCoord;
 
-	vertPos = vec3(model * vec4(position, 1.0f));
-	vertNorm = mat3(normalMatrix) * normal;
-
+	vertPos			  = worldPos.xyz;
+	vertNorm		  = mat3(normalMatrix) * normal;
 	vertPosLightSpace = directionalLightSpaceMatrix * vec4(vertPos, 1.0f);
 }

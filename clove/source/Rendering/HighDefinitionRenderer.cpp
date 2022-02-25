@@ -781,18 +781,20 @@ namespace clove {
 
             struct {
                 vec3f pos{};
-                float farPlane{};
+                float radius{};
             } const lightData{
-                .pos      = light.position,
-                .farPlane = light.radius,
+                .pos    = light.position,
+                .radius = light.radius,
             };
+            size_t constexpr lightDataSize{ sizeof(lightData) };
 
-            RgBufferId lightBuffer{ renderGraph.createBuffer(sizeof(lightData)) };
-            renderGraph.writeToBuffer(lightBuffer, &lightData, 0, sizeof(lightData));
+            RgBufferId lightDataBuffer{ renderGraph.createBuffer(lightDataSize) };
+            renderGraph.writeToBuffer(lightDataBuffer, &lightData, 0, lightDataSize);
 
             for(size_t j{ 0 }; j < cubeFaces; ++j) {
-                RgBufferId lightSpaceBuffer{ renderGraph.createBuffer(sizeof(mat4f)) };
-                renderGraph.writeToBuffer(lightSpaceBuffer, &currentFrameData.pointShadowTransforms[light.shadowIndex][j], 0, sizeof(mat4f));
+                size_t constexpr lightSpaceSize{ sizeof(mat4f) };
+                RgBufferId lightSpaceBuffer{ renderGraph.createBuffer(lightSpaceSize) };
+                renderGraph.writeToBuffer(lightSpaceBuffer, &currentFrameData.pointShadowTransforms[light.shadowIndex][j], 0, lightSpaceSize);
 
                 RgRenderPass::Descriptor passDescriptor{
                     .vertexShader     = renderGraph.createShader({ pointshadowdepthsvert, pointshadowdepthsvertLength }, shaderIncludes, "Point shadow depths (vertex)", GhaShader::Stage::Vertex),
@@ -831,13 +833,13 @@ namespace clove {
                                                                              RgBufferBinding{
                                                                                  .slot        = 1,//NOLINT
                                                                                  .buffer      = lightSpaceBuffer,
-                                                                                 .size        = sizeof(mat4f),
+                                                                                 .size        = lightSpaceSize,
                                                                                  .shaderStage = GhaShader::Stage::Vertex,
                                                                              },
                                                                              RgBufferBinding{
                                                                                  .slot        = 2,//NOLINT
-                                                                                 .buffer      = lightBuffer,
-                                                                                 .size        = sizeof(lightData),
+                                                                                 .buffer      = lightDataBuffer,
+                                                                                 .size        = lightDataSize,
                                                                                  .shaderStage = GhaShader::Stage::Pixel,
                                                                              },
                                                                          },
