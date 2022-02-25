@@ -46,8 +46,14 @@ struct MaterialInput{
 
 	float shininess;
 
-	vec3 viewDir;
 	vec3 normal;
+};
+
+struct LightResult{
+	vec3 ambient;
+	vec3 diffuse;
+	vec3 specular;
+	float shadow;
 };
 
 //Adjusts the bias to be in between min and max based off of the angle to the light
@@ -58,20 +64,22 @@ float adjustBias(vec3 normal, vec3 lightDir){
 	return max(maxBias * (1.0f - dot(normal, lightDir)), minBias);
 }
 
-void getDirectionalLighting(Light light, MaterialInput materialInput, inout vec3 outAmbient, inout vec3 outDiffuse, inout vec3 outSpecular, inout float outShadow){
+LightResult getDirectionalLighting(Light light, MaterialInput materialInput, vec3 viewDir){
+	LightResult result;
+
 	const vec3 lightDir = normalize(-light.direction); //Gets the direction towards the light
 
 	//Ambient
-	outAmbient += materialInput.diffuseColour * light.ambient;
+	result.ambient = materialInput.diffuseColour * light.ambient;
 	
 	//Diffuse
 	const float diffIntensity = max(dot(materialInput.normal, lightDir), 0.0f);
-	outDiffuse += materialInput.diffuseColour * light.diffuse * diffIntensity;
+	result.diffuse = materialInput.diffuseColour * light.diffuse * diffIntensity;
 
 	//Specular
 	const vec3 reflectDir = reflect(-lightDir, materialInput.normal);
-	const float specIntensity = pow(max(dot(materialInput.viewDir, reflectDir), 0.0f), materialInput.shininess);
-	outSpecular += materialInput.specularColour * light.specular * specIntensity;
+	const float specIntensity = pow(max(dot(viewDir, reflectDir), 0.0f), materialInput.shininess);
+	result.specular = materialInput.specularColour * light.specular * specIntensity;
 
 	//Shadow
 	vec3 projCoords = fragPosLightSpace.xyz / fragPosLightSpace.w;
@@ -81,35 +89,35 @@ void getDirectionalLighting(Light light, MaterialInput materialInput, inout vec3
 	const float closestDepth = texture(sampler2D(directionalDepthTexture, shadowSampler), projCoords.xy).r;
 
 	const float depthBias = adjustBias(materialInput.normal, lightDir);
-	outShadow += currentDepth - depthBias > closestDepth ? 1.0f : 0.0f;
+	result.shadow = currentDepth - depthBias > closestDepth ? 1.0f : 0.0f;
+
+	return result;
 }
 
-void getPointLighting(Light light, MaterialInput materialInput, inout vec3 outAmbient, inout vec3 outDiffuse, inout vec3 outSpecular, inout float outShadow){
+LightResult getPointLighting(Light light, MaterialInput materialInput, vec3 viewDir){
+	LightResult result;
+
 	const vec3 lightDir = normalize(light.position - fragPos);
 
 	//Ambient
-	vec3 ambient = materialInput.diffuseColour * light.ambient;
+	result.ambient = materialInput.diffuseColour * light.ambient;
 
 	//Diffuse
 	const float diffIntensity  = max(dot(materialInput.normal, lightDir), 0.0f);
-	vec3 diffuse 			   = materialInput.diffuseColour * light.diffuse * diffIntensity;
+	result.diffuse 			   = materialInput.diffuseColour * light.diffuse * diffIntensity;
 
 	//Specular
 	const vec3 reflectDir	  = reflect(-lightDir, materialInput.normal);
-	const float specIntensity = pow(max(dot(materialInput.viewDir, reflectDir), 0.0f), materialInput.shininess);
-	vec3 specular			  = materialInput.specularColour * light.specular * specIntensity;
+	const float specIntensity = pow(max(dot(viewDir, reflectDir), 0.0f), materialInput.shininess);
+	result.specular			  = materialInput.specularColour * light.specular * specIntensity;
 
 	//Attenuation
 	const float dist 		= length(light.position - fragPos);
 	const float attenuation = max((1.0f / sqrt(dist)) - (1.0f / sqrt(light.radius)), 0.0f);
 
-	ambient		*= attenuation;
-	diffuse		*= attenuation;
-	specular	*= attenuation;
-
-	outAmbient  += ambient;
-	outDiffuse  += diffuse;
-	outSpecular += specular;
+	result.ambient *= attenuation;
+	result.diffuse *= attenuation;
+	result.specular	*= attenuation;
 
 	//Shadow
 	const vec3 lightToFrag = fragPos - light.position;
@@ -120,24 +128,19 @@ void getPointLighting(Light light, MaterialInput materialInput, inout vec3 outAm
 	const float closestDepth = sampledDepth * light.radius;
 
 	const float depthBias = adjustBias(materialInput.normal, lightDir);
-	outShadow += currentDepth - depthBias > closestDepth ? 1.0f : 0.0f;
+	result.shadow = currentDepth - depthBias > closestDepth ? 1.0f : 0.0f;
+
+	return result;
 }
 
 void main(){
 	MaterialInput materialInput;
 	materialInput.diffuseColour  = texture(sampler2D(diffuseTexture, meshSampler), fragTexCoord).rgb;
 	materialInput.specularColour = texture(sampler2D(specularTexture, meshSampler), fragTexCoord).rgb;
-	
 	materialInput.shininess = 32.0f; //TODO: Add shininess as a material param
-
-	materialInput.viewDir = normalize(viewPos - fragPos);
 	materialInput.normal  = normalize(fragNorm);
 
-	vec3 totalAmbient 	= vec3(0.0f);
-	vec3 totalDiffuse 	= vec3(0.0f);
-	vec3 totalSpecular 	= vec3(0.0f);
-
-	float shadow = 0.0f;
+	const vec3 viewDir = normalize(viewPos - fragPos);
 
 	const ivec2 tileIndex 	= ivec2(floor(gl_FragCoord / SCREEN_GRID_SIZE));
 	const uvec2 tileData	= texelFetch(usampler2D(lightGrid, lightGridSampler), tileIndex, 0).xy;
@@ -145,21 +148,23 @@ void main(){
 	const uint lightCount 	= tileData.y;
 
 	//Compute lighting
+	vec3 lighting = vec3(0.0f);
+
 	for(int i = 0; i < lightCount; ++i) {
 		const Light light = lights[lightIndexList[startOffset + i]];
+		LightResult result;
 
 		switch(light.type) {
 			case LIGHT_TYPE_DIRECTIONAL:
-				getDirectionalLighting(light, materialInput, totalAmbient, totalDiffuse, totalSpecular, shadow);
+				result = getDirectionalLighting(light, materialInput, viewDir);
 				break;
 			case LIGHT_TYPE_POINT:
-				getPointLighting(light, materialInput, totalAmbient, totalDiffuse, totalSpecular, shadow);
+				result = getPointLighting(light, materialInput, viewDir);
 				break;
 		}
-	}
 
-	shadow /= lightCount;
-	const vec3 lighting = (totalAmbient + ((1.0f - shadow) * (totalDiffuse + totalSpecular)));
+		lighting += (result.ambient + ((1.0f - result.shadow) * (result.diffuse + result.specular)));
+	}
 
 	outColour = vec4(lighting, 1.0f) * colour;
 }
