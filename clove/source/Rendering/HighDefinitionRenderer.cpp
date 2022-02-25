@@ -149,6 +149,8 @@ namespace clove {
         currentFrameData.text.clear();
 
         currentFrameData.lights.clear();
+        currentFrameData.pointShadowTransforms.clear();
+        currentFrameData.directionalShadowTransform = {};
         currentFrameData.numDirLights   = 0;
         currentFrameData.numPointLights = 0;
     }
