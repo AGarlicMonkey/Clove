@@ -43,14 +43,32 @@ namespace clove {
         }
     }
     
-    void MetalDescriptorSet::write(GhaImageView const &imageView, GhaImage::Layout const layout, uint32_t const bindingSlot) {
-        [pixelEncoder->encoder setTexture:polyCast<MetalImageView const>(&imageView)->getTexture()
-                                  atIndex:bindingSlot];
+    void MetalDescriptorSet::write(GhaImageView const &imageView, GhaImage::Layout const layout, DescriptorType const descriptorType, uint32_t const bindingSlot) {
+        GhaShader::Stage const shaderStage{ getStageFromBindingSlot(bindingSlot) };
+        id<MTLTexture> mtlTexture{ polyCast<MetalImageView const>(&imageView)->getTexture() };
+
+        if((shaderStage & GhaShader::Stage::Pixel) != 0) {
+            [pixelEncoder->encoder setTexture:mtlTexture
+                                      atIndex:bindingSlot];
+        }
+        if((shaderStage & GhaShader::Stage::Compute) != 0) {
+            [computeEncoder->encoder setTexture:mtlTexture
+                                        atIndex:bindingSlot];
+        }
     }
     
     void MetalDescriptorSet::write(GhaSampler const &sampler, uint32_t const bindingSlot) {
-        [pixelEncoder->encoder setSamplerState:polyCast<MetalSampler const>(&sampler)->getSamplerState()
-                                       atIndex:bindingSlot];
+        GhaShader::Stage const shaderStage{ getStageFromBindingSlot(bindingSlot) };
+        id<MTLSamplerState> mtlSampler{ polyCast<MetalSampler const>(&sampler)->getSamplerState() };
+        
+        if((shaderStage & GhaShader::Stage::Pixel) != 0) {
+            [pixelEncoder->encoder setSamplerState:mtlSampler
+                                           atIndex:bindingSlot];
+        }
+        if((shaderStage & GhaShader::Stage::Compute) != 0) {
+            [computeEncoder->encoder setSamplerState:mtlSampler
+                                             atIndex:bindingSlot];
+        }
     }
     
     GhaShader::Stage MetalDescriptorSet::getStageFromBindingSlot(uint32_t const bindingSlot) {

@@ -16,8 +16,10 @@ namespace clove {
     public:
         enum class Type {
             _2D,
+            _2DArray,
             _3D,
-            Cube
+            Cube,
+            CubeArray
         };
 
         struct Descriptor {

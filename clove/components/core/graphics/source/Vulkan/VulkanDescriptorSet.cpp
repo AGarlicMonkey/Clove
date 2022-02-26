@@ -45,7 +45,7 @@ namespace clove {
         vkUpdateDescriptorSets(device, 1, &writeInfo, 0, nullptr);
     }
 
-    void VulkanDescriptorSet::write(GhaImageView const &imageView, GhaImage::Layout const layout, uint32_t const bindingSlot) {
+    void VulkanDescriptorSet::write(GhaImageView const &imageView, GhaImage::Layout const layout, DescriptorType const descriptorType, uint32_t const bindingSlot) {
         auto const *vkImageView{ polyCast<VulkanImageView const>(&imageView) };
 
         VkDescriptorImageInfo imageInfo{
@@ -60,7 +60,7 @@ namespace clove {
             .dstBinding       = bindingSlot,
             .dstArrayElement  = 0,
             .descriptorCount  = 1,
-            .descriptorType   = VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE,
+            .descriptorType   = getDescriptorType(descriptorType),
             .pImageInfo       = &imageInfo,
             .pBufferInfo      = nullptr,
             .pTexelBufferView = nullptr,
