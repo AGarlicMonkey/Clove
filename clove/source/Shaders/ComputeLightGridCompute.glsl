@@ -84,10 +84,14 @@ void main(){
 
 	{
 		const ivec2 pixelPos = ivec2(gl_GlobalInvocationID.xy);
-		const uint depth = floatBitsToUint(texelFetch(sampler2D(sceneDepth, sceneDepthSampler), pixelPos, 0).r);
+        const ivec2 textureSize = textureSize(sampler2D(sceneDepth, sceneDepthSampler), 0);
+        
+        if(all(lessThanEqual(pixelPos, textureSize))){
+            const uint depth = floatBitsToUint(texelFetch(sampler2D(sceneDepth, sceneDepthSampler), pixelPos, 0).r);
 
-		atomicMin(minDepth, depth);
-		atomicMax(maxDepth, depth);
+            atomicMin(minDepth, depth);
+            atomicMax(maxDepth, depth);
+        }
 	}
 	
 	groupMemoryBarrier();
