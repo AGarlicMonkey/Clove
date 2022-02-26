@@ -6,6 +6,19 @@
 #include <spdlog/spdlog.h>
 #include <vector>
 
+static clove::Logger *instance{ nullptr };
+
+#if CLOVE_PLATFORM_WINDOWS
+extern "C" {
+__declspec(dllexport) void linkLogger(clove::Logger *logger) {
+    if(instance != nullptr) {
+        delete instance;
+    }
+    instance = logger;
+}
+}
+#endif
+
 namespace clove {
     Logger::Logger() {
         auto consoleSink{ std::make_shared<spdlog::sinks::stdout_color_sink_mt>() };
@@ -23,6 +36,14 @@ namespace clove {
     }
 
     Logger::~Logger() = default;
+
+    Logger &Logger::get() {
+        if(instance == nullptr) {
+            instance = new Logger{};
+        }
+
+        return *instance;
+    }
 
     void Logger::addSink(std::shared_ptr<spdlog::sinks::sink> sink) {
         logger->sinks().push_back(std::move(sink));

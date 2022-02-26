@@ -23,6 +23,13 @@ namespace clove {
     }
 
     template<typename SubSystemType>
+    bool Application::hasSubSystem() const {
+        std::type_index const subSystemIndex{ typeid(SubSystemType) };
+
+        return subSystemToIndex.find(subSystemIndex) != subSystemToIndex.end();
+    }
+
+    template<typename SubSystemType>
     SubSystemType &Application::getSubSystem() {
         std::type_index const subSystemIndex{ typeid(SubSystemType) };
 
@@ -36,8 +43,7 @@ namespace clove {
     void Application::popSubSystem() {
         std::type_index const subSystemIndex{ typeid(SubSystemType) };
 
-        if(subSystemToIndex.find(subSystemIndex) == subSystemToIndex.end()) {
-            CLOVE_LOG(CloveApplication, LogLevel::Warning, "{0}: No subsystem of type provided is currently attached.", CLOVE_FUNCTION_NAME_PRETTY);
+        if(!hasSubSystem<SubSystemType>()) {
             return;
         }
 

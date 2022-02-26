@@ -16,6 +16,15 @@ namespace membrane {
     };
 
     //Messages sent from Bulb
+    public ref class Editor_AddSubSystem : public EditorMessage {
+    public:
+        System::String ^name;
+    };
+    public ref class Editor_RemoveSubSystem : public EditorMessage {
+    public:
+        System::String ^name;
+    };
+
     public ref class Editor_CreateEntity : public EditorMessage {};
     public ref class Editor_DeleteEntity : public EditorMessage {
     public:
@@ -106,6 +115,7 @@ namespace membrane {
 
     public ref class Engine_OnSceneLoaded : public EngineMessage {
     public:
+        System::Collections::Generic::List<System::String^> ^enabledSubSystems;
         System::Collections::Generic::List<Entity^> ^entities;
     };
     // clang-format on

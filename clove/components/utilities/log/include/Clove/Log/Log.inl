@@ -1,16 +1,6 @@
 #include <fmt/format.h>
 
 namespace clove {
-    Logger &Logger::get(){
-        static Logger *instance{ nullptr };
-
-        if(instance == nullptr){
-            instance = new Logger;
-        }
-
-        return *instance;
-    }
-
     template<typename... Args>
     void Logger::log(std::string_view category, LogLevel level, std::string_view msg, Args &&... args) {
         fmt::basic_memory_buffer<char, 250> messageBuffer{};
