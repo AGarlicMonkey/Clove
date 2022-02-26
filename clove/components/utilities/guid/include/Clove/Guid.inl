@@ -1,5 +1,13 @@
-namespace clove{
+namespace clove {
+    Guid::Guid(uint64_t guid)
+        : guid{ guid } {
+    }
+
+    Guid::Guid(Guid const &other) = default;
+
     Guid::Guid(Guid &&other) noexcept = default;
+
+    Guid &Guid::operator=(Guid const &other) = default;
 
     Guid &Guid::operator=(Guid &&other) noexcept = default;
 

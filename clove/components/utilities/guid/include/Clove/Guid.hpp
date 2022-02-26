@@ -3,6 +3,11 @@
 #include <cstdint>
 
 namespace clove {
+    /**
+     * @brief Represents a globally unique identifier.
+     * @details Guids can be copyable so there might be some with equal values but initialising 
+     * a new Guid will result in a unique ID.
+     */
     class Guid {
         //VARIABLES
     private:
@@ -11,12 +16,13 @@ namespace clove {
         //FUNCTIONS
     public:
         Guid();
+        inline explicit Guid(uint64_t guid);
 
-        Guid(Guid const &other) = delete;
+        inline Guid(Guid const &other);
         inline Guid(Guid &&other) noexcept;
 
-        Guid &operator=(Guid const &other) = delete;
-        inline Guid &operator =(Guid &&other) noexcept;
+        inline Guid &operator=(Guid const &other);
+        inline Guid &operator=(Guid &&other) noexcept;
 
         inline ~Guid();
 
