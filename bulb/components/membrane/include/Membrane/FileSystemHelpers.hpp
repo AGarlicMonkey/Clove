@@ -32,6 +32,6 @@ namespace membrane {
          */
         static FileType getAssetFileType(System::String ^ file);
 
-        static void createAssetFile(System::String ^ location, System::String ^ relPath, System::String ^ assetFullPath);
+        static void createAssetFile(System::String ^ location, System::String ^ relPath, System::String ^ vfsPath);
     };
 }

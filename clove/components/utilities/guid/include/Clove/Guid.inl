@@ -1,5 +1,5 @@
 namespace clove {
-    Guid::Guid(uint64_t guid)
+    Guid::Guid(Type guid)
         : guid{ guid } {
     }
 
@@ -13,11 +13,11 @@ namespace clove {
 
     Guid::~Guid() = default;
 
-    uint64_t Guid::getId() const {
+    Guid::Type Guid::getId() const {
         return guid;
     }
 
-    Guid::operator uint64_t() const {
+    Guid::operator Guid::Type() const {
         return getId();
     }
 }

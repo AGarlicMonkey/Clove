@@ -9,14 +9,18 @@ namespace clove {
      * a new Guid will result in a unique ID.
      */
     class Guid {
+        //TYPES
+    public:
+        using Type = uint64_t;
+
         //VARIABLES
     private:
-        uint64_t guid{ 0 };
+        Type guid{ 0 };
 
         //FUNCTIONS
     public:
         Guid();
-        inline explicit Guid(uint64_t guid);
+        inline explicit Guid(Type guid);
 
         inline Guid(Guid const &other);
         inline Guid(Guid &&other) noexcept;
@@ -26,9 +30,9 @@ namespace clove {
 
         inline ~Guid();
 
-        inline uint64_t getId() const;
+        inline Type getId() const;
 
-        inline operator uint64_t() const;
+        inline operator Type() const;
     };
 }
 

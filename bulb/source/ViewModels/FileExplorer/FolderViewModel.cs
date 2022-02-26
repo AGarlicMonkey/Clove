@@ -48,12 +48,12 @@ namespace Bulb {
 
         public override void OnFileDropped(string file) {
             string fileName = Path.GetFileNameWithoutExtension(file);
-            string fileLocation = $"{FullPath}{Path.DirectorySeparatorChar}{fileName}.clvasset";
-            string fileRelativePath = MakeRelativePath(fileLocation, file);
+            string assetFileLocation = $"{FullPath}{Path.DirectorySeparatorChar}{fileName}.clvasset";
+            string fileRelativePath = MakeRelativePath(assetFileLocation, file);
 
-            var vfsPath = $"{Name}/{Path.GetFileName(file)}".Replace("content/", ""); //Remove '/content' from the desired VFS path as this is where the VFS searches from
+            string vfsPath = $"{Name}{Path.DirectorySeparatorChar}{Path.GetFileName(file)}".Replace($"content{Path.DirectorySeparatorChar}", ""); //Remove 'content' from the desired VFS path as this is where the VFS searches from
 
-            Membrane.FileSystemHelpers.createAssetFile(fileLocation, fileRelativePath, vfsPath);
+            Membrane.FileSystemHelpers.createAssetFile(assetFileLocation, fileRelativePath, vfsPath);
         }
 
         #region Item view model events
