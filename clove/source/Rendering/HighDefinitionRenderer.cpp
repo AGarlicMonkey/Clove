@@ -895,7 +895,9 @@ namespace clove {
                 },
             },
             .viewportSize  = getRenderTargetSize(),
-            .depthWrite    = false,
+            //Currently clearing and then rewriting to the depth buffer. This seems wasteful but without doing this
+            // there are culling issues likely down to floating point inaccuracy.
+            //.depthWrite    = false,
             .renderTargets = {
                 RgRenderTargetBinding{
                     .loadOp     = LoadOperation::Clear,
@@ -907,8 +909,9 @@ namespace clove {
                 },
             },
             .depthStencil = {
-                .loadOp    = LoadOperation::Load,
+                .loadOp    = LoadOperation::Clear,
                 .storeOp   = StoreOperation::DontCare,
+                .clearValue = DepthStencilValue{.depth = 1.0f},
                 .imageView = {
                     .image = depthTarget,
                 },
