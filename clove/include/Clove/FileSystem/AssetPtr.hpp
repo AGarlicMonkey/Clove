@@ -15,7 +15,7 @@ namespace clove {
     class AssetPtr {
         //VARIABLES
     private:
-        Guid guid{};
+        Guid guid{ 0 };
         std::shared_ptr<std::optional<AssetType>> asset{ nullptr };
 
         std::function<AssetType()> loadFunction{};

@@ -86,13 +86,16 @@ namespace membrane {
     }
 
     FileType FileSystemHelpers::getAssetFileType(System::String ^ file) {
-        throw gcnew System::NotImplementedException();//TODO
+        std::filesystem::path const path{ msclr::interop::marshal_as<std::string>(file) };
+
+        clove::serialiser::Node fileNode{ clove::loadYaml(path).getValue() };
+
+        return FileType{ fileNode["asset"]["type"].as<int32_t>() };
     }
 
     void FileSystemHelpers::createAssetFile(System::String ^ location, System::String ^ relPath, System::String ^ vfsPath) {
         std::filesystem::path const saveLocation{ msclr::interop::marshal_as<std::string>(location) };
         std::filesystem::path const relativePath{ msclr::interop::marshal_as<std::string>(relPath) };
-        std::filesystem::path const nativeVfsPath{ msclr::interop::marshal_as<std::string>(vfsPath) };
 
         FileType const type{ getFileType(vfsPath) };
         std::ofstream fileStream{ saveLocation, std::ios::out | std::ios::trunc };
@@ -107,9 +110,17 @@ namespace membrane {
         fileStream << clove::emittYaml(rootNode);
         fileStream.flush();
 
-        rootNode["asset"]["guid"] = static_cast<clove::Guid::Type>(getAssetGuid(nativeVfsPath, type));
+        rootNode["asset"]["guid"] = static_cast<clove::Guid::Type>(getAssetFileGuid(vfsPath));
 
         fileStream.seekp(0);
         fileStream << clove::emittYaml(rootNode);
+    }
+
+    System::UInt64 FileSystemHelpers::getAssetFileGuid(System::String ^ fullFilePath) {
+        std::filesystem::path const path{ msclr::interop::marshal_as<std::string>(fullFilePath) };
+
+        clove::serialiser::Node fileNode{ clove::loadYaml(path).getValue() };
+
+        return fileNode["asset"]["guid"].as<uint64_t>();
     }
 }
