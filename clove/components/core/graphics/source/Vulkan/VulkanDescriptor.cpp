@@ -11,6 +11,8 @@ namespace clove {
                 return VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
             case DescriptorType::SampledImage:
                 return VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE;
+            case DescriptorType::StorageImage:
+                return VK_DESCRIPTOR_TYPE_STORAGE_IMAGE;
             case DescriptorType::Sampler:
                 return VK_DESCRIPTOR_TYPE_SAMPLER;
             default:

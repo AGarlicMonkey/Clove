@@ -30,6 +30,8 @@ namespace clove {
                 return MTLPixelFormatInvalid;
             case Format::R8_UNORM:
                 return MTLPixelFormatR8Unorm;
+            case Format::R32G32_UINT:
+                return MTLPixelFormatRG32Uint;
             case Format::R8G8B8A8_SRGB:
                 return MTLPixelFormatRGBA8Unorm_sRGB;
             case Format::B8G8R8A8_SRGB:

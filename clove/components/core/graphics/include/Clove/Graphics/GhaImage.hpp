@@ -19,9 +19,10 @@ namespace clove {
         enum class UsageMode : UsageModeType {
             TransferSource         = 1 << 0, /**< To be used as a source in a transfer operation. */
             TransferDestination    = 1 << 1, /**< To be used as a destination in a transfer operation. Such as writing data from a system memory backed buffer to a video memory backed buffer */
-            Sampled                = 1 << 2, /**< To be used in a GhaImageView that's sampled in a shader */
-            ColourAttachment       = 1 << 3, /**< To be used in a GhaImageView for a frame buffer */
-            DepthStencilAttachment = 1 << 4, /**< To be used in a GhaImageView for a depth / stencil attachment */
+            Sampled                = 1 << 2, /**< To be used in a GhaImage that'll be sampled in a shader (read only) */
+            Storage                = 1 << 3, /**< To be used in a GhaImage that requires unorderred acces (such as writing from a compute shader) */
+            ColourAttachment       = 1 << 4, /**< To be used in a GhaImage for a frame buffer */
+            DepthStencilAttachment = 1 << 5, /**< To be used in a GhaImage for a depth / stencil attachment */
         };
 
         enum class Type {
@@ -34,6 +35,7 @@ namespace clove {
             Unkown,
 
             R8_UNORM,
+            R32G32_UINT,
             R8G8B8A8_SRGB,
             B8G8R8A8_SRGB,
             B8G8R8A8_UNORM,

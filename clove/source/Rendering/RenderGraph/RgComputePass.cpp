@@ -20,6 +20,9 @@ namespace clove {
             for(auto const &binding : submission.readStorageBuffers) {
                 inputs.emplace(binding.buffer);
             }
+            for(auto const &binding : submission.readImages) {
+                inputs.emplace(binding.imageView.image);
+            }
         }
         return inputs;
     }
@@ -29,6 +32,9 @@ namespace clove {
         for(auto const &submission : submissions) {
             for(auto const &binding : submission.writeBuffers) {
                 outputs.emplace(binding.buffer);
+            }
+            for(auto const &binding : submission.writeImages) {
+                outputs.emplace(binding.imageView.image);
             }
         }
         return outputs;
