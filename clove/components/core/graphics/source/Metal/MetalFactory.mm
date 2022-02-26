@@ -260,6 +260,7 @@ namespace clove {
         auto const getDataType = [](DescriptorType descriptorType) {
             switch(descriptorType) {
                 case DescriptorType::SampledImage:
+                case DescriptorType::StorageImage:
                     return MTLDataTypeTexture;
                 case DescriptorType::Sampler:
                     return MTLDataTypeSampler;
