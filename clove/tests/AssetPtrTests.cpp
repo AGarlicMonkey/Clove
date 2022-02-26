@@ -22,18 +22,19 @@ TEST(AssetPtrTest, ProperlyDefaultInitialises) {
 }
 
 TEST(AssetPtrTest, CanInitialiseWithAFilePath) {
-    size_t const randomHash{ 1234 };
-    AssetPtr<MockFile> asset{ randomHash, &loadMockFile };
+    AssetPtr<MockFile> asset{ &loadMockFile };
 
     EXPECT_TRUE(asset.isValid());
     EXPECT_FALSE(asset.isLoaded());
 }
 
-TEST(AssetPtrTest, CanGetAssetPtrHash) {
-    size_t const randomHash{ 1234 };
-    AssetPtr<MockFile> asset{ randomHash, &loadMockFile };
+TEST(AssetPtrTest, SamePointersHaveTheSameGuids) {
+    AssetPtr<MockFile> asset{ &loadMockFile };
+    AssetPtr<MockFile> copy{ asset };
+    AssetPtr<MockFile> other{ &loadMockFile };
 
-    EXPECT_EQ(asset.getHash(), randomHash);
+    EXPECT_EQ(asset.getGuid(), copy.getGuid());
+    EXPECT_NE(asset.getGuid(), other.getGuid());
 }
 
 TEST(AssetPtrTest, CanLoadFileWhenRequested) {
@@ -41,10 +42,8 @@ TEST(AssetPtrTest, CanLoadFileWhenRequested) {
 
     EXPECT_DEATH(MockFile const &invalidFile{ emptyPtr.get() }, "");
 
-    size_t const randomHash{ 1234 };
-
-    AssetPtr<MockFile> asset{ randomHash, &loadMockFile };
-    AssetPtr<MockFile> const constAsset{ randomHash, &loadMockFile };
+    AssetPtr<MockFile> asset{ &loadMockFile };
+    AssetPtr<MockFile> const constAsset{ &loadMockFile };
 
     ASSERT_TRUE(asset.isValid());
     ASSERT_FALSE(asset.isLoaded());
@@ -75,9 +74,7 @@ TEST(AssetPtrTest, CanPointToSameAssetButOnlyLoadOnce) {
         return MockFile{ true };
     };
 
-    size_t const randomHash{ 1234 };
-
-    AssetPtr<MockFile> asset{ randomHash, loadMockFileCount };
+    AssetPtr<MockFile> asset{ loadMockFileCount };
     AssetPtr<MockFile> assetCopy{ asset };
 
     ASSERT_TRUE(asset.isValid());

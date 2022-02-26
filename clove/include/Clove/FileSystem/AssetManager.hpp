@@ -15,24 +15,16 @@ namespace clove {
      * @brief Manages the loading of assets.
      */
     class AssetManager {
-        //TYPES
-    private:
-        template<typename AssetType>
-        struct AssetEntry {
-            VirtualFileSystem::Path path{};
-            AssetPtr<AssetType> asset{};
-        };
-
         //VARIABLES
     private:
         VirtualFileSystem *vfs{ nullptr };
 
-        std::unordered_map<size_t, AssetEntry<StaticModel>> staticModels{};
-        std::unordered_map<size_t, AssetEntry<AnimatedModel>> animatedModels{};
+        std::unordered_map<std::string, AssetPtr<StaticModel>> staticModels{};
+        std::unordered_map<std::string, AssetPtr<AnimatedModel>> animatedModels{};
 
-        std::unordered_map<size_t, AssetEntry<Texture>> textures{};
+        std::unordered_map<std::string, AssetPtr<Texture>> textures{};
 
-        std::unordered_map<size_t, AssetEntry<SoundFile>> sounds{};
+        std::unordered_map<std::string, AssetPtr<SoundFile>> sounds{};
 
         //FUNCTIONS
     public:
@@ -54,11 +46,11 @@ namespace clove {
          */
         AssetPtr<StaticModel> getStaticModel(VirtualFileSystem::Path const &filePath);
         /**
-         * @brief Get a StaticModel using a hash.
-         * @param assetHash 
+         * @brief Get a StaticModel using a guid.
+         * @param assetGuid 
          * @return 
          */
-        AssetPtr<StaticModel> getStaticModel(size_t const assetHash);
+        AssetPtr<StaticModel> getStaticModel(Guid const assetGuid);
 
         /**
          * @brief Get an AnimatedModel using a VFS path.
@@ -67,24 +59,24 @@ namespace clove {
          */
         AssetPtr<AnimatedModel> getAnimatedModel(VirtualFileSystem::Path const &filePath);
         /**
-         * @brief Get a AnimatedModel using a hash.
-         * @param assetHash 
+         * @brief Get a AnimatedModel using a guid.
+         * @param assetGuid 
          * @return 
          */
-        AssetPtr<AnimatedModel> getAnimatedModel(size_t const assetHash);
+        AssetPtr<AnimatedModel> getAnimatedModel(Guid const assetGuid);
 
         /**
-         * @brief Get a Texture using a VFS path.
+         * @brief Get a Texture using a VFS guid.
          * @param filePath
          * @return An AssetPtr to the Texture
          */
         AssetPtr<Texture> getTexture(VirtualFileSystem::Path const &filePath);
         /**
          * @brief Get a Texture using a hash.
-         * @param assetHash 
+         * @param assetGuid 
          * @return 
          */
-        AssetPtr<Texture> getTexture(size_t const assetHash);
+        AssetPtr<Texture> getTexture(Guid const assetGuid);
 
         /**
          * @brief Get a SoundFile using a VFS path.
@@ -93,11 +85,11 @@ namespace clove {
          */
         AssetPtr<SoundFile> getSound(VirtualFileSystem::Path const &filePath);
         /**
-         * @brief Get a SoundFile using a hash.
-         * @param assetHash 
+         * @brief Get a SoundFile using a guid.
+         * @param assetGuid 
          * @return 
          */
-        AssetPtr<SoundFile> getSound(size_t const assetHash);
+        AssetPtr<SoundFile> getSound(Guid const assetGuid);
     };
 }
 

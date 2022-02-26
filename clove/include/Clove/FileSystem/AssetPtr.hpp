@@ -1,9 +1,10 @@
 #pragma once
 
+#include <Clove/Guid.hpp>
 #include <filesystem>
-#include <optional>
 #include <functional>
 #include <memory>
+#include <optional>
 
 namespace clove {
     /**
@@ -14,15 +15,15 @@ namespace clove {
     class AssetPtr {
         //VARIABLES
     private:
-        size_t assetHash{};
-        std::shared_ptr<std::optional<AssetType>> asset{};
+        Guid guid{};
+        std::shared_ptr<std::optional<AssetType>> asset{ nullptr };
 
         std::function<AssetType()> loadFunction{};
 
         //FUNCTIONS
     public:
         AssetPtr();
-        AssetPtr(size_t hash, std::function<AssetType()> loadFunction);
+        AssetPtr(std::function<AssetType()> loadFunction);
 
         AssetPtr(AssetPtr const &other);
         AssetPtr(AssetPtr &&other) noexcept;
@@ -59,7 +60,7 @@ namespace clove {
          * @brief Returns the hash used to identify this pointer's asset.
          * @return 
          */
-        [[nodiscard]] size_t getHash() const;
+        [[nodiscard]] Guid getGuid() const;
 
         AssetType *operator->();
         AssetType const *operator->() const;

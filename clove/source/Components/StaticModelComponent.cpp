@@ -15,13 +15,13 @@ CLOVE_REFLECT_MEMBER(model, clove::EditorEditableMember{
                                     CLOVE_ASSERT(size == sizeof(AssetPtr<StaticModel>));
 
                                     auto const *const value{ reinterpret_cast<AssetPtr<StaticModel> const *const>(memory + offset) };
-                                    return std::to_string(value->getHash());
+                                    return std::to_string(value->getGuid());
                                 },
                                 .onEditorSetValue = [](uint8_t *const memory, size_t offset, size_t size, std::string_view value) { 
                                     CLOVE_ASSERT(size == sizeof(AssetPtr<StaticModel>));
 
                                     auto *const assetPtr{ reinterpret_cast<AssetPtr<StaticModel> *const>(memory + offset) };
-                                    *assetPtr = clove::Application::get().getAssetManager()->getStaticModel(std::atoi(value.data())); },
+                                    *assetPtr = clove::Application::get().getAssetManager()->getStaticModel(Guid{ std::stoull(value.data()) }); },
                             })
 CLOVE_REFLECT_MEMBER(material, clove::EditorEditableMember{})
 CLOVE_REFLECT_END

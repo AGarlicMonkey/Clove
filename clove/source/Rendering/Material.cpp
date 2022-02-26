@@ -72,13 +72,13 @@ CLOVE_REFLECT_MEMBER(diffuseTexture, clove::EditorEditableMember{
                                              CLOVE_ASSERT(size == sizeof(AssetPtr<Texture>));
 
                                              auto const *const value{ reinterpret_cast<AssetPtr<Texture> const *const>(memory + offset) };
-                                             return std::to_string(value->getHash());
+                                             return std::to_string(value->getGuid());
                                          },
                                          .onEditorSetValue = [](uint8_t *const memory, size_t offset, size_t size, std::string_view value) { 
                                             CLOVE_ASSERT(size == sizeof(AssetPtr<Texture>));
 
                                             auto *const assetPtr{ reinterpret_cast<AssetPtr<Texture> *const>(memory + offset) };
-                                            *assetPtr = clove::Application::get().getAssetManager()->getTexture(std::atoi(value.data())); },
+                                            *assetPtr = clove::Application::get().getAssetManager()->getTexture(Guid{ std::stoull(value.data()) }); },
                                      })
 CLOVE_REFLECT_MEMBER(specularTexture, clove::EditorEditableMember{
                                           .name             = "Specular Texture",
@@ -86,12 +86,12 @@ CLOVE_REFLECT_MEMBER(specularTexture, clove::EditorEditableMember{
                                               CLOVE_ASSERT(size == sizeof(AssetPtr<Texture>));
 
                                               auto const *const value{ reinterpret_cast<AssetPtr<Texture> const *const>(memory + offset) };
-                                              return std::to_string(value->getHash());
+                                              return std::to_string(value->getGuid());
                                           },
                                           .onEditorSetValue = [](uint8_t *const memory, size_t offset, size_t size, std::string_view value) { 
                                             CLOVE_ASSERT(size == sizeof(AssetPtr<Texture>));
 
                                             auto *const assetPtr{ reinterpret_cast<AssetPtr<Texture> *const>(memory + offset) };
-                                            *assetPtr = clove::Application::get().getAssetManager()->getTexture(std::atoi(value.data())); },
+                                            *assetPtr = clove::Application::get().getAssetManager()->getTexture(Guid{ std::stoull(value.data()) }); },
                                       })
 CLOVE_REFLECT_END
