@@ -2,7 +2,7 @@ using System;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Windows;
-
+using System.Windows.Input;
 using Membrane = membrane;
 
 namespace Bulb {
@@ -24,12 +24,15 @@ namespace Bulb {
 
         public override ObjectType Type => ObjectType.Directory;
 
+        public ICommand NewFolderCommand { get; }
+
         private readonly FileSystemWatcher watcher;
 
         public FolderViewModel(string path) : this(new DirectoryInfo(path), null) { }
 
         public FolderViewModel(DirectoryInfo directory, DirectoryItemViewModel parent)
             : base(directory.Name, directory.FullName, parent) {
+            NewFolderCommand = new RelayCommand(() => CreateNewFolder());
 
             watcher = new FileSystemWatcher(FullPath, "*.*") {
                 EnableRaisingEvents = true
@@ -56,13 +59,10 @@ namespace Bulb {
             Membrane.FileSystemHelpers.createAssetFile(assetFileLocation, fileRelativePath, vfsPath);
         }
 
-        #region Item view model events
         private void OnItemOpened(DirectoryItemViewModel item) => OnOpened?.Invoke(item);
 
         private void OnItemDeleted(DirectoryItemViewModel item) => File.Delete(item.FullPath);
-        #endregion
 
-        #region File system events
         private void OnFileCreated(object sender, FileSystemEventArgs e) {
             Application.Current.Dispatcher.Invoke(() => {
                 if (File.GetAttributes(e.FullPath).HasFlag(FileAttributes.Directory)) {
@@ -72,7 +72,11 @@ namespace Bulb {
                 }
             });
         }
-        #endregion
+
+        /// <summary>
+        /// Creates a new folder inside this current folder
+        /// </summary>
+        private void CreateNewFolder() => _ = Directory.CreateDirectory($"{FullPath}{Path.DirectorySeparatorChar}NewFolder");
 
         private DirectoryItemViewModel CreateItem(DirectoryInfo directory) {
             var vm = new FolderViewModel(directory, this);

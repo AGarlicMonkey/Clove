@@ -13,6 +13,13 @@
 				  DragOver="ItemsControl_DragOver"
 				  Drop="ItemsControl_Drop"
 				  Background="Transparent"> <!-- Can only drag and drop with a background. This is likely a sizing issue. Needs investigation -->
+		<ItemsControl.ContextMenu>
+			<ContextMenu>
+				<MenuItem Header="New Folder"
+						  Command="{Binding NewFolderCommand}"/>
+			</ContextMenu>
+		</ItemsControl.ContextMenu>
+
 		<ItemsControl.ItemsPanel>
 			<ItemsPanelTemplate>
 				<WrapPanel Orientation="Horizontal"/>
