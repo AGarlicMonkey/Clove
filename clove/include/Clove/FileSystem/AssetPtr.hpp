@@ -23,7 +23,7 @@ namespace clove {
         //FUNCTIONS
     public:
         AssetPtr();
-        AssetPtr(std::function<AssetType()> loadFunction);
+        AssetPtr(Guid guid, std::function<AssetType()> loadFunction);
 
         AssetPtr(AssetPtr const &other);
         AssetPtr(AssetPtr &&other) noexcept;

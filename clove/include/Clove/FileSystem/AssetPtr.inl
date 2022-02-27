@@ -5,9 +5,10 @@ namespace clove {
     AssetPtr<AssetType>::AssetPtr() = default;
 
     template<typename AssetType>
-    AssetPtr<AssetType>::AssetPtr(std::function<AssetType()> loadFunction)
-        : loadFunction{ std::move(loadFunction) }
-        , asset{ std::make_shared<std::optional<AssetType>>() } {
+    AssetPtr<AssetType>::AssetPtr(Guid guid, std::function<AssetType()> loadFunction)
+        : guid{ guid }
+        , asset{ std::make_shared<std::optional<AssetType>>() }
+        , loadFunction{ std::move(loadFunction) } {
     }
 
     template<typename AssetType>

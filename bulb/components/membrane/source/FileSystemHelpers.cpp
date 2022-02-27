@@ -9,6 +9,8 @@
 #include <Clove/Serialisation/Yaml.hpp>
 #include <filesystem>
 #include <msclr/marshal_cppstd.h>
+#include <Clove/Application.hpp>
+#include <Clove/FileSystem/AssetManager.hpp>
 
 #ifndef GAME_DIR
     #define GAME_DIR
@@ -96,24 +98,25 @@ namespace membrane {
     void FileSystemHelpers::createAssetFile(System::String ^ location, System::String ^ relPath, System::String ^ vfsPath) {
         std::filesystem::path const saveLocation{ msclr::interop::marshal_as<std::string>(location) };
         std::filesystem::path const relativePath{ msclr::interop::marshal_as<std::string>(relPath) };
+        std::filesystem::path const nativeVfsPath{ msclr::interop::marshal_as<std::string>(vfsPath) };
 
         FileType const type{ getFileType(vfsPath) };
         std::ofstream fileStream{ saveLocation, std::ios::out | std::ios::trunc };
 
-        //We first need to create the asset file that the asset manager will attempt to load through the VFS before we can retrieve the asset's guid
+        {
+            clove::serialiser::Node rootNode{};
+            rootNode["asset"]["file_version"] = 1;
+            rootNode["asset"]["type"]         = convertFileTypeToInt(type);
+            rootNode["asset"]["path"]         = relativePath.string();
 
-        clove::serialiser::Node rootNode{};
-        rootNode["asset"]["file_version"] = 1;
-        rootNode["asset"]["type"]         = convertFileTypeToInt(type);
-        rootNode["asset"]["path"]         = relativePath.string();
+            fileStream << clove::emittYaml(rootNode);
+            fileStream.flush();
 
-        fileStream << clove::emittYaml(rootNode);
-        fileStream.flush();
+            rootNode["asset"]["guid"] = static_cast<clove::Guid::Type>(getAssetGuid(nativeVfsPath, type));
 
-        rootNode["asset"]["guid"] = static_cast<clove::Guid::Type>(getAssetFileGuid(vfsPath));
-
-        fileStream.seekp(0);
-        fileStream << clove::emittYaml(rootNode);
+            fileStream.seekp(0);
+            fileStream << clove::emittYaml(rootNode);
+        }
     }
 
     System::UInt64 FileSystemHelpers::getAssetFileGuid(System::String ^ fullFilePath) {

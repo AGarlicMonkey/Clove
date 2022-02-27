@@ -10,6 +10,10 @@
 #include <Clove/Guid.hpp>
 #include <unordered_map>
 
+namespace clove::serialiser {
+    class Node;
+}
+
 namespace clove {
     /**
      * @brief Manages the loading of assets.
@@ -90,6 +94,24 @@ namespace clove {
          * @return 
          */
         AssetPtr<SoundFile> getSound(Guid const assetGuid);
+
+        /**
+         * @brief Writes the entire contents of the asset manager into the node.
+         * @param node 
+         */
+        void serialise(serialiser::Node &node);
+
+        /**
+         * @brief Rebuilds the asset manager from a node.
+         * @param node 
+         */
+        void deserialise(serialiser::Node &node);
+
+    private:
+        AssetPtr<StaticModel> addStaticModel(VirtualFileSystem::Path const &filePath, Guid guid);
+        AssetPtr<AnimatedModel> addAnimatedModel(VirtualFileSystem::Path const &filePath, Guid guid);
+        AssetPtr<Texture> addTexture(VirtualFileSystem::Path const &filePath, Guid guid);
+        AssetPtr<SoundFile> addSound(VirtualFileSystem::Path const &filePath, Guid guid);
     };
 }
 

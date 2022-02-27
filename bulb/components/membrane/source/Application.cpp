@@ -18,6 +18,8 @@
 #include <Clove/Rendering/GraphicsImageRenderTarget.hpp>
 #include <msclr/marshal_cppstd.h>
 #include <sstream>
+#include <Clove/Serialisation/Node.hpp>
+#include <Clove/Serialisation/Yaml.hpp>
 
 #ifndef GAME_OUTPUT_DIR
     #define GAME_OUTPUT_DIR ""
@@ -158,6 +160,13 @@ namespace membrane {
     }
 
     void Application::startSession() {
+        using namespace clove;
+
+        auto result{ loadYaml(GAME_DIR "/" GAME_NAME ".clvproj") };
+        if(result.hasValue()) {
+            app->getAssetManager()->deserialise(result.getValue()["assets"]);
+        }
+
         app->pushSubSystem<EditorSubSystem>(app->getEntityManager());
     }
 
@@ -177,7 +186,16 @@ namespace membrane {
     }
 
     void Application::shutdown() {
+        using namespace clove;
+
+        serialiser::Node projectNode{};
+        serialiser::Node &assetManagerNode{ projectNode["assets"] };
+
+        app->getAssetManager()->serialise(assetManagerNode);
         app->shutdown();
+
+        std::ofstream fileStream{ GAME_DIR "/" GAME_NAME ".clvproj", std::ios::out | std::ios::trunc };
+        fileStream << emittYaml(projectNode);
     }
 
     void Application::resize(int width, int height) {
