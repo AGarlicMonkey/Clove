@@ -17,8 +17,24 @@
 					   Margin="0 0 5 0"
 					   Grid.Column="0"/>
 			<TextBox Text="{Binding Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-					 Visibility="{Binding ValueVisibility}"
+					 Visibility="{Binding EditableValueVisibility}"
 					 Grid.Column="1"/>
+			<Border x:Name="StaticValueBorder"
+					Grid.Column="1"
+					Visibility="{Binding DragDropValueVisibility}"
+					BorderThickness="0"
+					BorderBrush="{StaticResource Secondary}"
+					Background="{StaticResource Background3}">
+				<TextBlock x:Name="StaticValueBox"
+						   Text="{Binding Value}"
+						   Margin="3 0 0 0"
+						   AllowDrop="True"
+						   DragEnter="StaticValueBox_DragEnter"
+						   DragLeave="StaticValueBox_DragLeave"
+						   DragOver="StaticValueBox_DragOver"
+						   Drop="StaticValueBox_Drop"/>
+			</Border>
+			
 		</Grid>
 
 		<ComboBox ItemsSource="{Binding DropdownItems}"

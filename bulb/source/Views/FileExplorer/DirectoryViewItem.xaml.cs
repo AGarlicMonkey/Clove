@@ -4,7 +4,7 @@ using System.Windows.Input;
 
 namespace Bulb {
     public partial class DirectoryViewItem : Button {
-        private DirectoryItemViewModel ViewModel => (DirectoryItemViewModel)DataContext;
+        private DirectoryItemViewModel ViewModel => DataContext as DirectoryItemViewModel;
 
         public DirectoryViewItem() {
             InitializeComponent();
@@ -20,9 +20,8 @@ namespace Bulb {
                     var data = new DataObject();
                     ulong guid = membrane.FileSystemHelpers.getAssetFileGuid(ViewModel.FullPath);
 
-                    data.SetData(DataFormats.StringFormat, guid);
-
-                    DragDrop.DoDragDrop(this, data, DragDropEffects.Copy);
+                    data.SetData(DataFormats.StringFormat, guid.ToString());
+                    _ = DragDrop.DoDragDrop(this, data, DragDropEffects.Copy);
                 }
             }
         }

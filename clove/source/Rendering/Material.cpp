@@ -79,6 +79,7 @@ CLOVE_REFLECT_MEMBER(diffuseTexture, clove::EditorEditableMember{
 
                                             auto *const assetPtr{ reinterpret_cast<AssetPtr<Texture> *const>(memory + offset) };
                                             *assetPtr = clove::Application::get().getAssetManager()->getTexture(Guid{ std::stoull(value.data()) }); },
+                                         .dragDropOnly     = true,
                                      })
 CLOVE_REFLECT_MEMBER(specularTexture, clove::EditorEditableMember{
                                           .name             = "Specular Texture",
@@ -93,5 +94,6 @@ CLOVE_REFLECT_MEMBER(specularTexture, clove::EditorEditableMember{
 
                                             auto *const assetPtr{ reinterpret_cast<AssetPtr<Texture> *const>(memory + offset) };
                                             *assetPtr = clove::Application::get().getAssetManager()->getTexture(Guid{ std::stoull(value.data()) }); },
+                                          .dragDropOnly     = true,
                                       })
 CLOVE_REFLECT_END

@@ -29,6 +29,8 @@ namespace membrane {
 
         EditorTypeType type{};
         System::Object ^typeData{}; //Data dependant on the type. If it is a value then it is a string, if it is a parent then it is an array of members etc.
+
+        bool dragDropOnly{ false };
     };
 
     public ref class AvailableTypeInfo {

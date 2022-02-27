@@ -22,6 +22,7 @@ CLOVE_REFLECT_MEMBER(model, clove::EditorEditableMember{
 
                                     auto *const assetPtr{ reinterpret_cast<AssetPtr<StaticModel> *const>(memory + offset) };
                                     *assetPtr = clove::Application::get().getAssetManager()->getStaticModel(Guid{ std::stoull(value.data()) }); },
+                                .dragDropOnly     = true,
                             })
 CLOVE_REFLECT_MEMBER(material, clove::EditorEditableMember{})
 CLOVE_REFLECT_END

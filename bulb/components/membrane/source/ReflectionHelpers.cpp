@@ -65,6 +65,7 @@ namespace membrane {
                         memberInfo->typeData = gcnew System::String{ "" };
                     }
                 }
+                memberInfo->dragDropOnly = attribute->dragDropOnly;
 
                 editorVisibleMembers->Add(memberInfo);
             } else if(std::optional<EditorEditableDropdown> attribute{ member.attributes.get<EditorEditableDropdown>() }) {
