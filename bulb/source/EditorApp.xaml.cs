@@ -5,6 +5,8 @@ using System.ComponentModel;
 using Membrane = membrane;
 using System;
 using System.Diagnostics;
+using System.Windows.Media;
+using System.Runtime.InteropServices;
 
 namespace Bulb {
     /// <summary>
@@ -17,87 +19,52 @@ namespace Bulb {
 
         private Membrane.Application engineApp;
 
-        private Thread engineThread;
-        private bool exitThread = false;
+        public IntPtr OpenChildWindow(IntPtr hwndParent, int width, int height) {
+            IntPtr href = engineApp.createChildWindow(hwndParent, width, height);
 
-        private Size size = new Size(1, 1);
-
-        private void EditorStartup(object sender, StartupEventArgs e) {
-            //Initialise the engine
-            engineApp = new Membrane.Application((int)size.Width, (int)size.Height);
+            //TEMP: Currently starting a session when we open a window. This is only temporary until Clove supports multiple windows.
             engineApp.loadGameDll();
             engineApp.startSession();
 
-            StartEditorSession();
+            sessionViewModel.Start("."); //TEMP: Remove with multiple window support
+
+            return href;
         }
 
-        private void StartEditorSession() {
-            //Set up the engine session
+        private void EditorStartup(object sender, StartupEventArgs e) {
+            //Initialise the engine
+            engineApp = new Membrane.Application();
+
             sessionViewModel = new EditorSessionViewModel(".");
             sessionViewModel.OnCompileGame = () => {
-                lock (editorWindow.EditorViewport.ResizeMutex) { //TEMP: Using this lock to make sure we're not in mid loop
-                    engineApp.loadGameDll();
-                }
+                engineApp.loadGameDll();
             };
 
             Membrane.Log.addSink((string message) => sessionViewModel.Log.LogText += message, "%v");
 
-            //Initialise the editor window
             editorWindow = new MainWindow {
                 DataContext = sessionViewModel
             };
-            editorWindow.Closing += StopEngine;
 
             editorWindow.Show();
             MainWindow = editorWindow;
 
-            //Run the engine thread
-            engineThread = new Thread(new ThreadStart(RunEngineApplication)) {
-                Name = "Garlic application thread"
-            };
-            engineThread.Start();
+            CompositionTarget.Rendering += RunEngineApplication;
         }
 
-        public string resolveVfsPath(string path) {
-            //TODO: Currently no thread locking here. Will be fine in most situations as the mounted paths are unlikely to change once the app has initialised
-            return engineApp.resolveVfsPath(path);
-        }
+        public string ResolveVfsPath(string path) => engineApp.resolveVfsPath(path);
 
-        private void StopEngine(object sender, CancelEventArgs e) {
-            exitThread = true;
-            engineThread.Join();
-        }
+        private void RunEngineApplication(object sender, EventArgs e) {
+            if (engineApp.isRunning()) {
+                //Send any editor events to the engine
+                Membrane.MessageHandler.flushEditor();
 
-        private void RunEngineApplication() {
-            while (!exitThread) {
-                if (engineApp.isRunning()) {
-                    //Send any editor events to the engine
-                    Membrane.MessageHandler.flushEditor();
+                //Update the application
+                engineApp.tick();
 
-                    lock (editorWindow.EditorViewport.ResizeMutex) {
-                        //Resize before rendering
-                        if (size != editorWindow.EditorViewport.Size) {
-                            size = editorWindow.EditorViewport.Size;
-
-                            engineApp.resize((int)size.Width, (int)size.Height);
-                        }
-
-                        //Update the application
-                        engineApp.tick();
-
-                        //Render to image
-                        editorWindow.EditorViewport.WriteToBackBuffer(engineApp.render);
-                    }
-
-                    //Send any engine events to the editor
-                    Membrane.MessageHandler.flushEngine(Current.Dispatcher);
-                } else {
-                    //Return to avoid calling shutdown if the app exits by itself
-                    return;
-                }
+                //Send any engine events to the editor
+                Membrane.MessageHandler.flushEngine(Current.Dispatcher);
             }
-
-            engineApp.shutdown();
         }
     }
 }

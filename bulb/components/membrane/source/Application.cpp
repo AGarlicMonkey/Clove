@@ -1,7 +1,6 @@
 #include "Membrane/Application.hpp"
 
 #include "Membrane/EditorSubSystem.hpp"
-#include "Membrane/EditorViewport.hpp"
 #include "Membrane/MessageHandler.hpp"
 #include "Membrane/Messages.hpp"
 #include "Membrane/RuntimeSubSystem.hpp"
@@ -14,7 +13,6 @@
 #include <Clove/Graphics/GraphicsAPI.hpp>
 #include <Clove/Log/Log.hpp>
 #include <Clove/Reflection/Reflection.hpp>
-#include <Clove/Rendering/GraphicsImageRenderTarget.hpp>
 #include <Clove/Serialisation/Node.hpp>
 #include <Clove/Serialisation/Yaml.hpp>
 #include <filesystem>
@@ -47,32 +45,7 @@ namespace {
 namespace membrane {
     static std::filesystem::path const cachedProjectsPath{ "projects.yaml" };
 
-    Application::Application(int const width, int const height)
-        : width{ width }
-        , height{ height } {
-        using namespace clove;
-
-        GhaImage::Descriptor renderTargetImageDescriptor{};
-        renderTargetImageDescriptor.type        = GhaImage::Type::_2D;
-        renderTargetImageDescriptor.usageFlags  = GhaImage::UsageMode::ColourAttachment | GhaImage::UsageMode::TransferSource;
-        renderTargetImageDescriptor.dimensions  = { width, height };
-        renderTargetImageDescriptor.format      = GhaImage::Format::B8G8R8A8_SRGB;//Hard coding format to B8G8R8A8_SRGB as that is what the WriteableBitmap is set to
-        renderTargetImageDescriptor.sharingMode = SharingMode::Concurrent;
-
-        viewport = gcnew EditorViewport{};
-
-        //Use pair as there seems to be an issue when using structured bindings
-        auto pair{ clove::Application::createHeadless(GraphicsApi::Vulkan, AudioApi::OpenAl, std::move(renderTargetImageDescriptor), viewport->getKeyboard(), viewport->getMouse()) };
-        app          = pair.first.release();
-        renderTarget = pair.second;
-
-        auto *vfs{ app->getFileSystem() };
-        vfs->mount(GAME_DIR "/content", ".");
-        std::filesystem::create_directories(vfs->resolve("."));
-
-        MessageHandler::bindToMessage(gcnew MessageSentHandler<Editor_Stop ^>(this, &Application::setEditorMode));
-        MessageHandler::bindToMessage(gcnew MessageSentHandler<Editor_Play ^>(this, &Application::setRuntimeMode));
-    }
+    Application::Application() {}
 
     Application::~Application() {
         this->!Application();
@@ -165,25 +138,11 @@ namespace membrane {
     }
 
     void Application::tick() {
-        viewport->processInput();
         app->tick();
-    }
-
-    void Application::render(System::IntPtr backBuffer) {
-        auto const renderTargetBuffer{ renderTarget->getNextReadyBuffer() };
-        size_t constexpr bbp{ 4 };
-        renderTargetBuffer->read(backBuffer.ToPointer(), 0, width * height * bbp);
     }
 
     void Application::shutdown() {
         app->shutdown();
-    }
-
-    void Application::resize(int width, int height) {
-        renderTarget->resize({ width, height });
-
-        this->width  = width;
-        this->height = height;
     }
 
     System::String ^ Application::resolveVfsPath(System::String ^ path) {
@@ -194,6 +153,22 @@ namespace membrane {
 
     System::String ^ Application::getProjectVersion() {
         return gcnew System::String{ CLOVE_VERSION };
+    }
+
+    System::IntPtr Application::createChildWindow(System::IntPtr parent, int32_t width, int32_t height) {
+        using namespace clove;
+
+        //TEMP: Create the application here. It would be better to initialise Clove when creating this instance but it is currently tightly couple to having a window open.
+        app = clove::Application::create(GraphicsApi::Vulkan, AudioApi::OpenAl, Window::Descriptor{ "test", width, height, reinterpret_cast<HWND>(parent.ToPointer()) }).release();
+
+        auto *vfs{ app->getFileSystem() };
+        vfs->mount(GAME_DIR "/content", ".");
+        std::filesystem::create_directories(vfs->resolve("."));
+
+        MessageHandler::bindToMessage(gcnew MessageSentHandler<Editor_Stop ^>(this, &Application::setEditorMode));
+        MessageHandler::bindToMessage(gcnew MessageSentHandler<Editor_Play ^>(this, &Application::setRuntimeMode));
+
+        return System::IntPtr{ std::any_cast<HWND>(app->getWindow()->getNativeWindow()) };
     }
 
     void Application::setEditorMode(Editor_Stop ^ message) {
