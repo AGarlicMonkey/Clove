@@ -3,18 +3,18 @@ using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Interop;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Threading;
 
 namespace Bulb {
-    
+    //TODO: Move EngineWindowHost into membrane
 
+    /// <summary>
+    /// Allows a Clove Win32 window to be hosted inside a WPF control.
+    /// </summary>
     public class EngineWindowHost : HwndHost {
         private readonly int width;
         private readonly int height;
 
-        private IntPtr hwnd;
+        private IntPtr childHandle;
 
         public EngineWindowHost(int width, int height) {
             this.width = width;
@@ -22,13 +22,8 @@ namespace Bulb {
         }
 
         protected override HandleRef BuildWindowCore(HandleRef hwndParent) {
-            hwnd = (Application.Current as EditorApp).Start(hwndParent.Handle, width, height);
-            return new HandleRef(this, hwnd);
-        }
-
-        protected override IntPtr WndProc(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled) {
-            handled = false;
-            return IntPtr.Zero;
+            childHandle = (Application.Current as EditorApp).Start(hwndParent.Handle, width, height);
+            return new HandleRef(this, childHandle);
         }
 
         protected override void DestroyWindowCore(HandleRef hwnd) {

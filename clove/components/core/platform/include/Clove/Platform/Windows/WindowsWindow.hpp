@@ -8,6 +8,7 @@ namespace clove {
         //VARIABLES
     private:
         bool open{ false };
+        bool hasFocus{ false };
 
         static LPCSTR constexpr className{ "CloveDefaultWindowStyle" };
 

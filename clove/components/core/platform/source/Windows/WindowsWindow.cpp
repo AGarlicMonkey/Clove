@@ -189,6 +189,11 @@ namespace clove {
 
             case WM_KILLFOCUS:
                 keyboardDispatcher.clearState();
+                hasFocus = false;
+                break;
+
+            case WM_SETFOCUS:
+                hasFocus = true;
                 break;
 
                 //Keyboard
@@ -227,6 +232,9 @@ namespace clove {
                 break;
 
             case WM_LBUTTONDOWN:
+                if(!hasFocus) {
+                    SetFocus(hWnd);
+                }
                 mouseDispatcher.onButtonPressed(MouseButton::Left, pos);
                 break;
 
@@ -235,6 +243,9 @@ namespace clove {
                 break;
 
             case WM_RBUTTONDOWN:
+                if(!hasFocus) {
+                    SetFocus(hWnd);
+                }
                 mouseDispatcher.onButtonPressed(MouseButton::Right, pos);
                 break;
 
