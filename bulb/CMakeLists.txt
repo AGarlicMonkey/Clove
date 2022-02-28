@@ -1,8 +1,5 @@
 include(CSharpUtilities)
 
-#Create another project to enable C#
-project(Clove-Editor LANGUAGES CSharp)
-
 set(SOURCE ${CMAKE_CURRENT_SOURCE_DIR}/source)
 set(RESOURCE ${CMAKE_CURRENT_SOURCE_DIR}/resource)
 
