@@ -61,5 +61,7 @@ add_subdirectory(clove)
 
 #Editor
 if(CLOVE_BUILD_BULB AND MSVC)
+	enable_language(CSharp)
+	
 	add_subdirectory(bulb)
 endif()
