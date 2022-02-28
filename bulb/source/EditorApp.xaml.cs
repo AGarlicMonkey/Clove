@@ -45,6 +45,7 @@ namespace Bulb {
             editorWindow = new MainWindow {
                 DataContext = sessionViewModel
             };
+            editorWindow.Closed += ShutdownEngine;
 
             editorWindow.Show();
             MainWindow = editorWindow;
@@ -53,6 +54,8 @@ namespace Bulb {
         }
 
         public string ResolveVfsPath(string path) => engineApp.resolveVfsPath(path);
+
+        private void ShutdownEngine(object sender, EventArgs e) => engineApp.shutdown();
 
         private void RunEngineApplication(object sender, EventArgs e) {
             if (engineApp.isRunning()) {
