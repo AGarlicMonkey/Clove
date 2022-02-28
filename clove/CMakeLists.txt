@@ -16,11 +16,14 @@ find_package(SndFile REQUIRED CONFIG)
 #Prepare SOURCEs to be inbedded
 set(
 	ShaderIncludes
+		${SOURCE}/Shaders/Common.glsl
 		${SOURCE}/Shaders/Constants.glsl
 )
 
 set(
 	ShaderFiles
+		${SOURCE}/Shaders/ComputeLightGridCompute.glsl
+
 		${SOURCE}/Shaders/ForwardPassVert.glsl
 		${SOURCE}/Shaders/ForwardPassPixel.glsl
 
@@ -29,6 +32,9 @@ set(
 		
 		${SOURCE}/Shaders/PointShadowDepthsVert.glsl
 		${SOURCE}/Shaders/PointShadowDepthsPixel.glsl
+
+		${SOURCE}/Shaders/SceneDepthVert.glsl
+		${SOURCE}/Shaders/SceneDepthPixel.glsl
 
 		${SOURCE}/Shaders/UIVert.glsl
 		${SOURCE}/Shaders/WidgetPixel.glsl

@@ -79,6 +79,9 @@ namespace clove {
             if((flags & GhaImage::UsageMode::Sampled) != 0) {
                 mtlFlags |= MTLTextureUsageShaderRead;
             }
+            if((flags & GhaImage::UsageMode::Storage) != 0) {
+                mtlFlags |= MTLTextureUsageShaderWrite;
+            }
             if((flags & GhaImage::UsageMode::ColourAttachment) != 0) {
                 mtlFlags |= MTLTextureUsageRenderTarget;
             }
@@ -257,6 +260,7 @@ namespace clove {
         auto const getDataType = [](DescriptorType descriptorType) {
             switch(descriptorType) {
                 case DescriptorType::SampledImage:
+                case DescriptorType::StorageImage:
                     return MTLDataTypeTexture;
                 case DescriptorType::Sampler:
                     return MTLDataTypeSampler;
@@ -449,7 +453,7 @@ namespace clove {
 
 		id<MTLTexture> mtlTexture{ polyCast<MetalImage const>(&image)->getTexture() };
 		id<MTLTexture> textureView{ [mtlTexture newTextureViewWithPixelFormat:MetalImage::convertFormat(imageDescriptor.format)
-                                                                  textureType:MetalImageView::convertType(descriptor.type, descriptor.layerCount)
+                                                                  textureType:MetalImageView::convertType(descriptor.type)
                                                                        levels:mipLevels
                                                                        slices:arraySlices] };
 		

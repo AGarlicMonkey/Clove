@@ -18,8 +18,8 @@ namespace clove {
             TransferDestination = 1 << 1, /**< To be used as a destination in a transfer operation. */
             VertexBuffer        = 1 << 2,
             IndexBuffer         = 1 << 3,
-            UniformBuffer       = 1 << 4, /**< Uploaded to shaders as a uniform buffer object (UBO). */
-            StorageBuffer       = 1 << 5, /**< Uploaded to shaders as a storage buffer object (SSBO). */
+            UniformBuffer       = 1 << 4, /**< Uploaded to shaders as a uniform buffer object (Read only data). */
+            StorageBuffer       = 1 << 5, /**< Uploaded to shaders as a storage buffer object (ReadWrite from compute). */
         };
 
         struct Descriptor {

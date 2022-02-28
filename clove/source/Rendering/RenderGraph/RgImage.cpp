@@ -5,19 +5,6 @@
 #include <Clove/Log/Log.hpp>
 
 namespace clove {
-    namespace {
-        GhaImageView::Type getViewType(GhaImage::Type imageType) {
-            switch(imageType) {
-                case GhaImage::Type::_2D:
-                    return GhaImageView::Type::_2D;
-                case GhaImage::Type::_3D:
-                    return GhaImageView::Type::_3D;
-                case GhaImage::Type::Cube:
-                    return GhaImageView::Type::Cube;
-            }
-        }
-    }
-
     RgImage::RgImage(GhaImage::Type const imageType, GhaImage::Format const format, vec2ui const dimensions, uint32_t const arrayCount) {
         ghaImageDescriptor = GhaImage::Descriptor{
             .type        = imageType,

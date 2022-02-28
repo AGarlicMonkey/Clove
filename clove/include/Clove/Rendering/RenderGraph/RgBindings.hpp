@@ -16,13 +16,6 @@ namespace clove {
         uint32_t arrayCount{ 1 };
     };
 
-    inline bool operator==(RgImageView const &lhs, RgImageView const &rhs) {
-        return lhs.image == rhs.image &&
-            lhs.viewType == rhs.viewType &&
-            lhs.arrayIndex == rhs.arrayIndex &&
-            lhs.arrayCount == rhs.arrayCount;
-    }
-
     struct RgBufferBinding {
         uint32_t slot{};
         RgBufferId buffer{};

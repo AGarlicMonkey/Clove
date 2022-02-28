@@ -27,22 +27,18 @@ namespace clove {
         return texture;
     }
 
-	MTLTextureType MetalImageView::convertType(GhaImageView::Type type, uint32_t const arrayCount) {
+	MTLTextureType MetalImageView::convertType(GhaImageView::Type const type) {
 		switch (type) {
             case GhaImageView::Type::_2D:
-                if(arrayCount > 1) {
-                    return MTLTextureType2DArray;
-                } else {
-                    return MTLTextureType2D;
-                }
+                return MTLTextureType2D;
+            case GhaImageView::Type::_2DArray:
+                return MTLTextureType2DArray;
             case GhaImageView::Type::_3D:
                 return MTLTextureType3D;
             case GhaImageView::Type::Cube:
-                if(arrayCount > 1) {
-                    return MTLTextureTypeCubeArray;
-                } else {
-                     return MTLTextureTypeCube;
-                }
+                return MTLTextureTypeCube;
+            case GhaImageView::Type::CubeArray:
+                return MTLTextureTypeCubeArray;
             default:
                 CLOVE_ASSERT_MSG(false, "{0}: Unkown type passed", CLOVE_FUNCTION_NAME_PRETTY);
                 return MTLTextureType2D;
