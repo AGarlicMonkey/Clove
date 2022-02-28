@@ -8,7 +8,7 @@ namespace clove {
     AssetPtr<AssetType>::AssetPtr(Guid guid, std::function<AssetType()> loadFunction)
         : guid{ guid }
         , asset{ std::make_shared<std::optional<AssetType>>() }
-        , loadFunction{ std::move(loadFunction) } {
+        , loadFunction{ std::make_shared<std::function<AssetType()>>(std::move(loadFunction)) } {
     }
 
     template<typename AssetType>
@@ -27,21 +27,21 @@ namespace clove {
     AssetPtr<AssetType>::~AssetPtr() = default;
 
     template<typename AssetType>
-    bool AssetPtr<AssetType>::isValid() const {
-        return asset != nullptr && loadFunction != nullptr;
+    bool AssetPtr<AssetType>::isValid() const noexcept {
+        return asset != nullptr && loadFunction != nullptr && (*loadFunction) != nullptr;
     }
 
     template<typename AssetType>
-    bool AssetPtr<AssetType>::isLoaded() const {
-        return isValid() && asset->has_value();
+    bool AssetPtr<AssetType>::isLoaded() const noexcept {
+        return asset->has_value();
     }
 
     template<typename AssetType>
     AssetType &AssetPtr<AssetType>::get() {
-        CLOVE_ASSERT_MSG(isValid(), "{0}: AssetPtr requires a valid path before it can load", CLOVE_FUNCTION_NAME_PRETTY);
+        CLOVE_ASSERT_MSG(isValid(), "{0}: AssetPtr is not valid", CLOVE_FUNCTION_NAME_PRETTY);
 
         if(!isLoaded()) {
-            *asset = loadFunction();
+            *asset = (*loadFunction)();
         }
 
         return asset->value();
@@ -49,17 +49,17 @@ namespace clove {
 
     template<typename AssetType>
     AssetType const &AssetPtr<AssetType>::get() const {
-        CLOVE_ASSERT_MSG(isValid(), "{0}: AssetPtr requires a valid path before it can load", CLOVE_FUNCTION_NAME_PRETTY);
+        CLOVE_ASSERT_MSG(isValid(), "{0}: AssetPtr is not valid", CLOVE_FUNCTION_NAME_PRETTY);
 
         if(!isLoaded()) {
-            *asset = loadFunction();
+            *asset = (*loadFunction)();
         }
 
         return asset->value();
     }
 
     template<typename AssetType>
-    Guid AssetPtr<AssetType>::getGuid() const {
+    Guid AssetPtr<AssetType>::getGuid() const noexcept {
         return guid;
     }
 

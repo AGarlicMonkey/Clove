@@ -13,12 +13,14 @@ namespace clove {
      */
     template<typename AssetType>
     class AssetPtr {
+        friend class AssetManager;
+
         //VARIABLES
     private:
         Guid guid{ 0 };
-        std::shared_ptr<std::optional<AssetType>> asset{ nullptr };
 
-        std::function<AssetType()> loadFunction{};
+        std::shared_ptr<std::optional<AssetType>> asset{ nullptr };
+        std::shared_ptr<std::function<AssetType()>> loadFunction{ nullptr };
 
         //FUNCTIONS
     public:
@@ -37,13 +39,13 @@ namespace clove {
          * @brief Returns true if this has a valid path to an asset.
          * @return 
          */
-        bool isValid() const;
+        bool isValid() const noexcept;
 
         /**
          * @brief Returns true if this has loaded the asset and there for contains a valid object.
          * @return 
          */
-        bool isLoaded() const;
+        bool isLoaded() const noexcept;
 
         /**
          * @brief Returns the asset object. Will load synchronously if the asset is not yet loaded.
@@ -60,7 +62,7 @@ namespace clove {
          * @brief Returns the hash used to identify this pointer's asset.
          * @return 
          */
-        [[nodiscard]] Guid getGuid() const;
+        Guid getGuid() const noexcept;
 
         AssetType *operator->();
         AssetType const *operator->() const;

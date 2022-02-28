@@ -101,6 +101,7 @@ add_library(
 		${INCLUDE}/FileSystem/AssetPtr.hpp
 		${INCLUDE}/FileSystem/AssetPtr.inl
 		${INCLUDE}/FileSystem/AssetManager.hpp
+		${INCLUDE}/FileSystem/AssetManager.inl
 		${SOURCE}/FileSystem/AssetManager.cpp
 		${INCLUDE}/FileSystem/FileSystemVFS.hpp
 		${INCLUDE}/FileSystem/FileSystemVFS.inl

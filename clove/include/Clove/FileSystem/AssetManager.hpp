@@ -96,6 +96,24 @@ namespace clove {
         AssetPtr<SoundFile> getSound(Guid const assetGuid);
 
         /**
+         * @brief Resets any AssetPtrs for the asset along with removing all references inside the AssetManager.
+         * @param filePath 
+         */
+        inline void removeStaticModel(Guid const assetGuid);
+        /**
+         * @copydoc removeStaticModel
+         */
+        inline void removeAnimatedModel(Guid const assetGuid);
+        /**
+         * @copydoc removeStaticModel
+         */
+        inline void removeTexture(Guid const assetGuid);
+        /**
+         * @copydoc removeStaticModel
+         */
+        inline void removeSound(Guid const assetGuid);
+
+        /**
          * @brief Writes the entire contents of the asset manager into the node.
          * @param node 
          */
@@ -112,6 +130,9 @@ namespace clove {
         AssetPtr<AnimatedModel> addAnimatedModel(VirtualFileSystem::Path const &filePath, Guid guid);
         AssetPtr<Texture> addTexture(VirtualFileSystem::Path const &filePath, Guid guid);
         AssetPtr<SoundFile> addSound(VirtualFileSystem::Path const &filePath, Guid guid);
+
+        template<typename AssetType>
+        void removeAsset(std::unordered_map<std::string, AssetPtr<AssetType>> &container, Guid const assetGuid);
     };
 }
 
