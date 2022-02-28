@@ -22,7 +22,15 @@ namespace Bulb {
         }
         private SceneViewModel scene = new SceneViewModel();
 
-        public FileExplorerViewModel FileExplorer { get; /*temp*/ private set; }
+        public FileExplorerViewModel FileExplorer {
+            get => fileExplorer;
+            set {
+                fileExplorer = value;
+                OnPropertyChanged(nameof(FileExplorer));
+            }
+        }
+        private FileExplorerViewModel fileExplorer;
+
         public LogViewModel Log { get; } = new LogViewModel();
 
         public string WindowTitle { get; }
