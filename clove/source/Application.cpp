@@ -54,20 +54,6 @@ namespace clove {
         return app;
     }
 
-    /*std::pair<std::unique_ptr<Application>, GraphicsImageRenderTarget *> Application::createHeadless(GraphicsApi graphicsApi, AudioApi audioApi, GhaImage::Descriptor renderTargetDescriptor, Keyboard *keyboard, Mouse *mouse) {
-        CLOVE_LOG(CloveApplication, LogLevel::Info, "Creating headless application.");
-
-        auto graphicsDevice{ createGhaDevice(graphicsApi, std::any{}).getValue() };
-        auto audioDevice{ createAhaDevice(audioApi).getValue() };
-
-        auto renderTarget{ std::make_unique<GraphicsImageRenderTarget>(renderTargetDescriptor, graphicsDevice.get()) };
-        auto *renderTargetPtr{ renderTarget.get() };
-
-        std::unique_ptr<Application> app{ new Application{ std::move(graphicsDevice), std::move(audioDevice), keyboard, mouse, std::move(renderTarget) } };
-
-        return { std::move(app), renderTargetPtr };
-    }*/
-
     Application &Application::get() {
         CLOVE_ASSERT_MSG(instance != nullptr, "Attempted to get Application before it has been created.");
         return *instance;

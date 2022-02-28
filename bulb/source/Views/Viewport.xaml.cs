@@ -22,7 +22,9 @@ namespace Bulb {
         }
 
         protected override HandleRef BuildWindowCore(HandleRef hwndParent) {
-            childHandle = (Application.Current as EditorApp).Start(hwndParent.Handle, width, height);
+            var editorApp = Application.Current as EditorApp;
+            childHandle = editorApp.OpenChildWindow(hwndParent.Handle, width, height);
+
             return new HandleRef(this, childHandle);
         }
 

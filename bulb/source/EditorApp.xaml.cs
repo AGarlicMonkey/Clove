@@ -19,29 +19,22 @@ namespace Bulb {
 
         private Membrane.Application engineApp;
 
-        //private Thread engineThread;
-        //private bool exitThread = false;
+        public IntPtr OpenChildWindow(IntPtr hwndParent, int width, int height) {
+            IntPtr href = engineApp.createChildWindow(hwndParent, width, height);
 
-        //private Size size = new Size(1, 1);
-
-        public IntPtr Start(IntPtr hwndParent, int width, int height) {
-            //Initialise the engine
-            engineApp = new Membrane.Application(1, 1); //TODO: Remove size
-
-            IntPtr href = engineApp.createWindow(hwndParent, width, height);
-
+            //TEMP: Currently starting a session when we open a window. This is only temporary until Clove supports multiple windows.
             engineApp.loadGameDll();
             engineApp.startSession();
 
-            //StartEditorSession();
-
-            sessionViewModel.Start(".");
+            sessionViewModel.Start("."); //TEMP: Remove with multiple window support
 
             return href;
         }
 
-        //Ignoring for now
         private void EditorStartup(object sender, StartupEventArgs e) {
+            //Initialise the engine
+            engineApp = new Membrane.Application();
+
             sessionViewModel = new EditorSessionViewModel(".");
             sessionViewModel.OnCompileGame = () => {
                 engineApp.loadGameDll();
@@ -52,54 +45,26 @@ namespace Bulb {
             editorWindow = new MainWindow {
                 DataContext = sessionViewModel
             };
-            //editorWindow.Closing += StopEngine;
 
             editorWindow.Show();
             MainWindow = editorWindow;
 
             CompositionTarget.Rendering += RunEngineApplication;
-
         }
 
-        public string resolveVfsPath(string path) {
-            return engineApp.resolveVfsPath(path);
-        }
-
-        private void StopEngine(object sender, CancelEventArgs e) {
-            //exitThread = true;
-            //engineThread.Join();
-        }
+        public string ResolveVfsPath(string path) => engineApp.resolveVfsPath(path);
 
         private void RunEngineApplication(object sender, EventArgs e) {
-            //while (!exitThread) {
-                if (engineApp.isRunning()) {
-                    //Send any editor events to the engine
-                    Membrane.MessageHandler.flushEditor();
+            if (engineApp.isRunning()) {
+                //Send any editor events to the engine
+                Membrane.MessageHandler.flushEditor();
 
-                    //lock (editorWindow.EditorViewport.ResizeMutex) {
-                        //Resize before rendering
-                        //if (size != editorWindow.EditorViewport.Size) {
-                        //    size = editorWindow.EditorViewport.Size;
+                //Update the application
+                engineApp.tick();
 
-                        //    engineApp.resize((int)size.Width, (int)size.Height);
-                        //}
-
-                        //Update the application
-                        engineApp.tick();
-
-                        //Render to image
-                        //editorWindow.EditorViewport.WriteToBackBuffer(engineApp.render);
-                    //}
-
-                    //Send any engine events to the editor
-                    Membrane.MessageHandler.flushEngine(Current.Dispatcher);
-                } else {
-                    //Return to avoid calling shutdown if the app exits by itself
-                    return;
-                }
-            //}
-
-            //engineApp.shutdown();
+                //Send any engine events to the editor
+                Membrane.MessageHandler.flushEngine(Current.Dispatcher);
+            }
         }
     }
 }

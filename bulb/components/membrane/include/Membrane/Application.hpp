@@ -22,16 +22,13 @@ public ref class Application {
         clove::GraphicsImageRenderTarget *renderTarget;
         EditorViewport ^viewport;
 
-        int width;
-        int height;
-
         bool isInEditorMode{ true };
 
         HINSTANCE gameLibrary{ nullptr };
 
         //FUNCTIONS
     public:
-        Application(int const width, int const height);
+        Application();
         ~Application();
         !Application();
 
@@ -46,9 +43,7 @@ public ref class Application {
 
         static System::String ^getProjectVersion();
 
-        //HACK TEMP STUFF - just to test this hosting buisness
-        System::IntPtr createWindow(System::IntPtr host, int32_t width, int32_t height);
-        void destroyWindow();
+        System::IntPtr createChildWindow(System::IntPtr parent, int32_t width, int32_t height);
 
     private:
         void setEditorMode(Editor_Stop ^message);

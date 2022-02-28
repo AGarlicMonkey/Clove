@@ -64,19 +64,16 @@ namespace Bulb {
 
             CompileCommand = new RelayCommand(() => OnCompileGame?.Invoke());
 
+            //TEMP: See below
             //FileExplorer = new FileExplorerViewModel(rootFilePath);
 
             WindowTitle = $"Clove - {Membrane.Application.getProjectVersion()}";
         }
 
-        //TEMP HACK - just to stuff doesn't get called before the engine has been initialise
-        public void Start(string rootFilePath) {
-            FileExplorer = new FileExplorerViewModel(rootFilePath);
-        }
+        //TEMP: Just to make sure functions don't get called before opening a window.
+        public void Start(string rootFilePath) => FileExplorer = new FileExplorerViewModel(rootFilePath);
 
-        private void OnSceneLoaded(Membrane.Engine_OnSceneLoaded message) {
-            Scene = new SceneViewModel(message.enabledSubSystems, message.entities);
-        }
+        private void OnSceneLoaded(Membrane.Engine_OnSceneLoaded message) => Scene = new SceneViewModel(message.enabledSubSystems, message.entities);
 
         private void Play() {
             IsPlayButtonEnabled = false;
