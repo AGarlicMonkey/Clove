@@ -157,7 +157,7 @@ namespace clove {
     AssetPtr<StaticModel> AssetManager::addStaticModel(VirtualFileSystem::Path const &filePath, Guid guid) {
         std::filesystem::path const fullSystemPath{ vfs->resolve(filePath) };
         if(!std::filesystem::exists(fullSystemPath)) {
-            CLOVE_LOG(CloveAssetManager, LogLevel::Error, "{0} does not resolve to a file that exists on disk.", filePath.string());
+            CLOVE_LOG(CloveAssetManager, LogLevel::Error, "{0} does not resolved to {1} whcih does not exist on disk.", filePath.string(), fullSystemPath.string());
             return {};
         }
 
@@ -169,7 +169,7 @@ namespace clove {
     AssetPtr<AnimatedModel> AssetManager::addAnimatedModel(VirtualFileSystem::Path const &filePath, Guid guid) {
         std::filesystem::path const fullSystemPath{ vfs->resolve(filePath) };
         if(!std::filesystem::exists(fullSystemPath)) {
-            CLOVE_LOG(CloveAssetManager, LogLevel::Error, "{0} does not resolve to a file that exists on disk.", filePath.string());
+            CLOVE_LOG(CloveAssetManager, LogLevel::Error, "{0} does not resolved to {1} whcih does not exist on disk.", filePath.string(), fullSystemPath.string());
             return {};
         }
 
@@ -181,7 +181,7 @@ namespace clove {
     AssetPtr<Texture> AssetManager::addTexture(VirtualFileSystem::Path const &filePath, Guid guid) {
         std::filesystem::path const fullSystemPath{ vfs->resolve(filePath) };
         if(!std::filesystem::exists(fullSystemPath)) {
-            CLOVE_LOG(CloveAssetManager, LogLevel::Error, "{0} does not resolve to a file that exists on disk.", filePath.string());
+            CLOVE_LOG(CloveAssetManager, LogLevel::Error, "{0} does not resolved to {1} whcih does not exist on disk.", filePath.string(), fullSystemPath.string());
             return {};
         }
 
@@ -193,7 +193,7 @@ namespace clove {
     AssetPtr<SoundFile> AssetManager::addSound(VirtualFileSystem::Path const &filePath, Guid guid) {
         std::filesystem::path const fullSystemPath{ vfs->resolve(filePath) };
         if(!std::filesystem::exists(fullSystemPath)) {
-            CLOVE_LOG(CloveAssetManager, LogLevel::Error, "{0} does not resolve to a file that exists on disk.", filePath.string());
+            CLOVE_LOG(CloveAssetManager, LogLevel::Error, "{0} does not resolved to {1} whcih does not exist on disk.", filePath.string(), fullSystemPath.string());
             return {};
         }
 

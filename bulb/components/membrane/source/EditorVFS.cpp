@@ -26,7 +26,7 @@ namespace membrane {
                 serialiser::Node assetNode{ loadYaml(assetPath).getValue() };
 
                 std::filesystem::path const relativePath{ assetNode["asset"]["path"].as<std::string>() };
-                systemPath = contentDirectory / relativePath;
+                systemPath = assetPath.parent_path() / relativePath;
 
                 CLOVE_LOG(MembraneEditorVFS, LogLevel::Trace, "Resolved {0} into {1}", path.string(), systemPath.lexically_normal().string());
             } else {
