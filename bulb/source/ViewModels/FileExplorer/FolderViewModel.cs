@@ -7,6 +7,8 @@ using Membrane = membrane;
 
 namespace Bulb {
     public class FolderViewModel : DirectoryItemViewModel {
+        public override ObjectType Type => ObjectType.Directory;
+
         /// <summary>
         /// A list of all directories within this directory. Will be empty if this item is a file.
         /// </summary>
@@ -22,13 +24,13 @@ namespace Bulb {
         /// </summary>
         public ObservableCollection<DirectoryItemViewModel> AllItems { get; } = new ObservableCollection<DirectoryItemViewModel>();
 
-        public override ObjectType Type => ObjectType.Directory;
-
         public ICommand NewFolderCommand { get; }
 
         private readonly FileSystemWatcher watcher;
 
-        public FolderViewModel(string path) : this(new DirectoryInfo(path), null) { }
+        public FolderViewModel(string path)
+            : this(new DirectoryInfo(path), null) {
+        }
 
         public FolderViewModel(DirectoryInfo directory, DirectoryItemViewModel parent)
             : base(directory.Name, directory.FullName, parent) {
@@ -37,7 +39,9 @@ namespace Bulb {
             watcher = new FileSystemWatcher(FullPath, "*.*") {
                 EnableRaisingEvents = true
             };
-            watcher.Created += OnFileCreated;
+            //Watcher events come from a different thread. So pass them through the app's dispatcher
+            watcher.Created += (sender, e) => Application.Current.Dispatcher.Invoke(() => OnFileCreated(e));
+            watcher.Deleted += (sender, e) => Application.Current.Dispatcher.Invoke(() => OnFileDeleted(e));
 
             foreach (DirectoryInfo dir in directory.EnumerateDirectories()) {
                 _ = CreateItem(dir);
@@ -56,21 +60,39 @@ namespace Bulb {
 
             string vfsPath = $"{Name}{Path.DirectorySeparatorChar}{Path.GetFileName(file)}".Replace($"content{Path.DirectorySeparatorChar}", ""); //Remove 'content' from the desired VFS path as this is where the VFS searches from
 
-            Membrane.FileSystemHelpers.createAssetFile(assetFileLocation, fileRelativePath, vfsPath);
+            Membrane.FileSystemHelpers.createAssetFile(assetFileLocation, file, fileRelativePath, vfsPath);
         }
 
         private void OnItemOpened(DirectoryItemViewModel item) => OnOpened?.Invoke(item);
 
         private void OnItemDeleted(DirectoryItemViewModel item) => File.Delete(item.FullPath);
 
-        private void OnFileCreated(object sender, FileSystemEventArgs e) {
-            Application.Current.Dispatcher.Invoke(() => {
-                if (File.GetAttributes(e.FullPath).HasFlag(FileAttributes.Directory)) {
-                    _ = CreateItem(new DirectoryInfo(e.FullPath));
-                } else if (Membrane.FileSystemHelpers.isAssetFile(e.FullPath)) {
-                    _ = CreateItem(new FileInfo(e.FullPath));
+        private void OnFileCreated(FileSystemEventArgs eventArgs) {
+            if (File.GetAttributes(eventArgs.FullPath).HasFlag(FileAttributes.Directory)) {
+                _ = CreateItem(new DirectoryInfo(eventArgs.FullPath));
+            } else if (Membrane.FileSystemHelpers.isAssetFile(eventArgs.FullPath)) {
+                _ = CreateItem(new FileInfo(eventArgs.FullPath));
+            }
+        }
+
+        private void OnFileDeleted(FileSystemEventArgs eventArgs) {
+            foreach (DirectoryItemViewModel item in AllItems) {
+                if (item.Name == eventArgs.Name) {
+                    _ = AllItems.Remove(item);
+                    if (item is FolderViewModel folderVm) {
+                        _ = SubDirectories.Remove(item);
+                        //TODO: Loop through and delete children
+                    } else if (item is FileViewModel fileVm) {
+                        _ = Files.Remove(item);
+                        Membrane.FileSystemHelpers.removeAssetFile(fileVm.AssetGuid, fileVm.AssetType);
+                    }
+
+                    item.OnOpened -= OnItemOpened;
+                    item.OnDeleted -= OnItemDeleted;
+
+                    break;
                 }
-            });
+            }
         }
 
         /// <summary>
@@ -80,8 +102,8 @@ namespace Bulb {
 
         private DirectoryItemViewModel CreateItem(DirectoryInfo directory) {
             var vm = new FolderViewModel(directory, this);
-            vm.OnOpened += (DirectoryItemViewModel item) => OnItemOpened(item);
-            vm.OnDeleted += (DirectoryItemViewModel item) => OnItemDeleted(item);
+            vm.OnOpened += OnItemOpened;
+            vm.OnDeleted += OnItemDeleted;
 
             SubDirectories.Add(vm);
             AllItems.Add(vm);
@@ -91,8 +113,8 @@ namespace Bulb {
 
         private DirectoryItemViewModel CreateItem(FileInfo file) {
             var vm = new FileViewModel(file, this);
-            vm.OnOpened += (DirectoryItemViewModel item) => OnItemOpened(item);
-            vm.OnDeleted += (DirectoryItemViewModel item) => OnItemDeleted(item);
+            vm.OnOpened += OnItemOpened;
+            vm.OnDeleted += OnItemDeleted;
 
             Files.Add(vm);
             AllItems.Add(vm);
@@ -110,8 +132,8 @@ namespace Bulb {
                 throw new ArgumentNullException("toPath");
             }
 
-            Uri fromUri = new Uri(fromPath);
-            Uri toUri = new Uri(toPath);
+            var fromUri = new Uri(fromPath);
+            var toUri = new Uri(toPath);
 
             if (fromUri.Scheme != toUri.Scheme) { return toPath; } // path can't be made relative.
 

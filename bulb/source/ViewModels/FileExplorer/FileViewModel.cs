@@ -1,11 +1,25 @@
 using System.IO;
 
+using Membrane = membrane;
+
 namespace Bulb {
     public class FileViewModel : DirectoryItemViewModel {
         public override ObjectType Type => ObjectType.File;
 
+        /// <summary>
+        /// Guid used by the internal asset manager to track files
+        /// </summary>
+        public ulong AssetGuid { get; }
+
+        /// <summary>
+        /// The type of asset this file is (i.e. Mesh, Texture etc.)
+        /// </summary>
+        public Membrane.FileType AssetType { get; }
+
         public FileViewModel(FileInfo file, DirectoryItemViewModel parent)
             : base(file.Name, file.FullName, parent) {
+            AssetGuid = Membrane.FileSystemHelpers.getAssetFileGuid(FullPath);
+            AssetType = Membrane.FileSystemHelpers.getAssetFileType(FullPath);
         }
 
         public override bool CanDropFile(string file) => false;

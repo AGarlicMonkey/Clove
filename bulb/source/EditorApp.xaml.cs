@@ -1,12 +1,8 @@
-using System.Threading;
+﻿using System;
 using System.Windows;
-using System.ComponentModel;
+using System.Windows.Media;
 
 using Membrane = membrane;
-using System;
-using System.Diagnostics;
-using System.Windows.Media;
-using System.Runtime.InteropServices;
 
 namespace Bulb {
     /// <summary>

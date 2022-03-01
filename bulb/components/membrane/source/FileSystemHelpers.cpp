@@ -23,6 +23,19 @@ namespace {
                 return 0;
             case membrane::FileType::Texture:
                 return 1;
+            default:
+                return -1;
+        }
+    }
+
+    membrane::FileType convertIntToFileType(int32_t val){
+        switch(val) {
+            case 0:
+                return membrane::FileType::Mesh;
+            case 1:
+                return membrane::FileType::Texture;
+            default:
+                return membrane::FileType::Unknown;
         }
     }
 
@@ -64,15 +77,15 @@ namespace membrane {
         return System::IO::Path::GetExtension(file) == ".clvasset";
     }
 
-    FileType FileSystemHelpers::getFileType(System::String ^ file) {
-        if(!isFileSupported(file)) {
-            throw gcnew System::ArgumentException("File is not a type that is supported by Clove", file);
+    FileType FileSystemHelpers::getFileType(System::String ^ fullFilePath) {
+        if(!isFileSupported(fullFilePath)) {
+            throw gcnew System::ArgumentException("File is not a type that is supported by Clove", fullFilePath);
         }
 
-        System::String ^ extension { System::IO::Path::GetExtension(file) };
+        System::String ^ extension { System::IO::Path::GetExtension(fullFilePath) };
 
         if(extension == ".clvasset") {
-            return getAssetFileType(file);
+            return getAssetFileType(fullFilePath);
         } else {
             if(extension == ".obj" ||
                extension == ".fbx") {
@@ -87,20 +100,12 @@ namespace membrane {
         return FileType::Mesh;
     }
 
-    FileType FileSystemHelpers::getAssetFileType(System::String ^ file) {
-        std::filesystem::path const path{ msclr::interop::marshal_as<std::string>(file) };
-
-        clove::serialiser::Node fileNode{ clove::loadYaml(path).getValue() };
-
-        return FileType{ fileNode["asset"]["type"].as<int32_t>() };
-    }
-
-    void FileSystemHelpers::createAssetFile(System::String ^ location, System::String ^ relPath, System::String ^ vfsPath) {
+    void FileSystemHelpers::createAssetFile(System::String ^ location, System::String ^ fullPath, System::String ^ relPath, System::String ^ vfsPath) {
         std::filesystem::path const saveLocation{ msclr::interop::marshal_as<std::string>(location) };
         std::filesystem::path const relativePath{ msclr::interop::marshal_as<std::string>(relPath) };
         std::filesystem::path const nativeVfsPath{ msclr::interop::marshal_as<std::string>(vfsPath) };
 
-        FileType const type{ getFileType(vfsPath) };
+        FileType const type{ getFileType(fullPath) };
         std::ofstream fileStream{ saveLocation, std::ios::out | std::ios::trunc };
 
         {
@@ -119,9 +124,40 @@ namespace membrane {
         }
     }
 
-    System::UInt64 FileSystemHelpers::getAssetFileGuid(System::String ^ fullFilePath) {
-        std::filesystem::path const path{ msclr::interop::marshal_as<std::string>(fullFilePath) };
+    void FileSystemHelpers::removeAssetFile(System::UInt64 assetGuid, FileType assetFileType) {
+        clove::Guid const guid{ assetGuid };
 
+        switch(assetFileType) {
+            case FileType::Mesh:
+                clove::Application::get().getAssetManager()->removeStaticModel(guid);
+                break;
+            case FileType::Texture:
+                clove::Application::get().getAssetManager()->removeTexture(guid);
+                break;
+            default:
+                CLOVE_ASSERT(false);
+            case FileType::Unknown:
+                break;
+        }
+    }
+
+    FileType FileSystemHelpers::getAssetFileType(System::String ^ fullFilePath) {
+        if(!isAssetFile(fullFilePath)) {
+            return FileType::Unknown;
+        }
+
+        std::filesystem::path const path{ msclr::interop::marshal_as<std::string>(fullFilePath) };
+        clove::serialiser::Node fileNode{ clove::loadYaml(path).getValue() };
+
+        return convertIntToFileType(fileNode["asset"]["type"].as<int32_t>());
+    }
+
+    System::UInt64 FileSystemHelpers::getAssetFileGuid(System::String ^ fullFilePath) {
+        if(!isAssetFile(fullFilePath)) {
+            return 0;
+        }
+
+        std::filesystem::path const path{ msclr::interop::marshal_as<std::string>(fullFilePath) };
         clove::serialiser::Node fileNode{ clove::loadYaml(path).getValue() };
 
         return fileNode["asset"]["guid"].as<uint64_t>();

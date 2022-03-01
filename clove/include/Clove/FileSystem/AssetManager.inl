@@ -1,3 +1,7 @@
+#include <Clove/Log/Log.hpp>
+
+CLOVE_DECLARE_LOG_CATEGORY(CloveAssetManager)
+
 namespace clove {
     AssetManager::AssetManager(VirtualFileSystem *vfs)
         : vfs{ vfs } {
@@ -43,6 +47,8 @@ namespace clove {
             asset.asset->reset();
 
             container.erase(assetPath);
+
+            CLOVE_LOG(CloveAssetManager, LogLevel::Trace, "Deleted Asset {0}.", assetPath);
         }
     }
 }

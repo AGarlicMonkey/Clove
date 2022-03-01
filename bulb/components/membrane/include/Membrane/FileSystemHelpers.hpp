@@ -2,6 +2,7 @@
 
 namespace membrane {
     public enum class FileType{
+        Unknown,
         Mesh,
         Texture,
     };
@@ -25,14 +26,15 @@ namespace membrane {
         /**
          * @brief Gets the type of a file.
          */
-        static FileType getFileType(System::String ^ file);
+        static FileType getFileType(System::String ^ fullFilePath);
+
+        static void createAssetFile(System::String ^ location, System::String ^ fullPath, System::String ^ relPath, System::String ^ vfsPath);
+        static void removeAssetFile(System::UInt64 assetGuid, FileType assetFileType);
 
         /**
          * @brief Gets the type of an asset file (*.clvasset)
          */
-        static FileType getAssetFileType(System::String ^ file);
-
-        static void createAssetFile(System::String ^ location, System::String ^ relPath, System::String ^ vfsPath);
+        static FileType getAssetFileType(System::String ^ fullFilePath);
 
         static System::UInt64 getAssetFileGuid(System::String ^ fullFilePath);
     };

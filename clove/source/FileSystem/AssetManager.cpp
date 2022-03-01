@@ -4,10 +4,7 @@
 #include "Clove/ModelLoader.hpp"
 #include "Clove/TextureLoader.hpp"
 
-#include <Clove/Log/Log.hpp>
 #include <Clove/Serialisation/Node.hpp>
-
-CLOVE_DECLARE_LOG_CATEGORY(CloveAssetManager)
 
 namespace clove {
     AssetPtr<StaticModel> AssetManager::getStaticModel(VirtualFileSystem::Path const &filePath) {
