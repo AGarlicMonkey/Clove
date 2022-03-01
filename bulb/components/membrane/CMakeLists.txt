@@ -14,9 +14,6 @@ add_library(
         ${INCLUDE}/EditorVFS.inl
         ${SOURCE}/EditorVFS.cpp
 
-        ${INCLUDE}/EditorViewport.hpp
-        ${SOURCE}/EditorViewport.cpp
-
         ${INCLUDE}/FileSystemHelpers.hpp
         ${SOURCE}/FileSystemHelpers.cpp
 

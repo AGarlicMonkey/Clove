@@ -17,8 +17,10 @@ namespace clove {
     public:
         struct Descriptor {
             std::string title{ "Clove window" };
-            int32_t width{ 800 }; /**< Width of the client region. */
+            int32_t width{ 800 };  /**< Width of the client region. */
             int32_t height{ 600 }; /**< Height of the client region. */
+
+            std::any parent{}; /**< The parent window to attach this window to. */
         };
 
         //VARIABLES

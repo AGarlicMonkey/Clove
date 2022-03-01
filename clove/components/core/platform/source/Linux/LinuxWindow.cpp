@@ -34,6 +34,7 @@ namespace clove {
     LinuxWindow::LinuxWindow(Descriptor const &descriptor)
         : Window(keyboardDispatcher, mouseDispatcher) {
         CLOVE_ASSERT_MSG(window == 0, "Window already exists! Currently only a single window on linux is supported");
+        CLOVE_ASSERT_MSG(!descriptor.parent.has_value(), "Windows as children are not supported on Linux");
 
         if(display == nullptr) {
             //Make the connection to the client, where to display the window

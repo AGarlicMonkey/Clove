@@ -2,7 +2,6 @@
 
 #include "Clove/FileSystem/FileSystemVFS.hpp"
 #include "Clove/InputEvent.hpp"
-#include "Clove/Rendering/GraphicsImageRenderTarget.hpp"
 #include "Clove/Rendering/HighDefinitionRenderer.hpp"
 #include "Clove/Rendering/SwapchainRenderTarget.hpp"
 #include "Clove/SubSystems/AudioSubSystem.hpp"
@@ -55,20 +54,6 @@ namespace clove {
         windowPtr->onWindowCloseDelegate.bind(&Application::shutdown, app.get());
 
         return app;
-    }
-
-    std::pair<std::unique_ptr<Application>, GraphicsImageRenderTarget *> Application::createHeadless(GraphicsApi graphicsApi, AudioApi audioApi, GhaImage::Descriptor renderTargetDescriptor, Keyboard *keyboard, Mouse *mouse, std::unique_ptr<VirtualFileSystem> fileSystem) {
-        CLOVE_LOG(CloveApplication, LogLevel::Info, "Creating headless application.");
-
-        auto graphicsDevice{ createGhaDevice(graphicsApi, std::any{}).getValue() };
-        auto audioDevice{ createAhaDevice(audioApi).getValue() };
-
-        auto renderTarget{ std::make_unique<GraphicsImageRenderTarget>(renderTargetDescriptor, graphicsDevice->getGraphicsFactory()) };
-        auto *renderTargetPtr{ renderTarget.get() };
-
-        std::unique_ptr<Application> app{ new Application{ std::move(graphicsDevice), std::move(audioDevice), keyboard, mouse, std::move(renderTarget), std::move(fileSystem) } };
-
-        return { std::move(app), renderTargetPtr };
     }
 
     Application &Application::get() {

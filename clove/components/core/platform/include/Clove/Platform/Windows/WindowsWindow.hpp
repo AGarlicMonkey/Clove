@@ -7,11 +7,11 @@ namespace clove {
     class WindowsWindow : public Window {
         //VARIABLES
     private:
-        bool open = false;
+        bool open{ false };
+        bool hasFocus{ false };
 
-        static LPCSTR constexpr className = "Clove";
+        static LPCSTR constexpr className{ "CloveDefaultWindowStyle" };
 
-        HINSTANCE instance;
         HWND windowsHandle;
 
         Keyboard::Dispatcher keyboardDispatcher{};

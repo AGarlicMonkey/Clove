@@ -26,7 +26,10 @@ namespace clove {
     }
 
     MacWindow::MacWindow(Descriptor const &descriptor)
-        : Window(keyboardDispatcher, mouseDispatcher) {
+        : Window{ keyboardDispatcher, mouseDispatcher }{
+
+        CLOVE_ASSERT_MSG(!descriptor.parent.has_value(), "Windows as children are not supported on macOS");
+
         //Application specific init
         [NSApplication sharedApplication];
         [NSApp finishLaunching];

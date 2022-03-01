@@ -114,8 +114,6 @@ add_library(
 		${INCLUDE}/Rendering/Camera.hpp
 		${INCLUDE}/Rendering/Camera.inl
 		${SOURCE}/Rendering/Camera.cpp
-		${INCLUDE}/Rendering/GraphicsImageRenderTarget.hpp
-		${SOURCE}/Rendering/GraphicsImageRenderTarget.cpp
 		${INCLUDE}/Rendering/HighDefinitionRenderer.hpp
 		${SOURCE}/Rendering/HighDefinitionRenderer.cpp
 		${INCLUDE}/Rendering/Material.hpp

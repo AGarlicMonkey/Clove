@@ -22,7 +22,15 @@ namespace Bulb {
         }
         private SceneViewModel scene = new SceneViewModel();
 
-        public FileExplorerViewModel FileExplorer { get; }
+        public FileExplorerViewModel FileExplorer {
+            get => fileExplorer;
+            set {
+                fileExplorer = value;
+                OnPropertyChanged(nameof(FileExplorer));
+            }
+        }
+        private FileExplorerViewModel fileExplorer;
+
         public LogViewModel Log { get; } = new LogViewModel();
 
         public string WindowTitle { get; }
@@ -64,14 +72,16 @@ namespace Bulb {
 
             CompileCommand = new RelayCommand(() => OnCompileGame?.Invoke());
 
-            FileExplorer = new FileExplorerViewModel(rootFilePath);
+            //TEMP: See below
+            //FileExplorer = new FileExplorerViewModel(rootFilePath);
 
             WindowTitle = $"Clove - {Membrane.Application.getProjectVersion()}";
         }
 
-        private void OnSceneLoaded(Membrane.Engine_OnSceneLoaded message) {
-            Scene = new SceneViewModel(message.enabledSubSystems, message.entities);
-        }
+        //TEMP: Just to make sure functions don't get called before opening a window.
+        public void Start(string rootFilePath) => FileExplorer = new FileExplorerViewModel(rootFilePath);
+
+        private void OnSceneLoaded(Membrane.Engine_OnSceneLoaded message) => Scene = new SceneViewModel(message.enabledSubSystems, message.entities);
 
         private void Play() {
             IsPlayButtonEnabled = false;
