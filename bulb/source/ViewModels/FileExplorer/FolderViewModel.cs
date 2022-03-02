@@ -12,12 +12,12 @@ namespace Bulb {
         /// <summary>
         /// A list of all directories within this directory. Will be empty if this item is a file.
         /// </summary>
-        public ObservableCollection<DirectoryItemViewModel> SubDirectories { get; } = new ObservableCollection<DirectoryItemViewModel>();
+        public ObservableCollection<FolderViewModel> SubDirectories { get; } = new ObservableCollection<FolderViewModel>();
 
         /// <summary>
         /// A list of all files within this directory. Will be empty if this item is a file.
         /// </summary>
-        public ObservableCollection<DirectoryItemViewModel> Files { get; } = new ObservableCollection<DirectoryItemViewModel>();
+        public ObservableCollection<FileViewModel> Files { get; } = new ObservableCollection<FileViewModel>();
 
         /// <summary>
         /// A list of every single item within this directory. Will be empty if this item is a file.
@@ -65,7 +65,16 @@ namespace Bulb {
 
         private void OnItemOpened(DirectoryItemViewModel item) => OnOpened?.Invoke(item);
 
-        private void OnItemDeleted(DirectoryItemViewModel item) => File.Delete(item.FullPath);
+        private void OnItemDeleted(DirectoryItemViewModel item) {
+            switch (item.Type) {
+                case ObjectType.File:
+                    File.Delete(item.FullPath);
+                    break;
+                case ObjectType.Directory:
+                    Directory.Delete(item.FullPath, recursive: true);
+                    break;
+            }
+        }
 
         private void OnFileCreated(FileSystemEventArgs eventArgs) {
             if (File.GetAttributes(eventArgs.FullPath).HasFlag(FileAttributes.Directory)) {
@@ -80,10 +89,12 @@ namespace Bulb {
                 if (item.Name == eventArgs.Name) {
                     _ = AllItems.Remove(item);
                     if (item is FolderViewModel folderVm) {
-                        _ = SubDirectories.Remove(item);
-                        //TODO: Loop through and delete children
+                        _ = SubDirectories.Remove(folderVm);
+                        //If a directory still has children when we come to delete that means it was not deleted through the editor (as we do it recursively)
+                        //so we need to make sure each item is removed from the asset manager.
+                        RemoveAllFilesInDirectory(folderVm);
                     } else if (item is FileViewModel fileVm) {
-                        _ = Files.Remove(item);
+                        _ = Files.Remove(fileVm);
                         Membrane.FileSystemHelpers.removeAssetFile(fileVm.AssetGuid, fileVm.AssetType);
                     }
 
@@ -120,6 +131,19 @@ namespace Bulb {
             AllItems.Add(vm);
 
             return vm;
+        }
+
+        /// <summary>
+        /// Recursively iterates all items in a directory and removes them from the asset manager
+        /// </summary>
+        /// <param name="folderVm"></param>
+        private void RemoveAllFilesInDirectory(FolderViewModel folderVm) {
+            foreach (FileViewModel file in folderVm.Files) {
+                Membrane.FileSystemHelpers.removeAssetFile(file.AssetGuid, file.AssetType);
+            }
+            foreach (FolderViewModel folder in folderVm.SubDirectories) {
+                RemoveAllFilesInDirectory(folder);
+            }
         }
 
         //Gets the relative path - TODO: Update to .Net5.0+ to use Path.GetRelativePath
