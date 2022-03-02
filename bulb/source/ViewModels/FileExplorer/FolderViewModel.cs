@@ -32,7 +32,7 @@ namespace Bulb {
             : this(new DirectoryInfo(path), null) {
         }
 
-        public FolderViewModel(DirectoryInfo directory, DirectoryItemViewModel parent)
+        public FolderViewModel(DirectoryInfo directory, FolderViewModel parent)
             : base(directory.Name, directory.FullName, parent) {
             NewFolderCommand = new RelayCommand(() => CreateNewFolder());
 
@@ -58,10 +58,16 @@ namespace Bulb {
             string assetFileLocation = $"{FullPath}{Path.DirectorySeparatorChar}{fileName}.clvasset";
             string fileRelativePath = MakeRelativePath(assetFileLocation, file);
 
-            string vfsPath = $"{Name}{Path.DirectorySeparatorChar}{Path.GetFileName(file)}".Replace($"content{Path.DirectorySeparatorChar}", ""); //Remove 'content' from the desired VFS path as this is where the VFS searches from
+            string vfsPath = $"{GetVfsPath()}{Path.DirectorySeparatorChar}{Path.GetFileName(file)}".Replace($"content{Path.DirectorySeparatorChar}", ""); //Remove 'content' from the desired VFS path as this is where the VFS searches from
 
             Membrane.FileSystemHelpers.createAssetFile(assetFileLocation, file, fileRelativePath, vfsPath);
         }
+
+        /// <summary>
+        /// Recursively iterates up the parent chain to get the full VFS path of this folder
+        /// </summary>
+        /// <returns></returns>
+        public string GetVfsPath() => Parent != null ? $"{Parent.GetVfsPath()}{Path.DirectorySeparatorChar}{Name}" : Name;
 
         private void OnItemOpened(DirectoryItemViewModel item) => OnOpened?.Invoke(item);
 
@@ -86,7 +92,7 @@ namespace Bulb {
 
         private void OnFileDeleted(FileSystemEventArgs eventArgs) {
             foreach (DirectoryItemViewModel item in AllItems) {
-                if (item.Name == eventArgs.Name) {
+                if (item.FullPath == eventArgs.FullPath) { //Make sure to compare full paths as some items (especially folders) could share the same name
                     _ = AllItems.Remove(item);
                     if (item is FolderViewModel folderVm) {
                         _ = SubDirectories.Remove(folderVm);

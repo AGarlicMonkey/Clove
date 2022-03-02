@@ -16,7 +16,7 @@ namespace Bulb {
         /// </summary>
         public Membrane.FileType AssetType { get; }
 
-        public FileViewModel(FileInfo file, DirectoryItemViewModel parent)
+        public FileViewModel(FileInfo file, FolderViewModel parent)
             : base(file.Name, file.FullName, parent) {
             AssetGuid = Membrane.FileSystemHelpers.getAssetFileGuid(FullPath);
             AssetType = Membrane.FileSystemHelpers.getAssetFileType(FullPath);

@@ -30,7 +30,7 @@ namespace Bulb {
         /// <summary>
         /// Parent directory of this item.
         /// </summary>
-        public DirectoryItemViewModel Parent { get; }
+        public FolderViewModel Parent { get; }
 
         public abstract ObjectType Type { get; }
 
@@ -41,7 +41,7 @@ namespace Bulb {
         public ItemEventHandler OnOpened;
         public ItemEventHandler OnDeleted;
 
-        protected DirectoryItemViewModel(string itemName, string itemFullPath, DirectoryItemViewModel parent) {
+        protected DirectoryItemViewModel(string itemName, string itemFullPath, FolderViewModel parent) {
             Name = itemName;
             FullPath = itemFullPath;
             OpenCommand = new RelayCommand(() => OnOpened?.Invoke(this));
