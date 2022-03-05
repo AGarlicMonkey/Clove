@@ -33,7 +33,7 @@ namespace clove {
 
     template<typename AssetType>
     bool AssetPtr<AssetType>::isLoaded() const noexcept {
-        return asset->has_value();
+        return isValid() && asset->has_value();
     }
 
     template<typename AssetType>
