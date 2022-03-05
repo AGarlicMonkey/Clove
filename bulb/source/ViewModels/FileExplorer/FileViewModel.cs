@@ -22,6 +22,16 @@ namespace Bulb {
             AssetType = Membrane.FileSystemHelpers.getAssetFileType(FullPath);
         }
 
+        public override void Rename(string newName) {
+            string newFileName = $"{newName}.clvasset";
+            string newPath = $"{Path.GetDirectoryName(FullPath)}{Path.DirectorySeparatorChar}{newFileName}";
+
+            Membrane.FileSystemHelpers.moveAssetFile(FullPath, newPath);
+
+            Name = newFileName;
+            FullPath = newPath;
+        }
+
         public override bool CanDropFile(string file) => false;
 
         public override void OnFileDropped(string file) => throw new System.InvalidOperationException("Attempting to drop a file onto another file. Operation is not supported.");

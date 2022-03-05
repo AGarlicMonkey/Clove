@@ -19,6 +19,8 @@
 
 	<Button.ContextMenu>
 		<ContextMenu>
+			<MenuItem Header="Rename"
+					  Click="BeginRename"/>
 			<MenuItem Header="Delete"
 					  Command="{Binding DeleteCommand}"/>
 		</ContextMenu>
@@ -44,8 +46,18 @@
 				</Style>
 			</Image.Style>
 		</Image>
-		
-		<TextBlock Text="{Binding Name}" 
-				   HorizontalAlignment="Center"/>
+
+		<Grid Background="Transparent"
+			  HorizontalAlignment="Center">
+			<Grid.ColumnDefinitions>
+				<ColumnDefinition Width="*"/>
+			</Grid.ColumnDefinitions>
+			
+			<TextBlock x:Name="StaticName"
+					   Text="{Binding Name}"/>
+
+			<TextBox x:Name="EditableName"
+					 KeyDown="EditableName_KeyDown"/>
+		</Grid>
 	</StackPanel>
 </Button>

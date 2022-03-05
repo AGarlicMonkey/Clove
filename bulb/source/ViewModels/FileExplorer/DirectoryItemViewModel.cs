@@ -25,7 +25,7 @@ namespace Bulb {
         /// <summary>
         /// Full system path of this item.
         /// </summary>
-        public string FullPath { get; }
+        public string FullPath { get; protected set; }
 
         /// <summary>
         /// Parent directory of this item.
@@ -50,14 +50,20 @@ namespace Bulb {
         }
 
         /// <summary>
-        /// Called by the view to check if a file can be dropped onto it
+        /// Renames this item and updates correlating file. 
+        /// </summary>
+        /// <param name="newName">New name for this file. It should not include any extensions.</param>
+        public abstract void Rename(string newName);
+
+        /// <summary>
+        /// Checks if file can be dropped onto this item.
         /// </summary>
         /// <param name="file"></param>
         /// <returns></returns>
         public abstract bool CanDropFile(string file);
 
         /// <summary>
-        /// Called by the view when a file has been dropped onto it. Only works if this item is a directory.
+        /// Perform a drop operation for file onto this item.
         /// </summary>
         /// <param name="file">The full path of the file</param>
         public abstract void OnFileDropped(string file);

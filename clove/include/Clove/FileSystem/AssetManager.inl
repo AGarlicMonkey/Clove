@@ -53,7 +53,7 @@ namespace clove {
             container.erase(sourcePath.string());
             container[destPath.string()] = asset;
 
-            CLOVE_LOG(CloveAssetManager, LogLevel::Debug, "Moved {0} to {1}.", sourcePath.string(), destPath.string());
+            CLOVE_LOG(CloveAssetManager, LogLevel::Trace, "Moved {0} to {1}.", sourcePath.string(), destPath.string());
         }
     }
 

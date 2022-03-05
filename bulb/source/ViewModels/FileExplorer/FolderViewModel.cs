@@ -80,6 +80,8 @@ namespace Bulb {
             }
         }
 
+        public override void Rename(string newName) => throw new NotImplementedException();
+
         private void OnItemOpened(DirectoryItemViewModel item) => OnOpened?.Invoke(item);
 
         private void OnItemDeleted(DirectoryItemViewModel item) {
@@ -89,6 +91,8 @@ namespace Bulb {
                     break;
                 case ObjectType.Directory:
                     Directory.Delete(item.FullPath, recursive: true);
+                    break;
+                default:
                     break;
             }
         }
