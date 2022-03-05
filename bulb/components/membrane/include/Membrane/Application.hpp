@@ -6,7 +6,6 @@
 namespace membrane {
     class EditorSubSystem;
     class RuntimeSubSystem;
-    ref class EditorViewport;
     ref class Editor_Stop;
     ref class Editor_Play;
 }
@@ -19,8 +18,6 @@ public ref class Application {
         //VARIABLES
     private:
         clove::Application *app;
-        clove::GraphicsImageRenderTarget *renderTarget;
-        EditorViewport ^viewport;
 
         bool isInEditorMode{ true };
 

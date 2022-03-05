@@ -22,6 +22,7 @@
 #include <Clove/SubSystems/RenderSubSystem.hpp>
 #include <Clove/SubSystems/TransformSubSystem.hpp>
 #include <msclr/marshal_cppstd.h>
+#include <Clove/Rendering/Renderer.hpp>
 
 using namespace clove;
 using namespace membrane;

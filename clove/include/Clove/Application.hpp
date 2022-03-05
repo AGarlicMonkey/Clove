@@ -20,7 +20,6 @@ namespace clove {
     class Keyboard;
     class GhaDevice;
     class Renderer;
-    class GraphicsImageRenderTarget;
     class AhaDevice;
     class PhysicsSubSystem;
     class RenderTarget;
