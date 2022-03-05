@@ -15,14 +15,15 @@ namespace Bulb {
 
             if (e.LeftButton == MouseButtonState.Pressed) {
                 var viewModel = (DirectoryItemViewModel)DataContext;
-                //Only drag-drop files for now
-                if (viewModel.Type == ObjectType.File) {
-                    var data = new DataObject();
-                    ulong guid = membrane.FileSystemHelpers.getAssetFileGuid(ViewModel.FullPath);
+                var data = new DragDropData();
 
-                    data.SetData(DataFormats.StringFormat, guid.ToString());
-                    _ = DragDrop.DoDragDrop(this, data, DragDropEffects.Copy);
+                if (viewModel.Type == ObjectType.File) {
+                    data.assetGuid = membrane.FileSystemHelpers.getAssetFileGuid(ViewModel.FullPath);
                 }
+
+                var dataObject = new DataObject();
+                dataObject.SetData(typeof(DragDropData), data);
+                _ = DragDrop.DoDragDrop(this, data, DragDropEffects.Copy);
             }
         }
     }

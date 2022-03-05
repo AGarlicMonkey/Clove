@@ -16,14 +16,7 @@ set(
 #Executable
 add_executable(
     Bulb
-	    ${SOURCE}/EditorApp.xaml
-        ${SOURCE}/EditorApp.xaml.cs
-
-		${SOURCE}/EditorPropertyHelper.cs
-		${SOURCE}/SizePercentageConverter.cs
-
-	    ${SOURCE}/AssemblyInfo.cs
-        
+       
 		${SOURCE}/Views/FileExplorer/DirectoryTree.xaml
 		${SOURCE}/Views/FileExplorer/DirectoryTree.xaml.cs
 		${SOURCE}/Views/FileExplorer/DirectoryTreeItem.xaml
@@ -60,6 +53,16 @@ add_executable(
 		${SOURCE}/ViewModels/LogViewModel.cs
 		${SOURCE}/ViewModels/TypeViewModel.cs
 		
+	    ${SOURCE}/AssemblyInfo.cs
+
+		${SOURCE}/DragDropData.cs
+
+	    ${SOURCE}/EditorApp.xaml
+        ${SOURCE}/EditorApp.xaml.cs
+
+		${SOURCE}/EditorPropertyHelper.cs
+		${SOURCE}/SizePercentageConverter.cs
+
 		${RESOURCES}
 )
 
