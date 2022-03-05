@@ -26,6 +26,11 @@ namespace Bulb {
 
         public ICommand NewFolderCommand { get; }
 
+        /// <summary>
+        /// The full Virtual File System path of this item.
+        /// </summary>
+        public string VfsPath => Parent != null ? $"{Parent.VfsPath}/{Name}" : Name;
+
         private readonly FileSystemWatcher watcher;
 
         //Ignore deleting this file through the asset manager if an event fires for it. Requried when moving files.
