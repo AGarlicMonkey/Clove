@@ -13,6 +13,22 @@ namespace clove {
 
     AssetManager::~AssetManager() = default;
 
+    void AssetManager::moveStaticModel(VirtualFileSystem::Path const &sourcePath, VirtualFileSystem::Path const &destPath) {
+        moveAsset(staticModels, sourcePath, destPath);
+    }
+
+    void AssetManager::moveAnimatedModel(VirtualFileSystem::Path const &sourcePath, VirtualFileSystem::Path const &destPath) {
+        moveAsset(animatedModels, sourcePath, destPath);
+    }
+
+    void AssetManager::moveTexture(VirtualFileSystem::Path const &sourcePath, VirtualFileSystem::Path const &destPath) {
+        moveAsset(textures, sourcePath, destPath);
+    }
+
+    void AssetManager::moveSound(VirtualFileSystem::Path const &sourcePath, VirtualFileSystem::Path const &destPath) {
+        moveAsset(sounds, sourcePath, destPath);
+    }
+
     void AssetManager::removeStaticModel(Guid const assetGuid) {
         removeAsset(staticModels, assetGuid);
     }
@@ -27,6 +43,18 @@ namespace clove {
 
     void AssetManager::removeSound(Guid const assetGuid) {
         removeAsset(sounds, assetGuid);
+    }
+
+    template<typename AssetType>
+    void AssetManager::moveAsset(std::unordered_map<std::string, AssetPtr<AssetType>> &container, VirtualFileSystem::Path const &sourcePath, VirtualFileSystem::Path const &destPath) {
+        AssetPtr<AssetType> asset{ container.at(sourcePath.string()) };
+        
+        if(asset.isValid()) {
+            container.erase(sourcePath.string());
+            container[destPath.string()] = asset;
+
+            CLOVE_LOG(CloveAssetManager, LogLevel::Debug, "Moved {0} to {1}.", sourcePath.string(), destPath.string());
+        }
     }
 
     template<typename AssetType>

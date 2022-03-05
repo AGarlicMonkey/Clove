@@ -5,7 +5,10 @@
 		xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
 		xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
 		mc:Ignorable="d" d:DesignWidth="267.396" d:DesignHeight="155.156"
-		Style="{StaticResource DirectoryItemButton}">
+		Style="{StaticResource DirectoryItemButton}"
+		AllowDrop="True"
+		DragOver="Button_DragOver"
+		Drop="Button_Drop">
 	<Button.InputBindings>
 		<!-- Allow for custom input bindings to use ICommand -->
 		<MouseBinding Gesture="LeftDoubleClick" 

@@ -96,7 +96,28 @@ namespace clove {
         AssetPtr<SoundFile> getSound(Guid const assetGuid);
 
         /**
-         * @brief Resets any AssetPtrs for the asset along with removing all references inside the AssetManager.
+         * @brief Updates any AssetPtrs to point at the new asset location. Note: this does not actually move any files.
+         * That is expected to be handled by external systems as the asset manager does not have any knowledge of the external file system.
+         * @param sourcePath 
+         * @param destPath 
+         */
+        inline void moveStaticModel(VirtualFileSystem::Path const &sourcePath, VirtualFileSystem::Path const &destPath);
+        /**
+         * @copydoc moveStaticModel
+         */
+        inline void moveAnimatedModel(VirtualFileSystem::Path const &sourcePath, VirtualFileSystem::Path const &destPath);
+        /**
+         * @copydoc moveStaticModel
+         */
+        inline void moveTexture(VirtualFileSystem::Path const &sourcePath, VirtualFileSystem::Path const &destPath);
+        /**
+         * @copydoc moveStaticModel
+         */
+        inline void moveSound(VirtualFileSystem::Path const &sourcePath, VirtualFileSystem::Path const &destPath);
+
+        /**
+         * @brief Resets any AssetPtrs for the asset along with removing all references inside the AssetManager. Note: this does not actually remove any files.
+         * That is expected to be handled by external systems as the asset manager does not have any knowledge of the external file system.
          * @param filePath 
          */
         inline void removeStaticModel(Guid const assetGuid);
@@ -130,6 +151,9 @@ namespace clove {
         AssetPtr<AnimatedModel> addAnimatedModel(VirtualFileSystem::Path const &filePath, Guid guid);
         AssetPtr<Texture> addTexture(VirtualFileSystem::Path const &filePath, Guid guid);
         AssetPtr<SoundFile> addSound(VirtualFileSystem::Path const &filePath, Guid guid);
+
+        template<typename AssetType>
+        void moveAsset(std::unordered_map<std::string, AssetPtr<AssetType>> &container, VirtualFileSystem::Path const &sourcePath, VirtualFileSystem::Path const &destPath);
 
         template<typename AssetType>
         void removeAsset(std::unordered_map<std::string, AssetPtr<AssetType>> &container, Guid const assetGuid);

@@ -28,6 +28,9 @@ namespace Bulb {
 
         private readonly FileSystemWatcher watcher;
 
+        //Ignore deleting this file through the asset manager if an event fires for it. Requried when moving files.
+        private static string ignoreDelete = null;
+
         public FolderViewModel(string path)
             : this(new DirectoryInfo(path), null) {
         }
@@ -51,23 +54,26 @@ namespace Bulb {
             }
         }
 
-        public override bool CanDropFile(string file) => Membrane.FileSystemHelpers.isFileSupported(file);
+        public override bool CanDropFile(string file) => Path.GetDirectoryName(file) != FullPath && Membrane.FileSystemHelpers.isFileSupported(file);
 
         public override void OnFileDropped(string file) {
-            string fileName = Path.GetFileNameWithoutExtension(file);
-            string assetFileLocation = $"{FullPath}{Path.DirectorySeparatorChar}{fileName}.clvasset";
-            string fileRelativePath = MakeRelativePath(assetFileLocation, file);
+            if (!Membrane.FileSystemHelpers.isAssetFile(file)) {
+                //Create an asset file from the external dropped file
+                string fileName = Path.GetFileNameWithoutExtension(file);
+                string assetFileLocation = $"{FullPath}{Path.DirectorySeparatorChar}{fileName}.clvasset";
+                string fileRelativePath = MakeRelativePath(assetFileLocation, file);
 
-            string vfsPath = $"{GetVfsPath()}{Path.DirectorySeparatorChar}{Path.GetFileName(file)}".Replace($"content{Path.DirectorySeparatorChar}", ""); //Remove 'content' from the desired VFS path as this is where the VFS searches from
+                string vfsPath = $"{VfsPath}{Path.DirectorySeparatorChar}{Path.GetFileName(file)}".Replace($"content{Path.DirectorySeparatorChar}", ""); //Remove 'content' from the desired VFS path as this is where the VFS searches from
 
-            Membrane.FileSystemHelpers.createAssetFile(assetFileLocation, file, fileRelativePath, vfsPath);
+                Membrane.FileSystemHelpers.createAssetFile(assetFileLocation, file, fileRelativePath, vfsPath);
+            } else {
+                //Move the asset file into this folder
+                string fileName = Path.GetFileName(file);
+                ignoreDelete = file;
+
+                Membrane.FileSystemHelpers.moveAssetFile(file, $"{FullPath}{Path.DirectorySeparatorChar}{fileName}");
+            }
         }
-
-        /// <summary>
-        /// Recursively iterates up the parent chain to get the full VFS path of this folder
-        /// </summary>
-        /// <returns></returns>
-        public string GetVfsPath() => Parent != null ? $"{Parent.GetVfsPath()}{Path.DirectorySeparatorChar}{Name}" : Name;
 
         private void OnItemOpened(DirectoryItemViewModel item) => OnOpened?.Invoke(item);
 
@@ -101,7 +107,11 @@ namespace Bulb {
                         RemoveAllFilesInDirectory(folderVm);
                     } else if (item is FileViewModel fileVm) {
                         _ = Files.Remove(fileVm);
-                        Membrane.FileSystemHelpers.removeAssetFile(fileVm.AssetGuid, fileVm.AssetType);
+                        if(ignoreDelete == fileVm.FullPath) {
+                            ignoreDelete = null;
+                        } else {
+                            Membrane.FileSystemHelpers.removeAssetFile(fileVm.AssetGuid, fileVm.AssetType);
+                        }
                     }
 
                     item.OnOpened -= OnItemOpened;

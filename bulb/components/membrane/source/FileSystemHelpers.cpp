@@ -124,6 +124,42 @@ namespace membrane {
         }
     }
 
+    void FileSystemHelpers::moveAssetFile(System::String ^sourceFileName, System::String ^destFileName) {
+        std::filesystem::path const source{ msclr::interop::marshal_as<std::string>(sourceFileName) };
+        std::filesystem::path const dest{ msclr::interop::marshal_as<std::string>(destFileName) };
+
+        clove::serialiser::Node assetNode{ clove::loadYaml(source).getValue() };
+        std::filesystem::path const assetPath{ GAME_DIR "/content" + assetNode["asset"]["path"].as<std::string>() };
+        
+        //Make sure to update the new relative path       
+        assetNode["asset"]["path"] = std::filesystem::relative(assetPath, dest).string();
+        {
+            std::ofstream fileStream{ source, std::ios::out | std::ios::trunc };
+            fileStream << clove::emittYaml(assetNode);
+        }
+
+        //Convert these into the proper vfs paths (folder/model.obj etc.) as the editor will always deal with absolute paths.
+        clove::VirtualFileSystem::Path const sourceVfs{ std::filesystem::relative(source, GAME_DIR "/content").replace_extension(assetPath.extension()) };
+        clove::VirtualFileSystem::Path const destVfs{ std::filesystem::relative(dest, GAME_DIR "/content").replace_extension(assetPath.extension()) };
+
+        //First, notify the asset manager of the move
+        switch(getFileType(sourceFileName)) {
+            case FileType::Mesh:
+                clove::Application::get().getAssetManager()->moveStaticModel(sourceVfs, destVfs);
+                break;
+            case FileType::Texture:
+                clove::Application::get().getAssetManager()->moveTexture(sourceVfs, destVfs);
+                break;
+            default:
+                CLOVE_ASSERT(false);
+            case FileType::Unknown:
+                break;
+        }
+
+        //Then move the file through the OS
+        std::filesystem::rename(source, dest);
+    }
+
     void FileSystemHelpers::removeAssetFile(System::UInt64 assetGuid, FileType assetFileType) {
         clove::Guid const guid{ assetGuid };
 

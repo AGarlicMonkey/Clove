@@ -29,6 +29,7 @@ namespace membrane {
         static FileType getFileType(System::String ^ fullFilePath);
 
         static void createAssetFile(System::String ^ location, System::String ^ fullPath, System::String ^ relPath, System::String ^ vfsPath);
+        static void moveAssetFile(System::String ^ sourceFileName, System::String ^ destFileName);
         static void removeAssetFile(System::UInt64 assetGuid, FileType assetFileType);
 
         /**

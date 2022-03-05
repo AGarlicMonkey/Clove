@@ -11,7 +11,7 @@ namespace Bulb {
     /// </summary>
     public abstract class DirectoryItemViewModel : ViewModel {
         /// <summary>
-        /// Name of this item.
+        /// Name of this item with extension.
         /// </summary>
         public string Name {
             get => name;
@@ -26,6 +26,11 @@ namespace Bulb {
         /// Full system path of this item.
         /// </summary>
         public string FullPath { get; }
+
+        /// <summary>
+        /// The full Virtual File System path of this item.
+        /// </summary>
+        public string VfsPath => Parent != null ? $"{Parent.VfsPath}/{Name}" : Name;
 
         /// <summary>
         /// Parent directory of this item.

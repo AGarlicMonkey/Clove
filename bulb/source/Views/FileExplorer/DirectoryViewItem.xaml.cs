@@ -14,16 +14,36 @@ namespace Bulb {
             base.OnMouseMove(e);
 
             if (e.LeftButton == MouseButtonState.Pressed) {
-                var viewModel = (DirectoryItemViewModel)DataContext;
-                var data = new DragDropData();
+                var data = new DragDropData {
+                    assetFullPath = ViewModel.FullPath
+                };
 
-                if (viewModel.Type == ObjectType.File) {
+                if (ViewModel.Type == ObjectType.File) {
                     data.assetGuid = membrane.FileSystemHelpers.getAssetFileGuid(ViewModel.FullPath);
                 }
 
                 var dataObject = new DataObject();
                 dataObject.SetData(typeof(DragDropData), data);
-                _ = DragDrop.DoDragDrop(this, data, DragDropEffects.Copy);
+                _ = DragDrop.DoDragDrop(this, data, DragDropEffects.All);
+            }
+        }
+
+        private void Button_DragOver(object sender, DragEventArgs e) => e.Effects = CanDrop(e.Data) ? DragDropEffects.Move : DragDropEffects.None;
+
+        private void Button_Drop(object sender, DragEventArgs e) {
+            if (CanDrop(e.Data)) {
+                var data = ((DragDropData)e.Data.GetData(typeof(DragDropData)));
+                string filePath = data.assetFullPath;
+                ViewModel.OnFileDropped(filePath);
+            }
+        }
+
+        private bool CanDrop(IDataObject dataObject) {
+            if (dataObject.GetDataPresent(typeof(DragDropData))) {
+                var data = ((DragDropData)dataObject.GetData(typeof(DragDropData)));
+                return data.assetFullPath != ViewModel.FullPath && ViewModel.CanDropFile(data.assetFullPath);
+            } else {
+                return false;
             }
         }
     }
