@@ -40,12 +40,15 @@ namespace clove {
         }
 
         template<size_t N, std::floating_point T>
-        void getCfactor(mat<N, N, T> const &m, mat<N, N, T> &t, int p, int q, int n) {
-            int i = 0, j = 0;
-            for(int r = 0; r < n; r++) {
-                for(int c = 0; c < n; c++) {
+        mat<N, N, T> getCofactor(mat<N, N, T> const &m, int32_t p, int32_t q, int32_t n) {
+            int32_t i{ 0 };
+            int32_t j{ 0 };
+            mat<N, N, T> result{};
+
+            for(int32_t r{ 0 }; r < n; ++r) {
+                for(int32_t c{ 0 }; c < n; ++c) {
                     if(r != p && c != q) {
-                        t[i][j++] = m[r][c];
+                        result[i][j++] = m[r][c];
                         if(j == n - 1) {
                             j = 0;
                             i++;
@@ -53,41 +56,46 @@ namespace clove {
                     }
                 }
             }
+
+            return result;
         }
 
         template<size_t N, std::floating_point T>
-        T getDeterminant(mat<N, N, T> const &m, int n) {
-            T D = 0;
-            if(n == 1)
-                return m[0][0];
-            mat<N, N, T> t;//store cofactors
-            int s = 1;      //store sign multiplier //
-            for(int f = 0; f < n; f++) {
-                //For Getting Cofactor of M[0][f] do getCfactor(M, t, 0, f, n); D += s * M[0][f] * DET(t, n - 1);
-                getCfactor(m, t, 0, f, n);
-                D += s * m[0][f] * getDeterminant(t, n - 1);
-                s = -s;
-            }
-            return D;
-        }
+        T getDeterminant(mat<N, N, T> const &m, int32_t n) {
+            T determinant{ 0 };
 
-        template<size_t N, std::floating_point T>
-        void getAdjoint(mat<N, N, T> const &m, mat<N, N, T> &adj) {
-            //to find adjoint matrix
-            if(N == 1) {
-                adj[0][0] = 1;
-                return;
-            }
-            int s = 1;
-            mat<N, N, T> t;
-            for(int i = 0; i < N; i++) {
-                for(int j = 0; j < N; j++) {
-                    //To get cofactor of M[i][j]
-                    getCfactor(m, t, i, j, N);
-                    s         = ((i + j) % 2 == 0) ? 1 : -1;     //sign of adj[j][i] positive if sum of row and column indexes is even.
-                    adj[j][i] = (s) * (getDeterminant(t, N - 1));//Interchange rows and columns to get the transpose of the cofactor matrix
+            if(n != 1) {
+                int32_t sign{ 1 };
+                for(int32_t f{ 0 }; f < n; ++f) {
+                    mat<N, N, T> const cofactors{ getCofactor(m, 0, f, n) };
+                    determinant += sign * m[0][f] * getDeterminant(cofactors, n - 1);
+                    sign = -sign;
                 }
+            } else {
+                determinant = m[0][0];
             }
+
+            return determinant;
+        }
+
+        template<size_t N, std::floating_point T>
+        mat<N, N, T> getAdjoint(mat<N, N, T> const &m) {
+            mat<N, N, T> adj{};
+
+            if(N != 1) {
+                int32_t sign{ 1 };
+                for(int32_t i{ 0 }; i < N; ++i) {
+                    for(int32_t j{ 0 }; j < N; ++j) {
+                        mat<N, N, T> const cofactors{ getCofactor(m, i, j, N) };
+                        sign      = ((i + j) % 2 == 0) ? 1 : -1;
+                        adj[j][i] = sign * (getDeterminant(cofactors, N - 1));//Interchange rows and columns to get the transpose of the cofactor matrix
+                    }
+                }
+            } else {
+                adj[0][0] = 1;
+            }
+
+            return adj;
         }
     }
 
@@ -188,13 +196,11 @@ namespace clove {
     template<size_t N, std::floating_point T>
     constexpr mat<N, N, T> inverse(mat<N, N, T> const &m) {
         T const determinant{ internal::getDeterminant(m, N) };
-
-        mat<N, N, T> adj;
-        internal::getAdjoint(m, adj);
+        mat<N, N, T> const adj{ internal::getAdjoint(m) };
 
         mat<N, N, T> result;
-        for(int i{ 0 }; i < N; ++i){
-            for(int j{ 0 }; j < N; ++j){
+        for(int i{ 0 }; i < N; ++i) {
+            for(int j{ 0 }; j < N; ++j) {
                 result[i][j] = adj[i][j] / determinant;
             }
         }
