@@ -129,3 +129,40 @@ TEST(MatrixTests, CanTransposeAMatrix) {
     EXPECT_EQ(transposed[3][2], matrix[2][3]);
     EXPECT_EQ(transposed[3][3], matrix[3][3]);
 }
+
+TEST(MatrixTests, CanInverseAMatrix) {
+    {
+        mat3f const aIdentity{ 1 };
+
+        mat3f a{};
+        a[0] = { 3, 0, 2 };
+        a[1] = { 2, 0, -2 };
+        a[2] = { 0, 1, 1 };
+
+        ASSERT_NE(a, aIdentity);
+
+        auto aInv{ inverse(a) };
+
+        EXPECT_EQ(a * aInv, aIdentity);
+        EXPECT_EQ(aInv * a, aIdentity);
+    }
+
+    {
+        mat4f const bIdentity{ 1 };
+
+        mat4f b{};
+        b[0] = { 2, 0, 0, 0 };
+        b[1] = { 0, 2, 0, 0 };
+        b[2] = { 0, 0, 2, 0 };
+        b[3] = { 0, 0, 0, 1 };
+
+        ASSERT_NE(b, bIdentity);
+
+        auto bInv{ inverse(b) };
+
+        EXPECT_EQ(b * bInv, bIdentity);
+        EXPECT_EQ(bInv * b, bIdentity);
+    }
+
+    //TODO: Test for detereminant 0
+}

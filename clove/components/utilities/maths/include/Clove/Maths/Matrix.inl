@@ -14,7 +14,7 @@ namespace clove {
             using intType  = int64_t;
             using uintType = uint64_t;
         };
-        
+
         template<typename T>
         constexpr bool compareFloatingPoint(T a, T b) requires std::is_floating_point_v<T> {
             using intType = SizeToIntType<sizeof(T)>::intType;
@@ -37,6 +37,57 @@ namespace clove {
 
             intType const intDiff{ aInt >= bInt ? aInt - bInt : bInt - aInt };
             return intDiff <= maxUlps;
+        }
+
+        template<size_t N, std::floating_point T>
+        void getCfactor(mat<N, N, T> const &m, mat<N, N, T> &t, int p, int q, int n) {
+            int i = 0, j = 0;
+            for(int r = 0; r < n; r++) {
+                for(int c = 0; c < n; c++) {
+                    if(r != p && c != q) {
+                        t[i][j++] = m[r][c];
+                        if(j == n - 1) {
+                            j = 0;
+                            i++;
+                        }
+                    }
+                }
+            }
+        }
+
+        template<size_t N, std::floating_point T>
+        T getDeterminant(mat<N, N, T> const &m, int n) {
+            T D = 0;
+            if(n == 1)
+                return m[0][0];
+            mat<N, N, T> t;//store cofactors
+            int s = 1;      //store sign multiplier //
+            for(int f = 0; f < n; f++) {
+                //For Getting Cofactor of M[0][f] do getCfactor(M, t, 0, f, n); D += s * M[0][f] * DET(t, n - 1);
+                getCfactor(m, t, 0, f, n);
+                D += s * m[0][f] * getDeterminant(t, n - 1);
+                s = -s;
+            }
+            return D;
+        }
+
+        template<size_t N, std::floating_point T>
+        void getAdjoint(mat<N, N, T> const &m, mat<N, N, T> &adj) {
+            //to find adjoint matrix
+            if(N == 1) {
+                adj[0][0] = 1;
+                return;
+            }
+            int s = 1;
+            mat<N, N, T> t;
+            for(int i = 0; i < N; i++) {
+                for(int j = 0; j < N; j++) {
+                    //To get cofactor of M[i][j]
+                    getCfactor(m, t, i, j, N);
+                    s         = ((i + j) % 2 == 0) ? 1 : -1;     //sign of adj[j][i] positive if sum of row and column indexes is even.
+                    adj[j][i] = (s) * (getDeterminant(t, N - 1));//Interchange rows and columns to get the transpose of the cofactor matrix
+                }
+            }
         }
     }
 
@@ -70,7 +121,7 @@ namespace clove {
 
         for(size_t r1{ 0 }; r1 < R1; ++r1) {
             for(size_t r2{ 0 }; r2 < R2; ++r2) {
-                for(size_t c{ 0 }; c < C; ++c){
+                for(size_t c{ 0 }; c < C; ++c) {
                     result[r1][r2] += a[r1][c] * b[c][r2];
                 }
             }
@@ -99,7 +150,7 @@ namespace clove {
     }
 
     template<size_t R, size_t C, number T>
-    constexpr bool operator!=(mat<R, C, T> const &lhs, mat<R, C, T> const &rhs){
+    constexpr bool operator!=(mat<R, C, T> const &lhs, mat<R, C, T> const &rhs) {
         return !(lhs == rhs);
     }
 
@@ -132,5 +183,22 @@ namespace clove {
         }
 
         return transposed;
+    }
+
+    template<size_t N, std::floating_point T>
+    constexpr mat<N, N, T> inverse(mat<N, N, T> const &m) {
+        T const determinant{ internal::getDeterminant(m, N) };
+
+        mat<N, N, T> adj;
+        internal::getAdjoint(m, adj);
+
+        mat<N, N, T> result;
+        for(int i{ 0 }; i < N; ++i){
+            for(int j{ 0 }; j < N; ++j){
+                result[i][j] = adj[i][j] / determinant;
+            }
+        }
+
+        return result;
     }
 }

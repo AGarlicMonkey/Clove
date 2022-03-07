@@ -32,6 +32,7 @@ namespace clove {
 
 //Matrix aliases
 namespace clove {
+    using mat3f = mat<3, 3, float>;
     using mat4f = mat<4, 4, float>;
 }
 
@@ -40,6 +41,8 @@ namespace clove {
     template<size_t R, size_t C, number T>
     constexpr mat<R, C, T> transpose(mat<R, C, T> const &m);
 
+    template<size_t N, std::floating_point T>
+    constexpr mat<N, N, T> inverse(mat<N, N, T> const &m);
 }
 
 #include "Matrix.inl"
