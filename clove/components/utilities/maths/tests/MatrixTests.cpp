@@ -67,45 +67,70 @@ TEST(MatrixTests, CanMultiplyMatrixByVector) {
 }
 
 TEST(MatrixTests, CanMultiplyMatrixByMatrix) {
-    mat<2, 3, float> a{};
-    a[0] = { 0, 3, 5 };
-    a[1] = { 5, 5, 2 };
+    //Test for correct row / colum sizing
+    {
+        mat<2, 3, float> a{};
+        a[0] = { 0, 3, 5 };
+        a[1] = { 5, 5, 2 };
 
-    mat<3, 2, float> b{};
-    b[0] = { 3, 4 };
-    b[1] = { 3, -2 };
-    b[2] = { 4, -2 };
+        mat<3, 2, float> b{};
+        b[0] = { 3, 4 };
+        b[1] = { 3, -2 };
+        b[2] = { 4, -2 };
 
-    mat<2, 2, float> result{ a * b };
+        mat<2, 2, float> result{ a * b };
 
-    EXPECT_EQ(result[0][0], 29);
-    EXPECT_EQ(result[0][1], -16);
-    EXPECT_EQ(result[1][0], 38);
-    EXPECT_EQ(result[1][1], 6);
+        EXPECT_EQ(result[0][0], 29);
+        EXPECT_EQ(result[0][1], -16);
+        EXPECT_EQ(result[1][0], 38);
+        EXPECT_EQ(result[1][1], 6);
+    }
+
+    //Test for large matrices
+    {
+        mat4f a{};
+        a[0] = { 0, 3, 5, 3 };
+        a[1] = { 1, 7, 2, 2 };
+        a[2] = { 5, 1, 2, 7 };
+        a[3] = { 3, 2, 2, 9 };
+
+        mat4f b{};
+        b[0] = { 3, 4, 6, 5 };
+        b[1] = { 3, -2, 8, 1 };
+        b[2] = { 8, -6, 9, 4 };
+        b[3] = { 4, -2, 1, 6 };
+
+        mat4f result{ a * b };
+
+        EXPECT_EQ(result[0][0], 61);
+        EXPECT_EQ(result[0][1], -42);
+        EXPECT_EQ(result[0][2], 72);
+        EXPECT_EQ(result[0][3], 41);
+
+        EXPECT_EQ(result[1][0], 48);
+        EXPECT_EQ(result[1][1], -26);
+        EXPECT_EQ(result[1][2], 82);
+        EXPECT_EQ(result[1][3], 32);
+
+        EXPECT_EQ(result[2][0], 62);
+        EXPECT_EQ(result[2][1], -8);
+        EXPECT_EQ(result[2][2], 63);
+        EXPECT_EQ(result[2][3], 76);
+
+        EXPECT_EQ(result[3][0], 67);
+        EXPECT_EQ(result[3][1], -22);
+        EXPECT_EQ(result[3][2], 61);
+        EXPECT_EQ(result[3][3], 79);
+    }
 }
 
 TEST(MatrixTests, CanTransposeAMatrix) {
     mat4f matrix{};
 
-    matrix[0][0] = 0;
-    matrix[0][1] = 1;
-    matrix[0][2] = 2;
-    matrix[0][3] = 3;
-
-    matrix[1][0] = 4;
-    matrix[1][1] = 4;
-    matrix[1][2] = 4;
-    matrix[1][3] = 4;
-
-    matrix[2][0] = 6;
-    matrix[2][1] = 7;
-    matrix[2][2] = 6;
-    matrix[2][3] = 7;
-
-    matrix[3][0] = 1;
-    matrix[3][1] = 1;
-    matrix[3][2] = 0;
-    matrix[3][3] = 0;
+    matrix[0] = { 0, 1, 2, 3 };
+    matrix[1] = { 4, 4, 4, 4 };
+    matrix[2] = { 6, 7, 6, 7 };
+    matrix[3] = { 1, 1, 0, 0 };
 
     mat4f const transposed{ transpose(matrix) };
 
