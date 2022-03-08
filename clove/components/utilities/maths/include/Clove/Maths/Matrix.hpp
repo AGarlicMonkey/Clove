@@ -4,6 +4,7 @@
 #include "Vector.hpp"
 
 #include <array>
+#include <cstddef>
 
 //Matrix types
 namespace clove {
@@ -14,16 +15,16 @@ namespace clove {
         constexpr mat() = default;
         constexpr mat(T val);
 
-        template<size_t R, size_t C, /* number */ typename T> //TODO: should be number but compiler issue is preventing that
-        friend constexpr vec<C, T> operator*(mat<R, C, T> const &m, vec<C, T> const &v);
+        template<size_t R1, size_t C1, number U>
+        friend constexpr vec<C1, U> operator*(mat<R1, C1, U> const &m, vec<C1, U> const &v);
 
-        template<size_t R1, size_t R2, size_t C, /* number */ typename T>//TODO: should be number but compiler issue is preventing that
-        friend constexpr mat<R1, R2, T> operator*(mat<R1, C, T> const &a, mat<C, R2, T> const &b);
+        template<size_t R1, size_t R2, size_t C1, number U>
+        friend constexpr mat<R1, R2, U> operator*(mat<R1, C1, U> const &a, mat<C1, R2, U> const &b);
 
-        template<size_t R, size_t C, /* number */ typename T>//TODO: should be number but compiler issue is preventing that
-        friend constexpr bool operator==(mat<R, C, T> const &lhs, mat<R, C, T> const &rhs);
-        template<size_t R, size_t C, /* number */ typename T>//TODO: should be number but compiler issue is preventing that
-        friend constexpr bool operator!=(mat<R, C, T> const &lhs, mat<R, C, T> const &rhs);
+        template<size_t R1, size_t C1, number U>
+        friend constexpr bool operator==(mat<R1, C1, U> const &lhs, mat<R1, C1, U> const &rhs);
+        template<size_t R1, size_t C1, number U>
+        friend constexpr bool operator!=(mat<R1, C1, U> const &lhs, mat<R1, C1, U> const &rhs);
 
         constexpr vec<C, T> &operator[](size_t const index);
         constexpr vec<C, T> const &operator[](size_t const index) const;

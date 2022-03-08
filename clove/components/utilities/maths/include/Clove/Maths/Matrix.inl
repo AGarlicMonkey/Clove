@@ -1,3 +1,5 @@
+#include <cinttypes>
+
 namespace clove {
     namespace internal {
         template<size_t size>
@@ -17,7 +19,7 @@ namespace clove {
 
         template<typename T>
         constexpr bool compareFloatingPoint(T a, T b) requires std::is_floating_point_v<T> {
-            using intType = SizeToIntType<sizeof(T)>::intType;
+            using intType = typename SizeToIntType<sizeof(T)>::intType;
 
             union fpUnion {
                 T val;
