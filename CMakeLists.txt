@@ -21,17 +21,22 @@ option(CLOVE_MANUALLY_INSTALL_PACKAGES "Stop CMake automatically installing cona
 #Required for linking shared object (*.so) files on Linux
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
+#There can be linking issues on macOS when running with shared libraries from conan. So we put everything in bin/lib so we can import the conan dylibs into there also.
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
+
 #Set up conan
 if(NOT CLOVE_MANUALLY_INSTALL_PACKAGES)
-	list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_BINARY_DIR})
-	list(APPEND CMAKE_PREFIX_PATH ${CMAKE_CURRENT_BINARY_DIR})
+	list(APPEND CMAKE_MODULE_PATH ${CMAKE_BINARY_DIR})
+	list(APPEND CMAKE_PREFIX_PATH ${CMAKE_BINARY_DIR})
 
-	if(NOT EXISTS "${CMAKE_CURRENT_BINARY_DIR}/conan.cmake")
+	if(NOT EXISTS "${CMAKE_BINARY_DIR}/conan.cmake")
  		message(STATUS "Downloading conan.cmake from https://github.com/conan-io/cmake-conan")
    		file(DOWNLOAD "https://raw.githubusercontent.com/conan-io/cmake-conan/release/0.17/conan.cmake"
         	          "${CMAKE_CURRENT_BINARY_DIR}/conan.cmake")
 	endif()
-	include(${CMAKE_CURRENT_BINARY_DIR}/conan.cmake)
+	include(${CMAKE_BINARY_DIR}/conan.cmake)
 
 	get_property(isMultiConfig GLOBAL PROPERTY GENERATOR_IS_MULTI_CONFIG)
 	if(${isMultiConfig})

@@ -268,14 +268,6 @@ target_link_libraries(
         CloveMaths
 
     PRIVATE
-		#Include all glslang libraries to prevent linking errors witrh shaderc
-        glslang::SPVRemapper
-        glslang::HLSL
-        glslang::OGLCompiler
-        glslang::OSDependent
-        glslang::glslang
-        glslang::SPIRV
-
         shaderc::shaderc
 		spirv-cross::spirv-cross
 
