@@ -21,6 +21,10 @@ namespace clove {
         constexpr vec<2, T> &operator+=(vec<2, T> const &b);
 
         template<number U>
+        friend constexpr vec<2, U> operator-(vec<2, U> const &a, vec<2, U> const &b);
+        constexpr vec<2, T> &operator-=(vec<2, T> const &b);
+
+        template<number U>
         friend constexpr vec<2, U> operator*(vec<2, U> const &a, U scalar);
         constexpr vec<2, T> &operator*=(T scalar);
 
@@ -48,6 +52,10 @@ namespace clove {
         template<number U>
         friend constexpr vec<3, U> operator+(vec<3, U> const &a, vec<3, U> const &b);
         constexpr vec<3, T> &operator+=(vec<3, T> const &b);
+
+        template<number U>
+        friend constexpr vec<3, U> operator-(vec<3, U> const &a, vec<3, U> const &b);
+        constexpr vec<3, T> &operator-=(vec<3, T> const &b);
 
         template<number U>
         friend constexpr vec<3, U> operator*(vec<3, U> const &a, U scalar);
@@ -78,6 +86,10 @@ namespace clove {
         template<number U>
         friend constexpr vec<4, U> operator+(vec<4, U> const &a, vec<4, U> const &b);
         constexpr vec<4, T> &operator+=(vec<4, T> const &b);
+
+        template<number U>
+        friend constexpr vec<4, U> operator-(vec<4, U> const &a, vec<4, U> const &b);
+        constexpr vec<4, T> &operator-=(vec<4, T> const &b);
 
         template<number U>
         friend constexpr vec<4, U> operator*(vec<4, U> const &a, U scalar);

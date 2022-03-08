@@ -15,6 +15,19 @@ namespace clove {
     }
 
     template<number T>
+    constexpr vec<2, T> operator-(vec<2, T> const &a, vec<2, T> const &b) {
+        return { a.x - b.x, a.y - b.y };
+    }
+
+    template<number T>
+    constexpr vec<2, T> &vec<2, T>::operator-=(vec<2, T> const &b) {
+        x -= b.x;
+        y -= b.y;
+
+        return *this;
+    }
+
+    template<number T>
     constexpr vec<2, T> operator*(vec<2, T> const &a, T scalar) {
         return { a.x * scalar, a.y * scalar };
     }
@@ -80,6 +93,20 @@ namespace clove {
         x += b.x;
         y += b.y;
         z += b.z;
+
+        return *this;
+    }
+
+    template<number T>
+    constexpr vec<3, T> operator-(vec<3, T> const &a, vec<3, T> const &b) {
+        return { a.x - b.x, a.y - b.y, a.z - b.z };
+    }
+
+    template<number T>
+    constexpr vec<3, T> &vec<3, T>::operator-=(vec<3, T> const &b) {
+        x -= b.x;
+        y -= b.y;
+        z -= b.z;
 
         return *this;
     }
@@ -153,6 +180,21 @@ namespace clove {
         y += b.y;
         z += b.z;
         w += b.w;
+
+        return *this;
+    }
+
+    template<number T>
+    constexpr vec<4, T> operator-(vec<4, T> const &a, vec<4, T> const &b) {
+        return { a.x - b.x, a.y - b.y, a.z - b.z, a.w - b.w };
+    }
+
+    template<number T>
+    constexpr vec<4, T> &vec<4, T>::operator-=(vec<4, T> const &b) {
+        x -= b.x;
+        y -= b.y;
+        z -= b.z;
+        w -= b.w;
 
         return *this;
     }

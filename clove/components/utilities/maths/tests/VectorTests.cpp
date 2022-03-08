@@ -139,6 +139,50 @@ TEST(VectorTests, CanAddTwoVectors) {
     EXPECT_EQ(v4c.w, v4a.w + v4b.w);
 }
 
+TEST(VectorTests, CanSubtractTwoVectors) {
+    {
+        vec2f a{ 1, 2 };
+        vec2f b{ 1, 2 };
+        vec2f c{ a };
+
+        vec2f const sub{ a.x - b.x, a.y - b.y };
+        EXPECT_EQ(a - b, sub);
+
+        c -= b;
+        EXPECT_EQ(c.x, a.x - b.x);
+        EXPECT_EQ(c.y, a.y - b.y);
+    }
+
+    {
+        vec3f a{ 2, 2, 2 };
+        vec3f b{ 2, 2, 2 };
+        vec3f c{ a };
+
+        vec3f const sub{ a.x - b.x, a.y - b.y, a.z - b.z };
+        EXPECT_EQ(a - b, sub);
+
+        c -= b;
+        EXPECT_EQ(c.x, a.x - b.x);
+        EXPECT_EQ(c.y, a.y - b.y);
+        EXPECT_EQ(c.z, a.z - b.z);
+    }
+
+    {
+        vec4f a{ 3, 2, 1, 6 };
+        vec4f b{ 2, 2, 2 };
+        vec4f c{ a };
+
+        vec4f const sub{ a.x - b.x, a.y - b.y, a.z - b.z, a.w - b.w };
+        EXPECT_EQ(a - b, sub);
+
+        c -= b;
+        EXPECT_EQ(c.x, a.x - b.x);
+        EXPECT_EQ(c.y, a.y - b.y);
+        EXPECT_EQ(c.z, a.z - b.z);
+        EXPECT_EQ(c.w, a.w - b.w);
+    }
+}
+
 TEST(VectorTests, CanMultiplyVectorByNumber) {
     float constexpr multiplier{ 5.0f };
 
