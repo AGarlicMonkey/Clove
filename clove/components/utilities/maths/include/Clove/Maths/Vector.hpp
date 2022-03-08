@@ -118,18 +118,58 @@ namespace clove {
 
 //Vector operations
 namespace clove {
+    /**
+     * @brief Returns the length of a vector.
+     * @tparam L 
+     * @tparam T 
+     * @param v 
+     * @return 
+     */
     template<size_t L, number T>
     constexpr T length(vec<L, T> const &v);
 
+    /**
+     * @brief Returns a normalised version of a vector.
+     * @tparam L 
+     * @tparam T 
+     * @param v 
+     * @return 
+     */
     template<size_t L, number T>
     constexpr vec<L, T> normalise(vec<L, T> const &v);
 
+    /**
+     * @brief Returns the dot product between two vectors.
+     * @tparam L 
+     * @tparam T 
+     * @param a 
+     * @param b 
+     * @return 
+     */
     template<size_t L, number T>
     constexpr T dot(vec<L, T> const &a, vec<L, T> const &b);
 
+    /**
+     * @brief Returns the cross product between two vectors.
+     * @tparam T 
+     * @param a 
+     * @param b 
+     * @return 
+     */
     template<number T>
     constexpr vec<3, T> cross(vec<3, T> const &a, vec<3, T> const &b);
 
+    /**
+     * @brief Returns a linearly interpolated vector from a to b.
+     * @details If t is 0 then the result will be equal to a. Else if t is 1 then the
+     * result will be equal to b.
+     * @tparam L 
+     * @tparam T 
+     * @param a 
+     * @param b 
+     * @param t A value between 0.0f and 1.0f.
+     * @return 
+     */
     template<size_t L, number T>
     constexpr vec<L, T> lerp(vec<L, T> const &a, vec<L, T> const &b, float const t);
 }
