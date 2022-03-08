@@ -290,4 +290,9 @@ namespace clove {
             .z = (a.x * b.y) - (a.y * b.x),
         };
     }
+
+    template<size_t L, number T>
+    constexpr vec<L, T> lerp(vec<L, T> const &a, vec<L, T> const &b, float const t) {
+        return (b * t) + (a * (1.0f - t));
+    }
 }

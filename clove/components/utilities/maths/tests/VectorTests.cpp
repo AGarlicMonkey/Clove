@@ -336,3 +336,53 @@ TEST(VectorTests, CanCrossProductTwoVectors) {
     };
     EXPECT_EQ(v3Cross, v3CrossTest);
 }
+
+TEST(VectorTests, CanLerpTwoVectors) {
+    {
+        vec2f const a{ 0.0f, 0.0f };
+        vec2f const b{ 1.0f, 1.0f };
+
+        vec2f res0{ lerp(a, b, 0.0f) };
+        EXPECT_EQ(res0, a);
+
+        vec2f res1{ lerp(a, b, 1.0f) };
+        EXPECT_EQ(res1, b);
+
+        vec2f res2{ lerp(a, b, 0.5f) };
+        EXPECT_EQ(res2.x, 0.5f);
+        EXPECT_EQ(res2.y, 0.5f);
+    }
+
+    {
+        vec3f const a{ 0.0f, 0.0f, 0.0f };
+        vec3f const b{ 1.0f, 1.0f, 1.0f };
+
+        vec3f res0{ lerp(a, b, 0.0f) };
+        EXPECT_EQ(res0, a);
+
+        vec3f res1{ lerp(a, b, 1.0f) };
+        EXPECT_EQ(res1, b);
+
+        vec3f res2{ lerp(a, b, 0.5f) };
+        EXPECT_EQ(res2.x, 0.5f);
+        EXPECT_EQ(res2.y, 0.5f);
+        EXPECT_EQ(res2.z, 0.5f);
+    }
+
+    {
+        vec4f const a{ 0.0f, 0.0f, 0.0f, 0.0f };
+        vec4f const b{ 1.0f, 1.0f, 1.0f, 1.0f };
+
+        vec4f res0{ lerp(a, b, 0.0f) };
+        EXPECT_EQ(res0, a);
+
+        vec4f res1{ lerp(a, b, 1.0f) };
+        EXPECT_EQ(res1, b);
+
+        vec4f res2{ lerp(a, b, 0.5f) };
+        EXPECT_EQ(res2.x, 0.5f);
+        EXPECT_EQ(res2.y, 0.5f);
+        EXPECT_EQ(res2.z, 0.5f);
+        EXPECT_EQ(res2.w, 0.5f);
+    }
+}
