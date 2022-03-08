@@ -114,6 +114,18 @@ namespace clove {
     using vec2f = vec<2, float>;
     using vec3f = vec<3, float>;
     using vec4f = vec<4, float>;
+
+    using vec2d = vec<2, double>;
+    using vec3d = vec<3, double>;
+    using vec4d = vec<4, double>;
+
+    using vec2i = vec<2, int32_t>;
+    using vec3i = vec<3, int32_t>;
+    using vec4i = vec<4, int32_t>;
+
+    using vec2u = vec<2, uint32_t>;
+    using vec3u = vec<3, uint32_t>;
+    using vec4u = vec<4, uint32_t>;
 }
 
 //Vector operations
