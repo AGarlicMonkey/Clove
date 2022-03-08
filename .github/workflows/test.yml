@@ -8,7 +8,7 @@ env:
 jobs:
   #Windows Jobs
   build-windows-msvc:
-    runs-on: windows-latest
+    runs-on: windows-2019
     steps:
     - uses: actions/checkout@v2
       with:
@@ -42,7 +42,7 @@ jobs:
         retention-days: 1
   unit_test-windows-msvc:
     needs: [build-windows-msvc]
-    runs-on: windows-latest
+    runs-on: windows-2019
     steps:
       - name: Download build artefacts
         uses: actions/download-artifact@v2
@@ -51,7 +51,7 @@ jobs:
           path: build/
       - name: Test
         working-directory: ${{ github.workspace }}/build
-        run: ctest -C $env:BUILD_TYPE
+        run: ctest -C $env:BUILD_TYPE --output-on-failure
   #macOS Jobs
   build-macos-apple_clang:
     runs-on: macos-latest
@@ -93,7 +93,7 @@ jobs:
         run: tar -xvf build_files.tar
       - name: Test
         working-directory: ${{ github.workspace }}/build
-        run: ctest -C $BUILD_TYPE
+        run: ctest -C $BUILD_TYPE --output-on-failure
   #Linux Jobs
   build-linux-gcc:
     runs-on: ubuntu-latest
@@ -173,7 +173,7 @@ jobs:
         run: tar -xvf build_files.tar
       - name: Test
         working-directory: ${{ github.workspace }}/build
-        run: ctest -C $BUILD_TYPE
+        run: ctest -C $BUILD_TYPE --output-on-failure
   unit_test-linux-clang:
     needs: [build-linux-clang]
     runs-on: ubuntu-latest
@@ -192,5 +192,5 @@ jobs:
         run: tar -xvf build_files.tar
       - name: Test
         working-directory: ${{ github.workspace }}/build
-        run: ctest -C $BUILD_TYPE
+        run: ctest -C $BUILD_TYPE --output-on-failure
         

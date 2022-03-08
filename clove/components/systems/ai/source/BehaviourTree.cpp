@@ -15,7 +15,7 @@ namespace clove {
         rootTask = std::move(task);
     }
 
-    BlackBoard &BehaviourTree::getBlackBoard() {
+    Blackboard &BehaviourTree::getBlackboard() {
         return blackboard;
     }
 

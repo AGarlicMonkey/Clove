@@ -1,53 +1,81 @@
 #include "Membrane/RuntimeSubSystem.hpp"
 
-#include "Membrane/MessageHandler.hpp"
-#include "Membrane/Messages.hpp"
+#include "Membrane/ReflectionHelpers.hpp"
+#include "Membrane/MembraneLog.hpp"
 
-#include <Clove/Application.hpp>
-#include <Clove/Components/TransformComponent.hpp>
+#include <Clove/ReflectionAttributes.hpp>
 #include <Clove/ECS/EntityManager.hpp>
-#include <Clove/Maths/MathsHelpers.hpp>
-#include <Clove/ModelLoader.hpp>
-#include <Clove/SubSystems/PhysicsSubSystem.hpp>
+#include <Clove/Application.hpp>
+#include <Clove/Serialisation/Yaml.hpp>
+
+using namespace clove;
 
 namespace membrane {
-    RuntimeSubSystem::RuntimeSubSystem()
-        : clove::SubSystem{ "Runtime SubSystem" }
-        , currentScene{ clove::Application::get().getEntityManager() } {
+    RuntimeSubSystem::RuntimeSubSystem(EntityManager *manager)
+        : SubSystem{ "Runtime Sub system" }
+        , entityManager{ manager } {
     }
 
-    clove::SubSystem::Group RuntimeSubSystem::getGroup() const {
+    RuntimeSubSystem::RuntimeSubSystem(RuntimeSubSystem &&other) noexcept = default;
+
+    RuntimeSubSystem &RuntimeSubSystem::operator=(RuntimeSubSystem &&other) noexcept = default;
+
+    RuntimeSubSystem::~RuntimeSubSystem() = default;
+
+    SubSystem::Group RuntimeSubSystem::getGroup() const {
         return Group::Core;
     }
 
     void RuntimeSubSystem::onAttach() {
-        auto &app{ clove::Application::get() };
+        auto loadResult{ loadYaml(clove::Application::get().getFileSystem()->resolve("./scene.clvscene")) };
+        serialiser::Node rootNode{ loadResult.getValue() };
 
-        //push the physics sub system from the application
-        app.pushSubSystem<clove::PhysicsSubSystem>(app.getEntityManager());
+        //Load sub systems
+        for(auto const &subSystemNode : rootNode["subSystems"]) {
+            std::string const subSystemName{ subSystemNode.as<std::string>() };
+            clove::reflection::TypeInfo const *const typeInfo{ clove::reflection::getTypeInfo(subSystemName) };
 
-        currentScene.load(app.getFileSystem()->resolve("./scene.clvscene"));
-    }
+            if(typeInfo == nullptr) {
+                CLOVE_LOG(Membrane, clove::LogLevel::Error, "Could not get typeinfo for {0}", subSystemName);
+                continue;
+            }
 
-    void RuntimeSubSystem::onUpdate(clove::DeltaTime const deltaTime) {
-        //Make sure any movement is reflected in editor
-        for(auto &entity : currentScene.getKnownEntities()) {
-            if(currentScene.hasComponent<clove::TransformComponent>(entity)) {
-                auto const &pos{ currentScene.getComponent<clove::TransformComponent>(entity).position };
-                auto const &rot{ clove::quaternionToEuler(currentScene.getComponent<clove::TransformComponent>(entity).rotation) };
-                auto const &scale{ currentScene.getComponent<clove::TransformComponent>(entity).scale };
+            typeInfo->attributes.get<EditorVisibleSubSystem>()->onEditorCreateSubSystem(clove::Application::get());
 
-                Engine_OnTransformChanged ^ message { gcnew Engine_OnTransformChanged };
-                message->entity   = entity;
-                message->position = Vector3(pos.x, pos.y, pos.z);
-                message->rotation = Vector3(clove::asDegrees(rot.x), clove::asDegrees(rot.y), clove::asDegrees(rot.z));
-                message->scale    = Vector3(scale.x, scale.y, scale.z);
-                MessageHandler::sendMessage(message);
+            trackedSubSystems.push_back(typeInfo);
+        }
+
+        //Load entities
+        for(auto const &entityNode : rootNode["entities"]) {
+            clove::Entity entity{ entityManager->create() };
+
+            for(auto const &componentNode : entityNode["components"]) {
+                std::string const componentName{ componentNode.getKey() };
+                clove::reflection::TypeInfo const *const typeInfo{ clove::reflection::getTypeInfo(componentName) };
+
+                if(typeInfo == nullptr) {
+                    CLOVE_LOG(Membrane, clove::LogLevel::Error, "Could not get typeinfo for {0}", componentName);
+                    continue;
+                }
+
+                uint8_t *const componentMemory{ typeInfo->attributes.get<clove::EditorVisibleComponent>()->onEditorCreateComponent(entity, *entityManager) };
+                deserialiseComponent(typeInfo, componentMemory, componentNode);
             }
         }
     }
 
+    clove::InputResponse RuntimeSubSystem::onInputEvent(clove::InputEvent const &inputEvent) {
+        return clove::InputResponse::Ignored;
+    }
+
+    void RuntimeSubSystem::onUpdate(clove::DeltaTime const deltaTime) {
+    }
+
     void RuntimeSubSystem::onDetach() {
-        currentScene.destroyAllEntities();
+        for(auto const *const subSystemInfo : trackedSubSystems) {
+            subSystemInfo->attributes.get<EditorVisibleSubSystem>()->onEditorDestroySubSystem(clove::Application::get());
+        }
+
+        entityManager->destroyAll();
     }
 }

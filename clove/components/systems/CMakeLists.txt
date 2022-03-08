@@ -1,4 +1,5 @@
 add_subdirectory(ai)
 add_subdirectory(ecs)
+add_subdirectory(reflection)
 add_subdirectory(serialisation)
 add_subdirectory(state_machine)

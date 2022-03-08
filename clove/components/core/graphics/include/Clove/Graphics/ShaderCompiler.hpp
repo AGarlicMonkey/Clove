@@ -9,6 +9,7 @@
 #include <string_view>
 #include <unordered_map>
 #include <vector>
+#include <Clove/Maths/Vector.hpp>
 
 namespace clove::ShaderCompiler {
     /**
@@ -42,4 +43,10 @@ namespace clove::ShaderCompiler {
      * @return MSL shader code as a string.
      */
     std::string spirvToMSL(std::span<uint32_t> spirvSource);
+    
+    /**
+     * @brief Returns the workgroup size of a given shader.
+     * @return
+     */
+    vec3ui getWorkgroupSize(std::span<uint32_t> spirvSource);
 }

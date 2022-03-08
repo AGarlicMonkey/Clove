@@ -36,6 +36,7 @@ namespace clove {
          * @param buffer The buffer to write from.
          * @param offset An offset into the buffer to start writting from.
          * @param range The size of the region into the buffer to write.
+         * @param descriptorType Type of descriptor that is being written.
          * @param bindingSlot The binding slot inside the shader to write to.
          */
         virtual void write(GhaBuffer const &buffer, size_t const offset, size_t const range, DescriptorType const descriptorType, uint32_t const bindingSlot) = 0;
@@ -45,9 +46,10 @@ namespace clove {
          * @details The value that is read from the shader will be whatever value is in the image at the time of writing.
          * @param imageView The image view to write.
          * @param layout The layout of the image being written.
+         * @param descriptorType Type of descriptor that is being written.
          * @param bindingSlot The binding slot inside the shader to write to.
          */
-        virtual void write(GhaImageView const &imageView, GhaImage::Layout const layout, uint32_t const bindingSlot) = 0;
+        virtual void write(GhaImageView const &imageView, GhaImage::Layout const layout, DescriptorType const descriptorType, uint32_t const bindingSlot) = 0;
 
         /**
          * @brief Writes a sampler into a binding inside a shader.

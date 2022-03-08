@@ -3,23 +3,22 @@
 #include <Clove/Delegate/DelegateHandle.hpp>
 #include <Clove/Maths/Matrix.hpp>
 #include <Clove/Maths/Vector.hpp>
-
-namespace clove {
-    class Window;
-}
+#include <Clove/Reflection/Reflection.hpp>
 
 namespace clove {
     class Camera {
+        CLOVE_REFLECT_PRIVATE(Camera)
+
         //TYPES
     public:
         /**
          * @brief Describes a region within the screen that this camera renders to.
          */
         struct Viewport {
-            float x{ 0 };      /**< 0 - 1 value for the start of the horizontal value. */
-            float y{ 0 };      /**< 0 - 1 value for the start of the vertical value. */
-            float width{ 0 };  /**< 0 - 1 value for the end of the horizontal value. */
-            float height{ 0 }; /**< 0 - 1 value for the end of the vertical value. */
+            float x{ 0.0f };      /**< 0 - 1 value for the start of the horizontal value. */
+            float y{ 0.0f };      /**< 0 - 1 value for the start of the vertical value. */
+            float width{ 1.0f };  /**< 0 - 1 value for the end of the horizontal value. */
+            float height{ 1.0f }; /**< 0 - 1 value for the end of the vertical value. */
         };
 
         enum class ProjectionMode {
@@ -32,16 +31,16 @@ namespace clove {
         static float constexpr nearPlane{ 0.5f };
         static float constexpr farPlane{ 10000.0f };
 
-        Viewport viewport;
-        ProjectionMode currentProjectionMode;
+        Viewport viewport{};
+        ProjectionMode currentProjectionMode{ ProjectionMode::Perspective };
 
         float zoomLevel{ 1.0f };
 
         //FUNCTIONS
     public:
-        Camera() = delete;
-        Camera(Viewport viewport, ProjectionMode const projection);
+        inline Camera();
         Camera(ProjectionMode const projection);
+        Camera(ProjectionMode const projection, Viewport const viewport);
 
         Camera(Camera const &other) = delete;
         inline Camera(Camera &&other) noexcept;
@@ -62,3 +61,5 @@ namespace clove {
 }
 
 #include "Camera.inl"
+
+CLOVE_REFLECT_DECLARE_TYPE(clove::Camera)

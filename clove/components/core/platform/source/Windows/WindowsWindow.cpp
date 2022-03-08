@@ -28,13 +28,13 @@ namespace clove {
     }
 
     WindowsWindow::WindowsWindow(Descriptor const &descriptor)
-        : Window(keyboardDispatcher, mouseDispatcher) {
-        instance = GetModuleHandle(nullptr);
+        : Window{ keyboardDispatcher, mouseDispatcher } {
+        HINSTANCE instance{ GetModuleHandle(nullptr) };
 
-        WNDCLASSEX windowClass {
+        WNDCLASSEX windowClass{
             .cbSize        = sizeof(windowClass),
             .style         = CS_OWNDC,
-            .lpfnWndProc   = HandleMsgSetup,
+            .lpfnWndProc   = WindowsWindow::HandleMsgSetup,
             .cbClsExtra    = 0,
             .cbWndExtra    = 0,
             .hInstance     = instance,
@@ -42,34 +42,43 @@ namespace clove {
             .hCursor       = nullptr,
             .hbrBackground = nullptr,
             .lpszMenuName  = nullptr,
-            .lpszClassName = className,
+            .lpszClassName = WindowsWindow::className,
         };
         RegisterClassEx(&windowClass);
 
-        std::string const wideTitle(descriptor.title.begin(), descriptor.title.end());
-
-        DWORD const windowStyle{ WS_CAPTION | WS_MAXIMIZEBOX | WS_MINIMIZEBOX | WS_SIZEBOX | WS_SYSMENU | WS_VISIBLE };
-
-        RECT windowRect {
+        DWORD windowStyle{ WS_VISIBLE };
+        RECT windowRect{
             .left   = 0,
             .top    = 0,
             .right  = descriptor.width,
             .bottom = descriptor.height,
         };
-        AdjustWindowRect(&windowRect, windowStyle, FALSE);
+        HWND windowParent{ nullptr };
+        LONG windowPosXY{ 0 };
+
+        if(descriptor.parent.has_value()) {
+            windowStyle |= WS_CHILD;
+            windowParent = std::any_cast<HWND>(descriptor.parent);
+        } else {
+            windowStyle |= WS_OVERLAPPEDWINDOW;
+            AdjustWindowRect(&windowRect, windowStyle, FALSE);
+            windowPosXY     = CW_USEDEFAULT;
+        }
 
         windowsHandle = CreateWindow(
             windowClass.lpszClassName,
-            wideTitle.c_str(),
+            descriptor.title.c_str(),
             windowStyle,
-            CW_USEDEFAULT,
-            CW_USEDEFAULT,
+            windowPosXY,
+            windowPosXY,
             windowRect.right - windowRect.left,
             windowRect.bottom - windowRect.top,
-            nullptr,
-            nullptr,
+            windowParent,
+            0,
             instance,
             this);
+
+        CLOVE_ASSERT(windowsHandle);
 
         open = true;
     }
@@ -79,7 +88,7 @@ namespace clove {
             close();
         }
 
-        UnregisterClass(className, instance);
+        UnregisterClass(className, GetModuleHandle(nullptr));
         DestroyWindow(windowsHandle);
     }
 
@@ -180,6 +189,11 @@ namespace clove {
 
             case WM_KILLFOCUS:
                 keyboardDispatcher.clearState();
+                hasFocus = false;
+                break;
+
+            case WM_SETFOCUS:
+                hasFocus = true;
                 break;
 
                 //Keyboard
@@ -218,6 +232,9 @@ namespace clove {
                 break;
 
             case WM_LBUTTONDOWN:
+                if(!hasFocus) {
+                    SetFocus(hWnd);
+                }
                 mouseDispatcher.onButtonPressed(MouseButton::Left, pos);
                 break;
 
@@ -226,6 +243,9 @@ namespace clove {
                 break;
 
             case WM_RBUTTONDOWN:
+                if(!hasFocus) {
+                    SetFocus(hWnd);
+                }
                 mouseDispatcher.onButtonPressed(MouseButton::Right, pos);
                 break;
 

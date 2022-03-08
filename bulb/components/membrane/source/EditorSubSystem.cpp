@@ -1,22 +1,30 @@
 #include "Membrane/EditorSubSystem.hpp"
 
+#include "Membrane/MembraneLog.hpp"
 #include "Membrane/MessageHandler.hpp"
 #include "Membrane/Messages.hpp"
 #include "Membrane/NameComponent.hpp"
+#include "Membrane/ReflectionHelpers.hpp"
 
 #include <Clove/Application.hpp>
 #include <Clove/Components/CameraComponent.hpp>
-#include <Clove/Components/CollisionShapeComponent.hpp>
-#include <Clove/Components/PointLightComponent.hpp>
-#include <Clove/Components/RigidBodyComponent.hpp>
-#include <Clove/Components/StaticModelComponent.hpp>
 #include <Clove/Components/TransformComponent.hpp>
 #include <Clove/ECS/EntityManager.hpp>
 #include <Clove/Log/Log.hpp>
 #include <Clove/Maths/MathsHelpers.hpp>
 #include <Clove/ModelLoader.hpp>
+#include <Clove/Reflection/Reflection.hpp>
+#include <Clove/ReflectionAttributes.hpp>
+#include <Clove/Serialisation/Node.hpp>
+#include <Clove/Serialisation/Yaml.hpp>
+#include <Clove/SubSystems/AudioSubSystem.hpp>
 #include <Clove/SubSystems/PhysicsSubSystem.hpp>
+#include <Clove/SubSystems/RenderSubSystem.hpp>
+#include <Clove/SubSystems/TransformSubSystem.hpp>
 #include <msclr/marshal_cppstd.h>
+
+using namespace clove;
+using namespace membrane;
 
 namespace membrane {
     // clang-format off
@@ -32,16 +40,16 @@ namespace membrane {
     public:
         EditorSubSystemMessageProxy(EditorSubSystem *layer)
             : subSystem{ layer } {
+            MessageHandler::bindToMessage(gcnew MessageSentHandler<Editor_AddSubSystem ^>(this, &EditorSubSystemMessageProxy::addSubSystem));
+            MessageHandler::bindToMessage(gcnew MessageSentHandler<Editor_RemoveSubSystem ^>(this, &EditorSubSystemMessageProxy::removeSubSystem));
+
             MessageHandler::bindToMessage(gcnew MessageSentHandler<Editor_CreateEntity ^>(this, &EditorSubSystemMessageProxy::createEntity));
             MessageHandler::bindToMessage(gcnew MessageSentHandler<Editor_DeleteEntity ^>(this, &EditorSubSystemMessageProxy::deleteEntity));
+
             MessageHandler::bindToMessage(gcnew MessageSentHandler<Editor_AddComponent ^>(this, &EditorSubSystemMessageProxy::addComponent));
+            MessageHandler::bindToMessage(gcnew MessageSentHandler<Editor_ModifyComponent ^>(this, &EditorSubSystemMessageProxy::modifyComponent));
             MessageHandler::bindToMessage(gcnew MessageSentHandler<Editor_RemoveComponent ^>(this, &EditorSubSystemMessageProxy::removeComponent));
 
-            MessageHandler::bindToMessage(gcnew MessageSentHandler<Editor_UpdateTransform ^>(this, &EditorSubSystemMessageProxy::updateTransform));
-            MessageHandler::bindToMessage(gcnew MessageSentHandler<Editor_UpdateStaticModel ^>(this, &EditorSubSystemMessageProxy::updateStaticModel));
-            MessageHandler::bindToMessage(gcnew MessageSentHandler<Editor_UpdateRigidBody ^>(this, &EditorSubSystemMessageProxy::updateRigidBody));
-            MessageHandler::bindToMessage(gcnew MessageSentHandler<Editor_UpdateSphereShape ^>(this, &EditorSubSystemMessageProxy::updateSphereShape));
-            MessageHandler::bindToMessage(gcnew MessageSentHandler<Editor_UpdateCubeShape ^>(this, &EditorSubSystemMessageProxy::updateCubeShape));
             MessageHandler::bindToMessage(gcnew MessageSentHandler<Editor_UpdateName ^>(this, &EditorSubSystemMessageProxy::updateName));
 
             MessageHandler::bindToMessage(gcnew MessageSentHandler<Editor_SaveScene ^>(this, &EditorSubSystemMessageProxy::saveScene));
@@ -54,6 +62,20 @@ namespace membrane {
         }
 
     private:
+        void addSubSystem(Editor_AddSubSystem ^message) {
+            if (subSystem){
+                System::String ^subSystemName{ message->name };
+                subSystem->addSubSystem(msclr::interop::marshal_as<std::string>(subSystemName));
+            }
+        }
+
+        void removeSubSystem(Editor_RemoveSubSystem ^message) {
+            if (subSystem){
+                System::String ^subSystemName{ message->name };
+                subSystem->removeSubSystem(msclr::interop::marshal_as<std::string>(subSystemName));
+            }
+        }
+
         void createEntity(Editor_CreateEntity ^ message) {
             if (subSystem){
                 subSystem->createEntity();
@@ -69,53 +91,23 @@ namespace membrane {
 
         void addComponent(Editor_AddComponent ^ message){
             if (subSystem){
-                subSystem->addComponent(message->entity, message->componentType);
+                System::String ^typeName{ message->componentName };
+                subSystem->addComponent(message->entity, msclr::interop::marshal_as<std::string>(typeName));
+            }
+        }
+
+        void modifyComponent(Editor_ModifyComponent ^ message){
+            if (subSystem){
+                System::String ^typeName{ message->componentName };
+                System::String ^memberValue{ message->value };
+                subSystem->modifyComponent(message->entity, msclr::interop::marshal_as<std::string>(typeName), message->offset, msclr::interop::marshal_as<std::string>(memberValue));
             }
         }
 
         void removeComponent(Editor_RemoveComponent ^ message){
             if (subSystem){
-                subSystem->removeComponent(message->entity, message->componentType);
-            }
-        }
-
-        void updateTransform(Editor_UpdateTransform ^ message){
-            if (subSystem){
-                clove::vec3f const pos{message->position.x, message->position.y, message->position.z};
-                clove::vec3f const rot{clove::asRadians(message->rotation.x), clove::asRadians(message->rotation.y), clove::asRadians(message->rotation.z)};
-                clove::vec3f const scale{message->scale.x, message->scale.y, message->scale.z};
-
-                subSystem->updateTransform(message->entity, pos, rot, scale);
-            }
-        }
-
-        void updateStaticModel(Editor_UpdateStaticModel ^ message){
-            if (subSystem){
-                System::String ^meshPath{ message->meshPath != nullptr ? message->meshPath : "" };
-                System::String ^diffusePath{ message->diffusePath != nullptr ? message->diffusePath : ""};
-                System::String ^specularPath{ message->specularPath != nullptr ? message->specularPath : ""};
-
-                subSystem->updateStaticModel(message->entity, msclr::interop::marshal_as<std::string>(meshPath), msclr::interop::marshal_as<std::string>(diffusePath), msclr::interop::marshal_as<std::string>(specularPath));
-            }
-        }
-
-        void updateRigidBody(Editor_UpdateRigidBody^ message){
-            if (subSystem){
-                subSystem->updateRigidBody(message->entity, message->mass);
-            }
-        }
-
-        void updateSphereShape(Editor_UpdateSphereShape ^message){
-            if (subSystem){
-                subSystem->updateSphereShape(message->entity, message->radius);
-            }
-        }
-
-        void updateCubeShape(Editor_UpdateCubeShape ^message){
-            if (subSystem){
-                clove::vec3f const halfExtents{message->halfExtents.x, message->halfExtents.y, message->halfExtents.z};
-
-                subSystem->updateCubeShape(message->entity, halfExtents);
+                System::String ^typeName{ message->componentName };
+                subSystem->removeComponent(message->entity, msclr::interop::marshal_as<std::string>(typeName));
             }
         }
 
@@ -142,9 +134,9 @@ namespace membrane {
 }
 
 namespace membrane {
-    EditorSubSystem::EditorSubSystem()
+    EditorSubSystem::EditorSubSystem(clove::EntityManager *entityManager)
         : clove::SubSystem{ "Editor SubSystem" }
-        , currentScene{ clove::Application::get().getEntityManager() } {
+        , entityManager{ entityManager } {
         proxy = gcnew EditorSubSystemMessageProxy(this);
     }
 
@@ -159,17 +151,23 @@ namespace membrane {
     void EditorSubSystem::onAttach() {
         auto &app{ clove::Application::get() };
 
-        //Pop the physics layer from the application
-        app.popSubSystem<clove::PhysicsSubSystem>();
+        entityManager->destroyAll();
+
+        //Make sure we add any default sub systems.
+        if(!app.hasSubSystem<RenderSubSystem>()) {
+            app.pushSubSystem<RenderSubSystem>(app.getRenderer(), app.getEntityManager());
+        }
+        if(!app.hasSubSystem<TransformSubSystem>()) {
+            app.pushSubSystem<TransformSubSystem>(app.getEntityManager());
+        }
 
         //Add the editor camera outside of the current scene
-        if(editorCamera == clove::NullEntity) {
-            auto *const entityManager{ app.getEntityManager() };
+        editorCamera = entityManager->create();
 
-            editorCamera                                                                  = entityManager->create();
-            entityManager->addComponent<clove::TransformComponent>(editorCamera).position = clove::vec3f{ 0.0f, 0.0f, -10.0f };
-            entityManager->addComponent<clove::CameraComponent>(editorCamera, clove::Camera{ clove::Camera::ProjectionMode::Perspective });
-        }
+        bool constexpr makePriority{ true };
+
+        entityManager->addComponent<clove::TransformComponent>(editorCamera).position = clove::vec3f{ 0.0f, 0.0f, -10.0f };
+        entityManager->addComponent<clove::CameraComponent>(editorCamera, clove::Camera{ clove::Camera::ProjectionMode::Perspective }, makePriority);
 
         loadScene();
     }
@@ -247,100 +245,117 @@ namespace membrane {
     }
 
     void EditorSubSystem::onDetach() {
-        //saveScene();
-        currentScene.destroyAllEntities();
+        saveScene();
+        entityManager->destroyAll();
     }
 
     void EditorSubSystem::saveScene() {
-        currentScene.save(clove::Application::get().getFileSystem()->resolve("./scene.clvscene"));
+        serialiser::Node rootNode{};
+
+        rootNode["sceneVersion"] = 1;
+
+        for(auto const &subSystem : enabledSubSystems) {
+            rootNode["subSystems"].pushBack(subSystem);
+        }
+
+        for(auto &&[entity, components] : trackedComponents) {
+            serialiser::Node entityNode{};
+            entityNode["id"]   = entity;
+            entityNode["name"] = entityManager->getComponent<NameComponent>(entity).name;
+
+            for(auto const *typeInfo : components) {
+                uint8_t const *const componentMemory{ typeInfo->attributes.get<clove::EditorVisibleComponent>()->onEditorGetComponent(entity, *entityManager) };
+
+                entityNode["components"][typeInfo->name] = serialiseComponent(typeInfo, componentMemory);
+            }
+
+            rootNode["entities"].pushBack(entityNode);
+        }
+
+        std::ofstream fileStream{ clove::Application::get().getFileSystem()->resolve("./scene.clvscene"), std::ios::out | std::ios::trunc };
+        fileStream << emittYaml(rootNode);
     }
 
     void EditorSubSystem::loadScene() {
-        currentScene.load(clove::Application::get().getFileSystem()->resolve("./scene.clvscene"));
+        for(auto &&[entity, components] : trackedComponents) {
+            entityManager->destroy(entity);
+        }
+        trackedComponents.clear();
 
-        Engine_OnSceneLoaded ^ loadMessage { gcnew Engine_OnSceneLoaded };
-        loadMessage->entities = gcnew System::Collections::Generic::List<Entity ^>{};
-        for(auto entity : currentScene.getKnownEntities()) {
-            Entity ^ editorEntity { gcnew Entity };
-            editorEntity->id         = entity;
-            editorEntity->name       = gcnew System::String(currentScene.getComponent<NameComponent>(entity).name.c_str());
-            editorEntity->components = gcnew System::Collections::Generic::List<Component ^>{};
-
-            //Add all of the component types for an entity
-            if(currentScene.hasComponent<clove::TransformComponent>(entity)) {
-                auto const &transform{ currentScene.getComponent<clove::TransformComponent>(entity) };
-
-                auto const &pos{ transform.position };
-                auto const &rot{ clove::quaternionToEuler(transform.rotation) };
-                auto const &scale{ transform.scale };
-
-                TransformComponentInitData ^ initData { gcnew TransformComponentInitData{} };
-                initData->position = Vector3(pos.x, pos.y, pos.z);
-                initData->rotation = Vector3(rot.x, rot.y, rot.z);
-                initData->scale    = Vector3(scale.x, scale.y, scale.z);
-
-                Component ^ componentData { gcnew Component{} };
-                componentData->type = ComponentType::Transform;
-                componentData->initData = initData;
-
-                editorEntity->components->Add(componentData);
-            }
-            if(currentScene.hasComponent<clove::StaticModelComponent>(entity)) {
-                StaticModelComponentInitData ^ initData { gcnew StaticModelComponentInitData{} };
-                initData->meshPath     = gcnew System::String(currentScene.getComponent<clove::StaticModelComponent>(entity).model.getPath().c_str());
-                initData->diffusePath  = gcnew System::String(currentScene.getComponent<clove::StaticModelComponent>(entity).material->getDiffuseTexture().getPath().c_str());
-                initData->specularPath = gcnew System::String(currentScene.getComponent<clove::StaticModelComponent>(entity).material->getSpecularTexture().getPath().c_str());
-
-                Component ^ componentData = gcnew Component{};
-                componentData->type       = ComponentType::StaticModel;
-                componentData->initData   = initData;
-
-                editorEntity->components->Add(componentData);
-            }
-            if(currentScene.hasComponent<clove::PointLightComponent>(entity)) {
-                Component ^ componentData = gcnew Component{};
-                componentData->type       = ComponentType::PointLight;
-
-                editorEntity->components->Add(componentData);
-            }
-            if(currentScene.hasComponent<clove::RigidBodyComponent>(entity)) {
-                RigidBodyComponentInitData ^ initData = gcnew RigidBodyComponentInitData{};
-                initData->mass                        = currentScene.getComponent<clove::RigidBodyComponent>(entity).mass;
-
-                Component ^ componentData = gcnew Component{};
-                componentData->type       = ComponentType::RigidBody;
-                componentData->initData   = initData;
-
-                editorEntity->components->Add(componentData);
-            }
-            if(currentScene.hasComponent<clove::CollisionShapeComponent>(entity)) {
-                auto &component{ currentScene.getComponent<clove::CollisionShapeComponent>(entity) };
-
-                CollisionShapeComponentInitData ^ initData { gcnew CollisionShapeComponentInitData{} };
-                if(auto *sphere{ std::get_if<clove::CollisionShapeComponent::Sphere>(&component.shape) }) {
-                    initData->shapeType = ShapeType::Sphere;
-                    initData->radius    = sphere->radius;
-                } else if(auto *cube{ std::get_if<clove::CollisionShapeComponent::Cube>(&component.shape) }) {
-                    initData->shapeType   = ShapeType::Cube;
-                    initData->halfExtents = Vector3(cube->halfExtents.x, cube->halfExtents.y, cube->halfExtents.z);
-                }
-
-                Component ^ componentData = gcnew Component{};
-                componentData->type       = ComponentType::CollisionShape;
-                componentData->initData   = initData;
-
-                editorEntity->components->Add(componentData);
-            }
-
-            loadMessage->entities->Add(editorEntity);
+        std::filesystem::path const scenePath{ clove::Application::get().getFileSystem()->resolve("./scene.clvscene") };
+        if(!std::filesystem::exists(scenePath)) {
+            CLOVE_LOG(Membrane, LogLevel::Warning, "Could not locate 'scene.clvscene' file in game root directory.");
+            return;
         }
 
-        MessageHandler::sendMessage(loadMessage);
+        auto loadResult{ loadYaml(scenePath) };
+        if(!loadResult.hasValue()) {
+            if(loadResult.getError() == clove::LoadError::BadFile) {
+                CLOVE_LOG(Membrane, LogLevel::Error, "Bad scene provided. Scene cannot be loaded.");
+            } else {
+                CLOVE_LOG(Membrane, LogLevel::Error, "Could not load scene file. Error code: {0}", loadResult.getError());
+                throw gcnew System::Exception{ "Scene file could not be loaded. See log for details." };
+            }
+
+            return;
+        }
+
+        serialiser::Node rootNode{ std::move(loadResult.getValue()) };
+
+        //Load sub systems
+        System::Collections::Generic::List<System::String ^> ^ subSystems { gcnew System::Collections::Generic::List<System::String ^> };
+
+        for(auto const &subSystemNode : rootNode["subSystems"]) {
+            std::string const subSystemName{ subSystemNode.as<std::string>() };
+
+            enabledSubSystems.push_back(subSystemName);
+
+            subSystems->Add(gcnew System::String(subSystemName.c_str()));
+        }
+
+        //Load entities
+        System::Collections::Generic::List<Entity ^> ^ entities { gcnew System::Collections::Generic::List<Entity ^> };
+
+        for(auto const &entityNode : rootNode["entities"]) {
+            clove::Entity entity{ entityManager->create() };
+            Entity ^ editorEntity { gcnew Entity };
+
+            std::string const name{ entityNode["name"].as<std::string>() };
+
+            entityManager->addComponent<NameComponent>(entity, name);
+
+            editorEntity->id         = entity;
+            editorEntity->name       = gcnew System::String{ name.c_str() };
+            editorEntity->components = gcnew System::Collections::Generic::List<EditorTypeInfo ^>;
+
+            for(auto const &componentNode : entityNode["components"]) {
+                std::string const componentName{ componentNode.getKey() };
+                clove::reflection::TypeInfo const *const typeInfo{ clove::reflection::getTypeInfo(componentName) };
+
+                if(typeInfo == nullptr) {
+                    CLOVE_LOG(Membrane, clove::LogLevel::Error, "Could not get typeinfo for {0}", componentName);
+                    continue;
+                }
+
+                uint8_t *const componentMemory{ typeInfo->attributes.get<clove::EditorVisibleComponent>()->onEditorCreateComponent(entity, *entityManager) };
+                deserialiseComponent(typeInfo, componentMemory, componentNode);
+
+                trackedComponents[entity].push_back(typeInfo);
+                editorEntity->components->Add(constructComponentEditorTypeInfo(typeInfo, componentMemory));
+            }
+
+            entities->Add(editorEntity);
+        }
+
+        Engine_OnSceneLoaded ^ message { gcnew Engine_OnSceneLoaded };
+        message->enabledSubSystems = subSystems;
+        message->entities          = entities;
+        MessageHandler::sendMessage(message);
     }
 
     clove::Entity EditorSubSystem::createEntity(std::string_view name) {
-        clove::Entity entity{ currentScene.createEntity() };
-        currentScene.addComponent<NameComponent>(entity, std::string{ std::move(name) });
+        clove::Entity entity{ entityManager->create() };
+        entityManager->addComponent<NameComponent>(entity, std::string{ std::move(name) });
 
         Engine_OnEntityCreated ^ message { gcnew Engine_OnEntityCreated };
         message->entity = entity;
@@ -351,140 +366,109 @@ namespace membrane {
     }
 
     void EditorSubSystem::deleteEntity(clove::Entity entity) {
-        currentScene.deleteEntity(entity);
+        entityManager->destroy(entity);
 
         Engine_OnEntityDeleted ^ message { gcnew Engine_OnEntityDeleted };
         message->entity = entity;
         MessageHandler::sendMessage(message);
+
+        trackedComponents.erase(entity);
     }
 
-    void EditorSubSystem::addComponent(clove::Entity entity, ComponentType componentType) {
-        bool added{ false };
-        System::Object ^ initData;
-
-        switch(componentType) {
-            case ComponentType::Transform:
-                if(!currentScene.hasComponent<clove::TransformComponent>(entity)) {
-                    currentScene.addComponent<clove::TransformComponent>(entity);
-                    added = true;
-                }
-                break;
-            case ComponentType::StaticModel:
-                if(!currentScene.hasComponent<clove::StaticModelComponent>(entity)) {
-                    currentScene.addComponent<clove::StaticModelComponent>(entity);
-                    added    = true;
-                }
-                break;
-            case ComponentType::PointLight:
-                if(!currentScene.hasComponent<clove::PointLightComponent>(entity)) {
-                    currentScene.addComponent<clove::PointLightComponent>(entity);
-                    added = true;
-                }
-                break;
-            case ComponentType::RigidBody:
-                if(!currentScene.hasComponent<clove::RigidBodyComponent>(entity)) {
-                    currentScene.addComponent<clove::RigidBodyComponent>(entity);
-
-                    RigidBodyComponentInitData ^ bodyData { gcnew RigidBodyComponentInitData{} };
-                    bodyData->mass = currentScene.getComponent<clove::RigidBodyComponent>(entity).mass;
-
-                    added    = true;
-                    initData = bodyData;
-                }
-                break;
-            case ComponentType::CollisionShape:
-                if(!currentScene.hasComponent<clove::CollisionShapeComponent>(entity)) {
-                    float constexpr initRadius{ 1.0f };
-                    currentScene.addComponent<clove::CollisionShapeComponent>(entity, clove::CollisionShapeComponent::Sphere{ initRadius });
-
-                    CollisionShapeComponentInitData ^ shapeData { gcnew CollisionShapeComponentInitData{} };
-                    shapeData->shapeType = ShapeType::Sphere;
-                    shapeData->radius    = initRadius;
-
-                    added    = true;
-                    initData = shapeData;
-                }
-                break;
-        }
-
-        if(added) {
-            Engine_OnComponentAdded ^ message { gcnew Engine_OnComponentAdded };
-            message->entity        = entity;
-            message->componentType = componentType;
-            message->data          = initData;
-            MessageHandler::sendMessage(message);
-        }
+    void EditorSubSystem::addSubSystem(std::string name) {
+        enabledSubSystems.push_back(name);
     }
 
-    void EditorSubSystem::removeComponent(clove::Entity entity, ComponentType componentType) {
-        switch(componentType) {
-            case ComponentType::Transform:
-                currentScene.removeComponent<clove::TransformComponent>(entity);
-                break;
-            case ComponentType::StaticModel:
-                currentScene.removeComponent<clove::StaticModelComponent>(entity);
-                break;
-            case ComponentType::PointLight:
-                currentScene.removeComponent<clove::PointLightComponent>(entity);
-                break;
-            case ComponentType::RigidBody:
-                currentScene.removeComponent<clove::RigidBodyComponent>(entity);
-                break;
-            case ComponentType::CollisionShape:
-                currentScene.removeComponent<clove::CollisionShapeComponent>(entity);
-                break;
+    void EditorSubSystem::removeSubSystem(std::string name) {
+        enabledSubSystems.erase(std::remove(enabledSubSystems.begin(), enabledSubSystems.end(), name), enabledSubSystems.end());
+    }
+
+    void EditorSubSystem::addComponent(clove::Entity entity, std::string_view typeName) {
+        clove::reflection::TypeInfo const *typeInfo{ clove::reflection::getTypeInfo(typeName) };
+        if(typeInfo == nullptr) {
+            CLOVE_LOG(Membrane, clove::LogLevel::Error, "Could not get typeinfo for {0}", typeName);
+            return;
         }
 
-        Engine_OnComponentRemoved ^ message { gcnew Engine_OnComponentRemoved };
+        std::optional<clove::EditorVisibleComponent> componentAttribute{ typeInfo->attributes.get<clove::EditorVisibleComponent>() };
+        if(!componentAttribute.has_value()) {
+            CLOVE_LOG(Membrane, clove::LogLevel::Error, "Could not get EditorVisibleComponent attribute for {0}", typeName);
+            return;
+        }
+
+        if(componentAttribute->onEditorCreateComponent == nullptr) {
+            CLOVE_LOG(Membrane, clove::LogLevel::Error, "{0} does not provide an implementation for EditorVisibleComponent::onEditorCreateComponent. Cannot create component", typeName);
+            return;
+        }
+
+        trackedComponents[entity].push_back(typeInfo);
+
+        uint8_t *componentMemory{ componentAttribute->onEditorCreateComponent(entity, *entityManager) };
+
+        auto message{ gcnew Engine_OnComponentAdded };
         message->entity        = entity;
-        message->componentType = componentType;
+        message->componentName = gcnew System::String{ typeName.data() };
+        message->typeInfo      = constructComponentEditorTypeInfo(typeInfo, componentMemory);
+
         MessageHandler::sendMessage(message);
     }
 
-    void EditorSubSystem::updateTransform(clove::Entity entity, clove::vec3f position, clove::vec3f rotation, clove::vec3f scale) {
-        if(currentScene.hasComponent<clove::TransformComponent>(entity)) {
-            auto &transform{ currentScene.getComponent<clove::TransformComponent>(entity) };
-            transform.position = position;
-            transform.rotation = rotation;
-            transform.scale    = scale;
+    void EditorSubSystem::modifyComponent(clove::Entity entity, std::string_view typeName, size_t offset, std::string_view value) {
+        clove::reflection::TypeInfo const *typeInfo{ clove::reflection::getTypeInfo(typeName) };
+        if(typeInfo == nullptr) {
+            CLOVE_LOG(Membrane, clove::LogLevel::Error, "Could not get typeinfo for {0}", typeName);
+            return;
         }
+
+        std::optional<clove::EditorVisibleComponent> componentAttribute{ typeInfo->attributes.get<clove::EditorVisibleComponent>() };
+        if(!componentAttribute.has_value()) {
+            CLOVE_LOG(Membrane, clove::LogLevel::Error, "Could not get EditorVisibleComponent attribute for {0}", typeName);
+            return;
+        }
+
+        if(componentAttribute->onEditorGetComponent == nullptr) {
+            CLOVE_LOG(Membrane, clove::LogLevel::Error, "{0} does not provide an implementation for EditorVisibleComponent::onEditorGetComponent. Cannot modify component", typeName);
+            return;
+        }
+
+        uint8_t *componentMemory{ componentAttribute->onEditorGetComponent(entity, *entityManager) };
+
+        size_t startingOffset{ 0 };
+        modifyComponentMember(componentMemory, typeInfo, value, offset, startingOffset);
     }
 
-    void EditorSubSystem::updateStaticModel(clove::Entity entity, std::string meshPath, std::string diffusePath, std::string specularPath) {
-        if(currentScene.hasComponent<clove::StaticModelComponent>(entity)) {
-            auto &staticModel{ currentScene.getComponent<clove::StaticModelComponent>(entity) };
-            staticModel.model = clove::Application::get().getAssetManager()->getStaticModel(meshPath);
-            if(!diffusePath.empty()) {
-                staticModel.material->setDiffuseTexture(clove::Application::get().getAssetManager()->getTexture(diffusePath));
-            }
-            if(!specularPath.empty()) {
-                staticModel.material->setSpecularTexture(clove::Application::get().getAssetManager()->getTexture(specularPath));
-            }
+    void EditorSubSystem::removeComponent(clove::Entity entity, std::string_view typeName) {
+        clove::reflection::TypeInfo const *typeInfo{ clove::reflection::getTypeInfo(typeName) };
+        if(typeInfo == nullptr) {
+            CLOVE_LOG(Membrane, clove::LogLevel::Error, "Could not get typeinfo for {0}", typeName);
+            return;
         }
-    }
 
-    void EditorSubSystem::updateRigidBody(clove::Entity entity, float mass) {
-        if(currentScene.hasComponent<clove::RigidBodyComponent>(entity)) {
-            auto &rigidBody{ currentScene.getComponent<clove::RigidBodyComponent>(entity) };
-            rigidBody.mass = mass;
+        std::optional<clove::EditorVisibleComponent> componentAttribute{ typeInfo->attributes.get<clove::EditorVisibleComponent>() };
+        if(!componentAttribute.has_value()) {
+            CLOVE_LOG(Membrane, clove::LogLevel::Error, "Could not get EditorVisibleComponent attribute for {0}", typeName);
+            return;
         }
-    }
 
-    void EditorSubSystem::updateSphereShape(clove::Entity entity, float radius) {
-        if(currentScene.hasComponent<clove::CollisionShapeComponent>(entity)) {
-            currentScene.getComponent<clove::CollisionShapeComponent>(entity).shape = clove::CollisionShapeComponent::Sphere{ radius };
+        if(componentAttribute->onEditorCreateComponent == nullptr) {
+            CLOVE_LOG(Membrane, clove::LogLevel::Error, "{0} does not provide an implementation for EditorVisibleComponent::onEditorCreateComponent. Cannot remove component", typeName);
+            return;
         }
-    }
 
-    void EditorSubSystem::updateCubeShape(clove::Entity entity, clove::vec3f halfExtents) {
-        if(currentScene.hasComponent<clove::CollisionShapeComponent>(entity)) {
-            currentScene.getComponent<clove::CollisionShapeComponent>(entity).shape = clove::CollisionShapeComponent::Cube{ halfExtents };
-        }
+        auto &componentArray{ trackedComponents.at(entity) };
+        componentArray.erase(std::remove(componentArray.begin(), componentArray.end(), typeInfo));
+
+        componentAttribute->onEditorDestroyComponent(entity, *entityManager);
+
+        auto message{ gcnew Engine_OnComponentRemoved };
+        message->entity        = entity;
+        message->componentName = gcnew System::String{ typeName.data() };
+        MessageHandler::sendMessage(message);
     }
 
     void EditorSubSystem::updateName(clove::Entity entity, std::string name) {
-        if(currentScene.hasComponent<NameComponent>(entity)) {
-            currentScene.getComponent<NameComponent>(entity).name = std::move(name);
+        if(entityManager->hasComponent<NameComponent>(entity)) {
+            entityManager->getComponent<NameComponent>(entity).name = std::move(name);
         }
     }
 }

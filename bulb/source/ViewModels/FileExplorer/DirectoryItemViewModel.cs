@@ -74,7 +74,7 @@ namespace Bulb {
             VfsPath = vfsPath;
         }
 
-        protected static string ConvertVfsPathToSystemPath(string vfsPath) => ((EditorApp)Application.Current).resolveVfsPath(vfsPath);
+        protected static string ConvertVfsPathToSystemPath(string vfsPath) => ((EditorApp)Application.Current).ResolveVfsPath(vfsPath);
 
         protected static string ConvertSystemPathToVfsPath(string systemPath) {
             string rootSystem = ConvertVfsPathToSystemPath(".");

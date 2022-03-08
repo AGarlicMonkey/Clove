@@ -188,4 +188,22 @@ namespace clove::ShaderCompiler {
 
         return msl.compile();
     }
+    
+    vec3ui getWorkgroupSize(std::span<uint32_t> spirvSource) {
+        spirv_cross::CompilerMSL msl{ spirvSource.data(), spirvSource.size() };
+        
+        spirv_cross::SpecializationConstant workgroupSpecialisationConstantX;
+        spirv_cross::SpecializationConstant workgroupSpecialisationConstantY;
+        spirv_cross::SpecializationConstant workgroupSpecialisationConstantZ;
+        
+        uint32_t const workGroupConstant{ msl.get_work_group_size_specialization_constants(workgroupSpecialisationConstantX, workgroupSpecialisationConstantY, workgroupSpecialisationConstantZ) };
+        
+        vec3ui workgroupSize{};
+        if(workGroupConstant != 0){
+            spirv_cross::SPIRConstant::ConstantVector const &size{ msl.get_constant(workGroupConstant).vector() };
+            workgroupSize = { size.r[0].u32, size.r[1].u32, size.r[2].u32 };
+        }
+
+        return workgroupSize;
+    }
 }

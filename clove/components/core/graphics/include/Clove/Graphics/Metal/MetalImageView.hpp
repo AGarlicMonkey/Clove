@@ -32,6 +32,6 @@ namespace clove {
 
         id<MTLTexture> getTexture() const;
 
-        static MTLTextureType convertType(GhaImageView::Type type, uint32_t const arrayCount);
+        static MTLTextureType convertType(GhaImageView::Type const type);
     };
 }

@@ -7,8 +7,8 @@
 #include "Clove/Components/PointLightComponent.hpp"
 #include "Clove/Components/StaticModelComponent.hpp"
 #include "Clove/Components/TransformComponent.hpp"
-#include "Clove/Rendering/Renderer.hpp"
 #include "Clove/Rendering/Renderables/Mesh.hpp"
+#include "Clove/Rendering/Renderer.hpp"
 
 #include <Clove/ECS/EntityManager.hpp>
 #include <Clove/Maths/Maths.hpp>
@@ -38,24 +38,26 @@ namespace clove {
 
         //Transform and submit cameras
         entityManager->forEach([this, &activeCamera](Entity entity, TransformComponent const &transform, CameraComponent &camera) {
-            vec3f const position{ transform.getWorldPosition() };
+            if(camera.isPriority || activeCamera == NullEntity) {
+                vec3f const position{ transform.getWorldPosition() };
 
-            vec3f const camFront{ transform.getForward() };
-            vec3f const camUp{ transform.getUp() };
+                vec3f const camFront{ transform.getForward() };
+                vec3f const camUp{ transform.getUp() };
 
-            mat4f const view{ lookAt(position, position + camFront, camUp) };
-            mat4f const projection{ camera.camera.getProjection(renderer->getRenderTargetSize()) };
+                mat4f const view{ lookAt(position, position + camFront, camUp) };
+                mat4f const projection{ camera.camera.getProjection(renderer->getRenderTargetSize()) };
 
-            renderer->submitCamera(view, projection, position);
+                renderer->submitCamera(view, projection, position);
 
-            activeCamera = entity;
+                activeCamera = entity;
+            }
         });
 
         //Submit static meshes
         entityManager->forEach([this](TransformComponent const &transform, StaticModelComponent const &staticModel) {
             if(staticModel.model.isValid()) {
                 mat4f const modelTransform{ transform.worldMatrix };
-                
+
                 for(auto const &mesh : staticModel.model->getMeshes()) {
                     renderer->submitMesh(Renderer::MeshInfo{ mesh, staticModel.material, modelTransform });
                 }
@@ -81,7 +83,7 @@ namespace clove {
             float constexpr farDist{ 100.0f };
             mat4f const shadowProj{ createOrthographicMatrix(-mapSize, mapSize, -mapSize, mapSize, nearDist, farDist) };
 
-            DirectionalLight lightProxy{
+            Renderer::DirectionalLight lightProxy{
                 .data = {
                     .direction = light.direction,
                     .ambient   = light.ambientColour,
@@ -94,19 +96,18 @@ namespace clove {
             renderer->submitLight(lightProxy);
         });
         //Submit point lights
-        entityManager->forEach([this](TransformComponent const &transform, PointLightComponent &light) {
-            float constexpr farDist{ 100.0f };
-            mat4f const shadowProj{ createPerspectiveMatrix(asRadians(90.0f), 1.0f, 0.5f, farDist) };
+        entityManager->forEach([this](TransformComponent const &transform, PointLightComponent const &light) {
+            mat4f const shadowProj{ createPerspectiveMatrix(asRadians(90.0f), 1.0f, 0.5f, light.radius) };
 
             vec3f const &position{ transform.position };
 
-            PointLight lightProxy{
+            Renderer::PointLight lightProxy{
                 .data = {
                     .position = position,
+                    .radius   = light.radius,
                     .ambient  = light.ambientColour,
                     .diffuse  = light.diffuseColour,
                     .specular = light.specularColour,
-                    .farPlane = farDist,
                 },
                 .shadowTransforms = {
                     shadowProj * lookAt(position, position + vec3f{ 1.0f, 0.0f, 0.0f }, vec3f{ 0.0f, 1.0f, 0.0f }),

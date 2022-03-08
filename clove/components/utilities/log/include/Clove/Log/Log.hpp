@@ -34,7 +34,7 @@ namespace clove {
         Logger();
         ~Logger();
 
-        static inline Logger &get();
+        static Logger &get();
 
         template<typename... Args>
         void log(std::string_view category, LogLevel level, std::string_view msg, Args &&...args);

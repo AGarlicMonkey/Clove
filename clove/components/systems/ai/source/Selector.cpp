@@ -9,7 +9,7 @@ namespace clove {
 
     Selector::~Selector() = default;
 
-    Task::Status Selector::activate(DeltaTime const deltaTime, BlackBoard &blackboard) {
+    Task::Status Selector::activate(DeltaTime const deltaTime, Blackboard &blackboard) {
         for(auto const &child : children) {
             Status const status{ child->activate(deltaTime, blackboard) };
             if(status != Status::Failure) {

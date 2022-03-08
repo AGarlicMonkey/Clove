@@ -1,3 +1,4 @@
+add_subdirectory(blackboard)
 add_subdirectory(cast)
 add_subdirectory(definitions)
 add_subdirectory(delegate)

@@ -12,6 +12,7 @@
 #include <Clove/Delegate/SingleCastDelegate.hpp>
 #include <Clove/ECS/EntityManager.hpp>
 #include <Clove/Event/EventDispatcher.hpp>
+#include <Clove/ReflectionAttributes.hpp>
 #include <btBulletDynamicsCommon.h>
 
 namespace clove {
@@ -69,9 +70,9 @@ namespace clove {
         }
     }
 
-    PhysicsSubSystem::PhysicsSubSystem(EntityManager *entityManager)
+    PhysicsSubSystem::PhysicsSubSystem()
         : SubSystem("Physics")
-        , entityManager{ entityManager } {
+        , entityManager{ Application::get().getEntityManager() } {
         collisionConfiguration = std::make_unique<btDefaultCollisionConfiguration>();
         dispatcher             = std::make_unique<btCollisionDispatcher>(collisionConfiguration.get());
         broadphase             = std::make_unique<btDbvtBroadphase>();
@@ -167,6 +168,7 @@ namespace clove {
 
             if(needsNewShape) {
                 createProxyShape(proxy, shape);
+                proxy.collisionObject->setCollisionShape(proxy.collisionShape.get());
             }
         });
 
@@ -367,3 +369,9 @@ namespace clove {
         dynamicsWorld->removeCollisionObject(event.component.collisionObject.get());
     }
 }
+
+CLOVE_REFLECT_BEGIN(clove::PhysicsSubSystem, clove::EditorVisibleSubSystem{
+                                                 .onEditorCreateSubSystem  = &createSubSystemHelper<clove::PhysicsSubSystem>,
+                                                 .onEditorDestroySubSystem = &destroySubSystemHelper<clove::PhysicsSubSystem>,
+                                             })
+CLOVE_REFLECT_END

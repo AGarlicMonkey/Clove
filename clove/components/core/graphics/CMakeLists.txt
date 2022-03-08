@@ -268,14 +268,6 @@ target_link_libraries(
         CloveMaths
 
     PRIVATE
-		#Include all glslang libraries to prevent linking errors witrh shaderc
-        glslang::SPVRemapper
-        glslang::HLSL
-        glslang::OGLCompiler
-        glslang::OSDependent
-        glslang::glslang
-        glslang::SPIRV
-
         shaderc::shaderc
 		spirv-cross::spirv-cross
 
@@ -308,6 +300,8 @@ target_compile_definitions(
 
 	PUBLIC
 		CLOVE_GHA_VALIDATION=$<BOOL:${CLOVE_ENABLE_GHA_VALIDATION}>
+
+	PRIVATE
 		CLOVE_COMPILE_DEBUG_SHADERS=$<BOOL:${CLOVE_COMPILE_DEBUG_SHADERS}>
 )
 

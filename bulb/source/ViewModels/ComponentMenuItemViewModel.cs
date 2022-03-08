@@ -1,13 +1,15 @@
 using System.Windows.Input;
-using Membrane = membrane;
 
 namespace Bulb {
+    /// <summary>
+    /// Viewmodel for displaying available components in a menu list.
+    /// </summary>
     public class ComponentMenuItemViewModel : ViewModel {
-        public Membrane.ComponentType ComponentType { get; }
+        public string Name { get; }
         public ICommand OnSelectedCommand { get; }
 
-        public ComponentMenuItemViewModel(Membrane.ComponentType componentType, ICommand onSelectedCommand) {
-            ComponentType = componentType;
+        public ComponentMenuItemViewModel(string name, ICommand onSelectedCommand) {
+            Name = name;
             OnSelectedCommand = onSelectedCommand;
         }
     }

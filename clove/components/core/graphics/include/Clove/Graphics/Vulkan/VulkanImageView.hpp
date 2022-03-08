@@ -33,7 +33,7 @@ namespace clove {
 
         inline VkImageView getImageView() const;
 
-        static VkImageViewType convertType(GhaImageView::Type garlicImageType, uint32_t const layerCount);
+        static VkImageViewType convertType(GhaImageView::Type const garlicImageType);
     };
 }
 

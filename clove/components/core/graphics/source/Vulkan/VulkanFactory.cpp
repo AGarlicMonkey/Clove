@@ -170,6 +170,9 @@ namespace clove {
             if((garlicUsageFlags & GhaImage::UsageMode::Sampled) != 0) {
                 flags |= VK_IMAGE_USAGE_SAMPLED_BIT;
             }
+            if((garlicUsageFlags & GhaImage::UsageMode::Storage) != 0) {
+                flags |= VK_IMAGE_USAGE_STORAGE_BIT;
+            }
             if((garlicUsageFlags & GhaImage::UsageMode::ColourAttachment) != 0) {
                 flags |= VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
             }
@@ -240,7 +243,7 @@ namespace clove {
                 .pNext      = nullptr,
                 .flags      = 0,
                 .image      = image,
-                .viewType   = VulkanImageView::convertType(viewdescriptor.type, viewdescriptor.layerCount),
+                .viewType   = VulkanImageView::convertType(viewdescriptor.type),
                 .format     = VulkanImage::convertFormat(imageFormat),
                 .components = {
                     .r = VK_COMPONENT_SWIZZLE_IDENTITY,

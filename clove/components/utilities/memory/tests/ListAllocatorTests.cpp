@@ -142,3 +142,15 @@ TEST(ListAllocatorTests, AllocatedBlocksAreMergedAfterBeingFreed) {
 
     allocations.resize(0);
 }
+
+TEST(ListAllocatorTests, CanGetSizeOfAllocator) {
+    ListAllocator allocator{ allocatorSize };
+
+    EXPECT_EQ(allocator.getSize(), allocatorSize);
+}
+
+TEST(ListAllocatorTests, CanGetMemoryOfAllocator) {
+    ListAllocator allocator{ allocatorSize };
+
+    EXPECT_NE(allocator.getMemory(), nullptr);
+}

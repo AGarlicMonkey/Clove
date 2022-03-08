@@ -18,11 +18,17 @@ namespace clove {
         for(auto const &submission : submissions) {
             inputResources.emplace(submission.vertexBuffer);
             inputResources.emplace(submission.indexBuffer);
-            for(auto const &ubo : submission.shaderUbos) {
+            for(auto const &ubo : submission.readUniformBuffers) {
                 inputResources.emplace(ubo.buffer);
             }
-            for(auto const &image : submission.shaderImages) {
+            for(auto const &sbo : submission.readStorageBuffers) {
+                inputResources.emplace(sbo.buffer);
+            }
+            for(auto const &image : submission.images) {
                 inputResources.emplace(image.imageView.image);
+            }
+            if(descriptor.depthStencil.imageView.image != INVALID_RESOURCE_ID && descriptor.depthStencil.loadOp == LoadOperation::Load) {
+                inputResources.emplace(descriptor.depthStencil.imageView.image);
             }
         }
         return inputResources;
@@ -36,6 +42,10 @@ namespace clove {
         if(descriptor.depthStencil.imageView.image != INVALID_RESOURCE_ID) {
             outputResources.emplace(descriptor.depthStencil.imageView.image);
         }
+        if(descriptor.depthStencil.imageView.image != INVALID_RESOURCE_ID && descriptor.depthStencil.storeOp == StoreOperation::Store) {
+            outputResources.emplace(descriptor.depthStencil.imageView.image);
+        }
+
         return outputResources;
     }
 }

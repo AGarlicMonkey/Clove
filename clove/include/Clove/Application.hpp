@@ -37,7 +37,6 @@ namespace clove {
 
         //VARIABLES
     private:
-        static Application *instance;
         State currentState{ State::Running };//Assumed to be initialised to the running state.
 
         std::unique_ptr<GhaDevice> graphicsDevice;
@@ -79,27 +78,13 @@ namespace clove {
          */
         static std::unique_ptr<Application> create(GraphicsApi graphicsApi, AudioApi audioApi, Window::Descriptor const &windowDescriptor);
 
-        /**
-         * @brief Create a Garlic application without a window that is capable of offscreen rendering.
-         * @param graphicsApi Which graphics api to use.
-         * @param audioApi Which audio api to use.
-         * @param renderTargetDescriptor A descriptor describing the format of the target that'll be rendered to.
-         * @param keyboard A keyboard object the application will quiery for input every frame.
-         * @param mouse A mouse object the application will quiery for input every frame.
-         * @return A pair with the created application instance and a pointer to the render target of the application.
-         */
-        static std::pair<std::unique_ptr<Application>, GraphicsImageRenderTarget *> createHeadless(GraphicsApi graphicsApi, AudioApi audioApi, GhaImage::Descriptor renderTargetDescriptor, Keyboard *keyboard, Mouse *mouse);
-
-        /**
-         * @brief Set the static application instance with an existing one.
-         * @param app 
-         */
-        static void set(Application *app);
-
         static Application &get();
 
         template<typename SubSystemType, typename... Args>
         void pushSubSystem(Args &&...args);
+
+        template<typename SubSystemType>
+        bool hasSubSystem() const;
 
         template<typename SubSystemType>
         SubSystemType &getSubSystem();

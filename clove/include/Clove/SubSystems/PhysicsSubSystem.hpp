@@ -7,6 +7,7 @@
 #include <Clove/ECS/Entity.hpp>
 #include <Clove/Event/EventHandle.hpp>
 #include <Clove/Maths/Vector.hpp>
+#include <Clove/Reflection/Reflection.hpp>
 #include <memory>
 #include <unordered_map>
 #include <unordered_set>
@@ -75,8 +76,7 @@ namespace clove {
 
         //FUNCTIONS
     public:
-		PhysicsSubSystem() = delete;
-		PhysicsSubSystem(EntityManager *entityManager);
+		PhysicsSubSystem();
 
         PhysicsSubSystem(PhysicsSubSystem const &other) = delete;
         PhysicsSubSystem(PhysicsSubSystem &&other) noexcept;
@@ -116,3 +116,5 @@ namespace clove {
         void onProxyRemoved(ComponentRemovedEvent<PhysicsProxyComponent> const &event);
     };
 }
+
+CLOVE_REFLECT_DECLARE_TYPE(clove::PhysicsSubSystem)

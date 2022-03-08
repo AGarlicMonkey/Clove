@@ -18,7 +18,7 @@ jobs:
         with:
           submodules: recursive
         #Suppress syntax errors as these are causing false positives
-      - run: cppcheck -iclove/components/core/graphics/external/shaderc -iclove/external/stb ./ --suppress=syntaxError --suppress=unknownMacro --error-exitcode=1
+      - run: cppcheck -iclove/components/core/graphics/external/shaderc -iclove/external/stb ./ --suppress=syntaxError --suppress=unknownMacro --suppress=internalAstError --error-exitcode=1
   #macOS
   clang-tidy-macos:
     runs-on: macos-latest

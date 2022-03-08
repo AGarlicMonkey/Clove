@@ -28,7 +28,7 @@ layout(std140, set = 0, binding = 3) buffer SkinnedVertices{
 	Vertex skinnedVertices[];
 };
 
-layout(local_size_x = AVERAGE_WORK_GROUP_SIZE) in;
+layout(local_size_x = 256) in;
 
 void main(){
     vec4 animatedPos = vec4(0.0f);

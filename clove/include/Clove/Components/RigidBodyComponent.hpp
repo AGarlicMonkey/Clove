@@ -1,10 +1,9 @@
 #pragma once
 
-#include "Clove/SerialisationCommon.hpp"
-
 #include <Clove/Maths/Vector.hpp>
 #include <cinttypes>
 #include <optional>
+#include <Clove/Reflection/Reflection.hpp>
 
 namespace clove {
     /**
@@ -90,28 +89,4 @@ namespace clove {
     };
 }
 
-namespace clove {
-    template<>
-    inline serialiser::Node serialise(RigidBodyComponent const &object) {
-        serialiser::Node node{};
-        node["collisionGroup"] = object.collisionGroup;
-        node["collisionMask"]  = object.collisionMask;
-        node["mass"]           = object.mass;
-        node["restitution"]    = object.restitution;
-        node["angularFactor"]  = object.angularFactor;
-        node["linearFactor"]   = object.linearFactor;
-        return node;
-    }
-
-    template<>
-    inline RigidBodyComponent deserialise(serialiser::Node const &node) {
-        RigidBodyComponent component{};
-        component.collisionGroup = node["collisionGroup"].as<uint32_t>();
-        component.collisionMask  = node["collisionMask"].as<uint32_t>();
-        component.mass           = node["mass"].as<float>();
-        component.restitution    = node["restitution"].as<float>();
-        component.angularFactor  = node["angularFactor"].as<vec3f>();
-        component.linearFactor   = node["linearFactor"].as<vec3f>();
-        return component;
-    }
-}
+CLOVE_REFLECT_DECLARE_TYPE(clove::RigidBodyComponent)

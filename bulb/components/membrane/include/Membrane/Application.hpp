@@ -3,10 +3,6 @@
 #include <Clove/Application.hpp>
 #include <Clove/ECS/Entity.hpp>
 
-namespace clove {
-    class GraphicsImageRenderTarget;
-}
-
 namespace membrane {
     class EditorSubSystem;
     class RuntimeSubSystem;
@@ -26,31 +22,28 @@ public ref class Application {
         clove::GraphicsImageRenderTarget *renderTarget;
         EditorViewport ^viewport;
 
-        int width;
-        int height;
-
         bool isInEditorMode{ true };
 
         HINSTANCE gameLibrary{ nullptr };
 
         //FUNCTIONS
     public:
-        Application(int const width, int const height);
+        Application();
         ~Application();
         !Application();
 
         void loadGameDll();
+        void startSession();
 
         bool isRunning();
         void tick();
-        void render(System::IntPtr backBuffer);
         void shutdown();
-
-        void resize(int width, int height);
 
         System::String ^resolveVfsPath(System::String ^path);
 
         static System::String ^getProjectVersion();
+
+        System::IntPtr createChildWindow(System::IntPtr parent, int32_t width, int32_t height);
 
     private:
         void setEditorMode(Editor_Stop ^message);
