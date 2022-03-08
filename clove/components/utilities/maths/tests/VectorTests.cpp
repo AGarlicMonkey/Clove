@@ -139,6 +139,52 @@ TEST(VectorTests, CanAddTwoVectors) {
     EXPECT_EQ(v4c.w, v4a.w + v4b.w);
 }
 
+TEST(VectorTests, CanMultiplyVectorByNumber) {
+    float constexpr multiplier{ 5.0f };
+
+    {
+        vec2f a{ 2, 5 };
+        vec2f aMul{ a.x * multiplier, a.y * multiplier };
+        EXPECT_EQ(a * multiplier, aMul);
+
+        vec2f b{ 1, 3 };
+        vec2f c{ b };
+
+        c *= multiplier;
+        EXPECT_EQ(b.x * multiplier, c.x);
+        EXPECT_EQ(b.y * multiplier, c.y);
+    }
+
+    {
+        vec3f a{ 2, 5, 8 };
+        vec3f aMul{ a.x * multiplier, a.y * multiplier, a.z * multiplier };
+        EXPECT_EQ(a * multiplier, aMul);
+
+        vec3f b{ 1, 3, 2 };
+        vec3f c{ b };
+
+        c *= multiplier;
+        EXPECT_EQ(b.x * multiplier, c.x);
+        EXPECT_EQ(b.y * multiplier, c.y);
+        EXPECT_EQ(b.z * multiplier, c.z);
+    }
+
+    {
+        vec4f a{ 2, 5, 8, 1};
+        vec4f aMul{ a.x * multiplier, a.y * multiplier, a.z * multiplier, a.w * multiplier };
+        EXPECT_EQ(a * multiplier, aMul);
+
+        vec4f b{ 1, 3, 2, 0 };
+        vec4f c{ b };
+
+        c *= multiplier;
+        EXPECT_EQ(b.x * multiplier, c.x);
+        EXPECT_EQ(b.y * multiplier, c.y);
+        EXPECT_EQ(b.z * multiplier, c.z);
+        EXPECT_EQ(b.w * multiplier, c.w);
+    }
+}
+
 TEST(VectorTests, CanDivideVectorByNumber) {
     float constexpr divisor{ 3.0f };
 
