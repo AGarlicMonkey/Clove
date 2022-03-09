@@ -68,7 +68,7 @@ namespace Bulb {
                 string assetFileLocation = $"{FullPath}{Path.DirectorySeparatorChar}{fileName}.clvasset";
                 string fileRelativePath = MakeRelativePath(assetFileLocation, file);
 
-                string vfsPath = $"{VfsPath}{Path.DirectorySeparatorChar}{Path.GetFileName(file)}".Replace("content/", ""); //Remove 'content' from the desired VFS path as this is where the VFS searches from
+                string vfsPath = $"{VfsPath}/{Path.GetFileName(file)}".Replace($"content/", ""); //Remove 'content' from the desired VFS path as this is where the VFS searches from
 
                 Membrane.FileSystemHelpers.createAssetFile(assetFileLocation, file, fileRelativePath, vfsPath);
             } else {
