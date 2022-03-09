@@ -10,17 +10,17 @@ namespace Bulb {
         public override ObjectType Type => ObjectType.Directory;
 
         /// <summary>
-        /// A list of all directories within this directory. Will be empty if this item is a file.
+        /// A list of all directories within this directory.
         /// </summary>
         public ObservableCollection<FolderViewModel> SubDirectories { get; } = new ObservableCollection<FolderViewModel>();
 
         /// <summary>
-        /// A list of all files within this directory. Will be empty if this item is a file.
+        /// A list of all files within this directory.
         /// </summary>
         public ObservableCollection<FileViewModel> Files { get; } = new ObservableCollection<FileViewModel>();
 
         /// <summary>
-        /// A list of every single item within this directory. Will be empty if this item is a file.
+        /// A list of every single item within this directory.
         /// </summary>
         public ObservableCollection<DirectoryItemViewModel> AllItems { get; } = new ObservableCollection<DirectoryItemViewModel>();
 
@@ -68,7 +68,7 @@ namespace Bulb {
                 string assetFileLocation = $"{FullPath}{Path.DirectorySeparatorChar}{fileName}.clvasset";
                 string fileRelativePath = MakeRelativePath(assetFileLocation, file);
 
-                string vfsPath = $"{VfsPath}{Path.DirectorySeparatorChar}{Path.GetFileName(file)}".Replace($"content{Path.DirectorySeparatorChar}", ""); //Remove 'content' from the desired VFS path as this is where the VFS searches from
+                string vfsPath = $"{VfsPath}{Path.DirectorySeparatorChar}{Path.GetFileName(file)}".Replace("content/", ""); //Remove 'content' from the desired VFS path as this is where the VFS searches from
 
                 Membrane.FileSystemHelpers.createAssetFile(assetFileLocation, file, fileRelativePath, vfsPath);
             } else {
