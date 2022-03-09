@@ -54,7 +54,7 @@ namespace clove {
          * @param assetGuid 
          * @return 
          */
-        AssetPtr<StaticModel> getStaticModel(Guid const assetGuid);
+        AssetPtr<StaticModel> getStaticModel(Guid const &assetGuid);
 
         /**
          * @brief Get an AnimatedModel using a VFS path.
@@ -67,7 +67,7 @@ namespace clove {
          * @param assetGuid 
          * @return 
          */
-        AssetPtr<AnimatedModel> getAnimatedModel(Guid const assetGuid);
+        AssetPtr<AnimatedModel> getAnimatedModel(Guid const &assetGuid);
 
         /**
          * @brief Get a Texture using a VFS guid.
@@ -80,7 +80,7 @@ namespace clove {
          * @param assetGuid 
          * @return 
          */
-        AssetPtr<Texture> getTexture(Guid const assetGuid);
+        AssetPtr<Texture> getTexture(Guid const &assetGuid);
 
         /**
          * @brief Get a SoundFile using a VFS path.
@@ -93,7 +93,7 @@ namespace clove {
          * @param assetGuid 
          * @return 
          */
-        AssetPtr<SoundFile> getSound(Guid const assetGuid);
+        AssetPtr<SoundFile> getSound(Guid const &assetGuid);
 
         /**
          * @brief Updates any AssetPtrs to point at the new asset location. Note: this does not actually move any files.

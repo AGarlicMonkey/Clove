@@ -16,7 +16,7 @@ namespace clove {
         return model;
     }
 
-    AssetPtr<StaticModel> AssetManager::getStaticModel(Guid const assetGuid) {
+    AssetPtr<StaticModel> AssetManager::getStaticModel(Guid const &assetGuid) {
         AssetPtr<StaticModel> asset{};
 
         for(auto &&[path, assetPtr] : staticModels) {
@@ -41,7 +41,7 @@ namespace clove {
         return model;
     }
 
-    AssetPtr<AnimatedModel> AssetManager::getAnimatedModel(Guid const assetGuid) {
+    AssetPtr<AnimatedModel> AssetManager::getAnimatedModel(Guid const &assetGuid) {
         AssetPtr<AnimatedModel> asset{};
 
         for(auto &&[path, assetPtr] : animatedModels) {
@@ -67,7 +67,7 @@ namespace clove {
         return texture;
     }
 
-    AssetPtr<Texture> AssetManager::getTexture(Guid const assetGuid) {
+    AssetPtr<Texture> AssetManager::getTexture(Guid const &assetGuid) {
         AssetPtr<Texture> asset{};
 
         for(auto &&[path, assetPtr] : textures) {
@@ -93,7 +93,7 @@ namespace clove {
         return sound;
     }
 
-    AssetPtr<SoundFile> AssetManager::getSound(Guid const assetGuid) {
+    AssetPtr<SoundFile> AssetManager::getSound(Guid const &assetGuid) {
         AssetPtr<SoundFile> asset{};
 
         for(auto &&[path, assetPtr] : sounds) {
@@ -157,11 +157,11 @@ namespace clove {
     AssetPtr<StaticModel> AssetManager::addStaticModel(VirtualFileSystem::Path const &filePath, Guid guid) {
         std::filesystem::path const fullSystemPath{ vfs->resolve(filePath) };
         if(!std::filesystem::exists(fullSystemPath)) {
-            CLOVE_LOG(CloveAssetManager, LogLevel::Error, "{0} does not resolved to {1} whcih does not exist on disk.", filePath.string(), fullSystemPath.string());
+            CLOVE_LOG(CloveAssetManager, LogLevel::Error, "{0} does not resolved to {1} which does not exist on disk.", filePath.string(), fullSystemPath.string());
             return {};
         }
 
-        return AssetPtr<StaticModel>{ guid, [fullSystemPath]() {
+        return AssetPtr<StaticModel>{ std::move(guid), [fullSystemPath]() {
                                          return ModelLoader::loadStaticModel(fullSystemPath);
                                      } };
     }
@@ -169,11 +169,11 @@ namespace clove {
     AssetPtr<AnimatedModel> AssetManager::addAnimatedModel(VirtualFileSystem::Path const &filePath, Guid guid) {
         std::filesystem::path const fullSystemPath{ vfs->resolve(filePath) };
         if(!std::filesystem::exists(fullSystemPath)) {
-            CLOVE_LOG(CloveAssetManager, LogLevel::Error, "{0} does not resolved to {1} whcih does not exist on disk.", filePath.string(), fullSystemPath.string());
+            CLOVE_LOG(CloveAssetManager, LogLevel::Error, "{0} does not resolved to {1} which does not exist on disk.", filePath.string(), fullSystemPath.string());
             return {};
         }
 
-        return AssetPtr<AnimatedModel>{ guid, [fullSystemPath]() {
+        return AssetPtr<AnimatedModel>{ std::move(guid), [fullSystemPath]() {
                                            return ModelLoader::loadAnimatedModel(fullSystemPath);
                                        } };
     }
@@ -181,11 +181,11 @@ namespace clove {
     AssetPtr<Texture> AssetManager::addTexture(VirtualFileSystem::Path const &filePath, Guid guid) {
         std::filesystem::path const fullSystemPath{ vfs->resolve(filePath) };
         if(!std::filesystem::exists(fullSystemPath)) {
-            CLOVE_LOG(CloveAssetManager, LogLevel::Error, "{0} does not resolved to {1} whcih does not exist on disk.", filePath.string(), fullSystemPath.string());
+            CLOVE_LOG(CloveAssetManager, LogLevel::Error, "{0} does not resolved to {1} which does not exist on disk.", filePath.string(), fullSystemPath.string());
             return {};
         }
 
-        return AssetPtr<Texture>{ guid, [fullSystemPath]() {
+        return AssetPtr<Texture>{ std::move(guid), [fullSystemPath]() {
                                      return TextureLoader::loadTexture(fullSystemPath).getValue();
                                  } };
     }
@@ -193,11 +193,11 @@ namespace clove {
     AssetPtr<SoundFile> AssetManager::addSound(VirtualFileSystem::Path const &filePath, Guid guid) {
         std::filesystem::path const fullSystemPath{ vfs->resolve(filePath) };
         if(!std::filesystem::exists(fullSystemPath)) {
-            CLOVE_LOG(CloveAssetManager, LogLevel::Error, "{0} does not resolved to {1} whcih does not exist on disk.", filePath.string(), fullSystemPath.string());
+            CLOVE_LOG(CloveAssetManager, LogLevel::Error, "{0} does not resolved to {1} which does not exist on disk.", filePath.string(), fullSystemPath.string());
             return {};
         }
 
-        return AssetPtr<SoundFile>{ guid, [fullSystemPath]() {
+        return AssetPtr<SoundFile>{ std::move(guid), [fullSystemPath]() {
                                        return SoundFile{ fullSystemPath.string() };
                                    } };
     }
