@@ -50,10 +50,15 @@ namespace Bulb {
         }
 
         /// <summary>
-        /// Renames this item and updates correlating file. 
+        /// Renames this item and updates the correlating file. 
         /// </summary>
         /// <param name="newName">New name for this file. It should not include any extensions.</param>
         public abstract void Rename(string newName);
+
+        /// <summary>
+        /// Reconstructs the path of this item. Updating the correlating file if need be.
+        /// </summary>
+        public abstract void Reconstruct();
 
         /// <summary>
         /// Checks if file can be dropped onto this item.

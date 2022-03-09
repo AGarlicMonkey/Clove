@@ -100,12 +100,12 @@ namespace membrane {
         return FileType::Mesh;
     }
 
-    void FileSystemHelpers::createAssetFile(System::String ^ location, System::String ^ fullPath, System::String ^ relPath, System::String ^ vfsPath) {
-        std::filesystem::path const saveLocation{ msclr::interop::marshal_as<std::string>(location) };
-        std::filesystem::path const relativePath{ msclr::interop::marshal_as<std::string>(relPath) };
-        std::filesystem::path const nativeVfsPath{ msclr::interop::marshal_as<std::string>(vfsPath) };
+    void FileSystemHelpers::createAssetFile(System::String ^ assetLocation, System::String ^ fileToCreateFrom, System::String ^ relPathOfCreateFrom, System::String ^ assetVfsPath) {
+        std::filesystem::path const saveLocation{ msclr::interop::marshal_as<std::string>(assetLocation) };
+        std::filesystem::path const relativePath{ msclr::interop::marshal_as<std::string>(relPathOfCreateFrom) };
+        std::filesystem::path const nativeVfsPath{ msclr::interop::marshal_as<std::string>(assetVfsPath) };
 
-        FileType const type{ getFileType(fullPath) };
+        FileType const type{ getFileType(fileToCreateFrom) };
         std::ofstream fileStream{ saveLocation, std::ios::out | std::ios::trunc };
 
         {
@@ -128,7 +128,7 @@ namespace membrane {
         std::filesystem::path const source{ msclr::interop::marshal_as<std::string>(sourceFileName) };
         std::filesystem::path const dest{ msclr::interop::marshal_as<std::string>(destFileName) };
 
-        clove::serialiser::Node assetNode{ clove::loadYaml(source).getValue() };
+        clove::serialiser::Node assetNode{ clove::loadYaml(dest).getValue() };
         std::filesystem::path const assetPath{ GAME_DIR "/content" + assetNode["asset"]["path"].as<std::string>() };
         
         //Make sure to update the new relative path       
@@ -142,8 +142,8 @@ namespace membrane {
         clove::VirtualFileSystem::Path const sourceVfs{ std::filesystem::relative(source, GAME_DIR "/content").replace_extension(assetPath.extension()) };
         clove::VirtualFileSystem::Path const destVfs{ std::filesystem::relative(dest, GAME_DIR "/content").replace_extension(assetPath.extension()) };
 
-        //First, notify the asset manager of the move
-        switch(getFileType(sourceFileName)) {
+        //Notify the asset manager of the move
+        switch(getFileType(destFileName)) {
             case FileType::Mesh:
                 clove::Application::get().getAssetManager()->moveStaticModel(sourceVfs, destVfs);
                 break;
@@ -155,9 +155,6 @@ namespace membrane {
             case FileType::Unknown:
                 break;
         }
-
-        //Then move the file through the OS
-        std::filesystem::rename(source, dest);
     }
 
     void FileSystemHelpers::removeAssetFile(System::UInt64 assetGuid, FileType assetFileType) {

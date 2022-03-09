@@ -28,8 +28,17 @@ namespace membrane {
          */
         static FileType getFileType(System::String ^ fullFilePath);
 
-        static void createAssetFile(System::String ^ location, System::String ^ fullPath, System::String ^ relPath, System::String ^ vfsPath);
+        /**
+         * @brief Creates a new .clvasset file on disk.
+         */
+        static void createAssetFile(System::String ^assetLocation, System::String ^fileToCreateFrom, System::String ^relPathOfCreateFrom, System::String ^assetVfsPath);
+        /**
+         * @brief Notifies the asset manager that a file was moved. Note: Does not move the file on disk.
+         */
         static void moveAssetFile(System::String ^ sourceFileName, System::String ^ destFileName);
+        /**
+         * @brief Notifies the asset manager that a file was deleted. Note: Does not delete the file on disk.
+         */
         static void removeAssetFile(System::UInt64 assetGuid, FileType assetFileType);
 
         /**

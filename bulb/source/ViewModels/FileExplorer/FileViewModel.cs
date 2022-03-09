@@ -26,10 +26,22 @@ namespace Bulb {
             string newFileName = $"{newName}.clvasset";
             string newPath = $"{Path.GetDirectoryName(FullPath)}{Path.DirectorySeparatorChar}{newFileName}";
 
+            File.Move(FullPath, newPath);
+
             Membrane.FileSystemHelpers.moveAssetFile(FullPath, newPath);
 
             Name = newFileName;
             FullPath = newPath;
+        }
+
+        public override void Reconstruct() {
+            string newPath = $"{Parent.FullPath}{Path.DirectorySeparatorChar}{Name}";
+
+            if (newPath != FullPath) {
+                Membrane.FileSystemHelpers.moveAssetFile(FullPath, newPath);
+
+                FullPath = newPath;
+            }
         }
 
         public override bool CanDropFile(string file) => false;

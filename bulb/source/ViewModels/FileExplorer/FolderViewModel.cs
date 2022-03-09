@@ -80,7 +80,24 @@ namespace Bulb {
             }
         }
 
-        public override void Rename(string newName) => throw new NotImplementedException();
+        public override void Rename(string newName) {
+            string newPath = $"{Parent.FullPath}{Path.DirectorySeparatorChar}{newName}";
+
+            Directory.Move(FullPath, newPath);
+
+            Name = newName;
+            FullPath = newPath;
+
+            Reconstruct();
+        }
+
+        public override void Reconstruct() {
+            FullPath = $"{Parent.FullPath}{Path.DirectorySeparatorChar}{Name}";
+
+            foreach (DirectoryItemViewModel item in AllItems) {
+                item.Reconstruct();
+            }
+        }
 
         private void OnItemOpened(DirectoryItemViewModel item) => OnOpened?.Invoke(item);
 
@@ -116,7 +133,7 @@ namespace Bulb {
                         RemoveAllFilesInDirectory(folderVm);
                     } else if (item is FileViewModel fileVm) {
                         _ = Files.Remove(fileVm);
-                        if(ignoreDelete == fileVm.FullPath) {
+                        if (ignoreDelete == fileVm.FullPath) {
                             ignoreDelete = null;
                         } else {
                             Membrane.FileSystemHelpers.removeAssetFile(fileVm.AssetGuid, fileVm.AssetType);
