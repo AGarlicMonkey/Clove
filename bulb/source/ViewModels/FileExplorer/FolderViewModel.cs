@@ -56,7 +56,17 @@ namespace Bulb {
             }
         }
 
-        public override bool CanDropFile(string file) => Path.GetDirectoryName(file) != FullPath && Membrane.FileSystemHelpers.isFileSupported(file);
+        public override bool CanDropFile(string file) {
+            if (Path.GetDirectoryName(file) == FullPath) {
+                return false;
+            }
+
+            if (File.GetAttributes(file).HasFlag(FileAttributes.Directory)) {
+                return true;
+            } else {
+                return Path.GetDirectoryName(file) != FullPath && Membrane.FileSystemHelpers.isFileSupported(file);
+            }
+        }
 
         public override void OnFileDropped(string file) {
             if (!Membrane.FileSystemHelpers.isAssetFile(file)) {
