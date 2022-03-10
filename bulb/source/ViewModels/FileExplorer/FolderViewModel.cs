@@ -33,7 +33,7 @@ namespace Bulb {
         /// </summary>
         public string VfsPath => Parent != null ? $"{Parent.VfsPath}/{Name}" : Name;
 
-        private readonly FileSystemWatcher watcher;
+        private FileSystemWatcher watcher;
 
         //Ignore deleting this file through the asset manager if an event fires for it. Requried when moving files.
         private static string ignoreDelete = null;
@@ -46,12 +46,7 @@ namespace Bulb {
             : base(directory.Name, directory.FullName, parent) {
             NewFolderCommand = new RelayCommand(() => CreateNewFolder());
 
-            watcher = new FileSystemWatcher(FullPath, "*.*") {
-                EnableRaisingEvents = true
-            };
-            //Watcher events come from a different thread. So pass them through the app's dispatcher
-            watcher.Created += (sender, e) => Application.Current.Dispatcher.Invoke(() => OnFileCreated(e));
-            watcher.Deleted += (sender, e) => Application.Current.Dispatcher.Invoke(() => OnFileDeleted(e));
+            RefreshWatcher();
 
             foreach (DirectoryInfo dir in directory.EnumerateDirectories()) {
                 AddItem(new FolderViewModel(dir, parent: this));
@@ -116,6 +111,7 @@ namespace Bulb {
             FullPath = newPath;
 
             Reconstruct();
+            RefreshWatcher();
         }
 
         public override void Reconstruct() {
@@ -141,36 +137,44 @@ namespace Bulb {
             }
         }
 
-        private void OnFileCreated(FileSystemEventArgs eventArgs) {
-            if (File.GetAttributes(eventArgs.FullPath).HasFlag(FileAttributes.Directory)) {
-                AddItem(new FolderViewModel(new DirectoryInfo(eventArgs.FullPath), parent: this));
-            } else if (Membrane.FileSystemHelpers.isAssetFile(eventArgs.FullPath)) {
-                AddItem(new FileViewModel(new FileInfo(eventArgs.FullPath), parent: this));
-            }
+        private void OnFileCreated(object sender, FileSystemEventArgs eventArgs) {
+            //Watcher events come from a different thread. So pass them through the app's dispatcher
+
+            Application.Current.Dispatcher.Invoke(() => {
+                if (File.GetAttributes(eventArgs.FullPath).HasFlag(FileAttributes.Directory)) {
+                    AddItem(new FolderViewModel(new DirectoryInfo(eventArgs.FullPath), parent: this));
+                } else if (Membrane.FileSystemHelpers.isAssetFile(eventArgs.FullPath)) {
+                    AddItem(new FileViewModel(new FileInfo(eventArgs.FullPath), parent: this));
+                }
+            });
         }
 
-        private void OnFileDeleted(FileSystemEventArgs eventArgs) {
-            foreach (DirectoryItemViewModel item in AllItems) {
-                if (item.FullPath == eventArgs.FullPath) { //Make sure to compare full paths as some items (especially folders) could share the same name
-                    if (item is FolderViewModel folderVm) {
-                        RemoveItem(folderVm);
+        private void OnFileDeleted(object sender, FileSystemEventArgs eventArgs) {
+            //Watcher events come from a different thread. So pass them through the app's dispatcher
 
-                        //If a directory still has children when we come to delete that means it was not deleted through the editor (as we do it recursively)
-                        //so we need to make sure each item is removed from the asset manager.
-                        RemoveAllFilesInDirectory(folderVm);
-                    } else if (item is FileViewModel fileVm) {
-                        RemoveItem(fileVm);
+            Application.Current.Dispatcher.Invoke(() => {
+                foreach (DirectoryItemViewModel item in AllItems) {
+                    if (item.FullPath == eventArgs.FullPath) { //Make sure to compare full paths as some items (especially folders) could share the same name
+                        if (item is FolderViewModel folderVm) {
+                            RemoveItem(folderVm);
 
-                        if (ignoreDelete == fileVm.FullPath) {
-                            ignoreDelete = null;
-                        } else {
-                            Membrane.FileSystemHelpers.removeAssetFile(fileVm.AssetGuid, fileVm.AssetType);
+                            //If a directory still has children when we come to delete that means it was not deleted through the editor (as we do it recursively)
+                            //so we need to make sure each item is removed from the asset manager.
+                            RemoveAllFilesInDirectory(folderVm);
+                        } else if (item is FileViewModel fileVm) {
+                            RemoveItem(fileVm);
+
+                            if (ignoreDelete == fileVm.FullPath) {
+                                ignoreDelete = null;
+                            } else {
+                                Membrane.FileSystemHelpers.removeAssetFile(fileVm.AssetGuid, fileVm.AssetType);
+                            }
                         }
-                    }
 
-                    break;
+                        break;
+                    }
                 }
-            }
+            });
         }
 
         /// <summary>
@@ -221,6 +225,19 @@ namespace Bulb {
             foreach (FolderViewModel folder in folderVm.SubDirectories) {
                 RemoveAllFilesInDirectory(folder);
             }
+        }
+
+        private void RefreshWatcher() {
+            if (watcher != null) {
+                watcher.Created -= OnFileCreated;
+                watcher.Deleted -= OnFileDeleted;
+            }
+
+            watcher = new FileSystemWatcher(FullPath, "*.*") {
+                EnableRaisingEvents = true
+            };
+            watcher.Created += OnFileCreated;
+            watcher.Deleted += OnFileDeleted;
         }
 
         //Gets the relative path - TODO: Update to .Net5.0+ to use Path.GetRelativePath
