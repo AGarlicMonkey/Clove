@@ -134,7 +134,8 @@ namespace membrane {
         //Make sure to update the new relative path       
         assetNode["asset"]["path"] = std::filesystem::relative(assetPath, dest).string();
         {
-            std::ofstream fileStream{ source, std::ios::out | std::ios::trunc };
+            CLOVE_ASSERT(std::filesystem::exists(dest));
+            std::ofstream fileStream{ dest, std::ios::out | std::ios::trunc };
             fileStream << clove::emittYaml(assetNode);
         }
 
