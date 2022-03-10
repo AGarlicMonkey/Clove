@@ -24,7 +24,7 @@ namespace Bulb {
 
         public override void Rename(string newName) {
             string newFileName = $"{newName}.clvasset";
-            string newPath = $"{Path.GetDirectoryName(FullPath)}{Path.DirectorySeparatorChar}{newFileName}";
+            string newPath = $"{Parent.FullPath}{Path.DirectorySeparatorChar}{newFileName}";
 
             File.Move(FullPath, newPath);
 
@@ -47,5 +47,7 @@ namespace Bulb {
         public override bool CanDropFile(string file) => false;
 
         public override void OnFileDropped(string file) => throw new System.InvalidOperationException("Attempting to drop a file onto another file. Operation is not supported.");
+
+        public override void OnFileDropped(DirectoryItemViewModel file) => throw new System.InvalidOperationException("Attempting to drop a file onto another file. Operation is not supported.");
     }
 }

@@ -28,9 +28,20 @@ namespace Bulb {
         public string FullPath { get; protected set; }
 
         /// <summary>
-        /// Parent directory of this item.
+        /// Parent directory of this item. Modifying this will cause the item to reconstruct.
         /// </summary>
-        public FolderViewModel Parent { get; }
+        public FolderViewModel Parent { 
+            get => parent;
+            set {
+                if (value != parent) {
+                    parent = value;
+                    if (parent != null) {
+                        Reconstruct();
+                    }
+                }
+            }
+        }
+        private FolderViewModel parent;
 
         public abstract ObjectType Type { get; }
 
@@ -46,7 +57,7 @@ namespace Bulb {
             FullPath = itemFullPath;
             OpenCommand = new RelayCommand(() => OnOpened?.Invoke(this));
             DeleteCommand = new RelayCommand(() => OnDeleted?.Invoke(this));
-            Parent = parent;
+            this.parent = parent;
         }
 
         /// <summary>
@@ -68,9 +79,16 @@ namespace Bulb {
         public abstract bool CanDropFile(string file);
 
         /// <summary>
+        /// Perform a drop operation for file onto this item. This is the expected code path for untracked files.
+        /// </summary>
+        /// <param name="file">The full file path to drop.</param>
+        /// <returns></returns>
+        public abstract void OnFileDropped(string file);
+
+        /// <summary>
         /// Perform a drop operation for file onto this item.
         /// </summary>
-        /// <param name="file">The full path of the file</param>
-        public abstract void OnFileDropped(string file);
+        /// <param name="file">The viewmodel of the dropped file</param>
+        public abstract void OnFileDropped(DirectoryItemViewModel file);
     }
 }

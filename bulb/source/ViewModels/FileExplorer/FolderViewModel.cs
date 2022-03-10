@@ -1,6 +1,8 @@
 using System;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Windows;
 using System.Windows.Input;
 using Membrane = membrane;
@@ -52,10 +54,10 @@ namespace Bulb {
             watcher.Deleted += (sender, e) => Application.Current.Dispatcher.Invoke(() => OnFileDeleted(e));
 
             foreach (DirectoryInfo dir in directory.EnumerateDirectories()) {
-                _ = CreateItem(dir);
+                AddItem(new FolderViewModel(dir, parent: this));
             }
             foreach (FileInfo file in directory.EnumerateFiles()) {
-                _ = CreateItem(file);
+                AddItem(new FileViewModel(file, parent: this));
             }
         }
 
@@ -71,12 +73,37 @@ namespace Bulb {
                 string vfsPath = $"{VfsPath}/{Path.GetFileName(file)}".Replace($"content/", ""); //Remove 'content' from the desired VFS path as this is where the VFS searches from
 
                 Membrane.FileSystemHelpers.createAssetFile(assetFileLocation, file, fileRelativePath, vfsPath);
-            } else {
-                //Move the asset file into this folder
-                string fileName = Path.GetFileName(file);
-                ignoreDelete = file;
+            }
+        }
 
-                Membrane.FileSystemHelpers.moveAssetFile(file, $"{FullPath}{Path.DirectorySeparatorChar}{fileName}");
+        public override void OnFileDropped(DirectoryItemViewModel file) {
+            if (file != null && !AllItems.Contains(file)) {
+                //Move the asset file into this folder
+                var fileParent = file.Parent;
+
+                watcher.EnableRaisingEvents = false;
+                fileParent.watcher.EnableRaisingEvents = false;
+
+                string newFilePath = $"{FullPath}{Path.DirectorySeparatorChar}{file.Name}";
+
+                if (file is FileViewModel fileVm) {
+                    File.Move(file.FullPath, newFilePath);
+
+                    fileParent.RemoveItem(fileVm);
+                    AddItem(fileVm);
+                } else if(file is FolderViewModel folderVm){
+                    Directory.Move(file.FullPath, newFilePath);
+
+                    fileParent.RemoveItem(folderVm);
+                    AddItem(folderVm);
+                } else {
+                    Debug.Assert(false, "Unknown directory item");
+                }
+
+                file.Parent = this;
+
+                watcher.EnableRaisingEvents = true;
+                fileParent.watcher.EnableRaisingEvents = true;
             }
         }
 
@@ -116,32 +143,30 @@ namespace Bulb {
 
         private void OnFileCreated(FileSystemEventArgs eventArgs) {
             if (File.GetAttributes(eventArgs.FullPath).HasFlag(FileAttributes.Directory)) {
-                _ = CreateItem(new DirectoryInfo(eventArgs.FullPath));
+                AddItem(new FolderViewModel(new DirectoryInfo(eventArgs.FullPath), parent: this));
             } else if (Membrane.FileSystemHelpers.isAssetFile(eventArgs.FullPath)) {
-                _ = CreateItem(new FileInfo(eventArgs.FullPath));
+                AddItem(new FileViewModel(new FileInfo(eventArgs.FullPath), parent: this));
             }
         }
 
         private void OnFileDeleted(FileSystemEventArgs eventArgs) {
             foreach (DirectoryItemViewModel item in AllItems) {
                 if (item.FullPath == eventArgs.FullPath) { //Make sure to compare full paths as some items (especially folders) could share the same name
-                    _ = AllItems.Remove(item);
                     if (item is FolderViewModel folderVm) {
-                        _ = SubDirectories.Remove(folderVm);
+                        RemoveItem(folderVm);
+
                         //If a directory still has children when we come to delete that means it was not deleted through the editor (as we do it recursively)
                         //so we need to make sure each item is removed from the asset manager.
                         RemoveAllFilesInDirectory(folderVm);
                     } else if (item is FileViewModel fileVm) {
-                        _ = Files.Remove(fileVm);
+                        RemoveItem(fileVm);
+
                         if (ignoreDelete == fileVm.FullPath) {
                             ignoreDelete = null;
                         } else {
                             Membrane.FileSystemHelpers.removeAssetFile(fileVm.AssetGuid, fileVm.AssetType);
                         }
                     }
-
-                    item.OnOpened -= OnItemOpened;
-                    item.OnDeleted -= OnItemDeleted;
 
                     break;
                 }
@@ -153,26 +178,36 @@ namespace Bulb {
         /// </summary>
         private void CreateNewFolder() => _ = Directory.CreateDirectory($"{FullPath}{Path.DirectorySeparatorChar}NewFolder");
 
-        private DirectoryItemViewModel CreateItem(DirectoryInfo directory) {
-            var vm = new FolderViewModel(directory, this);
-            vm.OnOpened += OnItemOpened;
-            vm.OnDeleted += OnItemDeleted;
+        private void AddItem(FolderViewModel folder) {
+            folder.OnOpened += OnItemOpened;
+            folder.OnDeleted += OnItemDeleted;
 
-            SubDirectories.Add(vm);
-            AllItems.Add(vm);
-
-            return vm;
+            SubDirectories.Add(folder);
+            AllItems.Add(folder);
         }
 
-        private DirectoryItemViewModel CreateItem(FileInfo file) {
-            var vm = new FileViewModel(file, this);
-            vm.OnOpened += OnItemOpened;
-            vm.OnDeleted += OnItemDeleted;
+        private void AddItem(FileViewModel file) {
+            file.OnOpened += OnItemOpened;
+            file.OnDeleted += OnItemDeleted;
 
-            Files.Add(vm);
-            AllItems.Add(vm);
+            Files.Add(file);
+            AllItems.Add(file);
+        }
 
-            return vm;
+        private void RemoveItem(FolderViewModel folder) {
+            folder.OnOpened -= OnItemOpened;
+            folder.OnDeleted -= OnItemDeleted;
+
+            SubDirectories.Remove(folder);
+            AllItems.Remove(folder);
+        }
+
+        private void RemoveItem(FileViewModel file) {
+            file.OnOpened -= OnItemOpened;
+            file.OnDeleted -= OnItemDeleted;
+
+            Files.Remove(file);
+            AllItems.Remove(file);
         }
 
         /// <summary>

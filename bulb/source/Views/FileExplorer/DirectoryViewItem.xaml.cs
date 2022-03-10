@@ -21,12 +21,8 @@ namespace Bulb {
 
             if (e.LeftButton == MouseButtonState.Pressed && !renaming) {
                 var data = new DragDropData {
-                    assetFullPath = ViewModel.FullPath
+                    assetViewModel = ViewModel
                 };
-
-                if (ViewModel.Type == ObjectType.File) {
-                    data.assetGuid = membrane.FileSystemHelpers.getAssetFileGuid(ViewModel.FullPath);
-                }
 
                 var dataObject = new DataObject();
                 dataObject.SetData(typeof(DragDropData), data);
@@ -39,15 +35,14 @@ namespace Bulb {
         private void Button_Drop(object sender, DragEventArgs e) {
             if (CanDrop(e.Data)) {
                 var data = ((DragDropData)e.Data.GetData(typeof(DragDropData)));
-                string filePath = data.assetFullPath;
-                ViewModel.OnFileDropped(filePath);
+                ViewModel.OnFileDropped(data.assetViewModel);
             }
         }
 
         private bool CanDrop(IDataObject dataObject) {
             if (dataObject.GetDataPresent(typeof(DragDropData))) {
                 var data = ((DragDropData)dataObject.GetData(typeof(DragDropData)));
-                return data.assetFullPath != ViewModel.FullPath && ViewModel.CanDropFile(data.assetFullPath);
+                return data.assetViewModel != ViewModel && ViewModel.CanDropFile(data.assetViewModel.FullPath);
             } else {
                 return false;
             }
