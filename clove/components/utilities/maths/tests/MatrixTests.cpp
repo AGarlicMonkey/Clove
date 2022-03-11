@@ -191,3 +191,17 @@ TEST(MatrixTests, CanInverseAMatrix) {
 
     //TODO: Test for detereminant 0
 }
+
+TEST(MatrixTests, CanTranslateAMatrix) {
+    mat4f const m{ 1 };
+    vec3f const v{ 3, 7, 8 };
+
+    mat4f const translation{ translate(m, v) };
+    mat4f result; //We use column major matrices. This helps visualise the result.
+    result[0] = { 1, 0, 0, 0 };
+    result[1] = { 0, 1, 0, 0 };
+    result[2] = { 0, 0, 1, 0 };
+    result[3] = { 3, 7, 8, 1 };
+
+    EXPECT_EQ(translation[3], result[3]);
+}

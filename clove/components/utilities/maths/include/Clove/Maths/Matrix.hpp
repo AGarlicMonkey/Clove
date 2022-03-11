@@ -44,6 +44,9 @@ namespace clove {
 
     template<size_t N, std::floating_point T>
     constexpr mat<N, N, T> inverse(mat<N, N, T> const &m);
+
+    template<number T>
+    constexpr mat<4, 4, T> translate(mat<4, 4, T> const &m, vec<3, T> const &v);
 }
 
 #include "Matrix.inl"

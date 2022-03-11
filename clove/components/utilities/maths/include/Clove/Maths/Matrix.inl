@@ -209,4 +209,13 @@ namespace clove {
 
         return result;
     }
+
+    template<number T>
+    constexpr mat<4, 4, T> translate(mat<4, 4, T> const &m, vec<3, T> const &v) {
+        mat<4, 4, T> result{ m };
+
+        result[3] = m[0] * v[0] + m[1] * v[1] + m[2] * v[2] + m[3];
+        
+        return result;
+    }
 }
