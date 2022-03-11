@@ -283,6 +283,41 @@ TEST(VectorTests, CanGetLengthOfAVector) {
     EXPECT_EQ(length(v4), std::sqrt(v4.x * v4.x + v4.y * v4.y + v4.z * v4.z + v4.w * v4.w));
 }
 
+TEST(VectorTests, CanGetDistanceBetweenTwoVectors) {
+    {
+        vec2f a{ 1, 5 };
+        vec2f b{ 3, 8 };
+
+        float result{ static_cast<float>(std::sqrt(std::pow(a.x - b.x, 2) + std::pow(a.y - b.y, 2))) };
+        float dist{ distance(a, b) };
+
+        EXPECT_EQ(dist, result);
+        EXPECT_GE(dist, 0.0f);
+    }
+
+    {
+        vec3f a{ 3, 3, 8 };
+        vec3f b{ 9, 1, 9 };
+
+        float result{ static_cast<float>(std::sqrt(std::pow(a.x - b.x, 2) + std::pow(a.y - b.y, 2) + std::pow(a.z - b.z, 2))) };
+        float dist{ distance(a, b) };
+
+        EXPECT_EQ(dist, result);
+        EXPECT_GE(dist, 0.0f);
+    }
+
+    {
+        vec4f a{ 0, 4, 6, 7 };
+        vec4f b{ 1, 2, 3, 4 };
+
+        float result{ static_cast<float>(std::sqrt(std::pow(a.x - b.x, 2) + std::pow(a.y - b.y, 2) + std::pow(a.z - b.z, 2) + std::pow(a.w - b.w, 2))) };
+        float dist{ distance(a, b) };
+
+        EXPECT_EQ(dist, result);
+        EXPECT_GE(dist, 0.0f);
+    }
+}
+
 TEST(VectorTests, CanNormaliseAVector) {
     float constexpr boundsError{ 0.00001f };
 

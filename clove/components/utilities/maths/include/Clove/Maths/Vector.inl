@@ -269,6 +269,16 @@ namespace clove {
     }
 
     template<size_t L, number T>
+    constexpr T distance(vec<L, T> const &a, vec<L, T> const &b) {
+        T dist{ 0 };
+        for(size_t i{ 0 }; i < L; ++i) {
+            T const diff{ a[i] - b[i] };
+            dist += diff * diff;
+        }
+        return std::sqrt(dist);
+    }
+
+    template<size_t L, number T>
     constexpr vec<L, T> normalise(vec<L, T> const &v) {
         return v / length(v);
     }

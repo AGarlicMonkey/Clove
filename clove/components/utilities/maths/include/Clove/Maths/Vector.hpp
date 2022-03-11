@@ -142,6 +142,17 @@ namespace clove {
     constexpr T length(vec<L, T> const &v);
 
     /**
+     * @brief Returns the distance between two vectors
+     * @tparam L 
+     * @tparam T 
+     * @param a 
+     * @param b 
+     * @return 
+     */
+    template<size_t L, number T>
+    constexpr T distance(vec<L, T> const &a, vec<L, T> const &b);
+
+    /**
      * @brief Returns a normalised version of a vector.
      * @tparam L 
      * @tparam T 
