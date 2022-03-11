@@ -2,8 +2,8 @@
 
 #include "Concepts.hpp"
 
-#include <cstddef>
 #include <cinttypes>
+#include <cstddef>
 
 //Vector types
 namespace clove {
@@ -133,21 +133,28 @@ namespace clove {
 namespace clove {
     /**
      * @brief Returns the length of a vector.
-     * @tparam L 
-     * @tparam T 
+     * @tparam L The number of components the vector has.
+     * @tparam T The type of the vector.
      * @param v 
      * @return 
      */
     template<size_t L, number T>
     constexpr T length(vec<L, T> const &v);
 
+    /**
+     * @brief Returns the length squared of a vector.
+     * @tparam L The number of components the vector has.
+     * @tparam T The type of the vector.
+     * @param v 
+     * @return 
+     */
     template<size_t L, number T>
     constexpr T lengthSquared(vec<L, T> const &v);
 
     /**
-     * @brief Returns the distance between two vectors
-     * @tparam L 
-     * @tparam T 
+     * @brief Returns the distance between two vectors.
+     * @tparam L The number of components each vector has. 
+     * @tparam T The type of each vector.
      * @param a 
      * @param b 
      * @return 
@@ -155,13 +162,21 @@ namespace clove {
     template<size_t L, number T>
     constexpr T distance(vec<L, T> const &a, vec<L, T> const &b);
 
+    /**
+     * @brief Returns the distance squared between two vectors.
+     * @tparam L The number of components each vector has.  
+     * @tparam T The type of each vector. 
+     * @param a 
+     * @param b 
+     * @return 
+     */
     template<size_t L, number T>
     constexpr T distanceSquared(vec<L, T> const &a, vec<L, T> const &b);
 
     /**
      * @brief Returns a normalised version of a vector.
-     * @tparam L 
-     * @tparam T 
+     * @tparam L The number of components the vector has. 
+     * @tparam T The type of the vector. 
      * @param v 
      * @return 
      */
@@ -170,8 +185,8 @@ namespace clove {
 
     /**
      * @brief Returns the dot product between two vectors.
-     * @tparam L 
-     * @tparam T 
+     * @tparam L The number of components each vector has. 
+     * @tparam T The type of each vector.
      * @param a 
      * @param b 
      * @return 
@@ -181,7 +196,7 @@ namespace clove {
 
     /**
      * @brief Returns the cross product between two vectors.
-     * @tparam T 
+     * @tparam T The type of each vector. 
      * @param a 
      * @param b 
      * @return 
@@ -193,8 +208,8 @@ namespace clove {
      * @brief Returns a linearly interpolated vector from a to b.
      * @details If t is 0 then the result will be equal to a. Else if t is 1 then the
      * result will be equal to b.
-     * @tparam L 
-     * @tparam T 
+     * @tparam L The number of components each vector has. 
+     * @tparam T The type of each vector. 
      * @param a 
      * @param b 
      * @param t A value between 0.0f and 1.0f.
