@@ -1,4 +1,3 @@
-using System;
 using System.IO;
 using System.Windows;
 using System.Windows.Controls;
@@ -27,16 +26,52 @@ namespace Bulb {
                 var dataObject = new DataObject();
                 dataObject.SetData(typeof(DragDropData), data);
                 _ = DragDrop.DoDragDrop(this, data, DragDropEffects.All);
+
+                e.Handled = true;
             }
         }
 
-        private void Button_DragOver(object sender, DragEventArgs e) => e.Effects = CanDrop(e.Data) ? DragDropEffects.Move : DragDropEffects.None;
+        protected override void OnDragEnter(DragEventArgs e) {
+            base.OnDragEnter(e);
+            DragBorder.BorderThickness = new Thickness(3);
+            DragBorder.Padding = new Thickness(0);
+            e.Handled = true;
+        }
 
-        private void Button_Drop(object sender, DragEventArgs e) {
+        protected override void OnDragLeave(DragEventArgs e) {
+            base.OnDragLeave(e);
+            DragBorder.BorderThickness = new Thickness(0);
+            DragBorder.Padding = new Thickness(3);
+            e.Handled = true;
+        }
+
+        protected override void OnDragOver(DragEventArgs e) {
+            base.OnDragOver(e);
+
+            e.Effects = DragDropEffects.None;
+
+            if (CanDrop(e.Data)) {
+                e.Effects = DragDropEffects.Move;
+            }
+
+            e.Handled = true;
+        }
+
+        protected override void OnDrop(DragEventArgs e) {
+            base.OnDrop(e);
+
+            e.Effects = DragDropEffects.None;
+
             if (CanDrop(e.Data)) {
                 var data = ((DragDropData)e.Data.GetData(typeof(DragDropData)));
                 ViewModel.OnFileDropped(data.assetViewModel);
+                e.Effects = DragDropEffects.Move;
             }
+
+            DragBorder.BorderThickness = new Thickness(0);
+            DragBorder.Padding = new Thickness(3);
+
+            e.Handled = true;
         }
 
         private bool CanDrop(IDataObject dataObject) {
@@ -73,7 +108,10 @@ namespace Bulb {
             renaming = false;
         }
 
-        private void EditableName_LostFocus(object sender, RoutedEventArgs e) => EndRename(confirmed: false);
+        private void EditableName_LostFocus(object sender, RoutedEventArgs e) {
+            EndRename(confirmed: false);
+            e.Handled = true;
+        }
 
         private void EditableName_KeyDown(object sender, KeyEventArgs e) {
             if (renaming) {

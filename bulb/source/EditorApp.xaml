@@ -262,23 +262,6 @@
 			</Setter>
 		</Style>
 
-		<Style x:Key="DirectoryItemButton"
-			   TargetType="{x:Type Button}"
-			   BasedOn="{StaticResource {x:Type Button}}">
-			<Style.Triggers>
-				<Trigger Property="IsMouseOver"
-						 Value="False">
-					<Setter Property="Background" 
-							Value="Transparent"/>
-				</Trigger>
-				<Trigger Property="IsFocused"
-						 Value="False">
-					<Setter Property="BorderBrush" 
-							Value="Transparent"/>
-				</Trigger>
-			</Style.Triggers>
-		</Style>
-
 		<!-- TabControl -->
 		<Style TargetType="{x:Type TabControl}">
 			<Setter Property="Template">
