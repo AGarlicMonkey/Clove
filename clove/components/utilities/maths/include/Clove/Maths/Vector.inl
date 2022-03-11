@@ -261,21 +261,31 @@ namespace clove {
 
     template<size_t L, number T>
     constexpr T length(vec<L, T> const &v) {
+        return std::sqrt(lengthSquared(v));
+    }
+
+    template<size_t L, number T>
+    constexpr T lengthSquared(vec<L, T> const &v) {
         T sum{ 0 };
         for(size_t i{ 0 }; i < L; ++i) {
             sum += v[i] * v[i];
         }
-        return std::sqrt(sum);
+        return sum;
     }
 
     template<size_t L, number T>
     constexpr T distance(vec<L, T> const &a, vec<L, T> const &b) {
+        return std::sqrt(distanceSquared(a, b));
+    }
+
+    template<size_t L, number T>
+    constexpr T distanceSquared(vec<L, T> const &a, vec<L, T> const &b) {
         T dist{ 0 };
         for(size_t i{ 0 }; i < L; ++i) {
             T const diff{ a[i] - b[i] };
             dist += diff * diff;
         }
-        return std::sqrt(dist);
+        return dist;
     }
 
     template<size_t L, number T>
