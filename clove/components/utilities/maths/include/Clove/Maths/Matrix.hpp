@@ -135,18 +135,55 @@ namespace clove {
 
 //Matrix operations
 namespace clove {
+    /**
+     * @brief Returns the transpose of m.
+     * @tparam R How many rows the matrix has.
+     * @tparam C How many columns the matrix has.
+     * @tparam T The type of the matrix.
+     * @param m 
+     * @return 
+     */
     template<size_t R, size_t C, number T>
     constexpr mat<R, C, T> transpose(mat<R, C, T> const &m);
 
+    /**
+     * @brief Returns the inverse of m.
+     * @tparam N How many rows & columns the matrix has
+     * @tparam T The type of the matrix.
+     * @param m 
+     * @return 
+     */
     template<size_t N, std::floating_point T>
     constexpr mat<N, N, T> inverse(mat<N, N, T> const &m);
 
+    /**
+     * @brief Translates matrix m with vector v.
+     * @tparam T The type of the matrix and vector.
+     * @param m 
+     * @param v 
+     * @return 
+     */
     template<number T>
     constexpr mat<4, 4, T> translate(mat<4, 4, T> const &m, vec<3, T> const &v);
 
+    /**
+     * @brief Rotates matrix m with angle along v.
+     * @tparam T The type of the matrix and vector.
+     * @param m 
+     * @param angle The angle in radians to rotate by.
+     * @param axis Multiplied by the angle to know how much to rotate around each axis.
+     * @return 
+     */
     template<number T>
     constexpr mat<4, 4, T> rotate(mat<4, 4, T> const &m, float angle, vec<3, T> axis);
 
+    /**
+     * @brief Scales matrix m by vector v.
+     * @tparam T The type of the matrix and vector.
+     * @param m 
+     * @param v 
+     * @return 
+     */
     template<number T>
     constexpr mat<4, 4, T> scale(mat<4, 4, T> const &m, vec<3, T> const &v);
 }
