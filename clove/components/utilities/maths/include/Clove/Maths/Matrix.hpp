@@ -128,6 +128,9 @@ namespace clove {
 namespace clove {
     using mat3f = mat<3, 3, float>;
     using mat4f = mat<4, 4, float>;
+
+    using mat3d = mat<3, 3, double>;
+    using mat4d = mat<4, 4, double>;
 }
 
 //Matrix operations
