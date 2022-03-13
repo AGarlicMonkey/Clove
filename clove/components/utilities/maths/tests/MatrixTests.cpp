@@ -233,6 +233,27 @@ TEST(MatrixTests, CanTranslateAMatrix) {
 
     EXPECT_EQ(translation[3], result[3]);
 
+    EXPECT_EQ(translation[0][0], 1);
+    EXPECT_EQ(translation[0][1], 0);
+    EXPECT_EQ(translation[0][2], 0);
+    EXPECT_EQ(translation[0][3], v.x);
+
+    EXPECT_EQ(translation[1][0], 0);
+    EXPECT_EQ(translation[1][1], 1);
+    EXPECT_EQ(translation[1][2], 0);
+    EXPECT_EQ(translation[1][3], v.y);
+
+    EXPECT_EQ(translation[2][0], 0);
+    EXPECT_EQ(translation[2][1], 0);
+    EXPECT_EQ(translation[2][2], 1);
+    EXPECT_EQ(translation[2][3], v.z);
+
+    EXPECT_EQ(translation[3][0], 0);
+    EXPECT_EQ(translation[3][1], 0);
+    EXPECT_EQ(translation[3][2], 0);
+    EXPECT_EQ(translation[3][3], 1);
+}
+
 TEST(MatrixTests, CanRotateAMatrix) {
     mat4f const m{ 1 };
     vec3f const x{ 1, 0, 0 };
