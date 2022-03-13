@@ -9,3 +9,8 @@ add_test(NAME VectorTest COMMAND VectorTest)
 add_executable(MatrixTest MatrixTests.cpp)
 target_link_libraries(MatrixTest PRIVATE GTest::gtest_main CloveMaths)
 add_test(NAME MatrixTest COMMAND MatrixTest)
+
+#Quaternion
+add_executable(QuaternionTest QuaternionTests.cpp)
+target_link_libraries(QuaternionTest PRIVATE GTest::gtest_main CloveMaths)
+add_test(NAME QuaternionTest COMMAND QuaternionTest)
