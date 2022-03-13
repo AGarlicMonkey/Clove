@@ -298,4 +298,34 @@ namespace clove {
 
         return result;
     }
+
+    template<number T>
+    constexpr mat<4, 4, T> rotate(mat<4, 4, T> const &m, float angle, vec<3, T> axis) {
+        float const c{ std::cos(angle) };
+        float const s{ std::sin(angle) };
+
+        axis = normalise(axis);
+
+        mat<4, 4, T> resX{ 1.0f };
+        resX[1][1] = axis.x != 0 ? c * axis.x : 1;
+        resX[1][2] = -s * axis.x;
+        resX[2][1] = s * axis.x;
+        resX[2][2] = axis.x != 0 ? c * axis.x : 1;
+
+        mat<4, 4, T> resY{ 1.0f };
+        resY[0][0] = axis.y != 0 ? c * axis.y : 1;
+        resY[0][2] = s * axis.y;
+        resY[2][0] = -s * axis.y;
+        resY[2][2] = axis.y != 0 ? c * axis.y : 1;
+
+        mat<4, 4, T> resZ{ 1.0f };
+        resZ[0][0] = axis.z != 0 ? c * axis.z : 1;
+        resZ[0][1] = -s * axis.z;
+        resZ[1][0] = s * axis.z;
+        resZ[1][1] = axis.z != 0 ? c * axis.z : 1;
+
+        mat<4, 4, T> const accum{ m * (resX * resY * resZ) };
+
+        return accum;
+    }
 }

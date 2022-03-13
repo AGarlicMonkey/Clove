@@ -232,4 +232,86 @@ TEST(MatrixTests, CanTranslateAMatrix) {
     result[3] = { 0, 0, 0, 1 };
 
     EXPECT_EQ(translation[3], result[3]);
+
+TEST(MatrixTests, CanRotateAMatrix) {
+    mat4f const m{ 1 };
+    vec3f const x{ 1, 0, 0 };
+    vec3f const y{ 0, 1, 0 };
+    vec3f const z{ 0, 0, 1 };
+    float const angle{ 45.0f };
+
+    //X
+    {
+        mat4f const rotationX{ rotate(m, angle, x) };
+
+        EXPECT_FLOAT_EQ(rotationX[0][0], 1);
+        EXPECT_FLOAT_EQ(rotationX[0][1], 0);
+        EXPECT_FLOAT_EQ(rotationX[0][2], 0);
+        EXPECT_FLOAT_EQ(rotationX[0][3], 0);
+
+        EXPECT_FLOAT_EQ(rotationX[1][0], 0);
+        EXPECT_FLOAT_EQ(rotationX[1][1], std::cos(angle));
+        EXPECT_FLOAT_EQ(rotationX[1][2], -std::sin(angle));
+        EXPECT_FLOAT_EQ(rotationX[1][3], 0);
+
+        EXPECT_FLOAT_EQ(rotationX[2][0], 0);
+        EXPECT_FLOAT_EQ(rotationX[2][1], std::sin(angle));
+        EXPECT_FLOAT_EQ(rotationX[2][2], std::cos(angle));
+        EXPECT_FLOAT_EQ(rotationX[2][3], 0);
+
+        EXPECT_FLOAT_EQ(rotationX[3][0], 0);
+        EXPECT_FLOAT_EQ(rotationX[3][1], 0);
+        EXPECT_FLOAT_EQ(rotationX[3][2], 0);
+        EXPECT_FLOAT_EQ(rotationX[3][3], 1);
+    }
+
+    //Y
+    {
+        mat4f const rotationY{ rotate(m, angle, y) };
+
+        EXPECT_FLOAT_EQ(rotationY[0][0], std::cos(angle));
+        EXPECT_FLOAT_EQ(rotationY[0][1], 0);
+        EXPECT_FLOAT_EQ(rotationY[0][2], std::sin(angle));
+        EXPECT_FLOAT_EQ(rotationY[0][3], 0);
+
+        EXPECT_FLOAT_EQ(rotationY[1][0], 0);
+        EXPECT_FLOAT_EQ(rotationY[1][1], 1);
+        EXPECT_FLOAT_EQ(rotationY[1][2], 0);
+        EXPECT_FLOAT_EQ(rotationY[1][3], 0);
+
+        EXPECT_FLOAT_EQ(rotationY[2][0], -std::sin(angle));
+        EXPECT_FLOAT_EQ(rotationY[2][1], 0);
+        EXPECT_FLOAT_EQ(rotationY[2][2], std::cos(angle));
+        EXPECT_FLOAT_EQ(rotationY[2][3], 0);
+
+        EXPECT_FLOAT_EQ(rotationY[3][0], 0);
+        EXPECT_FLOAT_EQ(rotationY[3][1], 0);
+        EXPECT_FLOAT_EQ(rotationY[3][2], 0);
+        EXPECT_FLOAT_EQ(rotationY[3][3], 1);
+    }
+
+    //Z
+    {
+        mat4f const rotationZ{ rotate(m, angle, z) };
+
+        EXPECT_FLOAT_EQ(rotationZ[0][0], std::cos(angle));
+        EXPECT_FLOAT_EQ(rotationZ[0][1], -std::sin(angle));
+        EXPECT_FLOAT_EQ(rotationZ[0][2], 0);
+        EXPECT_FLOAT_EQ(rotationZ[0][3], 0);
+
+        EXPECT_FLOAT_EQ(rotationZ[1][0], std::sin(angle));
+        EXPECT_FLOAT_EQ(rotationZ[1][1], std::cos(angle));
+        EXPECT_FLOAT_EQ(rotationZ[1][2], 0);
+        EXPECT_FLOAT_EQ(rotationZ[1][3], 0);
+
+        EXPECT_FLOAT_EQ(rotationZ[2][0], 0);
+        EXPECT_FLOAT_EQ(rotationZ[2][1], 0);
+        EXPECT_FLOAT_EQ(rotationZ[2][2], 1);
+        EXPECT_FLOAT_EQ(rotationZ[2][3], 0);
+
+        EXPECT_FLOAT_EQ(rotationZ[3][0], 0);
+        EXPECT_FLOAT_EQ(rotationZ[3][1], 0);
+        EXPECT_FLOAT_EQ(rotationZ[3][2], 0);
+        EXPECT_FLOAT_EQ(rotationZ[3][3], 1);
+    }
 }

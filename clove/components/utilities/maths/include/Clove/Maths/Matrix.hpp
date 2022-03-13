@@ -125,6 +125,9 @@ namespace clove {
 
     template<number T>
     constexpr mat<4, 4, T> translate(mat<4, 4, T> const &m, vec<3, T> const &v);
+
+    template<number T>
+    constexpr mat<4, 4, T> rotate(mat<4, 4, T> const &m, float angle, vec<3, T> axis);
 }
 
 #include "Matrix.inl"
