@@ -22,10 +22,16 @@ namespace clove {
             column_val();
             column_val(std::initializer_list<T> const list);
 
-            column_val &operator=(vec<C, T> const &v);
+            friend constexpr column_val operator*(column_val const &c, T scalar) {
+                column_val result{};
+                result.col.resize(C);
 
-            template<size_t R1, size_t C1, number U>
-            friend constexpr vec<C1, U> operator*(typename mat<R1, C1, U>::column_val c, U scalar);
+                for(size_t i{ 0 }; i < C; ++i) {
+                    result[i] = c[i] * scalar;
+                }
+
+                return result;
+            }
 
             friend constexpr bool operator==(column_val const &lhs, column_val const &rhs) {
                 bool result{ true };
@@ -56,10 +62,19 @@ namespace clove {
             column_ref();
             column_ref(std::initializer_list<std::reference_wrapper<T>> const list);
 
-            column_ref &operator=(vec<C, T> const &v);
+            column_ref &operator=(column_ref const &other);
+            column_ref &operator=(column_val const &other);
 
-            template<size_t R1, size_t C1, number U>
-            friend constexpr vec<C1, U> operator*(typename mat<R1, C1, U>::column_ref c, U scalar);
+            friend constexpr column_val operator*(column_ref const &c, T scalar) {
+                column_val result{};
+                result.col.resize(C);
+
+                for(size_t i{ 0 }; i < C; ++i) {
+                    result[i] = c[i] * scalar;
+                }
+
+                return result;
+            }
 
             friend constexpr bool operator==(column_ref const &lhs, column_ref const &rhs) {
                 bool result{ true };

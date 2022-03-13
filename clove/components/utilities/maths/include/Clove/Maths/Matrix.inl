@@ -110,26 +110,6 @@ namespace clove {
     }
 
     template<size_t R, size_t C, number T>
-    typename mat<R, C, T>::column_val &mat<R, C, T>::column_val::operator=(vec<C, T> const &v) {
-        for(size_t i{ 0 }; i < C; ++i) {
-            col[i].get() = v[i];
-        }
-
-        return *this;
-    }
-
-    template<size_t R, size_t C, number T>
-    constexpr vec<C, T> operator*(typename mat<R, C, T>::column_val c, T scalar) {
-        vec<C, T> result{};
-
-        for(size_t i{ 0 }; i < C; ++i) {
-            result[i] = c[i] * scalar;
-        }
-
-        return result;
-    }
-
-    template<size_t R, size_t C, number T>
     constexpr T &mat<R, C, T>::column_val::operator[](size_t const index) {
         return col[index];
     }
@@ -148,23 +128,21 @@ namespace clove {
     }
 
     template<size_t R, size_t C, number T>
-    typename mat<R, C, T>::column_ref &mat<R, C, T>::column_ref::operator=(vec<C, T> const &v) {
+    typename mat<R, C, T>::column_ref &mat<R, C, T>::column_ref::operator=(column_ref const &other) {
         for(size_t i{ 0 }; i < C; ++i) {
-            col[i].get() = v[i];
+            col[i].get() = other[i];
         }
 
         return *this;
     }
 
     template<size_t R, size_t C, number T>
-    constexpr vec<C, T> operator*(typename mat<R, C, T>::column_ref c, T scalar) {
-        vec<C, T> result{};
-
+    typename mat<R, C, T>::column_ref &mat<R, C, T>::column_ref::operator=(column_val const &other) {
         for(size_t i{ 0 }; i < C; ++i) {
-            result[i] = c[i] * scalar;
+            col[i].get() = other[i];
         }
 
-        return result;
+        return *this;
     }
 
     template<size_t R, size_t C, number T>
