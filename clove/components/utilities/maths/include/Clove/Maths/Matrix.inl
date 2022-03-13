@@ -306,4 +306,16 @@ namespace clove {
 
         return accum;
     }
+
+    template<number T>
+    constexpr mat<4, 4, T> scale(mat<4, 4, T> const &m, vec<3, T> const &v) {
+        mat<4, 4, T> result{};
+
+        result[0] = m[0] * v[0];
+        result[1] = m[1] * v[1];
+        result[2] = m[2] * v[2];
+        result[3] = m[3];
+
+        return result;
+    }
 }

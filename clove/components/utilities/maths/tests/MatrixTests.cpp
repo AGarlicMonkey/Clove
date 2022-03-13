@@ -231,8 +231,6 @@ TEST(MatrixTests, CanTranslateAMatrix) {
     result[2] = { 0, 0, 1, v.z };
     result[3] = { 0, 0, 0, 1 };
 
-    EXPECT_EQ(translation[3], result[3]);
-
     EXPECT_EQ(translation[0][0], 1);
     EXPECT_EQ(translation[0][1], 0);
     EXPECT_EQ(translation[0][2], 0);
@@ -335,4 +333,31 @@ TEST(MatrixTests, CanRotateAMatrix) {
         EXPECT_FLOAT_EQ(rotationZ[3][2], 0);
         EXPECT_FLOAT_EQ(rotationZ[3][3], 1);
     }
+}
+
+TEST(MatrixTests, CanScaleAMatrix) {
+    mat4f const m{ 1 };
+    vec3f const v{ 8, 4, 3 };
+
+    mat4f const scaling{ scale(m, v) };
+
+    EXPECT_EQ(scaling[0][0], 8);
+    EXPECT_EQ(scaling[0][1], 0);
+    EXPECT_EQ(scaling[0][2], 0);
+    EXPECT_EQ(scaling[0][3], 0);
+
+    EXPECT_EQ(scaling[1][0], 0);
+    EXPECT_EQ(scaling[1][1], 4);
+    EXPECT_EQ(scaling[1][2], 0);
+    EXPECT_EQ(scaling[1][3], 0);
+
+    EXPECT_EQ(scaling[2][0], 0);
+    EXPECT_EQ(scaling[2][1], 0);
+    EXPECT_EQ(scaling[2][2], 3);
+    EXPECT_EQ(scaling[2][3], 0);
+
+    EXPECT_EQ(scaling[3][0], 0);
+    EXPECT_EQ(scaling[3][1], 0);
+    EXPECT_EQ(scaling[3][2], 0);
+    EXPECT_EQ(scaling[3][3], 1);
 }
