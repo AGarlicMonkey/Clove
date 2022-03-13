@@ -102,14 +102,86 @@ namespace clove {
     }
 
     template<size_t R, size_t C, number T>
+    mat<R, C, T>::column_val::column_val() = default;
+
+    template<size_t R, size_t C, number T>
+    mat<R, C, T>::column_val::column_val(std::initializer_list<T> const list) {
+        col.insert(col.begin(), list.begin(), list.end());
+    }
+
+    template<size_t R, size_t C, number T>
+    typename mat<R, C, T>::column_val &mat<R, C, T>::column_val::operator=(vec<C, T> const &v) {
+        for(size_t i{ 0 }; i < C; ++i) {
+            col[i].get() = v[i];
+        }
+
+        return *this;
+    }
+
+    template<size_t R, size_t C, number T>
+    constexpr vec<C, T> operator*(typename mat<R, C, T>::column_val c, T scalar) {
+        vec<C, T> result{};
+
+        for(size_t i{ 0 }; i < C; ++i) {
+            result[i] = c[i] * scalar;
+        }
+
+        return result;
+    }
+
+    template<size_t R, size_t C, number T>
+    constexpr T &mat<R, C, T>::column_val::operator[](size_t const index) {
+        return col[index];
+    }
+
+    template<size_t R, size_t C, number T>
+    constexpr T const &mat<R, C, T>::column_val::operator[](size_t const index) const {
+        return col[index];
+    }
+
+    template<size_t R, size_t C, number T>
+    mat<R, C, T>::column_ref::column_ref() = default;
+
+    template<size_t R, size_t C, number T>
+    mat<R, C, T>::column_ref::column_ref(std::initializer_list<std::reference_wrapper<T>> const list) {
+        col.insert(col.begin(), list.begin(), list.end());
+    }
+
+    template<size_t R, size_t C, number T>
+    typename mat<R, C, T>::column_ref &mat<R, C, T>::column_ref::operator=(vec<C, T> const &v) {
+        for(size_t i{ 0 }; i < C; ++i) {
+            col[i].get() = v[i];
+        }
+
+        return *this;
+    }
+
+    template<size_t R, size_t C, number T>
+    constexpr vec<C, T> operator*(typename mat<R, C, T>::column_ref c, T scalar) {
+        vec<C, T> result{};
+
+        for(size_t i{ 0 }; i < C; ++i) {
+            result[i] = c[i] * scalar;
+        }
+
+        return result;
+    }
+
+    template<size_t R, size_t C, number T>
+    constexpr T &mat<R, C, T>::column_ref::operator[](size_t const index) {
+        return col[index];
+    }
+
+    template<size_t R, size_t C, number T>
+    constexpr T const &mat<R, C, T>::column_ref::operator[](size_t const index) const {
+        return col[index];
+    }
+
+    template<size_t R, size_t C, number T>
     constexpr mat<R, C, T>::mat(T val) {
         for(size_t r{ 0 }; r < R; ++r) {
             for(size_t c{ 0 }; c < C; ++c) {
-                if(r == c) {
-                    value[r][c] = val;
-                } else {
-                    value[r][c] = T{};
-                }
+                data[r + (c * C)] = r == c ? val : T{};
             }
         }
     }
@@ -118,8 +190,10 @@ namespace clove {
     constexpr vec<C, T> operator*(mat<R, C, T> const &m, vec<C, T> const &v) {
         vec<C, T> result{};
 
-        for(size_t i{ 0 }; i < C; ++i) {
-            result[i] = dot(m[i], v);
+        for(size_t r{ 0 }; r < R; ++r) {
+            for(size_t c{ 0 }; c < C; ++c) {
+                result[r] += m[r][c] * v[c];
+            }
         }
 
         return result;
@@ -165,21 +239,25 @@ namespace clove {
     }
 
     template<size_t R, size_t C, number T>
-    constexpr vec<C, T> &mat<R, C, T>::operator[](size_t const index) {
-        if(index <= R) {
-            return value[index];
-        } else {
-            return value[R - 1];
+    constexpr typename mat<R, C, T>::column_ref mat<R, C, T>::operator[](size_t const index) {
+        column_ref column{};
+
+        for(size_t c{ 0 }; c < C; ++c) {
+            column.col.push_back(data[index + (c * C)]);
         }
+
+        return column;
     }
 
     template<size_t R, size_t C, number T>
-    constexpr vec<C, T> const &mat<R, C, T>::operator[](size_t const index) const {
-        if(index <= R) {
-            return value[index];
-        } else {
-            return value[R - 1];
+    constexpr typename mat<R, C, T>::column_val const mat<R, C, T>::operator[](size_t const index) const {
+        column_val column{};
+
+        for(size_t c{ 0 }; c < C; ++c) {
+            column.col.push_back(data[index + (c * C)]);
         }
+
+        return column;
     }
 
     template<size_t R, size_t C, number T>
@@ -214,8 +292,10 @@ namespace clove {
     constexpr mat<4, 4, T> translate(mat<4, 4, T> const &m, vec<3, T> const &v) {
         mat<4, 4, T> result{ m };
 
-        result[3] = m[0] * v[0] + m[1] * v[1] + m[2] * v[2] + m[3];
-        
+        for(size_t i{ 0 }; i < 3; ++i) {
+            result[i][3] = (m[i][0] * v[0]) + (m[i][1] * v[1]) + (m[i][2] * v[2]) + m[i][3];
+        }
+
         return result;
     }
 }

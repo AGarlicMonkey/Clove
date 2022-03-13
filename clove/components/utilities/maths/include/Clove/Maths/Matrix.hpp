@@ -5,13 +5,91 @@
 
 #include <array>
 #include <cstddef>
+#include <vector>
 
 //Matrix types
 namespace clove {
     template<size_t R, size_t C, number T>
     struct mat {
-        std::array<vec<C, T>, R> value{};
+        //TYPES
+    public:
+        struct column_val;
+        struct column_ref;
 
+        struct column_val {
+            std::vector<T> col;
+
+            column_val();
+            column_val(std::initializer_list<T> const list);
+
+            column_val &operator=(vec<C, T> const &v);
+
+            template<size_t R1, size_t C1, number U>
+            friend constexpr vec<C1, U> operator*(typename mat<R1, C1, U>::column_val c, U scalar);
+
+            friend constexpr bool operator==(column_val const &lhs, column_val const &rhs) {
+                bool result{ true };
+
+                for(size_t i{ 0 }; i < C && result; ++i) {
+                    result = lhs[i] == rhs[i];
+                }
+
+                return result;
+            }
+            friend constexpr bool operator==(column_val const &lhs, column_ref const &rhs) {
+                bool result{ true };
+
+                for(size_t i{ 0 }; i < C && result; ++i) {
+                    result = lhs[i] == rhs[i];
+                }
+
+                return result;
+            }
+
+            constexpr T &operator[](size_t const index);
+            constexpr T const &operator[](size_t const index) const;
+        };
+
+        struct column_ref {
+            std::vector<std::reference_wrapper<T>> col;
+
+            column_ref();
+            column_ref(std::initializer_list<std::reference_wrapper<T>> const list);
+
+            column_ref &operator=(vec<C, T> const &v);
+
+            template<size_t R1, size_t C1, number U>
+            friend constexpr vec<C1, U> operator*(typename mat<R1, C1, U>::column_ref c, U scalar);
+
+            friend constexpr bool operator==(column_ref const &lhs, column_ref const &rhs) {
+                bool result{ true };
+
+                for(size_t i{ 0 }; i < C && result; ++i) {
+                    result = lhs[i] == rhs[i];
+                }
+
+                return result;
+            }
+            friend constexpr bool operator==(column_ref const &lhs, column_val const &rhs) {
+                bool result{ true };
+
+                for(size_t i{ 0 }; i < C && result; ++i) {
+                    result = lhs[i] == rhs[i];
+                }
+
+                return result;
+            }
+
+            constexpr T &operator[](size_t const index);
+            constexpr T const &operator[](size_t const index) const;
+        };
+
+        //VARIABLES
+    public:
+        std::array<T, R * C> data{};
+
+        //FUNCTIONS
+    public:
         constexpr mat() = default;
         constexpr mat(T val);
 
@@ -26,8 +104,8 @@ namespace clove {
         template<size_t R1, size_t C1, number U>
         friend constexpr bool operator!=(mat<R1, C1, U> const &lhs, mat<R1, C1, U> const &rhs);
 
-        constexpr vec<C, T> &operator[](size_t const index);
-        constexpr vec<C, T> const &operator[](size_t const index) const;
+        constexpr column_ref operator[](size_t const index);
+        constexpr column_val const operator[](size_t const index) const;
     };
 }
 

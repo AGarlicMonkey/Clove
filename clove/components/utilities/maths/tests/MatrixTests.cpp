@@ -8,21 +8,29 @@ TEST(MatrixTests, CanCreateDefaultMatrix) {
 
     for(size_t i{ 0 }; i < 4; ++i) {
         for(size_t j{ 0 }; j < 4; ++j) {
-            EXPECT_EQ(matrix.value[i][j], 0.0f);
+            EXPECT_EQ(matrix[i][j], 0.0f);
         }
     }
 }
 
-TEST(MatrixTests, CanUseIndexOperator) {
+TEST(MatrixTests, MemoryIsColumnMajor) {
     mat4f matrix{};
 
-    for(size_t i{ 0 }; i < 4; ++i) {
-        for(size_t j{ 0 }; j < 4; ++j) {
-            EXPECT_EQ(matrix.value[i][j], matrix[i][j]);
-        }
-    }
+    matrix[0] = { 1, 0, 4, 2 };
+    matrix[1] = { 0, 1, 3, 2 };
+    matrix[2] = { 0, 6, 1, 2 };
+    matrix[3] = { 0, 7, 0, 1 };
 
-    EXPECT_EQ(matrix[3][3], matrix[32][99]);
+    EXPECT_EQ(matrix[0][2], 4);
+    EXPECT_EQ(matrix[3][1], 7);
+
+    EXPECT_EQ(matrix[0][3], 2);
+    EXPECT_EQ(matrix[1][3], 2);
+    EXPECT_EQ(matrix[2][3], 2);
+
+    EXPECT_EQ(matrix.data[12], 2);
+    EXPECT_EQ(matrix.data[13], 2);
+    EXPECT_EQ(matrix.data[14], 2);
 }
 
 TEST(MatrixTests, CanCreateIdentityMatrix) {
@@ -50,20 +58,40 @@ TEST(MatrixTests, CanCreateIdentityMatrix) {
 }
 
 TEST(MatrixTests, CanMultiplyMatrixByVector) {
-    mat4f matrix{};
-    matrix[0] = { 1, 0, 0, 0 };
-    matrix[1] = { 0, 2, 4, 1 };
-    matrix[2] = { 0, 0, 1, 0 };
-    matrix[3] = { 9, 8, 1, 3 };
+    {
+        mat4f matrix{};
+        matrix[0] = { 1, 0, 0, 0 };
+        matrix[1] = { 0, 2, 4, 1 };
+        matrix[2] = { 0, 0, 1, 0 };
+        matrix[3] = { 9, 8, 1, 3 };
 
-    vec4f const vector{ 2, 3, 4, 5 };
+        vec4f const vector{ 2, 3, 4, 5 };
 
-    vec4f const result{ matrix * vector };
+        vec4f const result{ matrix * vector };
 
-    EXPECT_EQ(result[0], 2);
-    EXPECT_EQ(result[1], 27);
-    EXPECT_EQ(result[2], 4);
-    EXPECT_EQ(result[3], 61);
+        EXPECT_EQ(result[0], 2);
+        EXPECT_EQ(result[1], 27);
+        EXPECT_EQ(result[2], 4);
+        EXPECT_EQ(result[3], 61);
+    }
+
+    //Simulate translating a vector
+    {
+        mat4f matrix{};
+        matrix[0] = { 1, 0, 0, 2 };
+        matrix[1] = { 0, 1, 0, 1 };
+        matrix[2] = { 0, 0, 1, 3 };
+        matrix[3] = { 0, 0, 0, 1 };
+
+        vec4f const vector{ 2, 3, 4, 1 };
+
+        vec4f const result{ matrix * vector };
+
+        EXPECT_EQ(result[0], 4);
+        EXPECT_EQ(result[1], 4);
+        EXPECT_EQ(result[2], 7);
+        EXPECT_EQ(result[3], 1);
+    }
 }
 
 TEST(MatrixTests, CanMultiplyMatrixByMatrix) {
@@ -197,11 +225,11 @@ TEST(MatrixTests, CanTranslateAMatrix) {
     vec3f const v{ 3, 7, 8 };
 
     mat4f const translation{ translate(m, v) };
-    mat4f result; //We use column major matrices. This helps visualise the result.
-    result[0] = { 1, 0, 0, 0 };
-    result[1] = { 0, 1, 0, 0 };
-    result[2] = { 0, 0, 1, 0 };
-    result[3] = { 3, 7, 8, 1 };
+    mat4f result;
+    result[0] = { 1, 0, 0, v.x };
+    result[1] = { 0, 1, 0, v.y };
+    result[2] = { 0, 0, 1, v.z };
+    result[3] = { 0, 0, 0, 1 };
 
     EXPECT_EQ(translation[3], result[3]);
 }
