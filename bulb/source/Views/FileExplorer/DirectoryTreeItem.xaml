@@ -18,19 +18,42 @@
 	<StackPanel>
 		<StackPanel Orientation="Horizontal">
 			<Button x:Name="ExpandIcon"/>
-			<Button Style="{StaticResource DirectoryItemButton}"
-					Command="{Binding OpenCommand}">
-				<StackPanel Orientation="Horizontal"
-							Background="Transparent">
-					<Image Source="/resource/FileExplorer/png/001-folder-closed-black-shape.png"
-						   Width="20"
-						   Margin="3 0 0 0"/>
-					<TextBlock x:Name="Header" 
-							   Margin="3 0 0 0" 
-							   Text="{Binding Name}"/>
-				</StackPanel>
-			</Button>
-		</StackPanel>
+            <Border x:Name="DragDropBorder"
+                    BorderThickness="0"
+                    Padding="3">
+                <Border.BorderBrush>
+                    <VisualBrush>
+                        <VisualBrush.Visual>
+                            <Rectangle StrokeDashArray="4 2" 
+                               Stroke="{StaticResource Secondary}"
+                               StrokeThickness="1.5"
+                               Width="{Binding RelativeSource={RelativeSource AncestorType={x:Type Border}}, Path=ActualWidth}"
+                               Height="{Binding RelativeSource={RelativeSource AncestorType={x:Type Border}}, Path=ActualHeight}"
+                               RadiusX="5"
+                               RadiusY="5"/>
+                        </VisualBrush.Visual>
+                    </VisualBrush>
+                </Border.BorderBrush>
+            
+				<Button Style="{StaticResource DirectoryItemButton}"
+						Command="{Binding OpenCommand}"
+                        AllowDrop="True"
+                        DragEnter="Button_DragEnter"
+                        DragLeave="Button_DragLeave"
+                        DragOver="Button_DragOver"
+                        Drop="Button_Drop">
+					<StackPanel Orientation="Horizontal"
+								Background="Transparent">
+						<Image Source="/resource/FileExplorer/png/001-folder-closed-black-shape.png"
+							   Width="20"
+							   Margin="3 0 0 0"/>
+						<TextBlock x:Name="Header" 
+								   Margin="3 0 0 0" 
+								   Text="{Binding Name}"/>
+					</StackPanel>
+				</Button>
+            </Border>
+        </StackPanel>
 		<StackPanel x:Name="ContentPanel" Margin="10 0 0 0"/>
 	</StackPanel>
 </UserControl>
