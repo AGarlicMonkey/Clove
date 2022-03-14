@@ -15,22 +15,13 @@ namespace Bulb {
             UpdateExpansionIcon();
 
             ExpandIcon.Click += ToggleExpansion;
+            ContentPanel.Visibility = Visibility.Collapsed;
         }
 
         private void ToggleExpansion(object sender, RoutedEventArgs e) {
             isExpanded = !isExpanded;
 
-            if (isExpanded) {
-                foreach (var subDir in ViewModel.SubDirectories) {
-                    var item = new DirectoryTreeItem {
-                        DataContext = subDir
-                    };
-
-                    ContentPanel.Children.Add(item);
-                }
-            } else {
-                ContentPanel.Children.Clear();
-            }
+            ContentPanel.Visibility = isExpanded ? Visibility.Visible : Visibility.Collapsed;
 
             UpdateExpansionIcon();
         }
