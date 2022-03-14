@@ -129,10 +129,10 @@ namespace membrane {
         std::filesystem::path const dest{ msclr::interop::marshal_as<std::string>(destFileName) };
 
         clove::serialiser::Node assetNode{ clove::loadYaml(dest).getValue() };
-        std::filesystem::path const assetPath{ (dest.parent_path() / assetNode["asset"]["path"].as<std::string>()).lexically_normal() };
-        
+        std::filesystem::path const assetPath{ (source.parent_path() / assetNode["asset"]["path"].as<std::string>()).lexically_normal() };
+
         //Make sure to update the new relative path       
-        assetNode["asset"]["path"] = std::filesystem::relative(assetPath, dest).string();
+        assetNode["asset"]["path"] = std::filesystem::relative(assetPath, dest.parent_path()).string();
         {
             CLOVE_ASSERT(std::filesystem::exists(dest));
             std::ofstream fileStream{ dest, std::ios::out | std::ios::trunc };
