@@ -57,8 +57,15 @@ TEST(QuaternionTests, CanDivideQuaternionByNumber) {
     EXPECT_EQ(b.z, c.z / divisor);
     EXPECT_EQ(b.w, c.w / divisor);
 }
+
 TEST(QuaternionTests, CanGetLengthOfAQuaternion) {
-    quatf q{ 1, 3, 2, 5 };
+    quatf const q{ 1, 3, 2, 5 };
 
     EXPECT_FLOAT_EQ(length(q), std::sqrt(q.x * q.x + q.y * q.y + q.z * q.z + q.w * q.w));
+}
+
+TEST(QuaternionTests, CanNormaliseAQuaternion) {
+    quatf const q{ 4, 3, 8, 5 };
+
+    EXPECT_FLOAT_EQ(length(normalise(q)), 1.0f);
 }

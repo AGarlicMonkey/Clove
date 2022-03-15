@@ -46,4 +46,8 @@ namespace clove {
         return std::sqrt(q.x * q.x + q.y * q.y + q.z * q.z + q.w * q.w);
     }
 
+    template<number T>
+    constexpr quat<T> normalise(quat<T> const &q) {
+        return q / length(q);
+    }
 }

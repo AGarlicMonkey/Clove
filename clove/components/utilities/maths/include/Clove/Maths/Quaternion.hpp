@@ -36,6 +36,8 @@ namespace clove {
     template<number T>
     constexpr T length(quat<T> const &q);
 
+    template<number T>
+    constexpr quat<T> normalise(quat<T> const &q);
 }
 
 #include "Quaternion.inl"
