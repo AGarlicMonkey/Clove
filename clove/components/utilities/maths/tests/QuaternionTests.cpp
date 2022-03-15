@@ -24,6 +24,23 @@ TEST(QuaternionTest, CanCompareTwoQuaternions) {
     EXPECT_FALSE(a != b);
 }
 
+TEST(QuaternionTests, CanMultiplyQuaternionByNumber) {
+    float constexpr multiplier{ 5.0f };
+
+    quatf a{ 2, 1, 0, 1 };
+    quatf aMul{ a.x * multiplier, a.y * multiplier, a.z * multiplier, a.w * multiplier };
+    EXPECT_EQ(a * multiplier, aMul);
+
+    quatf b{ 1, 9, 8, 2 };
+    quatf c{ b };
+
+    c *= multiplier;
+    EXPECT_EQ(b.x * multiplier, c.x);
+    EXPECT_EQ(b.y * multiplier, c.y);
+    EXPECT_EQ(b.z * multiplier, c.z);
+    EXPECT_EQ(b.w * multiplier, c.w);
+}
+
 TEST(QuaternionTests, CanGetLengthOfAQuaternion) {
     quatf q{ 1, 3, 2, 5 };
 
