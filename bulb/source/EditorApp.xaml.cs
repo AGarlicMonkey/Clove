@@ -1,12 +1,8 @@
-﻿using System.Threading;
+﻿using System;
 using System.Windows;
-using System.ComponentModel;
+using System.Windows.Media;
 
 using Membrane = membrane;
-using System;
-using System.Diagnostics;
-using System.Windows.Media;
-using System.Runtime.InteropServices;
 
 namespace Bulb {
     /// <summary>
@@ -26,7 +22,7 @@ namespace Bulb {
             engineApp.loadGameDll();
             engineApp.startSession();
 
-            sessionViewModel.Start("."); //TEMP: Remove with multiple window support
+            sessionViewModel.Start(Membrane.FileSystemHelpers.getContentPath()); //TEMP: Remove with multiple window support
 
             return href;
         }

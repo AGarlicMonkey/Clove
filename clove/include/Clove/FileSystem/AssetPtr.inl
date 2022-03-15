@@ -2,16 +2,13 @@
 
 namespace clove {
     template<typename AssetType>
-    AssetPtr<AssetType>::AssetPtr()
-        : assetPath{ std::make_shared<std::filesystem::path>() }
-        , asset{ std::make_shared<std::optional<AssetType>>() } {
-    }
+    AssetPtr<AssetType>::AssetPtr() = default;
 
     template<typename AssetType>
-    AssetPtr<AssetType>::AssetPtr(std::filesystem::path assetVfsPath, std::function<AssetType()> loadFunction)
-        : assetPath{ std::make_shared<std::filesystem::path>(std::move(assetVfsPath)) }
-        , loadFunction{ std::move(loadFunction) }
-        , asset{ std::make_shared<std::optional<AssetType>>() } {
+    AssetPtr<AssetType>::AssetPtr(Guid guid, std::function<AssetType()> loadFunction)
+        : guid{ guid }
+        , asset{ std::make_shared<std::optional<AssetType>>() }
+        , loadFunction{ std::make_shared<std::function<AssetType()>>(std::move(loadFunction)) } {
     }
 
     template<typename AssetType>
@@ -30,21 +27,21 @@ namespace clove {
     AssetPtr<AssetType>::~AssetPtr() = default;
 
     template<typename AssetType>
-    bool AssetPtr<AssetType>::isValid() const {
-        return !assetPath->empty() && loadFunction != nullptr;
+    bool AssetPtr<AssetType>::isValid() const noexcept {
+        return asset != nullptr && loadFunction != nullptr && (*loadFunction) != nullptr;
     }
 
     template<typename AssetType>
-    bool AssetPtr<AssetType>::isLoaded() const {
-        return asset->has_value();
+    bool AssetPtr<AssetType>::isLoaded() const noexcept {
+        return isValid() && asset->has_value();
     }
 
     template<typename AssetType>
     AssetType &AssetPtr<AssetType>::get() {
-        CLOVE_ASSERT_MSG(isValid(), "{0}: AssetPtr requires a valid path before it can load", CLOVE_FUNCTION_NAME_PRETTY);
+        CLOVE_ASSERT_MSG(isValid(), "{0}: AssetPtr is not valid", CLOVE_FUNCTION_NAME_PRETTY);
 
         if(!isLoaded()) {
-            *asset = loadFunction();
+            *asset = (*loadFunction)();
         }
 
         return asset->value();
@@ -52,18 +49,18 @@ namespace clove {
 
     template<typename AssetType>
     AssetType const &AssetPtr<AssetType>::get() const {
-        CLOVE_ASSERT_MSG(isValid(), "{0}: AssetPtr requires a valid path before it can load", CLOVE_FUNCTION_NAME_PRETTY);
+        CLOVE_ASSERT_MSG(isValid(), "{0}: AssetPtr is not valid", CLOVE_FUNCTION_NAME_PRETTY);
 
         if(!isLoaded()) {
-            *asset = loadFunction();
+            *asset = (*loadFunction)();
         }
 
         return asset->value();
     }
 
     template<typename AssetType>
-    std::filesystem::path const &AssetPtr<AssetType>::getPath() const {
-        return *assetPath;
+    Guid AssetPtr<AssetType>::getGuid() const noexcept {
+        return guid;
     }
 
     template<typename AssetType>

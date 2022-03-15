@@ -15,10 +15,41 @@
 			
 			<TextBlock Text="{Binding Name}"
 					   Margin="0 0 5 0"
-					   Grid.Column="0"/>
+					   Grid.Column="0"
+                       VerticalAlignment="Center"/>
 			<TextBox Text="{Binding Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-					 Visibility="{Binding ValueVisibility}"
-					 Grid.Column="1"/>
+					 Visibility="{Binding EditableValueVisibility}"
+					 Grid.Column="1"
+                     VerticalAlignment="Center"/>
+			<Border x:Name="StaticValueBorder"
+					Grid.Column="1"
+					Visibility="{Binding DragDropValueVisibility}"
+					BorderThickness="0"
+                    Padding="1"
+					Background="{StaticResource Background3}"
+                    VerticalAlignment="Center">
+                <Border.BorderBrush>
+                    <VisualBrush>
+                        <VisualBrush.Visual>
+                            <Rectangle StrokeDashArray="4 2"
+                                       Stroke="{StaticResource Secondary}"
+                                       StrokeThickness="1.5"
+                                       Width="{Binding RelativeSource={RelativeSource AncestorType={x:Type Border}}, Path=ActualWidth}"
+                                       Height="{Binding RelativeSource={RelativeSource AncestorType={x:Type Border}}, Path=ActualHeight}"/>
+                        </VisualBrush.Visual>
+                    </VisualBrush>
+                </Border.BorderBrush>
+                
+                <TextBlock x:Name="StaticValueBox"
+						   Text="{Binding Value}"
+						   Margin="3 0 0 0"
+						   AllowDrop="True"
+						   DragEnter="StaticValueBox_DragEnter"
+						   DragLeave="StaticValueBox_DragLeave"
+						   DragOver="StaticValueBox_DragOver"
+						   Drop="StaticValueBox_Drop"/>
+			</Border>
+			
 		</Grid>
 
 		<ComboBox ItemsSource="{Binding DropdownItems}"

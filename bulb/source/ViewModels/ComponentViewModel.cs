@@ -46,7 +46,7 @@ namespace Bulb {
             TypeViewModel vm;
             switch (typeInfo.type) {
                 case Membrane.EditorTypeType.Value:
-                    vm = new TypeViewModel(typeInfo.displayName, typeInfo.offset, (string)typeInfo.typeData);
+                    vm = new TypeViewModel(typeInfo.displayName, typeInfo.offset, (string)typeInfo.typeData, typeInfo.dragDropOnly);
                     vm.OnValueChanged += OnValueChanged;
                     break;
 
@@ -80,7 +80,7 @@ namespace Bulb {
 
                 default:
                     Debug.Assert(false, "EditorTypeType not handled");
-                    vm = new TypeViewModel("Unknown", 0, "");
+                    vm = new TypeViewModel("Unknown", 0, "", false);
                     break;
             }
 

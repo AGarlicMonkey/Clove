@@ -80,6 +80,8 @@ namespace clove {
 
         std::function<std::string(uint8_t const *const, size_t, size_t)> onEditorGetValue{ &getFloatValue };      /**< Called when the editor retrieves the member. Override for custom serialisation logic. */
         std::function<void(uint8_t *const, size_t, size_t, std::string_view)> onEditorSetValue{ &setFloatValue }; /**< Called when the editor writes to the member. Override for custom serialisation logic. */
+
+        bool dragDropOnly{ false }; /**< If true values can only be set from drag drop operations and not from keyboard. */
     };
 
     /**

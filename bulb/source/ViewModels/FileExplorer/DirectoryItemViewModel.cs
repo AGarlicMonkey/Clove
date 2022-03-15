@@ -1,6 +1,3 @@
-using System.Diagnostics;
-using System.IO;
-using System.Windows;
 using System.Windows.Input;
 
 namespace Bulb {
@@ -14,7 +11,7 @@ namespace Bulb {
     /// </summary>
     public abstract class DirectoryItemViewModel : ViewModel {
         /// <summary>
-        /// Name of this item.
+        /// Name of this item with extension.
         /// </summary>
         public string Name {
             get => name;
@@ -26,21 +23,27 @@ namespace Bulb {
         private string name;
 
         /// <summary>
-        /// The Virtual File System path of this item.
-        /// </summary>
-        public string VfsPath { get; protected set; }
-
-        /// <summary>
         /// Full system path of this item.
         /// </summary>
-        public string FullPath => ConvertVfsPathToSystemPath(VfsPath);
-
-        public abstract ObjectType Type { get; }
+        public string FullPath { get; protected set; }
 
         /// <summary>
-        /// Parent directory of this item.
+        /// Parent directory of this item. Modifying this will cause the item to reconstruct.
         /// </summary>
-        public DirectoryItemViewModel Parent { get; private set; }
+        public FolderViewModel Parent { 
+            get => parent;
+            set {
+                if (value != parent) {
+                    parent = value;
+                    if (parent != null) {
+                        Reconstruct();
+                    }
+                }
+            }
+        }
+        private FolderViewModel parent;
+
+        public abstract ObjectType Type { get; }
 
         public ICommand OpenCommand { get; }
         public ICommand DeleteCommand { get; }
@@ -49,36 +52,43 @@ namespace Bulb {
         public ItemEventHandler OnOpened;
         public ItemEventHandler OnDeleted;
 
-        protected DirectoryItemViewModel(DirectoryItemViewModel parent) {
+        protected DirectoryItemViewModel(string itemName, string itemFullPath, FolderViewModel parent) {
+            Name = itemName;
+            FullPath = itemFullPath;
             OpenCommand = new RelayCommand(() => OnOpened?.Invoke(this));
             DeleteCommand = new RelayCommand(() => OnDeleted?.Invoke(this));
-            Parent = parent;
+            this.parent = parent;
         }
 
         /// <summary>
-        /// Called by the view when a file has been dropped onto it. Only works if this item is a directory.
+        /// Renames this item and updates the correlating file. 
         /// </summary>
-        /// <param name="file">The full path of the file</param>
-        public void OnFileDropped(string file) {
-            Debug.Assert(Type == ObjectType.Directory, "Cannot perform a drop operation on a file");
+        /// <param name="newName">New name for this file. It should not include any extensions.</param>
+        public abstract void Rename(string newName);
 
-            var fileInfo = new FileInfo(file);
-            string originalPath = file;
-            string newPath = Path.Combine(FullPath, fileInfo.Name);
+        /// <summary>
+        /// Reconstructs the path of this item. Updating the correlating file if need be.
+        /// </summary>
+        public abstract void Reconstruct();
 
-            File.Copy(originalPath, newPath);
-        }
+        /// <summary>
+        /// Checks if file can be dropped onto this item.
+        /// </summary>
+        /// <param name="file"></param>
+        /// <returns></returns>
+        public abstract bool CanDropFile(string file);
 
-        public void UpdateName(string name, string vfsPath) {
-            Name = name;
-            VfsPath = vfsPath;
-        }
+        /// <summary>
+        /// Perform a drop operation for file onto this item. This is the expected code path for untracked files.
+        /// </summary>
+        /// <param name="file">The full file path to drop.</param>
+        /// <returns></returns>
+        public abstract void OnFileDropped(string file);
 
-        protected static string ConvertVfsPathToSystemPath(string vfsPath) => ((EditorApp)Application.Current).ResolveVfsPath(vfsPath);
-
-        protected static string ConvertSystemPathToVfsPath(string systemPath) {
-            string rootSystem = ConvertVfsPathToSystemPath(".");
-            return systemPath.Remove(0, rootSystem.Length).Replace("\\", "/").Insert(0, ".");
-        }
+        /// <summary>
+        /// Perform a drop operation for file onto this item.
+        /// </summary>
+        /// <param name="file">The viewmodel of the dropped file</param>
+        public abstract void OnFileDropped(DirectoryItemViewModel file);
     }
 }

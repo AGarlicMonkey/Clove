@@ -1,14 +1,14 @@
-#include <Clove/FileSystem/VirtualFileSystem.hpp>
+#include <Clove/FileSystem/FileSystemVFS.hpp>
 #include <gtest/gtest.h>
 
 using namespace clove;
 
-TEST(VirtualFileSystemTest, CanMountAndResolveAFilePath) {
+TEST(FileSystemVFSTest, CanMountAndResolveAFilePath) {
     std::filesystem::path const rootPath{ "C:/Users/Test/Some/Root/Path" };
     std::filesystem::path const mountPath{ "C:/Users/Test/Some/Full/Path" };
     std::filesystem::path const emptyPath{};
 
-    VirtualFileSystem vfs{};
+    FileSystemVFS vfs{};
 
     vfs.mount(rootPath, ".");
     vfs.mount(mountPath, "saves");
@@ -18,11 +18,11 @@ TEST(VirtualFileSystemTest, CanMountAndResolveAFilePath) {
     EXPECT_EQ(vfs.resolve("notMounted"), emptyPath);
 }
 
-TEST(VirtualFileSystemTest, CanResolveNestedPaths) {
+TEST(FileSystemVFSTest, CanResolveNestedPaths) {
     std::filesystem::path const rootPath{ "C:/Users/Test/Some/Root/Path" };
     std::filesystem::path const mountPath{ "C:/Users/Test/Some/Full/Path" };
 
-    VirtualFileSystem vfs{};
+    FileSystemVFS vfs{};
 
     vfs.mount(rootPath, ".");
     vfs.mount(mountPath, "data");
@@ -32,11 +32,11 @@ TEST(VirtualFileSystemTest, CanResolveNestedPaths) {
     EXPECT_EQ(vfs.resolve("data/models/cube.obj"), mountPath / "models/cube.obj");
 }
 
-TEST(VirtualFileSystemTest, CanMountNestedPaths) {
+TEST(FileSystemVFSTest, CanMountNestedPaths) {
     std::filesystem::path const rootPath{ "C:/Users/Test/Some/Root/Path" };
     std::filesystem::path const mountPath{ rootPath / "Generated" };
 
-    VirtualFileSystem vfs{};
+    FileSystemVFS vfs{};
 
     vfs.mount(rootPath, ".");
     vfs.mount(mountPath, "generated");

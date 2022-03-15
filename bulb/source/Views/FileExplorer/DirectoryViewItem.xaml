@@ -5,7 +5,25 @@
 		xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
 		xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
 		mc:Ignorable="d" d:DesignWidth="267.396" d:DesignHeight="155.156"
-		Style="{StaticResource DirectoryItemButton}">
+		AllowDrop="True">
+    <Button.Style>
+        <Style TargetType="{x:Type Button}"
+               BasedOn="{StaticResource {x:Type Button}}">
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver"
+						 Value="False">
+					<Setter Property="Background" 
+							Value="Transparent"/>
+				</Trigger>
+				<Trigger Property="IsFocused"
+						 Value="False">
+					<Setter Property="BorderBrush" 
+							Value="Transparent"/>
+				</Trigger>
+			</Style.Triggers>
+        </Style>
+    </Button.Style>
+    
 	<Button.InputBindings>
 		<!-- Allow for custom input bindings to use ICommand -->
 		<MouseBinding Gesture="LeftDoubleClick" 
@@ -14,28 +32,65 @@
 					Command="{Binding DeleteCommand}"/>
 	</Button.InputBindings>
 
-	<StackPanel Background="Transparent">
-		<Image HorizontalAlignment="Center"
-			   Width="50">
-			<Image.Style>
-				<Style TargetType="{x:Type Image}">
-					<Style.Triggers>
-						<DataTrigger Binding="{Binding Type}" 
-									 Value="0">
-							<Setter Property="Source"
-									Value="/resource/FileExplorer/png/001-folder-closed-black-shape.png"/>
-						</DataTrigger>
-						<DataTrigger Binding="{Binding Type}"
-									 Value="1">
-							<Setter Property="Source" 
-									Value="/resource/FileExplorer/png/002-file.png"/>
-						</DataTrigger>
-					</Style.Triggers>
-				</Style>
-			</Image.Style>
-		</Image>
-		
-		<TextBlock Text="{Binding Name}" 
-				   HorizontalAlignment="Center"/>
-	</StackPanel>
+	<Button.ContextMenu>
+		<ContextMenu>
+			<MenuItem Header="Rename"
+					  Click="BeginRename"/>
+			<MenuItem Header="Delete"
+					  Command="{Binding DeleteCommand}"/>
+		</ContextMenu>
+	</Button.ContextMenu>
+
+    <Border x:Name="DragBorder"
+            BorderThickness="0"
+            Padding="3">
+        <Border.BorderBrush>
+            <VisualBrush>
+                <VisualBrush.Visual>
+                    <Rectangle StrokeDashArray="4 2" 
+                               Stroke="{StaticResource Secondary}"
+                               StrokeThickness="1.5"
+                               Width="{Binding RelativeSource={RelativeSource AncestorType={x:Type Border}}, Path=ActualWidth}"
+                               Height="{Binding RelativeSource={RelativeSource AncestorType={x:Type Border}}, Path=ActualHeight}"
+                               RadiusX="5"
+                               RadiusY="5"/>
+                </VisualBrush.Visual>
+            </VisualBrush>    
+        </Border.BorderBrush>
+        
+		<StackPanel Background="Transparent">
+			<Image HorizontalAlignment="Center"
+				   Width="50">
+				<Image.Style>
+					<Style TargetType="{x:Type Image}">
+						<Style.Triggers>
+							<DataTrigger Binding="{Binding Type}" 
+										 Value="0">
+								<Setter Property="Source"
+										Value="/resource/FileExplorer/png/001-folder-closed-black-shape.png"/>
+							</DataTrigger>
+							<DataTrigger Binding="{Binding Type}"
+										 Value="1">
+								<Setter Property="Source" 
+										Value="/resource/FileExplorer/png/002-file.png"/>
+							</DataTrigger>
+						</Style.Triggers>
+					</Style>
+				</Image.Style>
+			</Image>
+
+			<Grid Background="Transparent"
+				  HorizontalAlignment="Center">
+				<Grid.ColumnDefinitions>
+					<ColumnDefinition Width="*"/>
+				</Grid.ColumnDefinitions>
+				
+				<TextBlock x:Name="StaticName"
+						   Text="{Binding Name}"/>
+
+				<TextBox x:Name="EditableName"
+						 KeyDown="EditableName_KeyDown"/>
+			</Grid>
+		</StackPanel>
+    </Border>
 </Button>

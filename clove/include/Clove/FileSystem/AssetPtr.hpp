@@ -1,9 +1,10 @@
 #pragma once
 
+#include <Clove/Guid.hpp>
 #include <filesystem>
-#include <optional>
 #include <functional>
 #include <memory>
+#include <optional>
 
 namespace clove {
     /**
@@ -12,17 +13,19 @@ namespace clove {
      */
     template<typename AssetType>
     class AssetPtr {
+        friend class AssetManager;
+
         //VARIABLES
     private:
-        std::shared_ptr<std::filesystem::path> assetPath{};
-        std::function<AssetType()> loadFunction{};
+        Guid guid{ 0 };
 
-        std::shared_ptr<std::optional<AssetType>> asset{};
+        std::shared_ptr<std::optional<AssetType>> asset{ nullptr };
+        std::shared_ptr<std::function<AssetType()>> loadFunction{ nullptr };
 
         //FUNCTIONS
     public:
         AssetPtr();
-        AssetPtr(std::filesystem::path assetVfsPath, std::function<AssetType()> loadFunction);
+        AssetPtr(Guid guid, std::function<AssetType()> loadFunction);
 
         AssetPtr(AssetPtr const &other);
         AssetPtr(AssetPtr &&other) noexcept;
@@ -36,13 +39,13 @@ namespace clove {
          * @brief Returns true if this has a valid path to an asset.
          * @return 
          */
-        bool isValid() const;
+        bool isValid() const noexcept;
 
         /**
          * @brief Returns true if this has loaded the asset and there for contains a valid object.
          * @return 
          */
-        bool isLoaded() const;
+        bool isLoaded() const noexcept;
 
         /**
          * @brief Returns the asset object. Will load synchronously if the asset is not yet loaded.
@@ -56,11 +59,10 @@ namespace clove {
         [[nodiscard]] AssetType const &get() const;
 
         /**
-         * @brief Returns the path of the asset.
-         * @details Path will be in the VirtualFileSystem format.
+         * @brief Returns the hash used to identify this pointer's asset.
          * @return 
          */
-        [[nodiscard]] std::filesystem::path const &getPath() const;
+        Guid getGuid() const noexcept;
 
         AssetType *operator->();
         AssetType const *operator->() const;

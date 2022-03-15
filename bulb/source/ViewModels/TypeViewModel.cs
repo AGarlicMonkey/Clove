@@ -17,7 +17,7 @@ namespace Bulb {
                 this.value = value;
                 OnPropertyChanged(nameof(Value));
 
-                if(DropdownVisibility == Visibility.Visible && DropdownItemTypeInfos != null) {
+                if (DropdownVisibility == Visibility.Visible && DropdownItemTypeInfos != null) {
                     Members.Clear();
                     Members.Add(DropdownItemTypeInfos[DropdownItems.IndexOf(value)]);
                 }
@@ -28,7 +28,8 @@ namespace Bulb {
             }
         }
         private string value;
-        public Visibility ValueVisibility { get; }
+        public Visibility EditableValueVisibility { get; }
+        public Visibility DragDropValueVisibility { get; }
 
         public ObservableCollection<TypeViewModel> Members { get; }
         public Visibility MembersVisibility { get; }
@@ -47,7 +48,8 @@ namespace Bulb {
             Members = new ObservableCollection<TypeViewModel>(members);
 
             MembersVisibility = Visibility.Visible;
-            ValueVisibility = Visibility.Collapsed;
+            EditableValueVisibility = Visibility.Collapsed;
+            DragDropValueVisibility = Visibility.Collapsed;
             DropdownVisibility = Visibility.Collapsed;
         }
 
@@ -67,17 +69,23 @@ namespace Bulb {
                 MembersVisibility = Visibility.Collapsed;
             }
 
-            ValueVisibility = Visibility.Collapsed;
+            EditableValueVisibility = Visibility.Collapsed;
             DropdownVisibility = Visibility.Visible;
         }
 
-        public TypeViewModel(string displayName, uint offset, string value) {
+        public TypeViewModel(string displayName, uint offset, string value, bool isDragDropOnly) {
             Name = displayName;
             offsetIntoParent = offset;
             this.value = value; //Bypass property to prevent delegate being fired.
 
             MembersVisibility = Visibility.Collapsed;
-            ValueVisibility = Visibility.Visible;
+            if (!isDragDropOnly) {
+                EditableValueVisibility = Visibility.Visible;
+                DragDropValueVisibility = Visibility.Collapsed;
+            } else {
+                EditableValueVisibility = Visibility.Collapsed;
+                DragDropValueVisibility = Visibility.Visible;
+            }
             DropdownVisibility = Visibility.Collapsed;
         }
     }

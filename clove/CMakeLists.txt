@@ -101,9 +101,12 @@ add_library(
 		${INCLUDE}/FileSystem/AssetPtr.hpp
 		${INCLUDE}/FileSystem/AssetPtr.inl
 		${INCLUDE}/FileSystem/AssetManager.hpp
+		${INCLUDE}/FileSystem/AssetManager.inl
 		${SOURCE}/FileSystem/AssetManager.cpp
+		${INCLUDE}/FileSystem/FileSystemVFS.hpp
+		${INCLUDE}/FileSystem/FileSystemVFS.inl
+		${SOURCE}/FileSystem/FileSystemVFS.cpp
 		${INCLUDE}/FileSystem/VirtualFileSystem.hpp
-		${SOURCE}/FileSystem/VirtualFileSystem.cpp
 
 		${INCLUDE}/Rendering/AnimationTypes.hpp
 		${INCLUDE}/Rendering/Animator.hpp
@@ -208,6 +211,7 @@ add_library(
 		${INCLUDE}/ModelLoader.hpp
 		${SOURCE}/ModelLoader.cpp
 
+		${INCLUDE}/ReflectionCommon.hpp
 		${SOURCE}/ReflectionCommon.cpp
 
 		${INCLUDE}/ReflectionAttributes.hpp
@@ -260,6 +264,7 @@ target_link_libraries(
 		CloveDeltaTime 
 		CloveEvent 
 		CloveExpected 
+		CloveGuid
 		CloveLog 
 		CloveMaths 
 		CloveMemory 

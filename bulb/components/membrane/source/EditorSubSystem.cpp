@@ -22,6 +22,7 @@
 #include <Clove/SubSystems/RenderSubSystem.hpp>
 #include <Clove/SubSystems/TransformSubSystem.hpp>
 #include <msclr/marshal_cppstd.h>
+#include <Clove/Rendering/Renderer.hpp>
 
 using namespace clove;
 using namespace membrane;
@@ -250,9 +251,10 @@ namespace membrane {
     }
 
     void EditorSubSystem::saveScene() {
-        serialiser::Node rootNode{};
+        serialiser::Node fileNode{};
+        serialiser::Node &rootNode{ fileNode["scene"] };
 
-        rootNode["sceneVersion"] = 1;
+        rootNode["file_version"] = 1;
 
         for(auto const &subSystem : enabledSubSystems) {
             rootNode["subSystems"].pushBack(subSystem);
@@ -273,7 +275,7 @@ namespace membrane {
         }
 
         std::ofstream fileStream{ clove::Application::get().getFileSystem()->resolve("./scene.clvscene"), std::ios::out | std::ios::trunc };
-        fileStream << emittYaml(rootNode);
+        fileStream << emittYaml(fileNode);
     }
 
     void EditorSubSystem::loadScene() {
@@ -300,7 +302,8 @@ namespace membrane {
             return;
         }
 
-        serialiser::Node rootNode{ std::move(loadResult.getValue()) };
+        serialiser::Node fileNode{ std::move(loadResult.getValue()) };
+        serialiser::Node &rootNode{ fileNode["scene"] };
 
         //Load sub systems
         System::Collections::Generic::List<System::String ^> ^ subSystems { gcnew System::Collections::Generic::List<System::String ^> };

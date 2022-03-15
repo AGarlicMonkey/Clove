@@ -1,10 +1,11 @@
 #include "Membrane/Application.hpp"
 
 #include "Membrane/EditorSubSystem.hpp"
+#include "Membrane/MembraneLog.hpp"
 #include "Membrane/MessageHandler.hpp"
 #include "Membrane/Messages.hpp"
 #include "Membrane/RuntimeSubSystem.hpp"
-#include "Membrane/MembraneLog.hpp"
+#include "Membrane/EditorVFS.hpp"
 
 #include <Clove/Application.hpp>
 #include <Clove/ECS/EntityManager.hpp>
@@ -13,10 +14,10 @@
 #include <Clove/Graphics/GraphicsAPI.hpp>
 #include <Clove/Log/Log.hpp>
 #include <Clove/Reflection/Reflection.hpp>
+#include <msclr/marshal_cppstd.h>
+#include <sstream>
 #include <Clove/Serialisation/Node.hpp>
 #include <Clove/Serialisation/Yaml.hpp>
-#include <filesystem>
-#include <msclr/marshal_cppstd.h>
 
 #ifndef GAME_OUTPUT_DIR
     #define GAME_OUTPUT_DIR ""
@@ -130,6 +131,13 @@ namespace membrane {
     }
 
     void Application::startSession() {
+        using namespace clove;
+
+        auto result{ loadYaml(GAME_DIR "/" GAME_NAME ".clvproj") };
+        if(result.hasValue()) {
+            app->getAssetManager()->deserialise(result.getValue()["assets"]);
+        }
+
         app->pushSubSystem<EditorSubSystem>(app->getEntityManager());
     }
 
@@ -142,7 +150,16 @@ namespace membrane {
     }
 
     void Application::shutdown() {
+        using namespace clove;
+
+        serialiser::Node projectNode{};
+        serialiser::Node &assetManagerNode{ projectNode["assets"] };
+
+        app->getAssetManager()->serialise(assetManagerNode);
         app->shutdown();
+
+        std::ofstream fileStream{ GAME_DIR "/" GAME_NAME ".clvproj", std::ios::out | std::ios::trunc };
+        fileStream << emittYaml(projectNode);
     }
 
     System::String ^ Application::resolveVfsPath(System::String ^ path) {
@@ -158,12 +175,14 @@ namespace membrane {
     System::IntPtr Application::createChildWindow(System::IntPtr parent, int32_t width, int32_t height) {
         using namespace clove;
 
-        //TEMP: Create the application here. It would be better to initialise Clove when creating this instance but it is currently tightly couple to having a window open.
-        app = clove::Application::create(GraphicsApi::Vulkan, AudioApi::OpenAl, Window::Descriptor{ "test", width, height, reinterpret_cast<HWND>(parent.ToPointer()) }).release();
+        std::filesystem::path const contentDir{ GAME_DIR "/content" };
+        auto vfs{ std::make_unique<EditorVFS>(contentDir) };
+        if(!std::filesystem::exists(contentDir)) {
+            std::filesystem::create_directories(contentDir);
+        }
 
-        auto *vfs{ app->getFileSystem() };
-        vfs->mount(GAME_DIR "/content", ".");
-        std::filesystem::create_directories(vfs->resolve("."));
+        //TEMP: Create the application here. It would be better to initialise Clove when creating this instance but it is currently tightly couple to having a window open.
+        app = clove::Application::create(GraphicsApi::Vulkan, AudioApi::OpenAl, Window::Descriptor{ "test", width, height, reinterpret_cast<HWND>(parent.ToPointer()) }, std::move(vfs)).release();
 
         MessageHandler::bindToMessage(gcnew MessageSentHandler<Editor_Stop ^>(this, &Application::setEditorMode));
         MessageHandler::bindToMessage(gcnew MessageSentHandler<Editor_Play ^>(this, &Application::setRuntimeMode));
