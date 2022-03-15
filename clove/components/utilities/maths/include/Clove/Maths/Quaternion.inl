@@ -15,6 +15,22 @@ namespace clove {
 
         return *this;
     }
+
+    template<number T>
+    constexpr quat<T> operator-(quat<T> const &a, quat<T> const &b) {
+        return { a.x - b.x, a.y - b.y, a.z - b.z, a.w - b.w };
+    }
+
+    template<number T>
+    constexpr quat<T> &quat<T>::operator-=(quat<T> const &b) {
+        x -= b.x;
+        y -= b.y;
+        z -= b.z;
+        w -= b.w;
+
+        return *this;
+    }
+
     template<number T>
     constexpr quat<T> operator*(quat<T> const &a, T scalar) {
         return { a.x * scalar, a.y * scalar, a.z * scalar, a.w * scalar };
