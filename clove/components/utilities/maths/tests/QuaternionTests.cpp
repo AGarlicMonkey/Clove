@@ -24,6 +24,21 @@ TEST(QuaternionTests, CanCompareTwoQuaternions) {
     EXPECT_FALSE(a != b);
 }
 
+TEST(QuaternionTests, CanAddTwoQuaternions) {
+    quatf const a{ 9, 1, 0, 6 };
+    quatf const b{ 2, 1, 2, 1 };
+    quatf c{ a };
+
+    quatf const v4sum{ a.x + b.x, a.y + b.y, a.z + b.z, a.w + b.w };
+    EXPECT_EQ(a + b, v4sum);
+
+    c += b;
+    EXPECT_EQ(c.x, a.x + b.x);
+    EXPECT_EQ(c.y, a.y + b.y);
+    EXPECT_EQ(c.z, a.z + b.z);
+    EXPECT_EQ(c.w, a.w + b.w);
+}
+
 TEST(QuaternionTests, CanMultiplyQuaternionByNumber) {
     float constexpr multiplier{ 5.0f };
 
