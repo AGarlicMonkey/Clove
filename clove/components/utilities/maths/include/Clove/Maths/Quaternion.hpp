@@ -10,6 +10,11 @@ namespace clove {
         T y{ 0 };
         T z{ 0 };
         T w{ 1 };
+
+        template<number U>
+        friend constexpr bool operator==(quat<U> const &lhs, quat<U> const &rhs);
+        template<number U>
+        friend constexpr bool operator!=(quat<U> const &lhs, quat<U> const &rhs);
     };
 }
 

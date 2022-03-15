@@ -12,6 +12,18 @@ TEST(QuaternionTests, CanDefaultConstructAQuaternion) {
     EXPECT_FLOAT_EQ(q.w, 1);
 }
 
+TEST(QuaternionTest, CanCompareTwoQuaternions) {
+    quatf a{ 4, 1, 1, 0 };
+    quatf b{ 4, 1, 1, 0 };
+    quatf c{ 9, 2, 5, 8 };
+
+    EXPECT_TRUE(a == b);
+    EXPECT_TRUE(b != c);
+
+    EXPECT_FALSE(a == c);
+    EXPECT_FALSE(a != b);
+}
+
 TEST(QuaternionTests, CanGetLengthOfAQuaternion) {
     quatf q{ 1, 3, 2, 5 };
 
