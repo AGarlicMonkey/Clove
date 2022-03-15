@@ -41,6 +41,22 @@ TEST(QuaternionTests, CanMultiplyQuaternionByNumber) {
     EXPECT_EQ(b.w * multiplier, c.w);
 }
 
+TEST(QuaternionTests, CanDivideQuaternionByNumber) {
+    float constexpr divisor{ 3.0f };
+
+    quatf a{ 3, 2, 1, 6 };
+    quatf b{ 2, 1, 3, 6 };
+    quatf c{ b };
+
+    quatf aDiv{ a.x / divisor, a.y / divisor, a.z / divisor, a.w / divisor };
+    EXPECT_EQ(a / divisor, aDiv);
+
+    b /= divisor;
+    EXPECT_EQ(b.x, c.x / divisor);
+    EXPECT_EQ(b.y, c.y / divisor);
+    EXPECT_EQ(b.z, c.z / divisor);
+    EXPECT_EQ(b.w, c.w / divisor);
+}
 TEST(QuaternionTests, CanGetLengthOfAQuaternion) {
     quatf q{ 1, 3, 2, 5 };
 
