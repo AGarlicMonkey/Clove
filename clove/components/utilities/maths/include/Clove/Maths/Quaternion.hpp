@@ -20,6 +20,8 @@ namespace clove {
 
 //Quaternion operations
 namespace clove {
+    template<number T>
+    constexpr T length(quat<T> const &q);
 
 }
 
