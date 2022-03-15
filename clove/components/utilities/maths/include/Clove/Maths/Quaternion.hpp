@@ -40,6 +40,9 @@ namespace clove {
     constexpr quat<T> normalise(quat<T> const &q);
 
     template<number T>
+    constexpr T dot(quat<T> const &a, quat<T> const &b);
+
+    template<number T>
     constexpr quat<T> lerp(quat<T> const &a, quat<T> const &b, float const t);
 }
 

@@ -70,6 +70,15 @@ TEST(QuaternionTests, CanNormaliseAQuaternion) {
     EXPECT_FLOAT_EQ(length(normalise(q)), 1.0f);
 }
 
+TEST(QuaternionTests, CanDotProductTwoQuaternions) {
+    quatf const a{ 1, 2, 1, 4 };
+    quatf const b{ 4, 1, 3, 9 };
+
+    const float qDot{ dot(a, b) };
+    const float qDotTest{ a.x * b.x + a.y * b.y + a.z * b.z + a.w * b.w };
+    EXPECT_FLOAT_EQ(qDot, qDotTest);
+}
+
 TEST(QuaternionTests, CanLerpBetweenTwoQuaternions) {
     quatf const a{ 0.0f, 0.0f, 0.0f, 0.0f };
     quatf const b{ 1.0f, 1.0f, 1.0f, 1.0f };
