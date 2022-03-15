@@ -17,6 +17,8 @@ set(
 add_executable(
     Bulb
        
+		${SOURCE}/Views/FileExplorer/BreadcrumbItem.xaml
+		${SOURCE}/Views/FileExplorer/BreadcrumbItem.xaml.cs
 		${SOURCE}/Views/FileExplorer/DirectoryTree.xaml
 		${SOURCE}/Views/FileExplorer/DirectoryTree.xaml.cs
 		${SOURCE}/Views/FileExplorer/DirectoryTreeItem.xaml
@@ -83,6 +85,9 @@ csharp_set_designer_cs_properties(
 csharp_set_xaml_cs_properties(
 	${SOURCE}/EditorApp.xaml
     ${SOURCE}/EditorApp.xaml.cs
+
+	${SOURCE}/Views/FileExplorer/BreadcrumbItem.xaml
+	${SOURCE}/Views/FileExplorer/BreadcrumbItem.xaml.cs
 
 	${SOURCE}/Views/FileExplorer/DirectoryTree.xaml
 	${SOURCE}/Views/FileExplorer/DirectoryTree.xaml.cs

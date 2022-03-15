@@ -1,3 +1,5 @@
+using System;
+using System.Windows.Controls;
 using System.Windows.Input;
 
 namespace Bulb {
@@ -8,27 +10,28 @@ namespace Bulb {
         /// <summary>
         /// The root directory this explorer views from.
         /// </summary>
-        public DirectoryItemViewModel RootDirectory {
+        public FolderViewModel RootDirectory {
             get => rootDirectory;
             private set {
                 rootDirectory = value;
                 OnPropertyChanged(nameof(RootDirectory));
             }
         }
-        private DirectoryItemViewModel rootDirectory;
+        private FolderViewModel rootDirectory;
 
         /// <summary>
         /// The current directory this explorer has opened into.
         /// </summary>
-        public DirectoryItemViewModel CurrentDirectory {
+        public FolderViewModel CurrentDirectory {
             get => currentDirectory;
             private set {
                 currentDirectory = value;
-                OnPropertyChanged(nameof(currentDirectory));
+
+                OnPropertyChanged(nameof(CurrentDirectory));
                 OnPropertyChanged(nameof(CanStepBack));
             }
         }
-        private DirectoryItemViewModel currentDirectory;
+        private FolderViewModel currentDirectory;
 
         public ICommand StepBackCommand { get; }
         public bool CanStepBack => CurrentDirectory.Parent != null;
@@ -53,7 +56,7 @@ namespace Bulb {
                     CurrentDirectory.OnOpened -= OnItemOpened;
                 }
 
-                CurrentDirectory = item;
+                CurrentDirectory = item as FolderViewModel;
                 CurrentDirectory.OnOpened += OnItemOpened;
             }
 
