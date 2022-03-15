@@ -12,7 +12,7 @@ TEST(QuaternionTests, CanDefaultConstructAQuaternion) {
     EXPECT_FLOAT_EQ(q.w, 1);
 }
 
-TEST(QuaternionTest, CanCompareTwoQuaternions) {
+TEST(QuaternionTests, CanCompareTwoQuaternions) {
     quatf a{ 4, 1, 1, 0 };
     quatf b{ 4, 1, 1, 0 };
     quatf c{ 9, 2, 5, 8 };
@@ -68,4 +68,21 @@ TEST(QuaternionTests, CanNormaliseAQuaternion) {
     quatf const q{ 4, 3, 8, 5 };
 
     EXPECT_FLOAT_EQ(length(normalise(q)), 1.0f);
+}
+
+TEST(QuaternionTests, CanLerpBetweenTwoQuaternions) {
+    quatf const a{ 0.0f, 0.0f, 0.0f, 0.0f };
+    quatf const b{ 1.0f, 1.0f, 1.0f, 1.0f };
+
+    quatf const res0{ lerp(a, b, 0.0f) };
+    EXPECT_EQ(res0, a);
+
+    quatf const res1{ lerp(a, b, 1.0f) };
+    EXPECT_EQ(res1, b);
+
+    quatf const res2{ lerp(a, b, 0.5f) };
+    EXPECT_EQ(res2.x, 0.5f);
+    EXPECT_EQ(res2.y, 0.5f);
+    EXPECT_EQ(res2.z, 0.5f);
+    EXPECT_EQ(res2.w, 0.5f);
 }

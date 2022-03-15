@@ -50,4 +50,16 @@ namespace clove {
     constexpr quat<T> normalise(quat<T> const &q) {
         return q / length(q);
     }
+
+    template<number T>
+    constexpr quat<T> lerp(quat<T> const &a, quat<T> const &b, float const t) {
+        quat<T> result{};
+
+        result.x = (b.x * t) + (a.x * (1.0f - t));
+        result.y = (b.w * t) + (a.y * (1.0f - t));
+        result.z = (b.z * t) + (a.z * (1.0f - t));
+        result.w = (b.w * t) + (a.w * (1.0f - t));
+
+        return result;
+    }
 }
