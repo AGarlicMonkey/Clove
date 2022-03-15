@@ -125,3 +125,20 @@ TEST(QuaternionTests, CanLerpBetweenTwoQuaternions) {
     EXPECT_EQ(res2.z, 0.5f);
     EXPECT_EQ(res2.w, 0.5f);
 }
+
+TEST(QuaternionTests, CanSlerpBetweenTwoQuaternions) {
+    quatf const a{ 0.0f, 0.0f, 0.0f, 0.0f };
+    quatf const b{ 1.0f, 1.0f, 1.0f, 1.0f };
+
+    quatf const res0{ slerp(a, b, 0.0f) };
+    EXPECT_EQ(res0, a);
+
+    quatf const res1{ slerp(a, b, 1.0f) };
+    EXPECT_EQ(res1, b);
+
+    quatf const res2{ slerp(a, b, 0.5f) };
+    EXPECT_FLOAT_EQ(res2.x, 0.707107f);
+    EXPECT_FLOAT_EQ(res2.y, 0.707107f);
+    EXPECT_FLOAT_EQ(res2.z, 0.707107f);
+    EXPECT_FLOAT_EQ(res2.w, 0.707107f);
+}

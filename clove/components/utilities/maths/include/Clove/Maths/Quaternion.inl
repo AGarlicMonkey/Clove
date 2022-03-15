@@ -97,4 +97,12 @@ namespace clove {
 
         return result;
     }
+
+    template<number T>
+    constexpr quat<T> slerp(quat<T> const &a, quat<T> const &b, float const t) {
+        T const angle{ std::acos(dot(a, b)) };
+        T const denom{ std::sin(angle) };
+
+        return ((b * std::sin(t * angle)) + (a * std::sin((1.0f - t) * angle))) / denom;
+    }
 }
