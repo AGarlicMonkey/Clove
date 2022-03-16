@@ -72,9 +72,10 @@ add_executable(
 target_link_libraries(
     Bulb
 
-	PUBLIC
+	PRIVATE
 		BulbUI
-        BulbMembrane   
+
+		Membrane
 )
 
 #Cs properties

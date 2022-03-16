@@ -3,7 +3,7 @@ set(INCLUDE ${CMAKE_CURRENT_SOURCE_DIR}/include/Membrane)
 
 #Library
 add_library(
-    BulbMembrane SHARED
+    Membrane SHARED
         ${INCLUDE}/Application.hpp
         ${SOURCE}/Application.cpp
         
@@ -37,7 +37,7 @@ add_library(
 
 #Include
 target_include_directories(
-    BulbMembrane
+    Membrane
 
     PUBLIC
         include
@@ -45,7 +45,7 @@ target_include_directories(
 
 #Libraries
 target_link_libraries(
-    BulbMembrane
+    Membrane
 
     PRIVATE
         Clove
@@ -53,7 +53,7 @@ target_link_libraries(
 
 #PreProcessor
 target_compile_definitions(
-    BulbMembrane
+    Membrane
 
     PRIVATE
         ROOT_DIR="${CMAKE_SOURCE_DIR}"   
@@ -61,7 +61,7 @@ target_compile_definitions(
 
 #Properties
 set_target_properties(
-    BulbMembrane
+    Membrane
     
     PROPERTIES 
         COMMON_LANGUAGE_RUNTIME ""

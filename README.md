@@ -9,6 +9,7 @@ The Clove respository contains the following projects:
 |Project|Language|Description|
 |-|-|-|
 |Clove|C++|Clove is the engine itself. This is where all the platform / graphics / rendering / systems etc. are.|
+|Membrane|C++/C#|Membrane acts as a middle man between Clove and Bulb. Providing a C# API of Clove.|
 |Bulb|C#|Bulb is Clove's editor. Allowing for an easy way to create scenes for Clove.|
 
 Note: Bulb is only currently supported on Windows.
