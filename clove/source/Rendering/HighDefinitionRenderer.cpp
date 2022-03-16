@@ -72,13 +72,8 @@ namespace clove {
         framesInFlight.resize(maxFramesInFlight);
         imagesInFlight.resize(maxImages);
 
-        graphicsQueue     = ghaFactory->createGraphicsQueue(CommandQueueDescriptor{ .flags = QueueFlags::ReuseBuffers }).getValue();
-        computeQueue      = ghaFactory->createComputeQueue(CommandQueueDescriptor{ .flags = QueueFlags::ReuseBuffers }).getValue();
-        asyncComputeQueue = ghaFactory->createAsyncComputeQueue(CommandQueueDescriptor{ .flags = QueueFlags::ReuseBuffers }).getValue();
-        transferQueue     = ghaFactory->createTransferQueue(CommandQueueDescriptor{ .flags = QueueFlags::ReuseBuffers }).getValue();
-
         for(size_t i{ 0 }; i < maxFramesInFlight + 1; ++i) {
-            frameCaches.emplace_back(ghaFactory, graphicsQueue.get(), computeQueue.get(), asyncComputeQueue.get(), transferQueue.get());
+            frameCaches.emplace_back(ghaFactory);
         }
 
         shaderIncludes["Common.glsl"]    = { common, commonLength };

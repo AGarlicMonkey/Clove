@@ -5,12 +5,12 @@
 #include <functional>
 
 namespace clove {
-    RgFrameCache::RgFrameCache(GhaFactory *ghaFactory, GhaGraphicsQueue *graphicsQueue, GhaComputeQueue *computeQueue, GhaComputeQueue *asyncComputeQueue, GhaTransferQueue *transferQueue)
-        : ghaFactory{ ghaFactory }
-        , graphicsQueue{ graphicsQueue }
-        , computeQueue{ computeQueue }
-        , asyncComputeQueue{ asyncComputeQueue }
-        , transferQueue{ transferQueue } {
+    RgFrameCache::RgFrameCache(GhaFactory *ghaFactory)
+        : ghaFactory{ ghaFactory } {
+        graphicsQueue     = ghaFactory->createGraphicsQueue(CommandQueueDescriptor{ .flags = QueueFlags::ReuseBuffers }).getValue();
+        computeQueue      = ghaFactory->createComputeQueue(CommandQueueDescriptor{ .flags = QueueFlags::ReuseBuffers }).getValue();
+        asyncComputeQueue = ghaFactory->createAsyncComputeQueue(CommandQueueDescriptor{ .flags = QueueFlags::ReuseBuffers }).getValue();
+        transferQueue     = ghaFactory->createTransferQueue(CommandQueueDescriptor{ .flags = QueueFlags::ReuseBuffers }).getValue();
     }
 
     RgFrameCache::RgFrameCache(RgFrameCache &&other) noexcept = default;

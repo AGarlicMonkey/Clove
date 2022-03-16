@@ -110,11 +110,6 @@ namespace clove {
         std::unique_ptr<RenderTarget> renderTarget;
         DelegateHandle renderTargetPropertyChangedBeginHandle;
 
-        std::unique_ptr<GhaGraphicsQueue> graphicsQueue{};
-        std::unique_ptr<GhaComputeQueue> computeQueue{};
-        std::unique_ptr<GhaComputeQueue> asyncComputeQueue{};
-        std::unique_ptr<GhaTransferQueue> transferQueue{};
-
         std::vector<RgFrameCache> frameCaches{};
         RgGlobalCache globalCache;
 

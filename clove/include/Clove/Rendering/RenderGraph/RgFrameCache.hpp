@@ -86,10 +86,10 @@ namespace clove {
         ResourcePool<GhaDescriptorPool> descriptorPoolPool{};
         ResourcePool<GhaSemaphore> semaphorePool{};
 
-        GhaGraphicsQueue *graphicsQueue{ nullptr };
-        GhaComputeQueue *computeQueue{ nullptr };
-        GhaComputeQueue *asyncComputeQueue{ nullptr };
-        GhaTransferQueue *transferQueue{ nullptr };
+        std::unique_ptr<GhaGraphicsQueue> graphicsQueue{ nullptr };
+        std::unique_ptr<GhaComputeQueue> computeQueue{ nullptr };
+        std::unique_ptr<GhaComputeQueue> asyncComputeQueue{ nullptr };
+        std::unique_ptr<GhaTransferQueue> transferQueue{ nullptr };
 
         std::vector<std::unique_ptr<GhaGraphicsCommandBuffer>> allocatedGraphicsCommandBuffers{};
         std::vector<std::unique_ptr<GhaComputeCommandBuffer>> allocatedComputeCommandBuffers{};
@@ -99,7 +99,7 @@ namespace clove {
         //FUNCTIONS
     public:
         RgFrameCache() = delete;
-        RgFrameCache(GhaFactory *ghaFactory, GhaGraphicsQueue *graphicsQueue, GhaComputeQueue *computeQueue, GhaComputeQueue *asyncComputeQueue, GhaTransferQueue *transferQueue);
+        RgFrameCache(GhaFactory *ghaFactory);
 
         RgFrameCache(RgFrameCache const &other) = delete;
         RgFrameCache(RgFrameCache &&other) noexcept;
