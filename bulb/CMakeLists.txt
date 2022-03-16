@@ -75,7 +75,7 @@ target_link_libraries(
 	PRIVATE
 		BulbUI
 
-		Membrane
+		MembraneManaged
 )
 
 #Cs properties
