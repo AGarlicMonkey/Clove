@@ -1,51 +1,16 @@
 #pragma once
 
-#include <Clove/Application.hpp>
-#include <Clove/ECS/Entity.hpp>
+#include <windows.h>
 
-namespace membrane {
-    class EditorSubSystem;
-    class RuntimeSubSystem;
-    ref class Editor_Stop;
-    ref class Editor_Play;
-}
+#define MEMBRANE_EXPORT extern "C" __declspec(dllexport)
 
-namespace membrane {
-    /**
-     * @brief Translates a Clove session into C++/CLI
-     */
-public ref class Application {
-        //VARIABLES
-    private:
-        clove::Application *app;
+MEMBRANE_EXPORT void initialise();
+MEMBRANE_EXPORT bool isRunning();
+MEMBRANE_EXPORT void tick();
+MEMBRANE_EXPORT void shutDown();
 
-        bool isInEditorMode{ true };
+MEMBRANE_EXPORT void startSession();
 
-        HINSTANCE gameLibrary{ nullptr };
+MEMBRANE_EXPORT HWND createChildWindow(HWND parent, int width, int height);
 
-        //FUNCTIONS
-    public:
-        Application();
-        ~Application();
-        !Application();
-
-        void loadGameDll();
-        void startSession();
-
-        bool isRunning();
-        void tick();
-        void shutdown();
-
-        System::String ^resolveVfsPath(System::String ^path);
-
-        static System::String ^getProjectVersion();
-
-        System::IntPtr createChildWindow(System::IntPtr parent, int32_t width, int32_t height);
-
-    private:
-        void setEditorMode(Editor_Stop ^message);
-        void setRuntimeMode(Editor_Play ^message);
-
-        bool tryLoadGameDll(std::string_view path);
-    };
-}
+MEMBRANE_EXPORT void loadGameDll();

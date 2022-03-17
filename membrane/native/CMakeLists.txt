@@ -6,33 +6,15 @@ add_library(
     MembraneNative SHARED
         ${INCLUDE}/Application.hpp
         ${SOURCE}/Application.cpp
-        
+
         ${INCLUDE}/EditorSubSystem.hpp
         ${SOURCE}/EditorSubSystem.cpp
-        
+
         ${INCLUDE}/EditorVFS.hpp
         ${INCLUDE}/EditorVFS.inl
         ${SOURCE}/EditorVFS.cpp
 
-        ${INCLUDE}/FileSystemHelpers.hpp
-        ${SOURCE}/FileSystemHelpers.cpp
-
-        ${INCLUDE}/Log.hpp
-        ${SOURCE}/Log.cpp
-        ${INCLUDE}/MembraneLog.hpp
-
-        ${INCLUDE}/MessageBase.hpp
-        ${INCLUDE}/MessageHandler.hpp
-        ${SOURCE}/MessageHandler.cpp
-        ${INCLUDE}/Messages.hpp
-
         ${INCLUDE}/NameComponent.hpp
-
-        ${INCLUDE}/ReflectionHelpers.hpp
-        ${SOURCE}/ReflectionHelpers.cpp
-
-        ${INCLUDE}/RuntimeSubSystem.hpp
-        ${SOURCE}/RuntimeSubSystem.cpp
 )
 
 #Include
@@ -57,4 +39,11 @@ target_compile_definitions(
 
     PRIVATE
         ROOT_DIR="${CMAKE_SOURCE_DIR}"   
+)
+
+target_compile_options(
+    MembraneNative
+
+    PRIVATE
+        /EHs
 )

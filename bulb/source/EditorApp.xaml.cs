@@ -2,8 +2,6 @@
 using System.Windows;
 using System.Windows.Media;
 
-using Membrane = membrane;
-
 namespace Bulb {
     /// <summary>
     /// Interaction logic for Editor.xaml
@@ -13,30 +11,26 @@ namespace Bulb {
 
         private EditorSessionViewModel sessionViewModel;
 
-        private Membrane.Application engineApp;
-
-        public IntPtr OpenChildWindow(IntPtr hwndParent, int width, int height) {
-            IntPtr href = engineApp.createChildWindow(hwndParent, width, height);
+        public IntPtr OpenChildWindow(IntPtr parent, int width, int height) {
+            IntPtr href = Membrane.Application.CreateChildWindow(parent, width, height);
 
             //TEMP: Currently starting a session when we open a window. This is only temporary until Clove supports multiple windows.
-            engineApp.loadGameDll();
-            engineApp.startSession();
+            Membrane.Application.LoadGameDll();
+            Membrane.Application.StartSession();
 
-            sessionViewModel.Start(Membrane.FileSystemHelpers.getContentPath()); //TEMP: Remove with multiple window support
+            //sessionViewModel.Start(Membrane.FileSystemHelpers.getContentPath()); //TEMP: Remove with multiple window support
 
             return href;
         }
 
         private void EditorStartup(object sender, StartupEventArgs e) {
             //Initialise the engine
-            engineApp = new Membrane.Application();
+            Membrane.Application.Initialise();
 
             sessionViewModel = new EditorSessionViewModel(".");
-            sessionViewModel.OnCompileGame = () => {
-                engineApp.loadGameDll();
-            };
+            sessionViewModel.OnCompileGame = () => Membrane.Application.LoadGameDll();
 
-            Membrane.Log.addSink((string message) => sessionViewModel.Log.LogText += message, "%v");
+            // Membrane.Log.addSink((string message) => sessionViewModel.Log.LogText += message, "%v");
 
             editorWindow = new MainWindow {
                 DataContext = sessionViewModel
@@ -49,20 +43,11 @@ namespace Bulb {
             CompositionTarget.Rendering += RunEngineApplication;
         }
 
-        public string ResolveVfsPath(string path) => engineApp.resolveVfsPath(path);
-
-        private void ShutdownEngine(object sender, EventArgs e) => engineApp.shutdown();
+        private void ShutdownEngine(object sender, EventArgs e) => Membrane.Application.Shutdown();
 
         private void RunEngineApplication(object sender, EventArgs e) {
-            if (engineApp.isRunning()) {
-                //Send any editor events to the engine
-                Membrane.MessageHandler.flushEditor();
-
-                //Update the application
-                engineApp.tick();
-
-                //Send any engine events to the editor
-                Membrane.MessageHandler.flushEngine(Current.Dispatcher);
+            if (Membrane.Application.IsRunning()) {
+                Membrane.Application.Tick();
             }
         }
     }
