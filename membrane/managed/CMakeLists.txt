@@ -5,6 +5,7 @@ add_library(
     MembraneManaged SHARED
 
     ${SOURCE}/Application.cs
+    ${SOURCE}/FileSystemHelpers.cs
 )
 
 #Libraries
@@ -13,4 +14,9 @@ target_link_libraries(
 
     PRIVATE
         MembraneNative
+)
+
+#Target properties
+set_target_properties(MembraneManaged PROPERTIES
+        VS_DOTNET_REFERENCES "Microsoft.CSharp;System;System.Core;System.Data"
 )

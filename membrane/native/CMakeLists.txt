@@ -14,6 +14,11 @@ add_library(
         ${INCLUDE}/EditorVFS.inl
         ${SOURCE}/EditorVFS.cpp
 
+        ${INCLUDE}/Export.hpp
+
+        ${INCLUDE}/FileSystemHelpers.hpp
+        ${SOURCE}/FileSystemHelpers.cpp
+
         ${INCLUDE}/NameComponent.hpp
 )
 

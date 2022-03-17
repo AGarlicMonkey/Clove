@@ -1,51 +1,22 @@
 #pragma once
 
-namespace membrane {
-    public enum class FileType{
-        Unknown,
-        Mesh,
-        Texture,
-    };
+#include "Membrane/Export.hpp"
 
-    public ref class FileSystemHelpers{
-        //FUNCTIONS
-    public:
-        static System::String ^getContentPath();
-        static System::String ^getAssetExtension();
+#include <Clove/Guid.hpp>
+#include <string>
+#include <wtypes.h>
 
-        /**
-         * @brief Checks if the file system can support the file.
-         */
-        static bool isFileSupported(System::String ^file);
+MEMBRANE_EXPORT BSTR getContentPath();
 
-        /**
-         * @brief Checks if the file is a *.clvasset file.
-         */
-        static bool isAssetFile(System::String ^ file);
+MEMBRANE_EXPORT bool isFileSupported(std::string file);
 
-        /**
-         * @brief Gets the type of a file.
-         */
-        static FileType getFileType(System::String ^ fullFilePath);
+MEMBRANE_EXPORT bool isAssetFile(std::string file);
 
-        /**
-         * @brief Creates a new .clvasset file on disk.
-         */
-        static void createAssetFile(System::String ^assetLocation, System::String ^fileToCreateFrom, System::String ^relPathOfCreateFrom, System::String ^assetVfsPath);
-        /**
-         * @brief Notifies the asset manager that a file was moved. Note: Does not move the file on disk.
-         */
-        static void moveAssetFile(System::String ^ sourceFileName, System::String ^ destFileName);
-        /**
-         * @brief Notifies the asset manager that a file was deleted. Note: Does not delete the file on disk.
-         */
-        static void removeAssetFile(System::UInt64 assetGuid, FileType assetFileType);
+MEMBRANE_EXPORT int32_t getFileType(std::string file);
 
-        /**
-         * @brief Gets the type of an asset file (*.clvasset)
-         */
-        static FileType getAssetFileType(System::String ^ fullFilePath);
+MEMBRANE_EXPORT void createAssetFile(std::string assetLocation, std::string fileToCreateFrom, std::string relPathOfCreateFrom, std::string assetVfsPath);
+MEMBRANE_EXPORT void moveAssetFile(std::string sourceFileName, std::string destFileName);
+MEMBRANE_EXPORT void removeAssetFile(clove::Guid::Type assetGuid, int32_t assetFileType);
 
-        static System::UInt64 getAssetFileGuid(System::String ^ fullFilePath);
-    };
-}
+MEMBRANE_EXPORT int32_t getAssetFileType(std::string fullFilePath);
+MEMBRANE_EXPORT clove::Guid::Type getAssetFileGuid(std::string fullFilePath);

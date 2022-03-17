@@ -1,8 +1,8 @@
 #pragma once
 
-#include <windows.h>
+#include "Membrane/Export.hpp"
 
-#define MEMBRANE_EXPORT extern "C" __declspec(dllexport)
+#include <windows.h>
 
 MEMBRANE_EXPORT void initialise();
 MEMBRANE_EXPORT bool isRunning();

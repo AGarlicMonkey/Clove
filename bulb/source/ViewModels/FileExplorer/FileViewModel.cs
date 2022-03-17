@@ -1,6 +1,5 @@
 using System.IO;
-
-using Membrane = membrane;
+using Membrane;
 
 namespace Bulb {
     public class FileViewModel : DirectoryItemViewModel {
@@ -14,12 +13,12 @@ namespace Bulb {
         /// <summary>
         /// The type of asset this file is (i.e. Mesh, Texture etc.)
         /// </summary>
-        public Membrane.FileType AssetType { get; }
+        public FileType AssetType { get; }
 
         public FileViewModel(FileInfo file, FolderViewModel parent)
             : base(file.Name, file.FullName, parent) {
-            AssetGuid = Membrane.FileSystemHelpers.getAssetFileGuid(FullPath);
-            AssetType = Membrane.FileSystemHelpers.getAssetFileType(FullPath);
+            AssetGuid = FileSystemHelpers.GetAssetFileGuid(FullPath);
+            AssetType = FileSystemHelpers.GetAssetFileType(FullPath);
         }
 
         public override void Rename(string newName) {
@@ -28,7 +27,7 @@ namespace Bulb {
 
             File.Move(FullPath, newPath);
 
-            Membrane.FileSystemHelpers.moveAssetFile(FullPath, newPath);
+            FileSystemHelpers.MoveAssetFile(FullPath, newPath);
 
             Name = newFileName;
             FullPath = newPath;
@@ -38,7 +37,7 @@ namespace Bulb {
             string newPath = $"{Parent.FullPath}{Path.DirectorySeparatorChar}{Name}";
 
             if (newPath != FullPath) {
-                Membrane.FileSystemHelpers.moveAssetFile(FullPath, newPath);
+                FileSystemHelpers.MoveAssetFile(FullPath, newPath);
 
                 FullPath = newPath;
             }
