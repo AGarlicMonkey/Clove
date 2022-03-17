@@ -3,7 +3,6 @@
 #include <Clove/ECS/Entity.hpp>
 #include <Clove/Rendering/Camera.hpp>
 #include <Clove/SubSystem.hpp>
-#include <msclr/gcroot.h>
 #include <string_view>
 #include <unordered_map>
 #include <vector>
@@ -21,12 +20,8 @@ namespace membrane {
      * Is active while 'editing' and allows the user to build a scene
      */
     class EditorSubSystem : public clove::SubSystem {
-        friend ref class EditorSubSystemMessageProxy;
-
         //VARIABLES
     private:
-        msclr::gcroot<EditorSubSystemMessageProxy ^> proxy;
-
         clove::EntityManager *entityManager{ nullptr };
         std::unordered_map<clove::Entity, std::vector<clove::reflection::TypeInfo const *>> trackedComponents;
 
