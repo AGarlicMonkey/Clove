@@ -259,14 +259,14 @@ namespace clove {
         transferBuffer->write(data, bufferOffset, dataSize);
 
         //Change the layout of the image, write the buffer into it and then release the queue ownership
-        transferCommandBuffer->beginRecording(CommandBufferUsage::OneTimeSubmit);
+        transferCommandBuffer->beginRecording();
         transferCommandBuffer->imageMemoryBarrier(*image, layoutTransferInfo, PipelineStage::Top, PipelineStage::Transfer);
         transferCommandBuffer->copyBufferToImage(*transferBuffer, bufferOffset, *image, imageOffset, imageExtent, 0, imageDescriptor.arrayCount);
         transferCommandBuffer->imageMemoryBarrier(*image, transferQueueReleaseInfo, PipelineStage::Transfer, PipelineStage::Transfer);
         transferCommandBuffer->endRecording();
 
         //Acquire ownership of the image to a graphics queue
-        graphicsCommandBuffer->beginRecording(CommandBufferUsage::OneTimeSubmit);
+        graphicsCommandBuffer->beginRecording();
         graphicsCommandBuffer->imageMemoryBarrier(*image, graphicsQueueAcquireInfo, PipelineStage::Transfer, PipelineStage::PixelShader);
         graphicsCommandBuffer->endRecording();
 

@@ -9,18 +9,6 @@
 #include <Clove/Log/Log.hpp>
 
 namespace clove {
-    VkCommandBufferUsageFlags getCommandBufferUsageFlags(CommandBufferUsage garlicUsage) {
-        switch(garlicUsage) {
-            case clove::CommandBufferUsage::Default:
-                return 0;
-            case clove::CommandBufferUsage::OneTimeSubmit:
-                return VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
-            default:
-                CLOVE_ASSERT_MSG(false, "{0}: Unkown usage type", CLOVE_FUNCTION_NAME);
-                return 0;
-        }
-    }
-
     void createBufferMemoryBarrier(VkCommandBuffer vkCommandBuffer, QueueFamilyIndices const &queueFamilyIndices, GhaBuffer &buffer, BufferMemoryBarrierInfo const &barrierInfo, PipelineStage sourceStage, PipelineStage destinationStage) {
         uint32_t const sourceFamilyIndex{ getQueueFamilyIndex(barrierInfo.sourceQueue, queueFamilyIndices) };
         uint32_t const destinationFamilyIndex{ getQueueFamilyIndex(barrierInfo.destinationQueue, queueFamilyIndices) };

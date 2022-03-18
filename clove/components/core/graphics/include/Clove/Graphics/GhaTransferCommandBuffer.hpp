@@ -1,6 +1,5 @@
 #pragma once
 
-#include "Clove/Graphics/CommandBuffer.hpp"
 #include "Clove/Graphics/GhaImage.hpp"
 #include "Clove/Graphics/MemoryBarrier.hpp"
 #include "Clove/Graphics/PipelineObject.hpp"
@@ -21,12 +20,11 @@ namespace clove {
     public:
         virtual ~GhaTransferCommandBuffer() = default;
 
+        virtual void beginRecording() = 0;
         /**
-         * @brief Begin recording commands on the buffer. This will implicitly reset the buffer.
-         * @param usageFlag 
+         * @brief End recording on this command buffer. Command buffers cannot be resued after recording has finished.
          */
-        virtual void beginRecording(CommandBufferUsage usageFlag) = 0;
-        virtual void endRecording()                               = 0;
+        virtual void endRecording()   = 0;
 
         /**
          * @brief Copy the contents from one buffer to another.

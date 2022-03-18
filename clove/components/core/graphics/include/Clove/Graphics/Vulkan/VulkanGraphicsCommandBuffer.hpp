@@ -28,7 +28,7 @@ namespace clove {
 
         ~VulkanGraphicsCommandBuffer();
 
-        void beginRecording(CommandBufferUsage usageFlag) override;
+        void beginRecording() override;
         void endRecording() override;
 
         void beginRenderPass(GhaRenderPass &renderPass, GhaFramebuffer &frameBuffer, RenderArea const &renderArea, std::span<ClearValue> clearValues) override;

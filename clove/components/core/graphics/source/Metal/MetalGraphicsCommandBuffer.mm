@@ -26,7 +26,9 @@ namespace clove {
         }
     }
     
-    MetalGraphicsCommandBuffer::MetalGraphicsCommandBuffer() = default;
+    MetalGraphicsCommandBuffer::MetalGraphicsCommandBuffer(id<MTLCommandBuffer> commandBuffer)
+    : commandBuffer{ commandBuffer } {
+    }
     
     MetalGraphicsCommandBuffer::MetalGraphicsCommandBuffer(MetalGraphicsCommandBuffer &&other) noexcept = default;
     
@@ -34,8 +36,8 @@ namespace clove {
     
     MetalGraphicsCommandBuffer::~MetalGraphicsCommandBuffer() = default;
     
-    void MetalGraphicsCommandBuffer::beginRecording(CommandBufferUsage usageFlag) {
-        passes.clear();
+    void MetalGraphicsCommandBuffer::beginRecording() {
+        //no op
     }
     
     void MetalGraphicsCommandBuffer::endRecording() {
@@ -43,25 +45,21 @@ namespace clove {
     }
     
     void MetalGraphicsCommandBuffer::beginRenderPass(GhaRenderPass &renderPass, GhaFramebuffer &frameBuffer, RenderArea const &renderArea, std::span<ClearValue> clearValues) {
-        std::vector<ClearValue> clearValuesCopy{ clearValues.begin(), clearValues.end() };
+        GhaRenderPass::Descriptor const &renderPassDescriptor{ polyCast<MetalRenderPass>(&renderPass)->getDescriptor() };
         
-        currentPass = &passes.emplace_back(RenderPass{});
-        currentPass->begin = [this, renderPass = &renderPass, frameBuffer = &frameBuffer, renderArea, clearValuesCopy](id<MTLCommandBuffer> commandBuffer) mutable {
-            GhaRenderPass::Descriptor const &renderPassDescriptor{ polyCast<MetalRenderPass>(renderPass)->getDescriptor() };
-            
-            //Modify the attachments to have the correct clear values.
-            MTLRenderPassDescriptor *frameBufferDescriptor{ polyCast<MetalFramebuffer>(frameBuffer)->getRenderPassDescriptor() };
-            for(size_t i{ 0 }; i < renderPassDescriptor.colourAttachments.size(); ++i) {
-                ColourValue const colour{ std::get<ColourValue>(clearValuesCopy[i]) };
-                frameBufferDescriptor.colorAttachments[i].clearColor = MTLClearColor{ colour.r, colour.g, colour.b, colour.a };
-            }
-            DepthStencilValue const depthStencilValue{ std::get<DepthStencilValue>(clearValuesCopy.back()) };
-            frameBufferDescriptor.depthAttachment.clearDepth = depthStencilValue.depth;
-            
-            //TODO: RenderArea
-            
-            return [commandBuffer renderCommandEncoderWithDescriptor:frameBufferDescriptor];
-        };
+        //Modify the attachments to have the correct clear values.
+        MTLRenderPassDescriptor *frameBufferDescriptor{ polyCast<MetalFramebuffer>(&frameBuffer)->getRenderPassDescriptor() };
+        for(size_t i{ 0 }; i < renderPassDescriptor.colourAttachments.size(); ++i) {
+            ColourValue const colour{ std::get<ColourValue>(clearValues[i]) };
+            frameBufferDescriptor.colorAttachments[i].clearColor = MTLClearColor{ colour.r, colour.g, colour.b, colour.a };
+        }
+        DepthStencilValue const depthStencilValue{ std::get<DepthStencilValue>(clearValues.back()) };
+        frameBufferDescriptor.depthAttachment.clearDepth = depthStencilValue.depth;
+        
+        //TODO: RenderArea
+        
+        currentPass = [commandBuffer renderCommandEncoderWithDescriptor:frameBufferDescriptor];
+        passes.push_back(currentPass);
     }
     
     void MetalGraphicsCommandBuffer::endRenderPass() {
@@ -69,7 +67,7 @@ namespace clove {
     }
     
     void MetalGraphicsCommandBuffer::setViewport(vec2i position, vec2ui size) {
-        MTLViewport viewport {
+        MTLViewport const viewport {
             .originX = static_cast<double>(position.x),
             .originY = static_cast<double>(position.y),
             .width   = static_cast<double>(size.x),
@@ -78,46 +76,38 @@ namespace clove {
             .zfar    = 1.0f,
         };
         
-        currentPass->commands.emplace_back([viewport](id<MTLRenderCommandEncoder> encoder){
-            [encoder setViewport:viewport];
-        });
+        [currentPass setViewport:viewport];
     }
     
     void MetalGraphicsCommandBuffer::setScissor(vec2i position, vec2ui size) {
-        MTLScissorRect scissorRect {
+        MTLScissorRect const scissorRect {
             .x      = static_cast<NSUInteger>(position.x),
             .y      = static_cast<NSUInteger>(position.y),
             .width  = size.x,
             .height = size.y,
         };
         
-        currentPass->commands.emplace_back([scissorRect](id<MTLRenderCommandEncoder> encoder){
-            [encoder setScissorRect:scissorRect];
-        });
+        [currentPass setScissorRect:scissorRect];
     }
     
     void MetalGraphicsCommandBuffer::bindPipelineObject(GhaGraphicsPipelineObject &pipelineObject) {
-        currentPass->commands.emplace_back([pipelineObject = &pipelineObject](id<MTLRenderCommandEncoder> encoder){
-            auto const *const metalPipeline{ polyCast<MetalGraphicsPipelineObject const>(pipelineObject) };
-            if(metalPipeline == nullptr){
-                CLOVE_LOG(CloveGhaMetal, LogLevel::Error, "{0}: PipelineObject is nullptr", CLOVE_FUNCTION_NAME);
-                return;
-            }
-            
-            MTLWinding constexpr winding{ MTLWindingClockwise };
-            
-            [encoder setRenderPipelineState:metalPipeline->getPipeline()];
-            [encoder setDepthStencilState:metalPipeline->getDepthStencil()];
-            [encoder setFrontFacingWinding:winding];
-        });
+        auto const *const metalPipeline{ polyCast<MetalGraphicsPipelineObject const>(&pipelineObject) };
+        if(metalPipeline == nullptr){
+            CLOVE_LOG(CloveGhaMetal, LogLevel::Error, "{0}: PipelineObject is nullptr", CLOVE_FUNCTION_NAME);
+            return;
+        }
+        
+        MTLWinding constexpr winding{ MTLWindingClockwise };
+        
+        [currentPass setRenderPipelineState:metalPipeline->getPipeline()];
+        [currentPass setDepthStencilState:metalPipeline->getDepthStencil()];
+        [currentPass setFrontFacingWinding:winding];
     }
     
     void MetalGraphicsCommandBuffer::bindVertexBuffer(GhaBuffer &vertexBuffer, size_t const offset) {
-        currentPass->commands.emplace_back([vertexBuffer = &vertexBuffer, offset](id<MTLRenderCommandEncoder> encoder){
-            [encoder setVertexBuffer:polyCast<MetalBuffer>(vertexBuffer)->getBuffer()
+        [currentPass setVertexBuffer:polyCast<MetalBuffer>(&vertexBuffer)->getBuffer()
                               offset:offset
                              atIndex:vertexBufferBindingIndex];
-        });
     }
     
     void MetalGraphicsCommandBuffer::bindIndexBuffer(GhaBuffer &indexBuffer, size_t const offset, IndexType indexType) {
@@ -127,120 +117,74 @@ namespace clove {
     }
     
     void MetalGraphicsCommandBuffer::bindDescriptorSet(GhaDescriptorSet &descriptorSet, uint32_t const setNum) {
-        currentPass->commands.emplace_back([descriptorSet = &descriptorSet, setNum](id<MTLRenderCommandEncoder> encoder){
-            auto const *const metalDescriptorSet{ polyCast<MetalDescriptorSet>(descriptorSet) };
-            if(metalDescriptorSet == nullptr) {
-                CLOVE_LOG(CloveGhaMetal, LogLevel::Error, "{0}: DescriptorSet is nullptr", CLOVE_FUNCTION_NAME);
-                return;
-            }
-            
-            id<MTLBuffer> backingBuffer{ metalDescriptorSet->getBackingBuffer() };
-            
-            std::optional<size_t> vertexOffset{ metalDescriptorSet->getVertexOffset() };
-            std::optional<size_t> pixelOffset{ metalDescriptorSet->getPixelOffset() };
-            
-            if(vertexOffset.has_value()) {
-                [encoder setVertexBuffer:backingBuffer
+        auto const *const metalDescriptorSet{ polyCast<MetalDescriptorSet>(&descriptorSet) };
+        if(metalDescriptorSet == nullptr) {
+            CLOVE_LOG(CloveGhaMetal, LogLevel::Error, "{0}: DescriptorSet is nullptr", CLOVE_FUNCTION_NAME);
+            return;
+        }
+        
+        id<MTLBuffer> backingBuffer{ metalDescriptorSet->getBackingBuffer() };
+        
+        std::optional<size_t> vertexOffset{ metalDescriptorSet->getVertexOffset() };
+        std::optional<size_t> pixelOffset{ metalDescriptorSet->getPixelOffset() };
+        
+        if(vertexOffset.has_value()) {
+            [currentPass setVertexBuffer:backingBuffer
                                   offset:vertexOffset.value()
                                  atIndex:setNum];
-            }
-            if(pixelOffset.has_value()) {
-                [encoder setFragmentBuffer:backingBuffer
+        }
+        if(pixelOffset.has_value()) {
+            [currentPass setFragmentBuffer:backingBuffer
                                     offset:pixelOffset.value()
                                    atIndex:setNum];
-            }
-        });
+        }
     }
     
     void MetalGraphicsCommandBuffer::pushConstant(GhaShader::Stage const stage, size_t const offset, size_t const size, void const *data) {
-        class Functor{
-            //VARIABLES
-        private:
-            GhaShader::Stage stage{};
-            size_t size{};
-            std::unique_ptr<std::byte> data{};
-            
-            //FUNCTIONS
-        public:
-            Functor() = delete;
-            Functor(GhaShader::Stage stage, size_t size, void const *data)
-                : stage{ stage }
-                , size{ size }
-                , data{ reinterpret_cast<std::byte*>(malloc(size)) } {
-                memcpy(this->data.get(), data, size);
-            }
-            
-            Functor(Functor const &other)
-                : stage{ other.stage }
-                , size{ other.size } {
-                data = std::unique_ptr<std::byte>{ reinterpret_cast<std::byte*>(malloc(size)) };
-                memcpy(data.get(), other.data.get(), size);
-            }
-            Functor(Functor &&other) = default;
-            
-            Functor &operator=(Functor const &other) {
-                stage = other.stage;
-                size = other.size;
-                data = std::unique_ptr<std::byte>{ reinterpret_cast<std::byte*>(malloc(size)) };
-                memcpy(data.get(), other.data.get(), size);
-            }
-            Functor &operator=(Functor &&other) = default;
-            
-            ~Functor() = default;
-            
-            void operator()(id<MTLRenderCommandEncoder> encoder) {
-                switch(stage) {
-                    case GhaShader::Stage::Vertex:
-                        [encoder setVertexBytes:data.get()
-                                         length:size
-                                        atIndex:pushConstantSlot];
-                        break;
-                    case GhaShader::Stage::Pixel:
-                        [encoder setFragmentBytes:data.get()
-                                           length:size
-                                          atIndex:pushConstantSlot];
-                        break;
-                    default:
-                        CLOVE_ASSERT_MSG(false, "{0}: Unknown shader stage provided", CLOVE_FUNCTION_NAME_PRETTY);
-                        break;
-                }
-            }
-        };
-        
-        currentPass->commands.emplace_back(Functor{ stage, size, data });
+        switch(stage) {
+            case GhaShader::Stage::Vertex:
+                [currentPass setVertexBytes:data
+                                     length:size
+                                    atIndex:pushConstantSlot];
+                break;
+            case GhaShader::Stage::Pixel:
+                [currentPass setFragmentBytes:data
+                                       length:size
+                                      atIndex:pushConstantSlot];
+                break;
+            default:
+                CLOVE_ASSERT_MSG(false, "{0}: Unknown shader stage provided", CLOVE_FUNCTION_NAME_PRETTY);
+                break;
+        }
     }
     
     void MetalGraphicsCommandBuffer::drawIndexed(size_t const indexCount) {
-        currentPass->commands.emplace_back([cachedIndexBuffer = cachedIndexBuffer, indexCount](id<MTLRenderCommandEncoder> encoder){
-            [encoder drawIndexedPrimitives:MTLPrimitiveTypeTriangle
+        [currentPass drawIndexedPrimitives:MTLPrimitiveTypeTriangle
                                 indexCount:indexCount
                                  indexType:cachedIndexBuffer.indexType
                                indexBuffer:cachedIndexBuffer.buffer
                          indexBufferOffset:cachedIndexBuffer.offset];
-        });
     }
     
     void MetalGraphicsCommandBuffer::bufferMemoryBarrier(GhaBuffer &buffer, BufferMemoryBarrierInfo const &barrierInfo, PipelineStage sourceStage, PipelineStage destinationStage) {
-        if(currentPass != nullptr) {
-            currentPass->commands.emplace_back([buffer = &buffer, sourceStage, destinationStage](id<MTLRenderCommandEncoder> encoder) {
-                id<MTLBuffer> mtlBuffer{ polyCast<MetalBuffer>(buffer)->getBuffer() };
-                [encoder memoryBarrierWithResources:&mtlBuffer
+        if(currentPass != nullptr){
+            id<MTLBuffer> mtlBuffer{ polyCast<MetalBuffer>(&buffer)->getBuffer() };
+            
+            [currentPass memoryBarrierWithResources:&mtlBuffer
                                               count:1
                                         afterStages:convertStage(sourceStage)
                                        beforeStages:convertStage(destinationStage)];
-            });
         }
     }
     
     void MetalGraphicsCommandBuffer::imageMemoryBarrier(GhaImage &image, ImageMemoryBarrierInfo const &barrierInfo, PipelineStage sourceStage, PipelineStage destinationStage) {
-        if(currentPass != nullptr) {
-            currentPass->commands.emplace_back([image = &image, sourceStage, destinationStage](id<MTLRenderCommandEncoder> encoder) {
-                id<MTLTexture> mtlTexture{ polyCast<MetalImage>(image)->getTexture() };
-                [encoder memoryBarrierWithResources:&mtlTexture
+        if(currentPass != nullptr){
+            id<MTLTexture> mtlTexture{ polyCast<MetalImage>(&image)->getTexture() };
+            
+            [currentPass memoryBarrierWithResources:&mtlTexture
                                               count:1
                                         afterStages:convertStage(sourceStage)
                                        beforeStages:convertStage(destinationStage)];
-            });
         }
     }
 }

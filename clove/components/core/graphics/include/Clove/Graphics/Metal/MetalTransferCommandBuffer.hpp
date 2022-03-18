@@ -10,13 +10,15 @@ namespace clove {
 	class MetalTransferCommandBuffer : public GhaTransferCommandBuffer {
 		//VARIABLES
 	private:
-		std::vector<std::function<void(id<MTLBlitCommandEncoder>)>> commands{};
-			
+        id<MTLCommandBuffer> commandBuffer{ nullptr };
+        id<MTLBlitCommandEncoder> encoder{ nullptr };
+
 		//FUNCTIONS
-	public:
-        MetalTransferCommandBuffer();
-		
-		MetalTransferCommandBuffer(MetalTransferCommandBuffer const &other) = delete;
+    public: 
+		MetalTransferCommandBuffer() = default;
+        MetalTransferCommandBuffer(id<MTLCommandBuffer> commandBuffer);
+
+        MetalTransferCommandBuffer(MetalTransferCommandBuffer const &other) = delete;
 		MetalTransferCommandBuffer(MetalTransferCommandBuffer &&other) noexcept;
 		
 		MetalTransferCommandBuffer &operator=(MetalTransferCommandBuffer const &other) = delete;
@@ -24,7 +26,7 @@ namespace clove {
 		
 		~MetalTransferCommandBuffer();
 
-		void beginRecording(CommandBufferUsage usageFlag) override;
+		void beginRecording() override;
 		void endRecording() override;
 
 		void copyBufferToBuffer(GhaBuffer &source, size_t const sourceOffset, GhaBuffer &destination, size_t const destinationOffset, size_t const sizeBytes) override;
@@ -34,9 +36,10 @@ namespace clove {
 
         void bufferMemoryBarrier(GhaBuffer &buffer, BufferMemoryBarrierInfo const &barrierInfo, PipelineStage sourceStage, PipelineStage destinationStage) override;
 		void imageMemoryBarrier(GhaImage &image, ImageMemoryBarrierInfo const &barrierInfo, PipelineStage sourceStage, PipelineStage destinationStage) override;
-		
-		inline std::vector<std::function<void(id<MTLBlitCommandEncoder>)>> const &getCommands() const;
-	};
+
+        inline id<MTLCommandBuffer> getMtlCommandBuffer() const;
+        inline id<MTLBlitCommandEncoder> getEncoder() const;
+    };
 }
 
 #include "MetalTransferCommandBuffer.inl"

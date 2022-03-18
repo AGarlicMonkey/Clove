@@ -28,7 +28,7 @@ namespace clove {
 
         ~VulkanComputeCommandBuffer();
 
-        void beginRecording(CommandBufferUsage usageFlag) override;
+        void beginRecording() override;
         void endRecording() override;
 
         void bindPipelineObject(GhaComputePipelineObject &pipelineObject) override;
