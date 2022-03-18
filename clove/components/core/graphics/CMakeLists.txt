@@ -189,7 +189,6 @@ set(
 #Library
 add_library(
 	CloveGraphics STATIC
-		${INCLUDE}/CommandBuffer.hpp
 		${INCLUDE}/Descriptor.hpp
 		${INCLUDE}/Gha.hpp		
 		${SOURCE}/Gha.cpp

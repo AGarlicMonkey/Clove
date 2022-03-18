@@ -13,7 +13,7 @@ namespace clove {
             auto transferQueue{ factory.createTransferQueue({ QueueFlags::Transient }).getValue() };
             auto transferCommandBuffer{ transferQueue->allocateCommandBuffer() };
 
-            transferCommandBuffer->beginRecording(CommandBufferUsage::OneTimeSubmit);
+            transferCommandBuffer->beginRecording();
             transferCommandBuffer->copyBufferToBuffer(source, 0, dest, 0, size);
             transferCommandBuffer->endRecording();
 
@@ -63,7 +63,7 @@ namespace clove {
         stagingBuffer->write(this->indices.data(), indexOffset, indexBufferSize);
 
         //Transfer the data to video memory
-        transferCommandBuffer->beginRecording(CommandBufferUsage::OneTimeSubmit);
+        transferCommandBuffer->beginRecording();
         transferCommandBuffer->copyBufferToBuffer(*stagingBuffer, 0, *combinedBuffer, 0, totalSize);
         transferCommandBuffer->endRecording();
 

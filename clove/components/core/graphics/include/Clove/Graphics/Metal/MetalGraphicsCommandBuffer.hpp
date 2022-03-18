@@ -8,13 +8,6 @@
 
 namespace clove {
 	class MetalGraphicsCommandBuffer : public GhaGraphicsCommandBuffer {
-		//TYPES
-	public:
-		struct RenderPass {
-			std::function<id<MTLRenderCommandEncoder>(id<MTLCommandBuffer>)> begin{};
-			std::vector<std::function<void(id<MTLRenderCommandEncoder>)>> commands{};
-		};
-		
 	private:
 		struct CachedIndexBufferData {
 			id<MTLBuffer> buffer{};
@@ -24,15 +17,18 @@ namespace clove {
 		
 		//VARIABLES
 	private:
-		std::vector<RenderPass> passes{};
-		RenderPass *currentPass{ nullptr };
-		
-		//Metal's drawIndexed call takes an index buffer directly so we need to cache the one provided from bindIndexBuffer
+        id<MTLCommandBuffer> commandBuffer{ nullptr };
+        id<MTLRenderCommandEncoder> currentPass{ nullptr };
+
+        std::vector<id<MTLRenderCommandEncoder>> passes{};
+
+        //Metal's drawIndexed call takes an index buffer directly so we need to cache the one provided from bindIndexBuffer
 		CachedIndexBufferData cachedIndexBuffer;
 		
 		//FUNCTIONS
 	public:
-        MetalGraphicsCommandBuffer();
+        MetalGraphicsCommandBuffer() = delete;
+        MetalGraphicsCommandBuffer(id<MTLCommandBuffer> commandBuffer);
 
         MetalGraphicsCommandBuffer(MetalGraphicsCommandBuffer const &other) = delete;
 		MetalGraphicsCommandBuffer(MetalGraphicsCommandBuffer &&other) noexcept;
@@ -42,7 +38,7 @@ namespace clove {
 		
 		~MetalGraphicsCommandBuffer();
 		
-		void beginRecording(CommandBufferUsage usageFlag) override;
+		void beginRecording() override;
 		void endRecording() override;
 
 		void beginRenderPass(GhaRenderPass &renderPass, GhaFramebuffer &frameBuffer, RenderArea const &renderArea, std::span<ClearValue> clearValues) override;
@@ -62,9 +58,10 @@ namespace clove {
 
 		void bufferMemoryBarrier(GhaBuffer &buffer, BufferMemoryBarrierInfo const &barrierInfo, PipelineStage sourceStage, PipelineStage destinationStage) override;
 		void imageMemoryBarrier(GhaImage &image, ImageMemoryBarrierInfo const &barrierInfo, PipelineStage sourceStage, PipelineStage destinationStage) override;
-		
-		inline std::vector<RenderPass> const &getEncodedRenderPasses() const;
-	};
+
+        inline id<MTLCommandBuffer> getMtlCommandBuffer() const;
+        inline std::vector<id<MTLRenderCommandEncoder>> const &getRenderPasses() const;
+    };
 }
 
 #include "Clove/Graphics/Metal/MetalGraphicsCommandBuffer.inl"

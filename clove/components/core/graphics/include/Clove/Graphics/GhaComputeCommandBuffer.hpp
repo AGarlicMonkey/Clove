@@ -1,6 +1,5 @@
 #pragma once
 
-#include "Clove/Graphics/CommandBuffer.hpp"
 #include "Clove/Graphics/GhaShader.hpp"
 #include "Clove/Graphics/MemoryBarrier.hpp"
 #include "Clove/Graphics/PipelineObject.hpp"
@@ -24,17 +23,16 @@ namespace clove {
     public:
         virtual ~GhaComputeCommandBuffer() = default;
 
+        virtual void beginRecording() = 0;
         /**
-         * @brief Begin recording commands on the buffer. This will implicitly reset the buffer.
-         * @param usageFlag 
+         * @brief End recording on this command buffer. Command buffers cannot be resued after recording has finished.
          */
-        virtual void beginRecording(CommandBufferUsage usageFlag) = 0;
-        virtual void endRecording()                               = 0;
+        virtual void endRecording()   = 0;
 
         virtual void bindPipelineObject(GhaComputePipelineObject &pipelineObject) = 0;
 
         virtual void bindDescriptorSet(GhaDescriptorSet &descriptorSet, uint32_t const setNum) = 0;
-        virtual void pushConstant(size_t const offset, size_t const size, void const *data) = 0;
+        virtual void pushConstant(size_t const offset, size_t const size, void const *data)    = 0;
 
         virtual void disptach(vec3ui groupCount) = 0;
 

@@ -14,13 +14,15 @@ namespace clove {
 	class MetalComputeCommandBuffer : public GhaComputeCommandBuffer {
 		//VARIABLES
 	private:
-		std::vector<std::function<void(id<MTLComputeCommandEncoder>)>> commands{};
-        
+        id<MTLCommandBuffer> commandBuffer{ nullptr };
+        id<MTLComputeCommandEncoder> encoder{ nullptr };
+
         MetalComputePipelineObject *activePipeline{ nullptr }; //Required to get shader workgroup size
 			
 		//FUNCTIONS
 	public:
-        MetalComputeCommandBuffer();
+        MetalComputeCommandBuffer() = delete;
+        MetalComputeCommandBuffer(id<MTLCommandBuffer> commandBuffer);
 
         MetalComputeCommandBuffer(MetalComputeCommandBuffer const &other) = delete;
 		MetalComputeCommandBuffer(MetalComputeCommandBuffer &&other) noexcept;
@@ -30,7 +32,7 @@ namespace clove {
 		
 		~MetalComputeCommandBuffer();
 
-		void beginRecording(CommandBufferUsage usageFlag) override;
+		void beginRecording() override;
         void endRecording() override;
 
 		void bindPipelineObject(GhaComputePipelineObject &pipelineObject) override;
@@ -42,9 +44,10 @@ namespace clove {
 
 		void bufferMemoryBarrier(GhaBuffer &buffer, BufferMemoryBarrierInfo const &barrierInfo, PipelineStage sourceStage, PipelineStage destinationStage) override;
 		void imageMemoryBarrier(GhaImage &image, ImageMemoryBarrierInfo const &barrierInfo, PipelineStage sourceStage, PipelineStage destinationStage) override;
-		
-		inline std::vector<std::function<void(id<MTLComputeCommandEncoder>)>> const &getCommands() const;
-	};
+
+        inline id<MTLCommandBuffer> getMtlCommandBuffer() const;
+        inline id<MTLComputeCommandEncoder> getEncoder() const;
+    };
 }
 
 #include "MetalComputeCommandBuffer.inl"

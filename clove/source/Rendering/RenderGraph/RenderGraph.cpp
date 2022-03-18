@@ -404,7 +404,7 @@ namespace clove {
             if(renderPasses.contains(passId)) {
                 GhaGraphicsCommandBuffer *graphicsCommandBufffer{ frameCache.allocateGraphicsCommandBuffer() };
 
-                graphicsCommandBufffer->beginRecording(CommandBufferUsage::OneTimeSubmit);
+                graphicsCommandBufffer->beginRecording();
                 executeGraphicsPass(executionPasses, static_cast<int32_t>(passIndex), *graphicsCommandBufffer, allocatedRenderPasses, allocatedFramebuffers, allocatedGraphicsPipelines, allocatedSamplers, allocatedDescriptorSets);
                 graphicsCommandBufffer->endRecording();
 
@@ -421,7 +421,7 @@ namespace clove {
             if(computePasses.contains(passId)) {
                 GhaComputeCommandBuffer *computeCommandBufffer{ frameCache.allocateComputeCommandBuffer() };
 
-                computeCommandBufffer->beginRecording(CommandBufferUsage::OneTimeSubmit);
+                computeCommandBufffer->beginRecording();
                 executeComputePass(executionPasses, static_cast<int32_t>(passIndex), *computeCommandBufffer, allocatedComputePipelines, allocatedDescriptorSets);
                 computeCommandBufffer->endRecording();
 
@@ -439,7 +439,7 @@ namespace clove {
             if(asyncComputePasses.contains(passId)) {
                 GhaComputeCommandBuffer *computeCommandBufffer{ frameCache.allocateAsyncComputeCommandBuffer() };
 
-                computeCommandBufffer->beginRecording(CommandBufferUsage::OneTimeSubmit);
+                computeCommandBufffer->beginRecording();
                 executeComputePass(executionPasses, static_cast<int32_t>(passIndex), *computeCommandBufffer, allocatedComputePipelines, allocatedDescriptorSets);
                 computeCommandBufffer->endRecording();
 

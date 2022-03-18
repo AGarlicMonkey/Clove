@@ -1,5 +1,9 @@
 namespace clove {
-	std::vector<std::function<void(id<MTLBlitCommandEncoder>)>> const &MetalTransferCommandBuffer::getCommands() const {
-		return commands;
-	}
+    id<MTLCommandBuffer> MetalTransferCommandBuffer::getMtlCommandBuffer() const {
+        return commandBuffer;
+    }
+
+    id<MTLBlitCommandEncoder> MetalTransferCommandBuffer::getEncoder() const {
+        return encoder;
+    }
 }

@@ -26,7 +26,7 @@ namespace clove {
 
         ~VulkanTransferCommandBuffer();
 
-        void beginRecording(CommandBufferUsage usageFlag) override;
+        void beginRecording() override;
         void endRecording() override;
 
         void copyBufferToBuffer(GhaBuffer &source, size_t const sourceOffset, GhaBuffer &destination, size_t const destinationOffset, size_t const sizeBytes) override;

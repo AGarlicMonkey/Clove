@@ -25,7 +25,7 @@ namespace clove {
     }
     
     std::unique_ptr<GhaComputeCommandBuffer> MetalComputeQueue::allocateCommandBuffer() {
-        return createGhaObject<MetalComputeCommandBuffer>();
+        return createGhaObject<MetalComputeCommandBuffer>([commandQueue commandBuffer]);
     }
     
     void MetalComputeQueue::freeCommandBuffer(std::unique_ptr<GhaComputeCommandBuffer> &buffer) {
@@ -43,8 +43,8 @@ namespace clove {
                     continue;
                 }
                 
-                id<MTLCommandBuffer> executionBuffer{ [commandQueue commandBuffer] };
-                id<MTLComputeCommandEncoder> encoder{ [executionBuffer computeCommandEncoder] };
+                id<MTLCommandBuffer> executionBuffer{ metalCommandBuffer->getMtlCommandBuffer() };
+                id<MTLComputeCommandEncoder> encoder{ metalCommandBuffer->getEncoder() };
                 
                 //Inject the wait semaphore into each buffer
                 for (auto const &semaphore : submission.waitSemaphores) {
@@ -56,12 +56,7 @@ namespace clove {
                     
                     [encoder waitForFence:metalSemaphore->getFence()];
                 }
-                
-                //Excute all recorded commands for the encoder
-                for(auto const &command : metalCommandBuffer->getCommands()) {
-                    command(encoder);
-                }
-                
+                             
                 //For the last buffer add all semaphore signalling
                 if(isLastCommandBuffer && !submission.signalSemaphores.empty()) {
                     for(auto const &semaphore : submission.signalSemaphores) {

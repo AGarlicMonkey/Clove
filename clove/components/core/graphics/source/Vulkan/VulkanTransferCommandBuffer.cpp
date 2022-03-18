@@ -21,10 +21,10 @@ namespace clove {
 
     VulkanTransferCommandBuffer::~VulkanTransferCommandBuffer() = default;
 
-    void VulkanTransferCommandBuffer::beginRecording(CommandBufferUsage usageFlag) {
+    void VulkanTransferCommandBuffer::beginRecording() {
         VkCommandBufferBeginInfo beginInfo{
             .sType            = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO,
-            .flags            = getCommandBufferUsageFlags(usageFlag),
+            .flags            = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT,
             .pInheritanceInfo = nullptr,
         };
 

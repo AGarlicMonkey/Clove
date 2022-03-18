@@ -11,8 +11,6 @@ namespace clove {
     public:
         using BaseQueueType::BaseQueueType;
 
-        std::unique_ptr<GhaGraphicsCommandBuffer> allocateCommandBuffer() override;
-
         void submit(GraphicsSubmitInfo const &submission, GhaFence *signalFence) override;
     };
 
@@ -22,8 +20,6 @@ namespace clove {
     public:
         using BaseQueueType::BaseQueueType;
 
-        std::unique_ptr<GhaComputeCommandBuffer> allocateCommandBuffer() override;
-
         void submit(ComputeSubmitInfo const &submission, GhaFence *signalFence) override;
     };
 
@@ -32,8 +28,6 @@ namespace clove {
         //FUNCTIONS
     public:
         using BaseQueueType::BaseQueueType;
-
-        std::unique_ptr<GhaTransferCommandBuffer> allocateCommandBuffer() override;
 
         void submit(TransferSubmitInfo const &submission, GhaFence *signalFence) override;
     };
