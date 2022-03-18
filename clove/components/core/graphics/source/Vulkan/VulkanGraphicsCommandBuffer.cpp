@@ -149,8 +149,4 @@ namespace clove {
     void VulkanGraphicsCommandBuffer::imageMemoryBarrier(GhaImage &image, ImageMemoryBarrierInfo const &barrierInfo, PipelineStage sourceStage, PipelineStage destinationStage) {
         createImageMemoryBarrier(commandBuffer, queueFamilyIndices, image, barrierInfo, sourceStage, destinationStage);
     }
-
-    VkCommandBuffer VulkanGraphicsCommandBuffer::getCommandBuffer() const {
-        return commandBuffer;
-    }
 }

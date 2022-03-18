@@ -49,6 +49,8 @@ namespace clove {
         void bufferMemoryBarrier(GhaBuffer &buffer, BufferMemoryBarrierInfo const &barrierInfo, PipelineStage sourceStage, PipelineStage destinationStage) override;
         void imageMemoryBarrier(GhaImage &image, ImageMemoryBarrierInfo const &barrierInfo, PipelineStage sourceStage, PipelineStage destinationStage) override;
 
-        VkCommandBuffer getCommandBuffer() const;
+        inline VkCommandBuffer getCommandBuffer() const;
     };
 }
+
+#include "VulkanGraphicsCommandBuffer.inl"

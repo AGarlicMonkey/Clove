@@ -103,8 +103,4 @@ namespace clove {
 
         createImageMemoryBarrier(commandBuffer, queueFamilyIndices, image, barrierInfo, sourceStage, destinationStage);
     }
-
-    VkCommandBuffer VulkanTransferCommandBuffer::getCommandBuffer() const {
-        return commandBuffer;
-    }
 }
