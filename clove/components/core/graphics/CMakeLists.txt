@@ -30,6 +30,7 @@ set(
 		${INCLUDE}/Vulkan/VulkanCommandBuffer.hpp
 		${SOURCE}/Vulkan/VulkanCommandBuffer.cpp
 		${INCLUDE}/Vulkan/VulkanComputeCommandBuffer.hpp
+		${INCLUDE}/Vulkan/VulkanComputeCommandBuffer.inl
 		${SOURCE}/Vulkan/VulkanComputeCommandBuffer.cpp
 		${INCLUDE}/Vulkan/VulkanComputePipelineObject.hpp
 		${SOURCE}/Vulkan/VulkanComputePipelineObject.cpp
@@ -52,6 +53,7 @@ set(
 		${INCLUDE}/Vulkan/VulkanGha.hpp
 		${SOURCE}/Vulkan/VulkanGha.cpp
 		${INCLUDE}/Vulkan/VulkanGraphicsCommandBuffer.hpp
+		${INCLUDE}/Vulkan/VulkanGraphicsCommandBuffer.inl
 		${SOURCE}/Vulkan/VulkanGraphicsCommandBuffer.cpp
 		${INCLUDE}/Vulkan/VulkanGraphicsPipelineObject.hpp
 		${SOURCE}/Vulkan/VulkanGraphicsPipelineObject.cpp
@@ -90,6 +92,7 @@ set(
 		${INCLUDE}/Vulkan/VulkanSwapchain.hpp
 		${SOURCE}/Vulkan/VulkanSwapchain.cpp
 		${INCLUDE}/Vulkan/VulkanTransferCommandBuffer.hpp
+		${INCLUDE}/Vulkan/VulkanTransferCommandBuffer.inl
 		${SOURCE}/Vulkan/VulkanTransferCommandBuffer.cpp
 		${INCLUDE}/Vulkan/VulkanTransferQueue.hpp
 		${SOURCE}/Vulkan/VulkanTransferQueue.cpp

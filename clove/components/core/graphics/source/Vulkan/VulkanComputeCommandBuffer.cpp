@@ -68,8 +68,4 @@ namespace clove {
     void VulkanComputeCommandBuffer::imageMemoryBarrier(GhaImage &image, ImageMemoryBarrierInfo const &barrierInfo, PipelineStage sourceStage, PipelineStage destinationStage) {
         createImageMemoryBarrier(commandBuffer, queueFamilyIndices, image, barrierInfo, sourceStage, destinationStage);
     }
-
-    VkCommandBuffer VulkanComputeCommandBuffer::getCommandBuffer() const {
-        return commandBuffer;
-    }
 }
