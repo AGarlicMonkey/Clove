@@ -224,7 +224,6 @@ add_library(
 		${INCLUDE}/Helpers.inl
 		${INCLUDE}/MemoryBarrier.hpp
 		${INCLUDE}/PipelineObject.hpp
-		${INCLUDE}/Queue.hpp
 		${INCLUDE}/Resource.hpp
 		${INCLUDE}/Result.hpp
 		${INCLUDE}/ShaderCompiler.hpp		

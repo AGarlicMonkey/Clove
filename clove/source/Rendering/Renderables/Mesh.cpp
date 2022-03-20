@@ -10,7 +10,7 @@ namespace clove {
         void copyFullBuffer(GhaBuffer &source, GhaBuffer &dest, size_t const size) {
             GhaFactory &factory{ *Application::get().getGraphicsDevice()->getGraphicsFactory() };
 
-            auto transferQueue{ factory.createTransferQueue({ QueueFlags::Transient }).getValue() };
+            auto transferQueue{ factory.createTransferQueue().getValue() };
             auto transferCommandBuffer{ transferQueue->allocateCommandBuffer() };
 
             transferCommandBuffer->beginRecording();
@@ -38,7 +38,7 @@ namespace clove {
         vertexOffset = 0;
         indexOffset  = vertexBufferSize;
 
-        std::unique_ptr<GhaTransferQueue> transferQueue{ factory.createTransferQueue({ QueueFlags::Transient }).getValue() };
+        std::unique_ptr<GhaTransferQueue> transferQueue{ factory.createTransferQueue().getValue() };
         std::unique_ptr<GhaTransferCommandBuffer> transferCommandBuffer{ transferQueue->allocateCommandBuffer() };
 
         //Staging buffer

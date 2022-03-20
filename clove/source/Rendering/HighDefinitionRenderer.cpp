@@ -72,10 +72,10 @@ namespace clove {
         framesInFlight.resize(maxFramesInFlight);
         imagesInFlight.resize(maxImages);
 
-        graphicsQueue     = ghaFactory->createGraphicsQueue(CommandQueueDescriptor{ .flags = QueueFlags::ReuseBuffers }).getValue();
-        computeQueue      = ghaFactory->createComputeQueue(CommandQueueDescriptor{ .flags = QueueFlags::ReuseBuffers }).getValue();
-        asyncComputeQueue = ghaFactory->createAsyncComputeQueue(CommandQueueDescriptor{ .flags = QueueFlags::ReuseBuffers }).getValue();
-        transferQueue     = ghaFactory->createTransferQueue(CommandQueueDescriptor{ .flags = QueueFlags::ReuseBuffers }).getValue();
+        graphicsQueue     = ghaFactory->createGraphicsQueue().getValue();
+        computeQueue      = ghaFactory->createComputeQueue().getValue();
+        asyncComputeQueue = ghaFactory->createAsyncComputeQueue().getValue();
+        transferQueue     = ghaFactory->createTransferQueue().getValue();
 
         for(size_t i{ 0 }; i < maxFramesInFlight + 1; ++i) {
             frameCaches.emplace_back(ghaFactory, graphicsQueue.get(), computeQueue.get(), asyncComputeQueue.get(), transferQueue.get());

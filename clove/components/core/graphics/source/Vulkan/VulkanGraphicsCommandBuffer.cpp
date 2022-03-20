@@ -74,8 +74,8 @@ namespace clove {
             .renderPass  = polyCast<VulkanRenderPass>(&renderPass)->getRenderPass(),
             .framebuffer = polyCast<VulkanFramebuffer>(&frameBuffer)->getFrameBuffer(),
             .renderArea  = {
-                .offset = { renderArea.origin.x, renderArea.origin.y },
-                .extent = { renderArea.size.x, renderArea.size.y },
+                 .offset = { renderArea.origin.x, renderArea.origin.y },
+                 .extent = { renderArea.size.x, renderArea.size.y },
             },
             .clearValueCount = static_cast<uint32_t>(std::size(vkClearValues)),
             .pClearValues    = std::data(vkClearValues),

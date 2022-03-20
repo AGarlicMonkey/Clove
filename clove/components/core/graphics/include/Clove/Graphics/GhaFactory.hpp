@@ -18,7 +18,6 @@
 #include "Clove/Graphics/GhaShader.hpp"
 #include "Clove/Graphics/GhaSwapchain.hpp"
 #include "Clove/Graphics/GhaTransferQueue.hpp"
-#include "Clove/Graphics/Queue.hpp"
 
 #include <Clove/Expected.hpp>
 #include <filesystem>
@@ -35,21 +34,21 @@ namespace clove {
     public:
         virtual ~GhaFactory() = default;
 
-        virtual Expected<std::unique_ptr<GhaGraphicsQueue>, std::runtime_error> createGraphicsQueue(CommandQueueDescriptor descriptor) noexcept = 0;
-        virtual Expected<std::unique_ptr<GhaPresentQueue>, std::runtime_error> createPresentQueue() noexcept = 0;
-        virtual Expected<std::unique_ptr<GhaTransferQueue>, std::runtime_error> createTransferQueue(CommandQueueDescriptor descriptor) noexcept = 0;
+        virtual Expected<std::unique_ptr<GhaGraphicsQueue>, std::runtime_error> createGraphicsQueue() noexcept = 0;
         /**
          * @brief Create a compute queue that runs inline with any graphics operations.
          * @param descriptor 
          * @return 
          */
-        virtual Expected<std::unique_ptr<GhaComputeQueue>, std::runtime_error> createComputeQueue(CommandQueueDescriptor descriptor) noexcept = 0;
+        virtual Expected<std::unique_ptr<GhaComputeQueue>, std::runtime_error> createComputeQueue() noexcept = 0;
         /**
          * @brief Create a compute queue that runs parallel to any graphics operations.
          * @param descriptor 
          * @return 
          */
-        virtual Expected<std::unique_ptr<GhaComputeQueue>, std::runtime_error> createAsyncComputeQueue(CommandQueueDescriptor descriptor) noexcept = 0;
+        virtual Expected<std::unique_ptr<GhaComputeQueue>, std::runtime_error> createAsyncComputeQueue() noexcept = 0;
+        virtual Expected<std::unique_ptr<GhaTransferQueue>, std::runtime_error> createTransferQueue() noexcept    = 0;
+        virtual Expected<std::unique_ptr<GhaPresentQueue>, std::runtime_error> createPresentQueue() noexcept      = 0;
 
         virtual Expected<std::unique_ptr<GhaSwapchain>, std::runtime_error> createSwapChain(GhaSwapchain::Descriptor descriptor) noexcept = 0;
 

@@ -32,19 +32,6 @@
 
 namespace clove {
     namespace {
-        VkCommandPoolCreateFlags convertCommandPoolCreateFlags(QueueFlags garlicFlags) {
-            VkCommandPoolCreateFlags flags{ 0 };
-
-            if((garlicFlags & QueueFlags::Transient) != 0) {
-                flags |= VK_COMMAND_POOL_CREATE_TRANSIENT_BIT;
-            }
-            if((garlicFlags & QueueFlags::ReuseBuffers) != 0) {
-                flags |= VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
-            }
-
-            return flags;
-        }
-
         VkSurfaceFormatKHR chooseSwapSurfaceFormat(std::vector<VkSurfaceFormatKHR> const &availableFormats) {
             for(auto const &availableFormat : availableFormats) {
                 if(availableFormat.format == VK_FORMAT_B8G8R8A8_SRGB && availableFormat.colorSpace == VK_COLOR_SPACE_SRGB_NONLINEAR_KHR) {
@@ -288,13 +275,13 @@ namespace clove {
 
     VulkanFactory::~VulkanFactory() = default;
 
-    Expected<std::unique_ptr<GhaGraphicsQueue>, std::runtime_error> VulkanFactory::createGraphicsQueue(CommandQueueDescriptor descriptor) noexcept {
+    Expected<std::unique_ptr<GhaGraphicsQueue>, std::runtime_error> VulkanFactory::createGraphicsQueue() noexcept {
         uint32_t const familyIndex{ *queueFamilyIndices.graphicsFamily };
 
         VkCommandPoolCreateInfo poolInfo{
             .sType            = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO,
             .pNext            = nullptr,
-            .flags            = convertCommandPoolCreateFlags(descriptor.flags),
+            .flags            = VK_COMMAND_POOL_CREATE_TRANSIENT_BIT,
             .queueFamilyIndex = familyIndex,
         };
 
@@ -313,27 +300,72 @@ namespace clove {
         VkQueue queue{ nullptr };
         vkGetDeviceQueue(devicePtr.get(), familyIndex, 0, &queue);
 
-        return std::unique_ptr<GhaGraphicsQueue>{ createGhaObject<VulkanGraphicsQueue>(descriptor, devicePtr, queue, commandPool, queueFamilyIndices) };
+        return std::unique_ptr<GhaGraphicsQueue>{ createGhaObject<VulkanGraphicsQueue>(devicePtr, queue, commandPool, queueFamilyIndices) };
     }
 
-    Expected<std::unique_ptr<GhaPresentQueue>, std::runtime_error> VulkanFactory::createPresentQueue() noexcept {
-        if(!queueFamilyIndices.presentFamily.has_value()) {
-            return Unexpected{ std::runtime_error{ "Presentation queue not available. GhaDevice is likely headless" } };
+    Expected<std::unique_ptr<GhaComputeQueue>, std::runtime_error> VulkanFactory::createComputeQueue() noexcept {
+        uint32_t const familyIndex{ *queueFamilyIndices.graphicsFamily };
+
+        VkCommandPoolCreateInfo const poolInfo{
+            .sType            = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO,
+            .pNext            = nullptr,
+            .flags            = VK_COMMAND_POOL_CREATE_TRANSIENT_BIT,
+            .queueFamilyIndex = familyIndex,
+        };
+
+        VkCommandPool commandPool{ nullptr };
+        if(VkResult const result{ vkCreateCommandPool(devicePtr.get(), &poolInfo, nullptr, &commandPool) }; result != VK_SUCCESS) {
+            switch(result) {
+                case VK_ERROR_OUT_OF_HOST_MEMORY:
+                    return Unexpected{ std::runtime_error{ "Failed to create GhaComputeQueue. Out of host memory" } };
+                case VK_ERROR_OUT_OF_DEVICE_MEMORY:
+                    return Unexpected{ std::runtime_error{ "Failed to create GhaComputeQueue. Out of device memory" } };
+                default:
+                    return Unexpected{ std::runtime_error{ "Failed to create GhaComputeQueue. Reason unkown." } };
+            }
         }
 
         VkQueue queue{ nullptr };
-        vkGetDeviceQueue(devicePtr.get(), *queueFamilyIndices.presentFamily, 0, &queue);
+        vkGetDeviceQueue(devicePtr.get(), familyIndex, 0, &queue);
 
-        return std::unique_ptr<GhaPresentQueue>{ createGhaObject<VulkanPresentQueue>(devicePtr, queue) };
+        return std::unique_ptr<GhaComputeQueue>{ createGhaObject<VulkanComputeQueue>(devicePtr, queue, commandPool, queueFamilyIndices) };
     }
 
-    Expected<std::unique_ptr<GhaTransferQueue>, std::runtime_error> VulkanFactory::createTransferQueue(CommandQueueDescriptor descriptor) noexcept {
+    Expected<std::unique_ptr<GhaComputeQueue>, std::runtime_error> VulkanFactory::createAsyncComputeQueue() noexcept {
+        uint32_t const familyIndex{ *queueFamilyIndices.asyncComputeFamily };
+
+        VkCommandPoolCreateInfo const poolInfo{
+            .sType            = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO,
+            .pNext            = nullptr,
+            .flags            = VK_COMMAND_POOL_CREATE_TRANSIENT_BIT,
+            .queueFamilyIndex = familyIndex,
+        };
+
+        VkCommandPool commandPool{ nullptr };
+        if(VkResult const result{ vkCreateCommandPool(devicePtr.get(), &poolInfo, nullptr, &commandPool) }; result != VK_SUCCESS) {
+            switch(result) {
+                case VK_ERROR_OUT_OF_HOST_MEMORY:
+                    return Unexpected{ std::runtime_error{ "Failed to create GhaComputeQueue. Out of host memory" } };
+                case VK_ERROR_OUT_OF_DEVICE_MEMORY:
+                    return Unexpected{ std::runtime_error{ "Failed to create GhaComputeQueue. Out of device memory" } };
+                default:
+                    return Unexpected{ std::runtime_error{ "Failed to create GhaComputeQueue. Reason unkown." } };
+            }
+        }
+
+        VkQueue queue{ nullptr };
+        vkGetDeviceQueue(devicePtr.get(), familyIndex, 0, &queue);
+
+        return std::unique_ptr<GhaComputeQueue>{ createGhaObject<VulkanComputeQueue>(devicePtr, queue, commandPool, queueFamilyIndices) };
+    }
+
+    Expected<std::unique_ptr<GhaTransferQueue>, std::runtime_error> VulkanFactory::createTransferQueue() noexcept {
         uint32_t const familyIndex{ *queueFamilyIndices.transferFamily };
 
         VkCommandPoolCreateInfo const poolInfo{
             .sType            = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO,
             .pNext            = nullptr,
-            .flags            = convertCommandPoolCreateFlags(descriptor.flags),
+            .flags            = VK_COMMAND_POOL_CREATE_TRANSIENT_BIT,
             .queueFamilyIndex = familyIndex,
         };
 
@@ -352,63 +384,18 @@ namespace clove {
         VkQueue queue{ nullptr };
         vkGetDeviceQueue(devicePtr.get(), familyIndex, 0, &queue);
 
-        return std::unique_ptr<GhaTransferQueue>{ createGhaObject<VulkanTransferQueue>(descriptor, devicePtr, queue, commandPool, queueFamilyIndices) };
+        return std::unique_ptr<GhaTransferQueue>{ createGhaObject<VulkanTransferQueue>(devicePtr, queue, commandPool, queueFamilyIndices) };
     }
 
-    Expected<std::unique_ptr<GhaComputeQueue>, std::runtime_error> VulkanFactory::createComputeQueue(CommandQueueDescriptor descriptor) noexcept {
-        uint32_t const familyIndex{ *queueFamilyIndices.graphicsFamily };
-
-        VkCommandPoolCreateInfo const poolInfo{
-            .sType            = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO,
-            .pNext            = nullptr,
-            .flags            = convertCommandPoolCreateFlags(descriptor.flags),
-            .queueFamilyIndex = familyIndex,
-        };
-
-        VkCommandPool commandPool{ nullptr };
-        if(VkResult const result{ vkCreateCommandPool(devicePtr.get(), &poolInfo, nullptr, &commandPool) }; result != VK_SUCCESS) {
-            switch(result) {
-                case VK_ERROR_OUT_OF_HOST_MEMORY:
-                    return Unexpected{ std::runtime_error{ "Failed to create GhaComputeQueue. Out of host memory" } };
-                case VK_ERROR_OUT_OF_DEVICE_MEMORY:
-                    return Unexpected{ std::runtime_error{ "Failed to create GhaComputeQueue. Out of device memory" } };
-                default:
-                    return Unexpected{ std::runtime_error{ "Failed to create GhaComputeQueue. Reason unkown." } };
-            }
+    Expected<std::unique_ptr<GhaPresentQueue>, std::runtime_error> VulkanFactory::createPresentQueue() noexcept {
+        if(!queueFamilyIndices.presentFamily.has_value()) {
+            return Unexpected{ std::runtime_error{ "Presentation queue not available. GhaDevice is likely headless" } };
         }
 
         VkQueue queue{ nullptr };
-        vkGetDeviceQueue(devicePtr.get(), familyIndex, 0, &queue);
+        vkGetDeviceQueue(devicePtr.get(), *queueFamilyIndices.presentFamily, 0, &queue);
 
-        return std::unique_ptr<GhaComputeQueue>{ createGhaObject<VulkanComputeQueue>(descriptor, devicePtr, queue, commandPool, queueFamilyIndices) };
-    }
-
-    Expected<std::unique_ptr<GhaComputeQueue>, std::runtime_error> VulkanFactory::createAsyncComputeQueue(CommandQueueDescriptor descriptor) noexcept {
-        uint32_t const familyIndex{ *queueFamilyIndices.asyncComputeFamily };
-
-        VkCommandPoolCreateInfo const poolInfo{
-            .sType            = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO,
-            .pNext            = nullptr,
-            .flags            = convertCommandPoolCreateFlags(descriptor.flags),
-            .queueFamilyIndex = familyIndex,
-        };
-
-        VkCommandPool commandPool{ nullptr };
-        if(VkResult const result{ vkCreateCommandPool(devicePtr.get(), &poolInfo, nullptr, &commandPool) }; result != VK_SUCCESS) {
-            switch(result) {
-                case VK_ERROR_OUT_OF_HOST_MEMORY:
-                    return Unexpected{ std::runtime_error{ "Failed to create GhaComputeQueue. Out of host memory" } };
-                case VK_ERROR_OUT_OF_DEVICE_MEMORY:
-                    return Unexpected{ std::runtime_error{ "Failed to create GhaComputeQueue. Out of device memory" } };
-                default:
-                    return Unexpected{ std::runtime_error{ "Failed to create GhaComputeQueue. Reason unkown." } };
-            }
-        }
-
-        VkQueue queue{ nullptr };
-        vkGetDeviceQueue(devicePtr.get(), familyIndex, 0, &queue);
-
-        return std::unique_ptr<GhaComputeQueue>{ createGhaObject<VulkanComputeQueue>(descriptor, devicePtr, queue, commandPool, queueFamilyIndices) };
+        return std::unique_ptr<GhaPresentQueue>{ createGhaObject<VulkanPresentQueue>(devicePtr, queue) };
     }
 
     Expected<std::unique_ptr<GhaSwapchain>, std::runtime_error> VulkanFactory::createSwapChain(GhaSwapchain::Descriptor descriptor) noexcept {

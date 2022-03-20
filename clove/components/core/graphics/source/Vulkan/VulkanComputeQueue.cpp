@@ -11,9 +11,8 @@
 #include <Clove/Definitions.hpp>
 
 namespace clove {
-    VulkanComputeQueue::VulkanComputeQueue(CommandQueueDescriptor descriptor, DevicePointer device, VkQueue queue, VkCommandPool commandPool, QueueFamilyIndices queueFamilyIndices)
-        : descriptor{ descriptor }
-        , device{ std::move(device) }
+    VulkanComputeQueue::VulkanComputeQueue(DevicePointer device, VkQueue queue, VkCommandPool commandPool, QueueFamilyIndices queueFamilyIndices)
+        : device{ std::move(device) }
         , queue{ queue }
         , commandPool{ commandPool }
         , queueFamilyIndices{ queueFamilyIndices } {
@@ -25,10 +24,6 @@ namespace clove {
 
     VulkanComputeQueue::~VulkanComputeQueue() {
         vkDestroyCommandPool(device.get(), commandPool, nullptr);
-    }
-
-    CommandQueueDescriptor const &VulkanComputeQueue::getDescriptor() const {
-        return descriptor;
     }
 
     std::unique_ptr<GhaComputeCommandBuffer> VulkanComputeQueue::allocateCommandBuffer() {

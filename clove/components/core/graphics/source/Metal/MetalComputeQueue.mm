@@ -9,9 +9,8 @@
 #include <Clove/Cast.hpp>
 
 namespace clove {
-    MetalComputeQueue::MetalComputeQueue(CommandQueueDescriptor descriptor, id<MTLCommandQueue> commandQueue)
-        : descriptor{ descriptor }
-        , commandQueue{ commandQueue } {
+    MetalComputeQueue::MetalComputeQueue(id<MTLCommandQueue> commandQueue)
+        : commandQueue{ commandQueue } {
     }
     
     MetalComputeQueue::MetalComputeQueue(MetalComputeQueue &&other) noexcept = default;
@@ -20,10 +19,6 @@ namespace clove {
     
     MetalComputeQueue::~MetalComputeQueue() = default;
 
-    CommandQueueDescriptor const &MetalComputeQueue::getDescriptor() const {
-        return descriptor;
-    }
-    
     std::unique_ptr<GhaComputeCommandBuffer> MetalComputeQueue::allocateCommandBuffer() {
         return createGhaObject<MetalComputeCommandBuffer>([commandQueue commandBuffer]);
     }
