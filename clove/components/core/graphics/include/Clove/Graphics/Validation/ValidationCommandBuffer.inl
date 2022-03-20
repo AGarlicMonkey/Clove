@@ -4,7 +4,6 @@ namespace clove {
     template<typename BaseCommandBufferType>
     void ValidationGraphicsCommandBuffer<BaseCommandBufferType>::beginRecording() {
         validateBeginRecording();
-        resetUsedFlag();
         BaseCommandBufferType::beginRecording();
     }
 
@@ -18,7 +17,6 @@ namespace clove {
     template<typename BaseCommandBufferType>
     void ValidationComputeCommandBuffer<BaseCommandBufferType>::beginRecording() {
         validateBeginRecording();
-        resetUsedFlag();
         BaseCommandBufferType::beginRecording();
     }
 
@@ -32,7 +30,6 @@ namespace clove {
     template<typename BaseCommandBufferType>
     void ValidationTransferCommandBuffer<BaseCommandBufferType>::beginRecording() {
         validateBeginRecording();
-        resetUsedFlag();
         BaseCommandBufferType::beginRecording();
     }
 

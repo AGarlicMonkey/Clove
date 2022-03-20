@@ -8,17 +8,17 @@ namespace clove {
     class ValidationCommandBuffer {
         //VARIABLES
     private:
-        bool hasBeenUsed{ false }; /**< Will be true if this buffer has been used before being rerecorded. */
+        bool hasBeenRecorded{ false };
+        bool hasBeenSubmitted{ false };
         bool endRecordingCalled{ true };
 
         //FUNCTIONS
     public:
-        void markAsUsed();
-        bool bufferHasBeenUsed() const;
+        void markAsSubmitted();
+        bool hasBufferBeenSubmitted() const;
 
     protected:
         void validateBeginRecording();
-        void resetUsedFlag();
 
         void onEndRecording();
     };
