@@ -58,6 +58,11 @@ namespace clove {
 #if CLOVE_ENABLE_ASSERTIONS
 CLOVE_DECLARE_LOG_CATEGORY(CloveAssert)
 
+    /**
+     * @brief Will cause the application to break if the condition is false.
+     * @details This macro can be compiled out if CLOVE_ENABLE_ASSERTIONS is 0. When this happens
+     * any code inside the macro will also be removed. To do an assertion with a side effect see CLOVE_VERIFY.
+     */
     #define CLOVE_ASSERT(x)                                                                                                  \
         {                                                                                                                    \
             if(!(x)) {                                                                                                       \
@@ -67,6 +72,9 @@ CLOVE_DECLARE_LOG_CATEGORY(CloveAssert)
             }                                                                                                                \
         }
 
+    /**
+     * @copydoc CLOVE_ASSERT
+     */
     #define CLOVE_ASSERT_MSG(x, ...)                                                                    \
         {                                                                                               \
             if(!(x)) {                                                                                  \
@@ -75,9 +83,35 @@ CLOVE_DECLARE_LOG_CATEGORY(CloveAssert)
                 CLOVE_DEBUG_BREAK;                                                                      \
             }                                                                                           \
         }
+
+    /**
+     * @brief Will cause the application to break if the condition is false.
+     * @details This macro can be compiled out if CLOVE_ENABLE_ASSERTIONS is 0. However, code inside the macro
+     * will still be executed if this is the case. To compile out the code as well see CLOVE_ASSERT
+     */
+    #define CLOVE_VERIFY(x) CLOVE_ASSERT(x)
+
+    /**
+     * @copydoc CLOVE_VERIFY
+     */
+    #define CLOVE_VERIFY_MSG(x, ...) CLOVE_ASSERT_MSG(x)
 #else
-    #define CLOVE_ASSERT(x) x
-    #define CLOVE_ASSERT_MSG(x, ...) x
+    /**
+     * @copydoc CLOVE_ASSERT
+     */
+    #define CLOVE_ASSERT(x)
+    /**
+     * @copydoc CLOVE_ASSERT
+     */
+    #define CLOVE_ASSERT_MSG(x, ...)
+    /**
+     * @copydoc CLOVE_VERIFY
+     */
+    #define CLOVE_VERIFY(x) x
+    /**
+     * @copydoc CLOVE_VERIFY
+     */
+    #define CLOVE_VERIFY_MSG(x, ...) x
 #endif
 
 #include "Log.inl"

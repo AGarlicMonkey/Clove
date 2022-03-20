@@ -26,7 +26,7 @@ namespace clove {
         }
 
         Font::FacePtr copyFace(FT_Face face) {
-            CLOVE_ASSERT(FT_Reference_Face(face) == FT_Err_Ok);
+            CLOVE_VERIFY(FT_Reference_Face(face) == FT_Err_Ok);
             return makeUniqueFace(face);
         }
     }
@@ -38,7 +38,7 @@ namespace clove {
         , face{ nullptr, nullptr } {
         if(ftLib.use_count() == 0) {
             FT_Library library{ nullptr };
-            CLOVE_ASSERT(FT_Init_FreeType(&library) == FT_Err_Ok);
+            CLOVE_VERIFY(FT_Init_FreeType(&library) == FT_Err_Ok);
 
             CLOVE_LOG(FreeType, LogLevel::Debug, "Constructed FreeType library");
 
@@ -124,7 +124,7 @@ namespace clove {
 
     Font::FacePtr Font::createFace(std::string const &filePath) {
         FT_Face face{ nullptr };
-        CLOVE_ASSERT(FT_New_Face(ftLibReference.get(), filePath.c_str(), 0, &face) == FT_Err_Ok);
+        CLOVE_VERIFY(FT_New_Face(ftLibReference.get(), filePath.c_str(), 0, &face) == FT_Err_Ok);
 
         return makeUniqueFace(face);
     }
@@ -132,7 +132,7 @@ namespace clove {
     Font::FacePtr Font::createFace(std::span<std::byte const> bytes) {
         FT_Face face{ nullptr };
         auto const *ftBytes{ reinterpret_cast<unsigned char const *>(bytes.data()) };
-        CLOVE_ASSERT(FT_New_Memory_Face(ftLibReference.get(), ftBytes, static_cast<FT_Long>(bytes.size_bytes()), 0, &face) == FT_Err_Ok);
+        CLOVE_VERIFY(FT_New_Memory_Face(ftLibReference.get(), ftBytes, static_cast<FT_Long>(bytes.size_bytes()), 0, &face) == FT_Err_Ok);
 
         return makeUniqueFace(face);
     }
