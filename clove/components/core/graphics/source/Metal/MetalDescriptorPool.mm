@@ -28,6 +28,9 @@ namespace clove {
             foundEntry = &buffers[size].back();
             
             foundEntry->buffer = [device newBufferWithLength:size options:0];
+            
+            static uint32_t bufferCount{ 1 };
+            foundEntry->buffer.label = [NSString stringWithFormat:@"Descriptor pool buffer %i", bufferCount++];
         }
         
         foundEntry->isFree = false;
