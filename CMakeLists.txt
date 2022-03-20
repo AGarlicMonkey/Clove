@@ -22,9 +22,9 @@ option(CLOVE_MANUALLY_INSTALL_PACKAGES "Stop CMake automatically installing cona
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
 #There can be linking issues on macOS when running with shared libraries from conan. So we put everything in bin/lib so we can import the conan dylibs into there also.
-set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
-set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/lib)
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/lib)
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/bin)
 
 #Set up conan
 if(NOT CLOVE_MANUALLY_INSTALL_PACKAGES)
