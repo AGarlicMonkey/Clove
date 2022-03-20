@@ -161,28 +161,28 @@ namespace clove {
     
     MetalFactory::~MetalFactory() = default;
     
-    Expected<std::unique_ptr<GhaGraphicsQueue>, std::runtime_error> MetalFactory::createGraphicsQueue(CommandQueueDescriptor descriptor) noexcept {
-        return std::unique_ptr<GhaGraphicsQueue>{ createGhaObject<MetalGraphicsQueue>(descriptor, graphicsPresentCommandQueue) };
+    Expected<std::unique_ptr<GhaGraphicsQueue>, std::runtime_error> MetalFactory::createGraphicsQueue() noexcept {
+        return std::unique_ptr<GhaGraphicsQueue>{ createGhaObject<MetalGraphicsQueue>(graphicsPresentCommandQueue) };
     }
     
+    Expected<std::unique_ptr<GhaComputeQueue>, std::runtime_error> MetalFactory::createComputeQueue() noexcept {
+        return std::unique_ptr<GhaComputeQueue>{ createGhaObject<MetalComputeQueue>(graphicsPresentCommandQueue) };
+    }
+
+    Expected<std::unique_ptr<GhaComputeQueue>, std::runtime_error> MetalFactory::createAsyncComputeQueue() noexcept {
+        return std::unique_ptr<GhaComputeQueue>{ createGhaObject<MetalComputeQueue>(asyncComputeCommandQueue) };
+    }
+
+    Expected<std::unique_ptr<GhaTransferQueue>, std::runtime_error> MetalFactory::createTransferQueue() noexcept {
+        return std::unique_ptr<GhaTransferQueue>{ createGhaObject<MetalTransferQueue>(transferCommandQueue) };
+    }
+
     Expected<std::unique_ptr<GhaPresentQueue>, std::runtime_error> MetalFactory::createPresentQueue() noexcept {
         if(view == nullptr) {
             return Unexpected{ std::runtime_error{ "Presentation queue not available. GhaDevice is likely headless" } };
         }
         
         return std::unique_ptr<GhaPresentQueue>{ createGhaObject<MetalPresentQueue>(graphicsPresentCommandQueue, view) };
-    }
-    
-    Expected<std::unique_ptr<GhaTransferQueue>, std::runtime_error> MetalFactory::createTransferQueue(CommandQueueDescriptor descriptor) noexcept {
-        return std::unique_ptr<GhaTransferQueue>{ createGhaObject<MetalTransferQueue>(descriptor, transferCommandQueue) };
-    }
-    
-    Expected<std::unique_ptr<GhaComputeQueue>, std::runtime_error> MetalFactory::createComputeQueue(CommandQueueDescriptor descriptor) noexcept {
-        return std::unique_ptr<GhaComputeQueue>{ createGhaObject<MetalComputeQueue>(descriptor, graphicsPresentCommandQueue) };
-    }
-
-    Expected<std::unique_ptr<GhaComputeQueue>, std::runtime_error> MetalFactory::createAsyncComputeQueue(CommandQueueDescriptor descriptor) noexcept {
-        return std::unique_ptr<GhaComputeQueue>{ createGhaObject<MetalComputeQueue>(descriptor, asyncComputeCommandQueue) };
     }
     
     Expected<std::unique_ptr<GhaSwapchain>, std::runtime_error> MetalFactory::createSwapChain(GhaSwapchain::Descriptor descriptor) noexcept {

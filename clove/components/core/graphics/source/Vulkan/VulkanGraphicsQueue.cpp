@@ -12,9 +12,8 @@
 #include <Clove/Definitions.hpp>
 
 namespace clove {
-    VulkanGraphicsQueue::VulkanGraphicsQueue(CommandQueueDescriptor descriptor, DevicePointer device, VkQueue queue, VkCommandPool commandPool, QueueFamilyIndices queueFamilyIndices)
-        : descriptor{ descriptor }
-        , device{ std::move(device) }
+    VulkanGraphicsQueue::VulkanGraphicsQueue(DevicePointer device, VkQueue queue, VkCommandPool commandPool, QueueFamilyIndices queueFamilyIndices)
+        : device{ std::move(device) }
         , queue{ queue }
         , commandPool{ commandPool }
         , queueFamilyIndices{ queueFamilyIndices } {
@@ -26,10 +25,6 @@ namespace clove {
 
     VulkanGraphicsQueue::~VulkanGraphicsQueue() {
         vkDestroyCommandPool(device.get(), commandPool, nullptr);
-    }
-
-    CommandQueueDescriptor const &VulkanGraphicsQueue::getDescriptor() const {
-        return descriptor;
     }
 
     std::unique_ptr<GhaGraphicsCommandBuffer> VulkanGraphicsQueue::allocateCommandBuffer() {

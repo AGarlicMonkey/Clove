@@ -11,9 +11,8 @@
 #include <Clove/Cast.hpp>
 
 namespace clove {
-    MetalGraphicsQueue::MetalGraphicsQueue(CommandQueueDescriptor descriptor, id<MTLCommandQueue> commandQueue)
-        : descriptor{ descriptor }
-        , commandQueue{ commandQueue } {
+    MetalGraphicsQueue::MetalGraphicsQueue(id<MTLCommandQueue> commandQueue)
+        : commandQueue{ commandQueue } {
     }
     
     MetalGraphicsQueue::MetalGraphicsQueue(MetalGraphicsQueue &&other) noexcept = default;
@@ -22,10 +21,6 @@ namespace clove {
     
     MetalGraphicsQueue::~MetalGraphicsQueue() = default;
 
-    CommandQueueDescriptor const &MetalGraphicsQueue::getDescriptor() const {
-        return descriptor;
-    }
-    
     std::unique_ptr<GhaGraphicsCommandBuffer> MetalGraphicsQueue::allocateCommandBuffer() {
         return createGhaObject<MetalGraphicsCommandBuffer>([commandQueue commandBuffer]);
     }

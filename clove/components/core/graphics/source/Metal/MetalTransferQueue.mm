@@ -10,9 +10,8 @@
 #include <Clove/Cast.hpp>
 
 namespace clove {
-    MetalTransferQueue::MetalTransferQueue(CommandQueueDescriptor descriptor, id<MTLCommandQueue> commandQueue)
-        : descriptor{ descriptor }
-        , commandQueue{ commandQueue } {
+    MetalTransferQueue::MetalTransferQueue(id<MTLCommandQueue> commandQueue)
+        : commandQueue{ commandQueue } {
     }
     
     MetalTransferQueue::MetalTransferQueue(MetalTransferQueue &&other) noexcept = default;
@@ -21,10 +20,6 @@ namespace clove {
     
     MetalTransferQueue::~MetalTransferQueue() = default;
 
-    CommandQueueDescriptor const &MetalTransferQueue::getDescriptor() const {
-        return descriptor;
-    }
-    
     std::unique_ptr<GhaTransferCommandBuffer> MetalTransferQueue::allocateCommandBuffer() {
         return createGhaObject<MetalTransferCommandBuffer>([commandQueue commandBuffer]);
     }

@@ -241,8 +241,8 @@ namespace clove {
         vec3i constexpr imageOffset{ 0, 0, 0 };
         vec3ui const imageExtent{ imageDescriptor.dimensions.x, imageDescriptor.dimensions.y, 1 };
 
-        auto transferQueue{ factory.createTransferQueue({ QueueFlags::Transient }).getValue() };
-        auto graphicsQueue{ factory.createGraphicsQueue({ QueueFlags::Transient }).getValue() };
+        auto transferQueue{ factory.createTransferQueue().getValue() };
+        auto graphicsQueue{ factory.createGraphicsQueue().getValue() };
 
         auto transferCommandBuffer{ transferQueue->allocateCommandBuffer() };
         auto graphicsCommandBuffer{ graphicsQueue->allocateCommandBuffer() };
