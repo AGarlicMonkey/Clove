@@ -6,7 +6,6 @@ struct Vertex{
     vec3 position;
     vec3 normal;
     vec2 texCoord;
-    vec3 colour;
     ivec4 jointIds;
     vec4 weights;
 };
