@@ -6,8 +6,8 @@ env:
   CMAKE_FLAGS: -DCLOVE_BUILD_TESTS=ON -DCLOVE_COMPILE_DEBUG_SHADERS=OFF -DCLOVE_ENABLE_AHA_VALIDATION=OFF -DCLOVE_ENABLE_ASSERTIONS=ON -DCLOVE_ENABLE_GHA_VALIDATION=OFF -DCLOVE_ENABLE_PROFILING=OFF -DCLOVE_MANUALLY_INSTALL_PACKAGES=ON -DCLOVE_USE_SAFE_CAST=ON
   BUILD_TYPE: Release
 jobs:
-  #Windows Jobs
-  build-windows-msvc:
+  #Windows
+  test-windows-msvc:
     runs-on: windows-2019
     steps:
     - uses: actions/checkout@v2
@@ -34,26 +34,11 @@ jobs:
     - name: Build
       working-directory: ${{ github.workspace }}/build
       run: cmake --build . --target ALL_BUILD --config $env:BUILD_TYPE
-    - name: Upload artefacts
-      uses: actions/upload-artifact@v2.2.4
-      with:
-        name: windows-msvc
-        path: build/
-        retention-days: 1
-  unit_test-windows-msvc:
-    needs: [build-windows-msvc]
-    runs-on: windows-2019
-    steps:
-      - name: Download build artefacts
-        uses: actions/download-artifact@v2
-        with:
-          name: windows-msvc
-          path: build/
-      - name: Test
-        working-directory: ${{ github.workspace }}/build
-        run: ctest -C $env:BUILD_TYPE --output-on-failure
-  #macOS Jobs
-  build-macos-apple_clang:
+    - name: Run Tests
+      working-directory: ${{ github.workspace }}/build
+      run: ctest -C $env:BUILD_TYPE --output-on-failure
+  #macOS
+  test-macos-apple_clang:
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v2
@@ -72,30 +57,11 @@ jobs:
       - name: Build
         working-directory: ${{ github.workspace }}/build
         run: cmake --build . --target ALL_BUILD --config $BUILD_TYPE
-      - name: Tar files to preserve permissions
-        run: tar -cvf build_files.tar build/
-      - name: Upload artefacts
-        uses: actions/upload-artifact@v2.2.4
-        with:
-          name: macos-apple_clang
-          path: build_files.tar
-          retention-days: 1
-  unit_test-macos-apple_clang:
-    needs: [build-macos-apple_clang]
-    runs-on: macos-latest
-    steps:
-      - name: Download build artefacts
-        uses: actions/download-artifact@v2
-        with:
-          name: macos-apple_clang
-          path: ./
-      - name: Extract tar files
-        run: tar -xvf build_files.tar
-      - name: Test
+      - name: Run Tests
         working-directory: ${{ github.workspace }}/build
         run: ctest -C $BUILD_TYPE --output-on-failure
-  #Linux Jobs
-  build-linux-gcc:
+  #Linux
+  test-linux-gcc:
     runs-on: ubuntu-latest
     container:
       image: ghcr.io/agarlicmonkey/clove/linux_build:1.2
@@ -117,15 +83,10 @@ jobs:
       - name: Build
         working-directory: ${{ github.workspace }}/build
         run: cmake --build .
-      - name: Tar files to preserve permissions
-        run: tar -cvf build_files.tar build/
-      - name: Upload artefacts
-        uses: actions/upload-artifact@v2.2.4
-        with:
-          name: linux-gcc
-          path: build_files.tar
-          retention-days: 1
-  build-linux-clang:
+      - name: Run Tests
+        working-directory: ${{ github.workspace }}/build
+        run: ctest -C $BUILD_TYPE --output-on-failure
+  test-linux-clang:
     runs-on: ubuntu-latest
     container:
       image: ghcr.io/agarlicmonkey/clove/linux_build:1.2
@@ -147,50 +108,6 @@ jobs:
       - name: Build
         working-directory: ${{ github.workspace }}/build
         run: cmake --build .
-      - name: Tar files to preserve permissions
-        run: tar -cvf build_files.tar build/
-      - name: Upload artefacts
-        uses: actions/upload-artifact@v2.2.4
-        with:
-          name: linux-clang
-          path: build_files.tar
-          retention-days: 1
-  unit_test-linux-gcc:
-    needs: [build-linux-gcc]
-    runs-on: ubuntu-latest
-    container:
-      image: ghcr.io/agarlicmonkey/clove/linux_build:1.2
-      credentials:
-        username: ${{ github.actor }}
-        password: ${{ secrets.GITHUB_TOKEN }}
-    steps:
-      - name: Download build artefacts
-        uses: actions/download-artifact@v2
-        with:
-          name: linux-gcc
-          path: ./
-      - name: Extract tar files
-        run: tar -xvf build_files.tar
-      - name: Test
+      - name: Run Tests
         working-directory: ${{ github.workspace }}/build
         run: ctest -C $BUILD_TYPE --output-on-failure
-  unit_test-linux-clang:
-    needs: [build-linux-clang]
-    runs-on: ubuntu-latest
-    container:
-      image: ghcr.io/agarlicmonkey/clove/linux_build:1.2
-      credentials:
-        username: ${{ github.actor }}
-        password: ${{ secrets.GITHUB_TOKEN }}
-    steps:
-      - name: Download build artefacts
-        uses: actions/download-artifact@v2
-        with:
-          name: linux-clang
-          path: ./
-      - name: Extract tar files
-        run: tar -xvf build_files.tar
-      - name: Test
-        working-directory: ${{ github.workspace }}/build
-        run: ctest -C $BUILD_TYPE --output-on-failure
-        

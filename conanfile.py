@@ -3,11 +3,31 @@ import os
 from conans import ConanFile
 
 class CloveConan(ConanFile):
-    settings = "os", "compiler", "build_type", "arch"
+    settings = (
+        "os",
+        "os_build",
+        "compiler",
+        "build_type",
+        "arch"
+    )
 
-    requires = "assimp/5.0.1", "bullet3/3.07", "freetype/2.10.4", "glm/0.9.9.8", "gtest/1.10.0", "libsndfile/1.0.30", "openal/1.21.0", "shaderc/2021.1", "spdlog/1.8.2", "spirv-cross/cci.20211113", "yaml-cpp/0.6.3"
+    requires = (
+        "assimp/5.0.1",
+        "bullet3/3.07",
+        "freetype/2.10.4",
+        "glm/0.9.9.8",
+        "gtest/1.10.0",
+        "libsndfile/1.0.30",
+        "openal/1.21.0",
+        "shaderc/2021.1",
+        "spdlog/1.8.2",
+        "spirv-cross/cci.20211113",
+        "yaml-cpp/0.6.3"
+    )
 
-    generators = "cmake_find_package_multi"
+    generators = (
+        "cmake_find_package_multi"
+    )
 
     default_options = {
         "assimp:shared": False,
@@ -15,7 +35,7 @@ class CloveConan(ConanFile):
         "freetype:shared": False,
         "gtest:shared": False,
         "libsndfile:shared": False,
-        "openal:shared": False,
+        "openal:shared": True,
         "shaderc:shared": True,
         "spdlog:shared": False,
         "spirv-cross:shared": False,
@@ -23,5 +43,11 @@ class CloveConan(ConanFile):
     }
 
     def imports(self):
-        binDir = os.path.join("bin", str(self.settings.build_type))
-        self.copy("*.dylib*", src="lib", dst=binDir)
+        outputFolder = "./bin"
+        if str(self.settings.os_build) != "Linux":
+            dest = os.path.join(outputFolder, str(self.settings.build_type))
+
+            self.copy("*.dll", src="bin", dst=dest)
+            self.copy("*.dylib*", src="lib", dst=dest)
+        else:
+            self.copy("*.so*", src="lib", dst=outputFolder)
