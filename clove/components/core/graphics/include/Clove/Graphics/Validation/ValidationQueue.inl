@@ -6,14 +6,14 @@ namespace clove {
         void validateBuffersUsage(SubmissionType const &submission) {
             for(auto &commandBuffer : submission.commandBuffers) {
                 auto *buffer{ dynamic_cast<ValidationCommandBuffer *>(commandBuffer) };
-                CLOVE_ASSERT_MSG(!buffer->bufferHasBeenUsed(), "Command buffer has already been used.");
+                CLOVE_ASSERT_MSG(!buffer->hasBufferBeenSubmitted(), "Command buffer has already been submitted used. Command buffers can only be recorded to and submitted for work once.");
             }
         }
 
         template<typename SubmissionType>
         void markBuffersAsUsed(SubmissionType const &submission) {
             for(auto &commandBuffer : submission.commandBuffers) {
-                dynamic_cast<ValidationCommandBuffer *>(commandBuffer)->markAsUsed();
+                dynamic_cast<ValidationCommandBuffer *>(commandBuffer)->markAsSubmitted();
             }
         }
     }
