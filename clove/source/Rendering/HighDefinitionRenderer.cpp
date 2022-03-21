@@ -889,10 +889,6 @@ namespace clove {
                     .format = VertexAttributeFormat::R32G32_SFLOAT,
                     .offset = offsetof(Vertex, texCoord),
                 },
-                VertexAttributeDescriptor{
-                    .format = VertexAttributeFormat::R32G32B32_SFLOAT,
-                    .offset = offsetof(Vertex, colour),
-                },
             },
             .viewportSize  = getRenderTargetSize(),
             //Currently clearing and then rewriting to the depth buffer. This seems wasteful but without doing this
