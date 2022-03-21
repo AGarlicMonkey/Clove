@@ -36,7 +36,6 @@ namespace clove {
         Expected<std::unique_ptr<GhaComputeQueue>, std::runtime_error> createComputeQueue() noexcept override;
         Expected<std::unique_ptr<GhaComputeQueue>, std::runtime_error> createAsyncComputeQueue() noexcept override;
         Expected<std::unique_ptr<GhaTransferQueue>, std::runtime_error> createTransferQueue() noexcept override;
-        Expected<std::unique_ptr<GhaPresentQueue>, std::runtime_error> createPresentQueue() noexcept override;
 
         Expected<std::unique_ptr<GhaSwapchain>, std::runtime_error> createSwapChain(GhaSwapchain::Descriptor descriptor) noexcept override;
 

@@ -16,7 +16,6 @@
 #include "Clove/Graphics/Vulkan/VulkanImage.hpp"
 #include "Clove/Graphics/Vulkan/VulkanImageView.hpp"
 #include "Clove/Graphics/Vulkan/VulkanPipelineObject.hpp"
-#include "Clove/Graphics/Vulkan/VulkanPresentQueue.hpp"
 #include "Clove/Graphics/Vulkan/VulkanRenderPass.hpp"
 #include "Clove/Graphics/Vulkan/VulkanResource.hpp"
 #include "Clove/Graphics/Vulkan/VulkanSampler.hpp"
@@ -387,17 +386,6 @@ namespace clove {
         return std::unique_ptr<GhaTransferQueue>{ createGhaObject<VulkanTransferQueue>(devicePtr, queue, commandPool, queueFamilyIndices) };
     }
 
-    Expected<std::unique_ptr<GhaPresentQueue>, std::runtime_error> VulkanFactory::createPresentQueue() noexcept {
-        if(!queueFamilyIndices.presentFamily.has_value()) {
-            return Unexpected{ std::runtime_error{ "Presentation queue not available. GhaDevice is likely headless" } };
-        }
-
-        VkQueue queue{ nullptr };
-        vkGetDeviceQueue(devicePtr.get(), *queueFamilyIndices.presentFamily, 0, &queue);
-
-        return std::unique_ptr<GhaPresentQueue>{ createGhaObject<VulkanPresentQueue>(devicePtr, queue) };
-    }
-
     Expected<std::unique_ptr<GhaSwapchain>, std::runtime_error> VulkanFactory::createSwapChain(GhaSwapchain::Descriptor descriptor) noexcept {
         if(devicePtr.getSurface() == VK_NULL_HANDLE) {
             return Unexpected{ std::runtime_error{ "GhaSwapchain is not available. GhaDevice is likely headless" } };
@@ -415,7 +403,7 @@ namespace clove {
         uint32_t const maxImageCount{ surfaceSupport.capabilities.maxImageCount };
         if(desiredImageCount > maxImageCount) {
             std::stringstream outputString{};
-            outputString << "Could not create GhaSwapchain." << desiredImageCount << " backing images requested but only " << maxImageCount << " are available.";
+            outputString << "Could not create GhaSwapchain. " << desiredImageCount << " backing images requested but only " << maxImageCount << " are available.";
             return Unexpected{ std::runtime_error{ outputString.str() } };
         }
 
@@ -460,6 +448,9 @@ namespace clove {
             }
         }
 
+        VkQueue presentQueue{ nullptr };
+        vkGetDeviceQueue(devicePtr.get(), *queueFamilyIndices.presentFamily, 0, &presentQueue);
+
         std::vector<VkImage> images{};
         std::vector<std::unique_ptr<VulkanImage>> vulkanImages{};
 
@@ -486,7 +477,7 @@ namespace clove {
             vulkanImages[i] = createGhaObject<VulkanImage>(devicePtr, images[i], imageDescriptor);
         }
 
-        return std::unique_ptr<GhaSwapchain>{ createGhaObject<VulkanSwapchain>(devicePtr, swapchain, surfaceFormat.format, swapchainExtent, std::move(vulkanImages)) };
+        return std::unique_ptr<GhaSwapchain>{ createGhaObject<VulkanSwapchain>(devicePtr, swapchain, presentQueue, surfaceFormat.format, swapchainExtent, std::move(vulkanImages)) };
     }
 
     Expected<std::unique_ptr<GhaShader>, std::runtime_error> VulkanFactory::createShaderFromFile(std::filesystem::path const &file, GhaShader::Stage shaderStage) noexcept {

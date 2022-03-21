@@ -66,7 +66,7 @@ namespace clove {
 
         GhaDevice::Info const info{ device->getInfo() };
 
-        CLOVE_LOG(CloveGha, LogLevel::Trace, "GHA device created with a {0} backend.", info.ApiName);
+        CLOVE_LOG(CloveGha, LogLevel::Info, "GHA device created with a {0} backend.", info.ApiName);
         if(info.ApiVersion.has_value()) {
             CLOVE_LOG(CloveGha, LogLevel::Trace, "\tAPI:\t{0}.{1}.{2}", info.ApiVersion->major, info.ApiVersion->minor, info.ApiVersion->patch);
         }

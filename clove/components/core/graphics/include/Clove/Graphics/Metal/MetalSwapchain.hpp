@@ -4,47 +4,51 @@
 
 #include <queue>
 #include <MetalKit/MetalKit.h>
+#include <mutex>
+
+@class MetalView;
 
 namespace clove {
-	class GhaImage;
+    class MetalImage;
 }
 
 namespace clove {
-	class MetalSwapchain : public GhaSwapchain {
-		//VARIABLES
-	private:
-		std::vector<std::unique_ptr<GhaImage>> images{};
-		
-		GhaImage::Format imageFormat{};
-		vec2ui imageSize{};
-		
-		std::queue<uint32_t> imageQueue{};
+    class MetalSwapchain : public GhaSwapchain {
+        //VARIABLES
+    private:
+        MetalView *view{ nullptr };
+        id<MTLCommandQueue> presentQueue{};
         
-        id<MTLCommandQueue> signalQueue{}; /**< Used to signal the semaphores. See aquireNextImage. */
-		
-		//FUNCTIONS
-	public:
-		MetalSwapchain() = delete;
-        MetalSwapchain(id<MTLCommandQueue> signalQueue, std::vector<std::unique_ptr<GhaImage>> images, GhaImage::Format imageFormat, vec2ui imageSize);
-
+        uint32_t activeImage{ 0 };
+        
+        GhaImage::Format imageFormat{};
+        vec2ui imageSize{};
+        
+        std::vector<std::unique_ptr<MetalImage>> images{};
+        
+        std::queue<uint32_t> imageQueue{};
+        std::mutex imageQueueMutex{};
+        
+        //FUNCTIONS
+    public:
+        MetalSwapchain() = delete;
+        MetalSwapchain(MetalView *view, id<MTLCommandQueue> presentQueue, std::vector<std::unique_ptr<MetalImage>> images, GhaImage::Format imageFormat, vec2ui imageSize);
+        
         MetalSwapchain(MetalSwapchain const &other) = delete;
-		MetalSwapchain(MetalSwapchain &&other) noexcept;
-		
-		MetalSwapchain& operator=(MetalSwapchain const &other) = delete;
-		MetalSwapchain& operator=(MetalSwapchain &&other) noexcept;
-		
-		~MetalSwapchain();
-		
-		std::pair<uint32_t, Result> aquireNextImage(GhaSemaphore const *availableSemaphore) override;
-
-		GhaImage::Format getImageFormat() const override;
-		vec2ui getSize() const override;
-
-		std::vector<GhaImage *> getImages() const override;
-		
-		/**
-		 * @brief Tells the swapchain that the image index is free to use again.
-		 */
-		void markIndexAsFree(uint32_t index);
-	};
+        MetalSwapchain(MetalSwapchain &&other) noexcept = delete;
+        
+        MetalSwapchain& operator=(MetalSwapchain const &other) = delete;
+        MetalSwapchain& operator=(MetalSwapchain &&other) noexcept = delete;
+        
+        ~MetalSwapchain();
+        
+        std::pair<GhaImage *, Result> aquireNextImage(GhaSemaphore const *availableSemaphore) override;
+        
+        uint32_t getCurrentImageIndex() const override;
+        
+        Result present(std::vector<GhaSemaphore const *> waitSemaphores) override;
+        
+        GhaImage::Format getImageFormat() const override;
+        vec2ui getSize() const override;
+    };
 }

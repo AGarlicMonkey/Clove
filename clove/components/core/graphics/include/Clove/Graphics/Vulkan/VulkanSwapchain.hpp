@@ -16,6 +16,9 @@ namespace clove {
     private:
         DevicePointer device;
         VkSwapchainKHR swapchain{ VK_NULL_HANDLE };
+        VkQueue presentQueue{ VK_NULL_HANDLE };
+
+        uint32_t activeImage{ 0 };
 
         VkFormat swapChainImageFormat{};
         VkExtent2D swapChainExtent{};
@@ -25,7 +28,7 @@ namespace clove {
         //FUNCTIONS
     public:
         VulkanSwapchain() = delete;
-        VulkanSwapchain(DevicePointer device, VkSwapchainKHR swapchain, VkFormat swapChainImageFormat, VkExtent2D swapChainExtent, std::vector<std::unique_ptr<VulkanImage>> images);
+        VulkanSwapchain(DevicePointer device, VkSwapchainKHR swapchain, VkQueue presentQueue, VkFormat swapChainImageFormat, VkExtent2D swapChainExtent, std::vector<std::unique_ptr<VulkanImage>> images);
 
         VulkanSwapchain(VulkanSwapchain const &other) = delete;
         VulkanSwapchain(VulkanSwapchain &&other) noexcept;
@@ -35,13 +38,17 @@ namespace clove {
 
         ~VulkanSwapchain();
 
-        std::pair<uint32_t, Result> aquireNextImage(GhaSemaphore const *availableSemaphore) override;
-        
+        std::pair<GhaImage *, Result> aquireNextImage(GhaSemaphore const *availableSemaphore) override;
+
+        uint32_t getCurrentImageIndex() const override;
+
+        Result present(std::vector<GhaSemaphore const *> waitSemaphores) override;
+
         GhaImage::Format getImageFormat() const override;
         vec2ui getSize() const override;
 
-        std::vector<GhaImage *> getImages() const override;
-
-        VkSwapchainKHR getSwapchain() const;
+        inline VkSwapchainKHR getSwapchain() const;
     };
 }
+
+#include "VulkanSwapchain.inl"

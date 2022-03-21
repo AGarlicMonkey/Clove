@@ -5,7 +5,6 @@
 #include <Clove/Graphics/GhaDevice.hpp>
 #include <Clove/Graphics/GhaFactory.hpp>
 #include <Clove/Graphics/GhaFence.hpp>
-#include <Clove/Graphics/GhaPresentQueue.hpp>
 #include <Clove/Graphics/GhaSemaphore.hpp>
 #include <Clove/Graphics/GhaSwapchain.hpp>
 #include <Clove/Log/Log.hpp>
@@ -20,8 +19,6 @@ namespace clove {
         windowSize         = swapchainWindow.getSize(true);
         windowResizeHandle = swapchainWindow.onWindowResize.bind(&SwapchainRenderTarget::onSurfaceSizeChanged, this);
 
-        presentQueue = graphicsFactory->createPresentQueue().getValue();
-
         createSwapchain();
     }
 
@@ -31,7 +28,7 @@ namespace clove {
 
     SwapchainRenderTarget::~SwapchainRenderTarget() = default;
 
-    Expected<uint32_t, std::string> SwapchainRenderTarget::aquireNextImage(GhaSemaphore const *const signalSemaphore) {
+    Expected<GhaImage *, std::string> SwapchainRenderTarget::aquireNextImage(GhaSemaphore const *const signalSemaphore) {
         if(windowSize.x == 0 || windowSize.y == 0) {
             return Unexpected<std::string>{ "Cannot acquire image while Window is minimised." };
         }
@@ -41,21 +38,21 @@ namespace clove {
             return Unexpected<std::string>{ "GhaSwapchain was recreated." };
         }
 
-        auto const [imageIndex, result] = swapchain->aquireNextImage(signalSemaphore);
+        auto const [image, result] = swapchain->aquireNextImage(signalSemaphore);
         if(result == Result::Error_SwapchainOutOfDate) {
             createSwapchain();
             return Unexpected<std::string>{ "GhaSwapchain was recreated." };
         }
 
-        return imageIndex;
+        return image;
     }
 
-    void SwapchainRenderTarget::present(uint32_t imageIndex, std::vector<GhaSemaphore const *> waitSemaphores) {
-        Result const result{ presentQueue->present(PresentInfo{
-            .waitSemaphores = waitSemaphores,
-            .swapChain      = swapchain.get(),
-            .imageIndex     = imageIndex,
-        }) };
+    uint32_t SwapchainRenderTarget::getCurrentImageIndex() const {
+        return swapchain->getCurrentImageIndex();
+    }
+
+    void SwapchainRenderTarget::present(std::vector<GhaSemaphore const *> waitSemaphores) {
+        Result const result{ swapchain->present(std::move(waitSemaphores)) };
 
         if(result == Result::Error_SwapchainOutOfDate || result == Result::Success_SwapchainSuboptimal) {
             createSwapchain();
@@ -70,8 +67,8 @@ namespace clove {
         return swapchain->getSize();
     }
 
-    std::vector<GhaImage *> SwapchainRenderTarget::getImages() const {
-        return swapchain->getImages();
+    uint32_t SwapchainRenderTarget::getImageCount() const {
+        return imageCount;
     }
 
     void SwapchainRenderTarget::onSurfaceSizeChanged(vec2ui const &size) {
