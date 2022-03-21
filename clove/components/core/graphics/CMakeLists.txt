@@ -76,8 +76,6 @@ set(
 		${SOURCE}/Vulkan/VulkanMemoryBarrier.cpp
 		${INCLUDE}/Vulkan/VulkanPipelineObject.hpp
 		${SOURCE}/Vulkan/VulkanPipelineObject.cpp
-		${INCLUDE}/Vulkan/VulkanPresentQueue.hpp
-		${SOURCE}/Vulkan/VulkanPresentQueue.cpp
 		${INCLUDE}/Vulkan/VulkanRenderPass.hpp
 		${SOURCE}/Vulkan/VulkanRenderPass.cpp
 		${INCLUDE}/Vulkan/VulkanResult.hpp
@@ -90,6 +88,7 @@ set(
 		${INCLUDE}/Vulkan/VulkanShader.hpp
 		${SOURCE}/Vulkan/VulkanShader.cpp
 		${INCLUDE}/Vulkan/VulkanSwapchain.hpp
+		${INCLUDE}/Vulkan/VulkanSwapchain.inl
 		${SOURCE}/Vulkan/VulkanSwapchain.cpp
 		${INCLUDE}/Vulkan/VulkanTransferCommandBuffer.hpp
 		${INCLUDE}/Vulkan/VulkanTransferCommandBuffer.inl
@@ -147,8 +146,6 @@ set(
 		${INCLUDE}/Metal/MetalLog.hpp
 		${INCLUDE}/Metal/MetalPipelineObject.hpp
 		${SOURCE}/Metal/MetalPipelineObject.mm
-		${INCLUDE}/Metal/MetalPresentQueue.hpp
-		${SOURCE}/Metal/MetalPresentQueue.mm
 		${INCLUDE}/Metal/MetalRenderPass.hpp
 		${INCLUDE}/Metal/MetalRenderPass.inl
 		${SOURCE}/Metal/MetalRenderPass.mm
@@ -211,7 +208,6 @@ add_library(
 		${INCLUDE}/GhaGraphicsQueue.hpp
 		${INCLUDE}/GhaImage.hpp
 		${INCLUDE}/GhaImageView.hpp
-		${INCLUDE}/GhaPresentQueue.hpp
 		${INCLUDE}/GhaRenderPass.hpp
 		${INCLUDE}/GhaSampler.hpp
 		${INCLUDE}/GhaSemaphore.hpp

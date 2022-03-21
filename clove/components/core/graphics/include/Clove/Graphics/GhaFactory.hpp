@@ -11,7 +11,6 @@
 #include "Clove/Graphics/GhaGraphicsQueue.hpp"
 #include "Clove/Graphics/GhaImage.hpp"
 #include "Clove/Graphics/GhaImageView.hpp"
-#include "Clove/Graphics/GhaPresentQueue.hpp"
 #include "Clove/Graphics/GhaRenderPass.hpp"
 #include "Clove/Graphics/GhaSampler.hpp"
 #include "Clove/Graphics/GhaSemaphore.hpp"
@@ -48,7 +47,6 @@ namespace clove {
          */
         virtual Expected<std::unique_ptr<GhaComputeQueue>, std::runtime_error> createAsyncComputeQueue() noexcept = 0;
         virtual Expected<std::unique_ptr<GhaTransferQueue>, std::runtime_error> createTransferQueue() noexcept    = 0;
-        virtual Expected<std::unique_ptr<GhaPresentQueue>, std::runtime_error> createPresentQueue() noexcept      = 0;
 
         virtual Expected<std::unique_ptr<GhaSwapchain>, std::runtime_error> createSwapChain(GhaSwapchain::Descriptor descriptor) noexcept = 0;
 

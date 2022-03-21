@@ -63,7 +63,7 @@ namespace clove {
         , globalCache{ ghaDevice->getGraphicsFactory() } {
         GhaFactory *ghaFactory{ ghaDevice->getGraphicsFactory() };
 
-        size_t const maxImages{ this->renderTarget->getImages().size() };
+        size_t const maxImages{ this->renderTarget->getImageCount() };
         maxFramesInFlight = std::max(static_cast<size_t>(1), maxImages - 1);
 
         skinningFinishedSemaphores.resize(maxFramesInFlight);
@@ -206,25 +206,26 @@ namespace clove {
         framesInFlight[currentFrame]->wait();
 
         //Aquire the next available image from the render target
-        Expected<uint32_t, std::string> const result{ renderTarget->aquireNextImage(imageAvailableSemaphores[currentFrame].get()) };
+        Expected<GhaImage *, std::string> const result{ renderTarget->aquireNextImage(imageAvailableSemaphores[currentFrame].get()) };
         if(!result.hasValue()) {
             CLOVE_LOG(CloveRendering, LogLevel::Debug, result.getError());
             return;
         }
 
-        size_t const imageIndex{ result.getValue() };
+        GhaImage *const swapchainImage{ result.getValue() };
+        uint32_t const swapchainImageIndex{ renderTarget->getCurrentImageIndex() };
 
         //Check if we're already using the image. If so, wait
-        if(imagesInFlight[imageIndex] != nullptr) {
-            imagesInFlight[imageIndex]->wait();
+        if(imagesInFlight[swapchainImageIndex] != nullptr) {
+            imagesInFlight[swapchainImageIndex]->wait();
         }
-        imagesInFlight[imageIndex] = framesInFlight[currentFrame].get();
+        imagesInFlight[swapchainImageIndex] = framesInFlight[currentFrame].get();
 
         framesInFlight[currentFrame]->reset();
 
-        RenderGraph renderGraph{ frameCaches[imageIndex], globalCache };
+        RenderGraph renderGraph{ frameCaches[swapchainImageIndex], globalCache };
 
-        RgImageId renderTargetImage{ renderGraph.createImage(renderTarget->getImages()[imageIndex]) };
+        RgImageId renderTargetImage{ renderGraph.createImage(swapchainImage) };
         renderGraph.registerGraphOutput(renderTargetImage);
 
         size_t const minUboOffsetAlignment{ ghaDevice->getLimits().minUniformBufferOffsetAlignment };
@@ -485,7 +486,7 @@ namespace clove {
         });
 
         //Tell the render target to present the image we just submitted to
-        renderTarget->present(imageIndex, { renderFinishedSemaphores[currentFrame].get() });
+        renderTarget->present({ renderFinishedSemaphores[currentFrame].get() });
 
         //Advance to the next frame
         currentFrame = (currentFrame + 1) % maxFramesInFlight;

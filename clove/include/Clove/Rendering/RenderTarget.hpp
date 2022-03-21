@@ -7,8 +7,7 @@
 
 namespace clove {
     class GhaSemaphore;
-    class FrameBuffer;
-    struct GraphicsSubmitInfo;
+    class GhaImage;
 }
 
 namespace clove {
@@ -46,23 +45,24 @@ namespace clove {
          * @param signalSemaphore A semaphore this RenderTarget will signal when the image is ready to render to. Can be nullptr.
          * @return Returns the image index for the getImageViews array.
          */
-        virtual Expected<uint32_t, std::string> aquireNextImage(GhaSemaphore const *const signalSemaphore) = 0;
+        virtual Expected<GhaImage *, std::string> aquireNextImage(GhaSemaphore const *const signalSemaphore) = 0;
+
+        virtual uint32_t getCurrentImageIndex() const = 0;
 
         /**
          * @brief Presents the render target with imageIndex.
          * @param imageIndex The image index of the getImageViews array this submission is for.
          * @param waitSemaphores Semaphores the RenderTarget will wait on before beginning presentation logic.
          */
-        virtual void present(uint32_t imageIndex, std::vector<GhaSemaphore const *> waitSemaphores) = 0;
+        virtual void present(std::vector<GhaSemaphore const *> waitSemaphores) = 0;
 
         virtual GhaImage::Format getImageFormat() const = 0;
         virtual vec2ui getSize() const                  = 0;
 
         /**
-         * @brief Returns the image views backing this RenderTarget. The lifetime of the views
-         * are tied to this object.
+         * @brief Returns the amount of images this render target is backed by.
          * @return 
          */
-        virtual std::vector<GhaImage *> getImages() const = 0;
+        virtual uint32_t getImageCount() const = 0;
     };
 }

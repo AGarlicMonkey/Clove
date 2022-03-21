@@ -27,7 +27,6 @@ namespace clove {
 
         uint32_t imageCount{};
         std::unique_ptr<GhaSwapchain> swapchain;
-        std::unique_ptr<GhaPresentQueue> presentQueue;
 
         vec2ui windowSize{};
         DelegateHandle windowResizeHandle;
@@ -47,14 +46,16 @@ namespace clove {
 
         ~SwapchainRenderTarget();
 
-        Expected<uint32_t, std::string> aquireNextImage(GhaSemaphore const *const signalSemaphore) override;
+        Expected<GhaImage *, std::string> aquireNextImage(GhaSemaphore const *const signalSemaphore) override;
 
-        void present(uint32_t imageIndex, std::vector<GhaSemaphore const *> waitSemaphores) override;
+        uint32_t getCurrentImageIndex() const override;
+
+        void present(std::vector<GhaSemaphore const *> waitSemaphores) override;
 
         GhaImage::Format getImageFormat() const override;
         vec2ui getSize() const override;
 
-        std::vector<GhaImage *> getImages() const override;
+        uint32_t getImageCount() const override;
 
     private:
         void onSurfaceSizeChanged(vec2ui const &size);
