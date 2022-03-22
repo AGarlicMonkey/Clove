@@ -19,6 +19,9 @@ add_library(
         ${INCLUDE}/FileSystemHelpers.hpp
         ${SOURCE}/FileSystemHelpers.cpp
 
+        ${INCLUDE}/ReflectionHelpers.hpp
+        ${SOURCE}/ReflectionHelpers.cpp
+
         ${INCLUDE}/NameComponent.hpp
 )
 

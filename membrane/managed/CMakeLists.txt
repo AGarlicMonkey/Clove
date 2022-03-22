@@ -6,6 +6,7 @@ add_library(
 
     ${SOURCE}/Application.cs
     ${SOURCE}/FileSystemHelpers.cs
+    ${SOURCE}/ReflectionHelpers.cs
 )
 
 #Libraries

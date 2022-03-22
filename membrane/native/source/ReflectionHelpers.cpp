@@ -1,13 +1,61 @@
 #include "Membrane/ReflectionHelpers.hpp"
 
-#include "Membrane/MembraneLog.hpp"
-
 #include <Clove/ReflectionAttributes.hpp>
-#include <msclr/marshal_cppstd.h>
+#include <Clove/Log/Log.hpp>
+
+CLOVE_DECLARE_LOG_CATEGORY(MembraneReflection)
 
 using namespace clove;
 
+void getEditorVisibleComponents(EditorTypeInfo *outInfos, uint32_t &numInfos) {
+    std::vector<reflection::TypeInfo const *> visibleComponents{ reflection::getTypesWithAttribute<EditorVisibleComponent>() };
+
+    if(outInfos == nullptr) {
+        numInfos = visibleComponents.size();
+    } else {
+        CLOVE_LOG(MembraneReflection, LogLevel::Trace, "{0} called with an array of {1} EditorTypeInfos as an output", CLOVE_FUNCTION_NAME, numInfos);
+
+        EditorTypeInfo *iter{ outInfos };
+
+        for(size_t i{ 0 }; i < numInfos; ++i) {
+            reflection::TypeInfo const *typeInfo{ visibleComponents[i] };
+            auto const attribute{ typeInfo->attributes.get<EditorVisibleComponent>().value() };
+
+            *iter = EditorTypeInfo{
+                .typeName    = typeInfo->name,
+                .displayName = attribute.name.value_or(typeInfo->name),
+            };
+            ++iter;
+        }
+    }
+}
+
+void getEditorVisibleSubSystems(EditorTypeInfo *outInfos, uint32_t &numInfos) {
+    std::vector<reflection::TypeInfo const *> visibleSubSystems{ reflection::getTypesWithAttribute<EditorVisibleSubSystem>() };
+
+    if(outInfos == nullptr) {
+        numInfos = visibleSubSystems.size();
+    } else {
+        CLOVE_LOG(MembraneReflection, LogLevel::Trace, "{0} called with an array of {1} EditorTypeInfos as an output", CLOVE_FUNCTION_NAME, numInfos);
+
+        EditorTypeInfo *iter{ outInfos };
+
+        for(size_t i{ 0 }; i < numInfos; ++i) {
+            reflection::TypeInfo const *typeInfo{ visibleSubSystems[i] };
+            auto const attribute{ typeInfo->attributes.get<EditorVisibleSubSystem>().value() };
+
+            *iter = EditorTypeInfo{
+                .typeName    = typeInfo->name,
+                .displayName = attribute.name.value_or(typeInfo->name),
+            };
+            ++iter;
+        }
+    }
+}
+
 namespace membrane {
+
+    /*
     System::Collections::Generic::List<AvailableTypeInfo ^> ^ReflectionHelper::getEditorVisibleComponents() {
         System::Collections::Generic::List<AvailableTypeInfo ^> ^list { gcnew System::Collections::Generic::List<AvailableTypeInfo ^>{} };
 
@@ -202,4 +250,5 @@ namespace membrane {
             }
         }
     }
+    */
 }
