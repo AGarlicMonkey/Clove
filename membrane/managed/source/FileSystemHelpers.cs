@@ -30,7 +30,7 @@ namespace Membrane {
         [DllImport("MembraneNative.dll", EntryPoint = "getAssetFileType", CharSet = CharSet.Unicode)]
         public static extern FileType GetAssetFileType(string fullFilePath);
         [DllImport("MembraneNative.dll", EntryPoint = "getAssetFileGuid", CharSet = CharSet.Unicode)]
-        public static extern uint GetAssetFileGuid(string fullFilePath);
+        public static extern ulong GetAssetFileGuid(string fullFilePath);
 
         [DllImport("MembraneNative.dll", CharSet = CharSet.Unicode)]
         private static extern int getFileType(string file);
