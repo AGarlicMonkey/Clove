@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 
-namespace Bulb {
+namespace Membrane {
     [StructLayout(LayoutKind.Sequential)]
     public struct TypeInfo {
         string typeName;
