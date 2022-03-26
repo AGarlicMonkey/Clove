@@ -285,7 +285,7 @@ namespace clove {
                 .sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO,
 #if CLOVE_GHA_VALIDATION
                 .pNext                = &debugMessengerCreateInfo,//Setting the pNext allows us to debug the creation and destruction of the instance (as normaly we need an instance pointer to enable debugging)
-                    .pApplicationInfo = &appInfo,
+                .pApplicationInfo     = &appInfo,
                 .enabledLayerCount    = static_cast<uint32_t>(std::size(validationLayers)),
                 .ppEnabledLayerNames  = std::data(validationLayers),
 #else
@@ -371,8 +371,8 @@ namespace clove {
         std::vector<char const *> deviceExtensions {
             VK_KHR_SWAPCHAIN_EXTENSION_NAME,
 
-#if CLOVE_GHA_VALIDATION
-                VK_EXT_MEMORY_BUDGET_EXTENSION_NAME,
+#if CLOVE_GHA_MEMORY_DEBUG
+            VK_EXT_MEMORY_BUDGET_EXTENSION_NAME,
 #endif
         };
 
@@ -402,10 +402,10 @@ namespace clove {
                 deviceScores[getDeviceScore(device, surface, deviceExtensions)] = device;
             }
 
-            if(deviceScores.rbegin()->first > 0){
+            if(deviceScores.rbegin()->first > 0) {
                 physicalDevice = deviceScores.rbegin()->second;
             }
-            
+
             if(physicalDevice == VK_NULL_HANDLE) {
                 return Unexpected{ std::runtime_error{ "Failed to create initialise Vulkan. Could not find a suitable device." } };
             }
@@ -413,7 +413,7 @@ namespace clove {
             {
                 VkPhysicalDeviceProperties devicePoperties{};
                 vkGetPhysicalDeviceProperties(physicalDevice, &devicePoperties);
-                CLOVE_LOG(CloveGhaVulkan, LogLevel::Debug, "Selecting '{0}'", devicePoperties.deviceName);
+                CLOVE_LOG(CloveGhaVulkan, LogLevel::Trace, "Selecting '{0}'", devicePoperties.deviceName);
             }
 
             {
@@ -428,7 +428,7 @@ namespace clove {
                 CLOVE_LOG(CloveGhaVulkan, LogLevel::Trace, "\tGraphics:\tid: {0}, count: {1}", *queueFamilyIndices.graphicsFamily, queueFamilies[*queueFamilyIndices.graphicsFamily].queueCount);
                 if(queueFamilyIndices.presentFamily.has_value()) {
                     CLOVE_LOG(CloveGhaVulkan, LogLevel::Trace, "\tPresent:\tid: {0}, count: {1}", *queueFamilyIndices.presentFamily, queueFamilies[*queueFamilyIndices.presentFamily].queueCount);
-                }else{
+                } else {
                     CLOVE_LOG(CloveGhaVulkan, LogLevel::Trace, "\tPresent:\tNOT REQUIRED");
                 }
                 CLOVE_LOG(CloveGhaVulkan, LogLevel::Trace, "\tCompute:\tid: {0}, count: {1}", *queueFamilyIndices.asyncComputeFamily, queueFamilies[*queueFamilyIndices.asyncComputeFamily].queueCount);
@@ -487,7 +487,7 @@ namespace clove {
 
 #if CLOVE_GHA_VALIDATION
                 //We don't need to do this as device specific validation layers are no more. But seeing as it's the same data we can reuse them to support older versions
-                    .enabledLayerCount = static_cast<uint32_t>(validationLayers.size()),
+                .enabledLayerCount = static_cast<uint32_t>(validationLayers.size()),
                 .ppEnabledLayerNames   = validationLayers.data(),
 #else
                 .enabledLayerCount = 0,

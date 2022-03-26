@@ -25,6 +25,9 @@ namespace clove {
 #if CLOVE_GHA_VALIDATION
         CLOVE_LOG(CloveGhaValidation, LogLevel::Debug, "GHA validation enabled.");
 #endif
+#if CLOVE_GHA_MEMORY_DEBUG
+        CLOVE_LOG(CloveGha, LogLevel::Debug, "GHA memory debug enabled.");
+#endif
 
         std::unique_ptr<GhaDevice> device{ nullptr };
         switch(api) {
