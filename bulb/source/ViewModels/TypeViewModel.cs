@@ -2,8 +2,6 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Windows;
 
-using Membrane = membrane;
-
 namespace Bulb {
     /// <summary>
     /// Viewmodel for each editor visible type.
