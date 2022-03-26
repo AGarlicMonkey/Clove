@@ -1,15 +1,14 @@
-using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 
 namespace Membrane {
     [StructLayout(LayoutKind.Sequential)]
     public struct TypeInfo {
-        string typeName;
-        string displayName;
+        public string typeName;
+        public string displayName;
     }
 
-    public class ReflectionHelpers {
+    public class Reflection {
         public static List<TypeInfo> GetEditorVisibleComponents() {
             uint numInfos = 0;
             getEditorVisibleComponents(null, ref numInfos);

@@ -1,7 +1,7 @@
-#include "Membrane/ReflectionHelpers.hpp"
+#include "Membrane/Reflection.hpp"
 
-#include <Clove/ReflectionAttributes.hpp>
 #include <Clove/Log/Log.hpp>
+#include <Clove/ReflectionAttributes.hpp>
 
 CLOVE_DECLARE_LOG_CATEGORY(MembraneReflection)
 

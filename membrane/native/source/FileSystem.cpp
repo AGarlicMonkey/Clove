@@ -1,4 +1,4 @@
-#include "Membrane/FileSystemHelpers.hpp"
+#include "Membrane/FileSystem.hpp"
 
 #include <Clove/Application.hpp>
 #include <Clove/FileSystem/AssetManager.hpp>
@@ -14,7 +14,7 @@
 using namespace clove;
 
 namespace {
-    //Required to mirror convertFileTypeToInt in FileSystemHelpers.cs
+    //Required to mirror convertFileTypeToInt in FileSystem.cs
     constexpr int32_t FILETYPE_UNKNOWN{ -1 };
     constexpr int32_t FILETYPE_MESH{ 0 };
     constexpr int32_t FILETYPE_TEXTURE{ 1 };

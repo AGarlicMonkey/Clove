@@ -7,7 +7,7 @@ namespace Membrane {
         Texture,
     }
 
-    public class FileSystemHelpers {
+    public class FileSystem {
         [DllImport("MembraneNative.dll", EntryPoint = "getContentPath")]
         [return: MarshalAs(UnmanagedType.BStr)]
         public static extern string GetContentPath();

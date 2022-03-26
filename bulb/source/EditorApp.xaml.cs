@@ -18,7 +18,7 @@ namespace Bulb {
             Membrane.Application.LoadGameDll();
             Membrane.Application.StartSession();
 
-            sessionViewModel.Start(Membrane.FileSystemHelpers.GetContentPath()); //TEMP: Remove with multiple window support
+            sessionViewModel.Start(Membrane.FileSystem.GetContentPath()); //TEMP: Remove with multiple window support
 
             return href;
         }

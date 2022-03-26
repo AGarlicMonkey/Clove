@@ -55,12 +55,12 @@ namespace Bulb {
             if (File.GetAttributes(file).HasFlag(FileAttributes.Directory)) {
                 return true;
             } else {
-                return Path.GetDirectoryName(file) != FullPath && FileSystemHelpers.IsFileSupported(file);
+                return Path.GetDirectoryName(file) != FullPath && FileSystem.IsFileSupported(file);
             }
         }
 
         public override void OnFileDropped(string file) {
-            if (!FileSystemHelpers.IsAssetFile(file) && FileSystemHelpers.IsFileSupported(file)) {
+            if (!FileSystem.IsAssetFile(file) && FileSystem.IsFileSupported(file)) {
                 //Create an asset file from the external dropped file
                 string fileName = Path.GetFileNameWithoutExtension(file);
                 string assetFileLocation = $"{FullPath}{Path.DirectorySeparatorChar}{fileName}.clvasset";
@@ -68,7 +68,7 @@ namespace Bulb {
 
                 string vfsPath = $"{VfsPath}/{Path.GetFileName(file)}".Replace($"content/", ""); //Remove 'content' from the desired VFS path as this is where the VFS searches from
 
-                FileSystemHelpers.CreateAssetFile(assetFileLocation, file, fileRelativePath, vfsPath);
+                FileSystem.CreateAssetFile(assetFileLocation, file, fileRelativePath, vfsPath);
 
                 AddItem(new FileViewModel(new FileInfo(assetFileLocation), parent: this));
             }
@@ -123,7 +123,7 @@ namespace Bulb {
         private void OnItemDeleted(DirectoryItemViewModel item) {
             if (item is FileViewModel fileVm) {
                 RemoveItem(fileVm);
-                FileSystemHelpers.RemoveAssetFile(fileVm.AssetGuid, fileVm.AssetType);
+                FileSystem.RemoveAssetFile(fileVm.AssetGuid, fileVm.AssetType);
                 File.Delete(fileVm.FullPath);
             } else if (item is FolderViewModel folderVm) {
                 RemoveItem(folderVm);
@@ -175,7 +175,7 @@ namespace Bulb {
         /// <param name="folderVm"></param>
         private void RemoveAllFilesInDirectory(FolderViewModel folderVm) {
             foreach (FileViewModel file in folderVm.Files) {
-               FileSystemHelpers.RemoveAssetFile(file.AssetGuid, file.AssetType);
+               FileSystem.RemoveAssetFile(file.AssetGuid, file.AssetType);
             }
             foreach (FolderViewModel folder in folderVm.SubDirectories) {
                 RemoveAllFilesInDirectory(folder);

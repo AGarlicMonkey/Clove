@@ -36,7 +36,7 @@
         bool dragDropOnly{ false };
     };
     */
-
+   
 struct EditorTypeInfo {
     std::string typeName{};
     std::string displayName{};

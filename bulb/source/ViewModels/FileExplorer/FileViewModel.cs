@@ -17,8 +17,8 @@ namespace Bulb {
 
         public FileViewModel(FileInfo file, FolderViewModel parent)
             : base(file.Name, file.FullName, parent) {
-            AssetGuid = FileSystemHelpers.GetAssetFileGuid(FullPath);
-            AssetType = FileSystemHelpers.GetAssetFileType(FullPath);
+            AssetGuid = FileSystem.GetAssetFileGuid(FullPath);
+            AssetType = FileSystem.GetAssetFileType(FullPath);
         }
 
         public override void Rename(string newName) {
@@ -27,7 +27,7 @@ namespace Bulb {
 
             File.Move(FullPath, newPath);
 
-            FileSystemHelpers.MoveAssetFile(FullPath, newPath);
+            FileSystem.MoveAssetFile(FullPath, newPath);
 
             Name = newFileName;
             FullPath = newPath;
@@ -37,7 +37,7 @@ namespace Bulb {
             string newPath = $"{Parent.FullPath}{Path.DirectorySeparatorChar}{Name}";
 
             if (newPath != FullPath) {
-                FileSystemHelpers.MoveAssetFile(FullPath, newPath);
+                FileSystem.MoveAssetFile(FullPath, newPath);
 
                 FullPath = newPath;
             }

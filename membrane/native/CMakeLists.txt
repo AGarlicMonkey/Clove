@@ -16,11 +16,12 @@ add_library(
 
         ${INCLUDE}/Export.hpp
 
-        ${INCLUDE}/FileSystemHelpers.hpp
-        ${SOURCE}/FileSystemHelpers.cpp
-
-        ${INCLUDE}/ReflectionHelpers.hpp
-        ${SOURCE}/ReflectionHelpers.cpp
+        ${INCLUDE}/FileSystem.hpp
+        ${SOURCE}/FileSystem.cpp
+        #${INCLUDE}/Log.hpp
+        #${SOURCE}/Log.cpp
+        ${INCLUDE}/Reflection.hpp
+        ${SOURCE}/Reflection.cpp
 
         ${INCLUDE}/NameComponent.hpp
 )

@@ -5,8 +5,9 @@ add_library(
     MembraneManaged SHARED
 
     ${SOURCE}/Application.cs
-    ${SOURCE}/FileSystemHelpers.cs
-    ${SOURCE}/ReflectionHelpers.cs
+    ${SOURCE}/FileSystem.cs
+    #${SOURCE}/Log.cs
+    ${SOURCE}/Reflection.cs
 )
 
 #Libraries
