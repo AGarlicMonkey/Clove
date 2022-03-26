@@ -21,11 +21,16 @@ public ref class Application {
 
         bool isInEditorMode{ true };
 
+        System::String ^projectFile{};
+        System::String ^gameName{}; /**< The name of the game module's cmake target */
+        System::String ^gameSourceDir{};
+        System::String ^gameContentDir{};
+
         HINSTANCE gameLibrary{ nullptr };
 
         //FUNCTIONS
     public:
-        Application();
+        Application(System::String ^projectFile);
         ~Application();
         !Application();
 
@@ -46,6 +51,6 @@ public ref class Application {
         void setEditorMode(Editor_Stop ^message);
         void setRuntimeMode(Editor_Play ^message);
 
-        bool tryLoadGameDll(std::string_view path);
+        bool tryLoadGameDll(std::filesystem::path const &path);
     };
 }

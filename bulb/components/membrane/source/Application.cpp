@@ -19,19 +19,6 @@
 #include <Clove/Serialisation/Node.hpp>
 #include <Clove/Serialisation/Yaml.hpp>
 
-#ifndef GAME_OUTPUT_DIR
-    #define GAME_OUTPUT_DIR ""
-#endif
-#ifndef GAME_NAME
-    #define GAME_NAME ""
-#endif
-#ifndef GAME_MODULE_DIR
-    #define GAME_MODULE_DIR ""
-#endif
-#ifndef GAME_DIR
-    #define GAME_DIR ""
-#endif
-
 typedef void (*OnModuleLoadedFn)();
 typedef void (*OnModuleRemovedFn)();
 
@@ -39,14 +26,22 @@ typedef void (*LinkApplicationFn)(clove::Application *app);
 typedef void (*LinkLoggerFn)(clove::Logger *logger);
 typedef void (*LinkReflectionFn)(clove::reflection::internal::Registry *reg);
 
-namespace {
-    std::string_view constexpr dllPath{ GAME_MODULE_DIR "/" GAME_NAME ".dll" };
-}
+using namespace clove;
 
 namespace membrane {
-    static std::filesystem::path const cachedProjectsPath{ "projects.yaml" };
+    Application::Application(System::String ^projectFile) 
+        : projectFile{ projectFile } {
+        std::filesystem::path const projectFilePath{ msclr::interop::marshal_as<std::string>(projectFile) };
 
-    Application::Application() {}
+        if(!std::filesystem::exists(projectFilePath)) {
+            throw gcnew System::IO::FileNotFoundException("Could not find project file", projectFile);
+        }
+
+        auto result{ loadYaml(projectFilePath).getValue() };
+        gameName = gcnew System::String{ result["project"]["name"].as<std::string>().c_str() };
+        gameSourceDir = gcnew System::String{ std::filesystem::path{ projectFilePath.parent_path() / "source" }.c_str() };
+        gameContentDir = gcnew System::String{ std::filesystem::path{ projectFilePath.parent_path() / "content" }.c_str() };
+    }
 
     Application::~Application() {
         this->!Application();
@@ -57,27 +52,17 @@ namespace membrane {
     }
 
     void Application::loadGameDll() {
-        std::filesystem::path const gameOutputDir{ GAME_OUTPUT_DIR };
-        if(gameOutputDir.empty()) {
-            CLOVE_LOG(Membrane, clove::LogLevel::Error, "GAME_OUTPUT_DIR is not defined. Please define this for BulbMembrane and point it to build output location.");
-            return;
-        }
+        //marshal_as does not like member variables
+        System::String ^gameCopy{ gameName };
+        System::String ^sourceCopy{ gameSourceDir };
 
-        std::string const gameName{ GAME_NAME };
-        if(gameName.empty()) {
-            CLOVE_LOG(Membrane, clove::LogLevel::Error, "GAME_NAME is not defined. Please define this for BulbMembrane to provide the name of the target to build.");
-            return;
-        }
-
-        std::filesystem::path const gameModuleDir{ GAME_MODULE_DIR };
-        if(gameModuleDir.empty()) {
-            CLOVE_LOG(Membrane, clove::LogLevel::Error, "GAME_MODULE_DIR is not defined. Please define this for BulbMembrane and point it to the game dll to load.");
-            return;
-        }
+        std::string const nativeName{ msclr::interop::marshal_as<std::string>(gameCopy) };
+        std::filesystem::path const nativeSourcePath{ msclr::interop::marshal_as<std::string>(sourceCopy) };
+        std::filesystem::path const dllPath{ std::filesystem::current_path() / (nativeName + ".dll") };
 
         std::optional<std::filesystem::path> fallbackDll{};
         if(gameLibrary != nullptr) {
-            CLOVE_LOG(Membrane, clove::LogLevel::Trace, "Unloading {0} to prepare for compilation and reload", gameName);
+            CLOVE_LOG(Membrane, clove::LogLevel::Trace, "Unloading {0} to prepare for compilation and reload", nativeName);
 
             if(OnModuleRemovedFn onModuleRemoved{ (OnModuleRemovedFn)GetProcAddress(gameLibrary, "onModuleRemoved") }; onModuleRemoved != nullptr) {
                 (onModuleRemoved)();
@@ -88,7 +73,7 @@ namespace membrane {
             FreeLibrary(gameLibrary);
 
             try {
-                fallbackDll = gameModuleDir / (gameName + "_copy.dll");
+                fallbackDll = std::filesystem::current_path() / (nativeName + "_copy.dll");
                 std::filesystem::copy_file(dllPath, fallbackDll.value(), std::filesystem::copy_options::overwrite_existing);
             } catch(std::exception e) {
                 CLOVE_LOG(Membrane, clove::LogLevel::Warning, "Could not create fallback dll:");
@@ -99,7 +84,7 @@ namespace membrane {
 
         std::filesystem::remove(dllPath);
 
-        CLOVE_LOG(Membrane, clove::LogLevel::Debug, "Configuring and compiling {0}", gameName);
+        CLOVE_LOG(Membrane, clove::LogLevel::Debug, "Configuring and compiling {0}", nativeName);
 
         {
             std::stringstream configureStream{};
@@ -108,8 +93,9 @@ namespace membrane {
         }
 
         {
+            //NOTE: The build path here is a bit of a hack as we know on windows we are in the bin/<CONFIG> dir
             std::stringstream buildStream{};
-            buildStream << "cmake --build " << gameOutputDir.string() << " --target " << gameName << " --config Debug";
+            buildStream << "cmake --build ../.." << " --target " << nativeName << " --config Debug";
             std::system(buildStream.str().c_str());
         }
 
@@ -127,13 +113,14 @@ namespace membrane {
             }
         }
 
-        CLOVE_LOG(Membrane, clove::LogLevel::Info, "Successfully loaded {0} dll", gameName);
+        CLOVE_LOG(Membrane, clove::LogLevel::Info, "Successfully loaded {0} dll", nativeName);
     }
 
     void Application::startSession() {
-        using namespace clove;
+        System::String ^copy{ projectFile };
+        std::filesystem::path const nativeProjectFile{ msclr::interop::marshal_as<std::string>(copy) };
 
-        auto result{ loadYaml(GAME_DIR "/" GAME_NAME ".clvproj") };
+        auto result{ loadYaml(nativeProjectFile) };
         if(result.hasValue()) {
             app->getAssetManager()->deserialise(result.getValue()["assets"]);
         }
@@ -150,15 +137,16 @@ namespace membrane {
     }
 
     void Application::shutdown() {
-        using namespace clove;
+        System::String ^copy{ projectFile };
+        std::filesystem::path const nativeProjectFile{ msclr::interop::marshal_as<std::string>(copy) };
 
-        serialiser::Node projectNode{};
+        serialiser::Node projectNode{ loadYaml(nativeProjectFile).getValue() };
         serialiser::Node &assetManagerNode{ projectNode["assets"] };
 
         app->getAssetManager()->serialise(assetManagerNode);
         app->shutdown();
 
-        std::ofstream fileStream{ GAME_DIR "/" GAME_NAME ".clvproj", std::ios::out | std::ios::trunc };
+        std::ofstream fileStream{ nativeProjectFile, std::ios::out | std::ios::trunc };
         fileStream << emittYaml(projectNode);
     }
 
@@ -173,12 +161,12 @@ namespace membrane {
     }
 
     System::IntPtr Application::createChildWindow(System::IntPtr parent, int32_t width, int32_t height) {
-        using namespace clove;
+        System::String ^copy{ gameContentDir };
+        std::filesystem::path const nativeContentDir{ msclr::interop::marshal_as<std::string>(copy) };
 
-        std::filesystem::path const contentDir{ GAME_DIR "/content" };
-        auto vfs{ std::make_unique<EditorVFS>(contentDir) };
-        if(!std::filesystem::exists(contentDir)) {
-            std::filesystem::create_directories(contentDir);
+        auto vfs{ std::make_unique<EditorVFS>(nativeContentDir) };
+        if(!std::filesystem::exists(nativeContentDir)) {
+            std::filesystem::create_directories(nativeContentDir);
         }
 
         //TEMP: Create the application here. It would be better to initialise Clove when creating this instance but it is currently tightly couple to having a window open.
@@ -200,8 +188,8 @@ namespace membrane {
         app->pushSubSystem<RuntimeSubSystem>(app->getEntityManager());
     }
 
-    bool Application::tryLoadGameDll(std::string_view path) {
-        if(gameLibrary = LoadLibrary(path.data()); gameLibrary != nullptr) {
+    bool Application::tryLoadGameDll(std::filesystem::path const &path) {
+        if(gameLibrary = LoadLibrary(path.string().c_str()); gameLibrary != nullptr) {
             //Set up module's application
             if(LinkApplicationFn linkAppProc{ (LinkApplicationFn)GetProcAddress(gameLibrary, "linkApplication") }) {
                 linkAppProc(&clove::Application::get());
@@ -235,7 +223,7 @@ namespace membrane {
                 CLOVE_LOG(Membrane, clove::LogLevel::Trace, "onModuleLoaded function not defined in client application.");
             }
         } else {
-            CLOVE_LOG(Membrane, clove::LogLevel::Error, "Could not load game dll. File does not exist");
+            CLOVE_LOG(Membrane, clove::LogLevel::Error, "Could not load game dll. File does not exist: {0}", path.string());
             return false;
         }
 
