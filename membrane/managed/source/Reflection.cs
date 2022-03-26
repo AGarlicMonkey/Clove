@@ -4,7 +4,9 @@ using System.Runtime.InteropServices;
 namespace Membrane {
     [StructLayout(LayoutKind.Sequential)]
     public struct TypeInfo {
+        [MarshalAs(UnmanagedType.BStr)]
         public string typeName;
+        [MarshalAs(UnmanagedType.BStr)]
         public string displayName;
     }
 
@@ -27,9 +29,9 @@ namespace Membrane {
             return new List<TypeInfo>(infos);
         }
 
-        [DllImport("MembraneNative.dll")]
-        private extern static void getEditorVisibleComponents([Out] TypeInfo[] data, ref uint num);
-        [DllImport("MembraneNative.dll")]
-        private extern static void getEditorVisibleSubSystems([Out] TypeInfo[] data, ref uint num);
+        [DllImport("MembraneNative.dll", CharSet = CharSet.Unicode)]
+        private extern static void getEditorVisibleComponents([MarshalAs(UnmanagedType.LPArray)][Out] TypeInfo[] data, ref uint num);
+        [DllImport("MembraneNative.dll", CharSet = CharSet.Unicode)]
+        private extern static void getEditorVisibleSubSystems([MarshalAs(UnmanagedType.LPArray)][Out] TypeInfo[] data, ref uint num);
     }
 }

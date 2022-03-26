@@ -3,11 +3,13 @@
 #include <Clove/Log/Log.hpp>
 #include <Clove/ReflectionAttributes.hpp>
 
+#include <codecvt>
+
 CLOVE_DECLARE_LOG_CATEGORY(MembraneReflection)
 
 using namespace clove;
 
-void getEditorVisibleComponents(EditorTypeInfo *outInfos, uint32_t &numInfos) {
+void getEditorVisibleComponents(EditorTypeInfo outInfos[], uint32_t &numInfos) {
     std::vector<reflection::TypeInfo const *> visibleComponents{ reflection::getTypesWithAttribute<EditorVisibleComponent>() };
 
     if(outInfos == nullptr) {
@@ -15,22 +17,21 @@ void getEditorVisibleComponents(EditorTypeInfo *outInfos, uint32_t &numInfos) {
     } else {
         CLOVE_LOG(MembraneReflection, LogLevel::Trace, "{0} called with an array of {1} EditorTypeInfos as an output", CLOVE_FUNCTION_NAME, numInfos);
 
-        EditorTypeInfo *iter{ outInfos };
+        std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> stringConverter{};
 
         for(size_t i{ 0 }; i < numInfos; ++i) {
             reflection::TypeInfo const *typeInfo{ visibleComponents[i] };
             auto const attribute{ typeInfo->attributes.get<EditorVisibleComponent>().value() };
 
-            *iter = EditorTypeInfo{
-                .typeName    = typeInfo->name,
-                .displayName = attribute.name.value_or(typeInfo->name),
+            outInfos[i] = EditorTypeInfo{
+                .typeName    = SysAllocString(stringConverter.from_bytes(typeInfo->name).c_str()),
+                .displayName = SysAllocString(stringConverter.from_bytes(attribute.name.value_or(typeInfo->name)).c_str()),
             };
-            ++iter;
         }
     }
 }
 
-void getEditorVisibleSubSystems(EditorTypeInfo *outInfos, uint32_t &numInfos) {
+void getEditorVisibleSubSystems(EditorTypeInfo outInfos[], uint32_t &numInfos) {
     std::vector<reflection::TypeInfo const *> visibleSubSystems{ reflection::getTypesWithAttribute<EditorVisibleSubSystem>() };
 
     if(outInfos == nullptr) {
@@ -38,17 +39,16 @@ void getEditorVisibleSubSystems(EditorTypeInfo *outInfos, uint32_t &numInfos) {
     } else {
         CLOVE_LOG(MembraneReflection, LogLevel::Trace, "{0} called with an array of {1} EditorTypeInfos as an output", CLOVE_FUNCTION_NAME, numInfos);
 
-        EditorTypeInfo *iter{ outInfos };
+        std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> stringConverter{};
 
         for(size_t i{ 0 }; i < numInfos; ++i) {
             reflection::TypeInfo const *typeInfo{ visibleSubSystems[i] };
             auto const attribute{ typeInfo->attributes.get<EditorVisibleSubSystem>().value() };
 
-            *iter = EditorTypeInfo{
-                .typeName    = typeInfo->name,
-                .displayName = attribute.name.value_or(typeInfo->name),
+            outInfos[i] = EditorTypeInfo{
+                .typeName    = SysAllocString(stringConverter.from_bytes(typeInfo->name).c_str()),
+                .displayName = SysAllocString(stringConverter.from_bytes(attribute.name.value_or(typeInfo->name)).c_str()),
             };
-            ++iter;
         }
     }
 }

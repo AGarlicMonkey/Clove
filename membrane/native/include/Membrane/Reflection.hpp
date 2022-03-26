@@ -5,6 +5,7 @@
 #include <Clove/Reflection/Reflection.hpp>
 #include <Clove/Serialisation/Node.hpp>
 #include <string>
+#include <wtypes.h>
 
 /*
     public enum class EditorTypeType{
@@ -36,10 +37,10 @@
         bool dragDropOnly{ false };
     };
     */
-   
+
 struct EditorTypeInfo {
-    std::string typeName{};
-    std::string displayName{};
+    BSTR typeName{};
+    BSTR displayName{};
 };
 
 /**
@@ -50,7 +51,7 @@ struct EditorTypeInfo {
  * @param numInfos Will either return the amount of visible components or decide how many to return (See brief).
  * @return 
  */
-MEMBRANE_EXPORT void getEditorVisibleComponents(EditorTypeInfo *outInfos, uint32_t &numInfos);
+MEMBRANE_EXPORT void getEditorVisibleComponents(EditorTypeInfo outInfos[], uint32_t &numInfos);
 /**
  * @brief This function has two ways to be called. If outInfos is nullptr then it will populate
  * numInfos with how many components are visible. If outInfos is not nullptr then it will
@@ -59,7 +60,7 @@ MEMBRANE_EXPORT void getEditorVisibleComponents(EditorTypeInfo *outInfos, uint32
  * @param numInfos Will either return the amount of visible subsystems or decide how many to return (See brief).
  * @return 
  */
-MEMBRANE_EXPORT void getEditorVisibleSubSystems(EditorTypeInfo *outInfos, uint32_t &numInfos);
+MEMBRANE_EXPORT void getEditorVisibleSubSystems(EditorTypeInfo outInfos[], uint32_t &numInfos);
 
 namespace membrane {
     /*
