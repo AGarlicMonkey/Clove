@@ -24,13 +24,12 @@ namespace Bulb {
         }
 
         private void EditorStartup(object sender, StartupEventArgs e) {
-            //Initialise the engine
-            Membrane.Application.Initialise();
-
             sessionViewModel = new EditorSessionViewModel(".");
             sessionViewModel.OnCompileGame = () => Membrane.Application.LoadGameDll();
 
-            // Membrane.Log.addSink((string message) => sessionViewModel.Log.LogText += message, "%v");
+            Membrane.Log.AddSink((string message) => sessionViewModel.Log.LogText += message, "%v");
+
+            Membrane.Application.Initialise();
 
             editorWindow = new MainWindow {
                 DataContext = sessionViewModel

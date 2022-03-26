@@ -1,26 +1,19 @@
 #pragma once
 
-namespace membrane {
-    public enum class LogLevel {
-        Trace,
-        Debug,
-        Info,
-        Warning,
-        Error,
-        Critical,
-    };
-}
+#include "Membrane/Export.hpp"
 
-namespace membrane {
-    public delegate void LogSink(System::String ^ message);
+#include <wtypes.h>
 
-    /**
-     * @brief Managed Logger wrapper design to be called from Bulb.
-     */
-    public ref class Log{
-    public:
-        static void write(LogLevel level, System::String ^ message);
+enum class LogLevel {
+    Trace,
+    Debug,
+    Info,
+    Warning,
+    Error,
+    Critical,
+};
 
-        static void addSink(LogSink ^ sink, System::String ^ pattern);
-    };
-}
+extern "C" typedef void(__stdcall *LogSink)(BSTR message);
+
+MEMBRANE_EXPORT void write(LogLevel logLevel, wchar_t const *message);
+MEMBRANE_EXPORT void addSink(LogSink sinkFp, wchar_t const *pattern);

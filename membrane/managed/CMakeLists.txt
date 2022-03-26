@@ -6,7 +6,7 @@ add_library(
 
     ${SOURCE}/Application.cs
     ${SOURCE}/FileSystem.cs
-    #${SOURCE}/Log.cs
+    ${SOURCE}/Log.cs
     ${SOURCE}/Reflection.cs
 )
 

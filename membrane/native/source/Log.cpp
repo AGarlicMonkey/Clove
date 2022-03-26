@@ -1,76 +1,79 @@
 #include "Membrane/Log.hpp"
 
 #include <Clove/Log/Log.hpp>
-#include <msclr/gcroot.h>
-#include <msclr/marshal_cppstd.h>
+#include <codecvt>
 #include <spdlog/details/log_msg.h>
-#include <spdlog/sinks/sink.h>
 #include <spdlog/pattern_formatter.h>
+#include <spdlog/sinks/sink.h>
 
 //Making the assumption that this library will only be used with Bulb
 CLOVE_DECLARE_LOG_CATEGORY(Bulb);
 
-namespace membrane {
-    namespace {
-        clove::LogLevel convertLevel(LogLevel level) {
-            switch(level) {
-                default:
-                case LogLevel::Trace:
-                    return clove::LogLevel::Trace;
-                case LogLevel::Debug:
-                    return clove::LogLevel::Debug;
-                case LogLevel::Info:
-                    return clove::LogLevel::Info;
-                case LogLevel::Warning:
-                    return clove::LogLevel::Warning;
-                case LogLevel::Error:
-                    return clove::LogLevel::Error;
-                case LogLevel::Critical:
-                    return clove::LogLevel::Critical;
-            }
+namespace {
+    clove::LogLevel convertLevel(LogLevel level) {
+        switch(level) {
+            default:
+            case LogLevel::Trace:
+                return clove::LogLevel::Trace;
+            case LogLevel::Debug:
+                return clove::LogLevel::Debug;
+            case LogLevel::Info:
+                return clove::LogLevel::Info;
+            case LogLevel::Warning:
+                return clove::LogLevel::Warning;
+            case LogLevel::Error:
+                return clove::LogLevel::Error;
+            case LogLevel::Critical:
+                return clove::LogLevel::Critical;
+        }
+    }
+
+    class FunctionPointerSink : public spdlog::sinks::sink {
+        //VARIABLES
+    private:
+        LogSink sinkFp{ nullptr };
+        std::unique_ptr<spdlog::formatter> formatter;
+
+        std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> stringConverter{};
+
+        //FUNCTIONS
+    public:
+        FunctionPointerSink(LogSink sinkFp)
+            : sinkFp{ sinkFp } {
         }
 
-        class DelegateSink : public spdlog::sinks::sink {
-            //VARIABLES
-        public:
-            msclr::gcroot<LogSink ^> sink;
-            std::unique_ptr<spdlog::formatter> formatter;
+        void log(spdlog::details::log_msg const &msg) override {
+            spdlog::memory_buf_t formatted;
+            formatter->format(msg, formatted);
 
-            //FUNCTIONS
-        public:
-            DelegateSink(msclr::gcroot<LogSink ^> sink)
-                : sink(std::move(sink)) {
-            }
+            std::wstring const wideMsg{ stringConverter.from_bytes(std::string{ formatted.data(), formatted.size() }) };
+            sinkFp(SysAllocString(wideMsg.c_str()));
+        }
 
-            void log(spdlog::details::log_msg const &msg) override {
-                spdlog::memory_buf_t formatted;
-                formatter->format(msg, formatted);
+        void flush() override {}
 
-                sink->Invoke(gcnew System::String(std::string{ formatted.data(), formatted.size() }.c_str()));
-            }
+        void set_pattern(std::string const &pattern) override {
+            set_formatter(spdlog::details::make_unique<spdlog::pattern_formatter>(pattern));
+        }
 
-            void flush() override {}
+        void set_formatter(std::unique_ptr<spdlog::formatter> formatter) override {
+            this->formatter = std::move(formatter);
+        }
+    };
+}
 
-            void set_pattern(std::string const &pattern) override {
-                set_formatter(spdlog::details::make_unique<spdlog::pattern_formatter>(pattern));
-            }
+void write(LogLevel logLevel, wchar_t const *message) {
+    std::string const narrowMsg{ std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>>{}.to_bytes(message) };
 
-            void set_formatter(std::unique_ptr<spdlog::formatter> sink_formatter) override {
-                formatter = std::move(sink_formatter);
-            }
-        };
-    }
+    CLOVE_LOG(Bulb, convertLevel(logLevel), narrowMsg);
+}
 
-    void Log::write(LogLevel level, System::String ^ message) {
-        CLOVE_LOG(Bulb, convertLevel(level), msclr::interop::marshal_as<std::string>(message));
-    }
+void addSink(LogSink sinkFp, wchar_t const *pattern) {
+    std::string const narrowPattern{ std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>>{}.to_bytes(pattern) };
 
-    void Log::addSink(LogSink ^ sink, System::String ^ pattern) {
-        auto delegateSink = std::make_shared<DelegateSink>(sink);
-        delegateSink->set_pattern(msclr::interop::marshal_as<std::string>(pattern));
+    auto sink{ std::make_shared<FunctionPointerSink>(sinkFp) };
+    sink->set_pattern(narrowPattern);
+    sink->set_level(spdlog::level::debug);
 
-        delegateSink->set_level(spdlog::level::debug);
-
-        clove::Logger::get().addSink(std::move(delegateSink));
-    }
+    clove::Logger::get().addSink(std::move(sink));
 }
