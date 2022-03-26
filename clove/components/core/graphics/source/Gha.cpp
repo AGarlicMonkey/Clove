@@ -25,6 +25,9 @@ namespace clove {
 #if CLOVE_GHA_VALIDATION
         CLOVE_LOG(CloveGhaValidation, LogLevel::Debug, "GHA validation enabled.");
 #endif
+#if CLOVE_GHA_MEMORY_DEBUG
+        CLOVE_LOG(CloveGha, LogLevel::Debug, "GHA memory debug enabled.");
+#endif
 
         std::unique_ptr<GhaDevice> device{ nullptr };
         switch(api) {
@@ -66,7 +69,7 @@ namespace clove {
 
         GhaDevice::Info const info{ device->getInfo() };
 
-        CLOVE_LOG(CloveGha, LogLevel::Trace, "GHA device created with a {0} backend.", info.ApiName);
+        CLOVE_LOG(CloveGha, LogLevel::Info, "GHA device created with a {0} backend.", info.ApiName);
         if(info.ApiVersion.has_value()) {
             CLOVE_LOG(CloveGha, LogLevel::Trace, "\tAPI:\t{0}.{1}.{2}", info.ApiVersion->major, info.ApiVersion->minor, info.ApiVersion->patch);
         }

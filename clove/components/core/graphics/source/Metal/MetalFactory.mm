@@ -14,7 +14,6 @@
 #include "Clove/Graphics/Metal/MetalGraphicsQueue.hpp"
 #include "Clove/Graphics/Metal/MetalImage.hpp"
 #include "Clove/Graphics/Metal/MetalImageView.hpp"
-#include "Clove/Graphics/Metal/MetalPresentQueue.hpp"
 #include "Clove/Graphics/Metal/MetalRenderPass.hpp"
 #include "Clove/Graphics/Metal/MetalSampler.hpp"
 #include "Clove/Graphics/Metal/MetalSemaphore.hpp"
@@ -168,21 +167,13 @@ namespace clove {
     Expected<std::unique_ptr<GhaComputeQueue>, std::runtime_error> MetalFactory::createComputeQueue() noexcept {
         return std::unique_ptr<GhaComputeQueue>{ createGhaObject<MetalComputeQueue>(graphicsPresentCommandQueue) };
     }
-
+    
     Expected<std::unique_ptr<GhaComputeQueue>, std::runtime_error> MetalFactory::createAsyncComputeQueue() noexcept {
         return std::unique_ptr<GhaComputeQueue>{ createGhaObject<MetalComputeQueue>(asyncComputeCommandQueue) };
     }
-
+    
     Expected<std::unique_ptr<GhaTransferQueue>, std::runtime_error> MetalFactory::createTransferQueue() noexcept {
         return std::unique_ptr<GhaTransferQueue>{ createGhaObject<MetalTransferQueue>(transferCommandQueue) };
-    }
-
-    Expected<std::unique_ptr<GhaPresentQueue>, std::runtime_error> MetalFactory::createPresentQueue() noexcept {
-        if(view == nullptr) {
-            return Unexpected{ std::runtime_error{ "Presentation queue not available. GhaDevice is likely headless" } };
-        }
-        
-        return std::unique_ptr<GhaPresentQueue>{ createGhaObject<MetalPresentQueue>(graphicsPresentCommandQueue, view) };
     }
     
     Expected<std::unique_ptr<GhaSwapchain>, std::runtime_error> MetalFactory::createSwapChain(GhaSwapchain::Descriptor descriptor) noexcept {
@@ -190,7 +181,6 @@ namespace clove {
             return Unexpected{ std::runtime_error{ "GhaSwapchain is not available. GhaDevice is likely headless" } };
         }
         
-        std::vector<std::unique_ptr<GhaImage>> swapchainImages{};
         GhaImage::Format const drawableFormat{ MetalImage::convertFormat([view.metalLayer pixelFormat]) }; //Needs to be the same as the target for when we blit in the present queue
         
         GhaImage::Descriptor const imageDescriptor{
@@ -201,26 +191,19 @@ namespace clove {
             .sharingMode = SharingMode::Concurrent,
         };
         
-        GhaImageView::Descriptor const imageViewDescriptor{
-            .type = GhaImageView::Type::_2D,
-        };
+        std::vector<std::unique_ptr<MetalImage>> swapchainImages{};
+        swapchainImages.reserve(descriptor.imageCount);
         
-        //Creating 3 back buffers for now. Will need to synchronise this number across APIs.
-        size_t constexpr swapchainImageCount{ 3 };
-        
-        swapchainImages.reserve(swapchainImageCount);
-        for(size_t i{ 0 }; i < swapchainImageCount; ++i) {
+        for(size_t i{ 0 }; i < descriptor.imageCount; ++i) {
             Expected<std::unique_ptr<GhaImage>, std::runtime_error> imageResult{ createImage(imageDescriptor) };
             if(imageResult.hasValue()) {
-                swapchainImages.emplace_back(std::move(imageResult.getValue()));
+                swapchainImages.emplace_back(std::unique_ptr<MetalImage>{ polyCast<MetalImage>(imageResult.getValue().release()) });
             } else {
                 return Unexpected{ std::move(imageResult.getError()) };
             }
         }
         
-        id<MTLCommandQueue> signalQueue{ [device newCommandQueue] };
-        
-        return std::unique_ptr<GhaSwapchain>{ createGhaObject<MetalSwapchain>(signalQueue, std::move(swapchainImages), drawableFormat, descriptor.extent) };
+        return std::unique_ptr<GhaSwapchain>{ createGhaObject<MetalSwapchain>(view, graphicsPresentCommandQueue, std::move(swapchainImages), drawableFormat, descriptor.extent) };
     }
     
     Expected<std::unique_ptr<GhaShader>, std::runtime_error> MetalFactory::createShaderFromFile(std::filesystem::path const &file, GhaShader::Stage shaderStage) noexcept {
@@ -440,25 +423,25 @@ namespace clove {
     }
     
     Expected<std::unique_ptr<GhaImageView>, std::runtime_error> MetalFactory::createImageView(GhaImage const &image, GhaImageView::Descriptor descriptor) noexcept {
-		GhaImage::Descriptor const &imageDescriptor{ image.getDescriptor() };
-		
-		NSRange const mipLevels{
-			.location = 0,
-			.length   = 1,
-		};
-		NSRange const arraySlices{
-			.location = descriptor.layer,
-			.length   = descriptor.layerCount,
-		};
-
-		id<MTLTexture> mtlTexture{ polyCast<MetalImage const>(&image)->getTexture() };
-		id<MTLTexture> textureView{ [mtlTexture newTextureViewWithPixelFormat:MetalImage::convertFormat(imageDescriptor.format)
+        GhaImage::Descriptor const &imageDescriptor{ image.getDescriptor() };
+        
+        NSRange const mipLevels{
+            .location = 0,
+            .length   = 1,
+        };
+        NSRange const arraySlices{
+            .location = descriptor.layer,
+            .length   = descriptor.layerCount,
+        };
+        
+        id<MTLTexture> mtlTexture{ polyCast<MetalImage const>(&image)->getTexture() };
+        id<MTLTexture> textureView{ [mtlTexture newTextureViewWithPixelFormat:MetalImage::convertFormat(imageDescriptor.format)
                                                                   textureType:MetalImageView::convertType(descriptor.type)
                                                                        levels:mipLevels
                                                                        slices:arraySlices] };
-		
-		return std::unique_ptr<GhaImageView>{ createGhaObject<MetalImageView>(imageDescriptor.format, imageDescriptor.dimensions, textureView) };
-	}
+        
+        return std::unique_ptr<GhaImageView>{ createGhaObject<MetalImageView>(imageDescriptor.format, imageDescriptor.dimensions, textureView) };
+    }
     
     Expected<std::unique_ptr<GhaSampler>, std::runtime_error> MetalFactory::createSampler(GhaSampler::Descriptor descriptor) noexcept {
         MTLSamplerDescriptor *samplerDescriptor{ [[MTLSamplerDescriptor alloc] init] };

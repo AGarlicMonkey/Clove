@@ -9,7 +9,6 @@ namespace clove {
         alignas(vertexElementAlignment) vec3f position{ 0.0f };
         alignas(vertexElementAlignment) vec3f normal{ 0.0f };
         alignas(vertexElementAlignment) vec2f texCoord{ 0.0f };
-        alignas(vertexElementAlignment) vec3f colour{ 0.0f };
         alignas(vertexElementAlignment) vec4i jointIds{ 0 };
         alignas(vertexElementAlignment) vec4f weights{ 1.0f / 4.0f };//We need to divide by 4 here else we'll accumulate 4 identity matricies for static meshes
 

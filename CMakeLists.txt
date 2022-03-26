@@ -14,7 +14,6 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_DOTNET_TARGET_FRAMEWORK_VERSION "v4.7.2")
 
 #Project wide settings
-option(CLOVE_BUILD_BULB "Build Bulb, Clove's editor" ON)
 option(CLOVE_BUILD_TESTS "Build Clove's tests" OFF)
 option(CLOVE_MANUALLY_INSTALL_PACKAGES "Stop CMake automatically installing conan packages when configuring" OFF)
 
@@ -65,7 +64,7 @@ endif()
 add_subdirectory(clove)
 
 #Editor
-if(CLOVE_BUILD_BULB AND MSVC)
+if(MSVC)
 	enable_language(CSharp)
 	
 	add_subdirectory(bulb)

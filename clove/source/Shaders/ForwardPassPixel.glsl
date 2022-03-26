@@ -32,11 +32,10 @@ layout(std140, set = 0, binding = 12) uniform Colour{
 	vec4 colour;
 };
 
-layout(location = 0) in vec3 fragColour;
-layout(location = 1) in vec2 fragTexCoord;
-layout(location = 2) in vec3 fragPos;
-layout(location = 3) in vec3 fragNorm;
-layout(location = 4) in vec4 fragPosLightSpace;
+layout(location = 0) in vec2 fragTexCoord;
+layout(location = 1) in vec3 fragPos;
+layout(location = 2) in vec3 fragNorm;
+layout(location = 3) in vec4 fragPosLightSpace;
 
 layout(location = 0) out vec4 outColour;
 

@@ -28,8 +28,13 @@ namespace Bulb {
         }
 
         private void EditorStartup(object sender, StartupEventArgs e) {
+            if(e.Args.Length != 1) {
+                Membrane.Log.write(Membrane.LogLevel.Critical, "Editor requires path to project file passed by command line");
+                throw new ArgumentException($"e.Args needs to have exactly 1 argument. Currently it has {e.Args.Length}");
+            }
+
             //Initialise the engine
-            engineApp = new Membrane.Application();
+            engineApp = new Membrane.Application(e.Args[0]);
 
             sessionViewModel = new EditorSessionViewModel(".");
             sessionViewModel.OnCompileGame = () => {

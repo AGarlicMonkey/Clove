@@ -182,7 +182,7 @@ namespace clove {
                 return nullptr;
             }
 
-#if CLOVE_GHA_VALIDATION
+#if CLOVE_GHA_MEMORY_DEBUG
             VkPhysicalDeviceMemoryBudgetPropertiesEXT memoryBudgetProperties{
                 .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MEMORY_BUDGET_PROPERTIES_EXT,
             };

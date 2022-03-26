@@ -1,9 +1,9 @@
 set(SOURCE ${CMAKE_CURRENT_SOURCE_DIR}/source)
 set(INCLUDE ${CMAKE_CURRENT_SOURCE_DIR}/include/Clove/Graphics)
-set(ASSETS ${CMAKE_CURRENT_SOURCE_DIR}/assets)
 
 #CMake
-option(CLOVE_ENABLE_GHA_VALIDATION "Sets the CLOVE_GHA_VALIDATION macro to 1. Allowing for extra code to run to validate usage of the CloveGraphics library." OFF)
+option(CLOVE_ENABLE_GHA_VALIDATION "Allows for extra code to run to validate the usage of the GHA." OFF)
+option(CLOVE_ENABLE_GHA_MEMORY_DEBUG "Enables logging of extra data when the GHA allocates memory." OFF)
 option(CLOVE_COMPILE_DEBUG_SHADERS "Compiles shaders in debug mode, disabling optimisations." OFF)
 
 find_package(shaderc REQUIRED CONFIG)
@@ -76,8 +76,6 @@ set(
 		${SOURCE}/Vulkan/VulkanMemoryBarrier.cpp
 		${INCLUDE}/Vulkan/VulkanPipelineObject.hpp
 		${SOURCE}/Vulkan/VulkanPipelineObject.cpp
-		${INCLUDE}/Vulkan/VulkanPresentQueue.hpp
-		${SOURCE}/Vulkan/VulkanPresentQueue.cpp
 		${INCLUDE}/Vulkan/VulkanRenderPass.hpp
 		${SOURCE}/Vulkan/VulkanRenderPass.cpp
 		${INCLUDE}/Vulkan/VulkanResult.hpp
@@ -90,6 +88,7 @@ set(
 		${INCLUDE}/Vulkan/VulkanShader.hpp
 		${SOURCE}/Vulkan/VulkanShader.cpp
 		${INCLUDE}/Vulkan/VulkanSwapchain.hpp
+		${INCLUDE}/Vulkan/VulkanSwapchain.inl
 		${SOURCE}/Vulkan/VulkanSwapchain.cpp
 		${INCLUDE}/Vulkan/VulkanTransferCommandBuffer.hpp
 		${INCLUDE}/Vulkan/VulkanTransferCommandBuffer.inl
@@ -147,8 +146,6 @@ set(
 		${INCLUDE}/Metal/MetalLog.hpp
 		${INCLUDE}/Metal/MetalPipelineObject.hpp
 		${SOURCE}/Metal/MetalPipelineObject.mm
-		${INCLUDE}/Metal/MetalPresentQueue.hpp
-		${SOURCE}/Metal/MetalPresentQueue.mm
 		${INCLUDE}/Metal/MetalRenderPass.hpp
 		${INCLUDE}/Metal/MetalRenderPass.inl
 		${SOURCE}/Metal/MetalRenderPass.mm
@@ -211,7 +208,6 @@ add_library(
 		${INCLUDE}/GhaGraphicsQueue.hpp
 		${INCLUDE}/GhaImage.hpp
 		${INCLUDE}/GhaImageView.hpp
-		${INCLUDE}/GhaPresentQueue.hpp
 		${INCLUDE}/GhaRenderPass.hpp
 		${INCLUDE}/GhaSampler.hpp
 		${INCLUDE}/GhaSemaphore.hpp
@@ -299,10 +295,10 @@ target_compile_options(
 target_compile_definitions(
 	CloveGraphics
 
-	PUBLIC
-		CLOVE_GHA_VALIDATION=$<BOOL:${CLOVE_ENABLE_GHA_VALIDATION}>
-
 	PRIVATE
+		CLOVE_GHA_VALIDATION=$<BOOL:${CLOVE_ENABLE_GHA_VALIDATION}>
+		CLOVE_GHA_MEMORY_DEBUG=$<BOOL:${CLOVE_ENABLE_GHA_MEMORY_DEBUG}>
+
 		CLOVE_COMPILE_DEBUG_SHADERS=$<BOOL:${CLOVE_COMPILE_DEBUG_SHADERS}>
 )
 

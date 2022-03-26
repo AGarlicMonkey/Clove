@@ -7,9 +7,9 @@
 namespace clove {
     struct QueueFamilyIndices {
         std::optional<uint32_t> graphicsFamily;
-        std::optional<uint32_t> presentFamily;
-        std::optional<uint32_t> transferFamily;
         std::optional<uint32_t> asyncComputeFamily;
+        std::optional<uint32_t> transferFamily;
+        std::optional<uint32_t> presentFamily;
 
         bool isComplete(bool const requirePresentFamily) const {
             return graphicsFamily && (presentFamily || !requirePresentFamily) && transferFamily && asyncComputeFamily;
