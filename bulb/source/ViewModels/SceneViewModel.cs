@@ -2,8 +2,7 @@ using System.Collections.ObjectModel;
 using System.Collections.Generic;
 using System.Windows.Input;
 using System.Windows;
-
-using Membrane = membrane;
+using Membrane;
 
 namespace Bulb {
     /// <summary>
@@ -28,57 +27,59 @@ namespace Bulb {
 
         public Visibility EntityViewVisibility => selectedEntity != null ? Visibility.Visible : Visibility.Collapsed;
 
-        public SceneViewModel() : this(new List<string>(), new List<Membrane.Entity>()) { }
+        //public SceneViewModel() : this(new List<string>(), new List<Membrane.Entity>()) { }
 
-        public SceneViewModel(List<string> enabledSubSystems, List<Membrane.Entity> entities) {
-            //Populate available sub systems
-            List<Membrane.AvailableTypeInfo> subSystems = Membrane.ReflectionHelper.getEditorVisibleSubSystems();
-            foreach (Membrane.AvailableTypeInfo typeInfo in subSystems) {
-                var vm = new SubSystemViewModel(typeInfo.displayName, typeInfo.typeName, enabledSubSystems.Contains(typeInfo.typeName));
-                vm.OnToggled += OnSubSystemToggled;
+         public SceneViewModel(/* List<string> enabledSubSystems, List<Membrane.Entity> entities */) {
+        //     //Populate available sub systems
+        //     List<Membrane.AvailableTypeInfo> subSystems = Membrane.ReflectionHelper.getEditorVisibleSubSystems();
+        //     foreach (Membrane.AvailableTypeInfo typeInfo in subSystems) {
+        //         var vm = new SubSystemViewModel(typeInfo.displayName, typeInfo.typeName, enabledSubSystems.Contains(typeInfo.typeName));
+        //         vm.OnToggled += OnSubSystemToggled;
 
-                SubSystems.Add(vm);
-            }
+        //         SubSystems.Add(vm);
+        //     }
 
-            //TODO: Move to function
-            foreach (Membrane.Entity entity in entities) {
-                var entityVm = new EntityViewModel(entity.components) {
-                    EntityId = entity.id,
-                    Name = entity.name,
-                    OnSelected = SelectEntity
-                };
+        //     //TODO: Move to function
+        //     foreach (Membrane.Entity entity in entities) {
+        //         var entityVm = new EntityViewModel(entity.components) {
+        //             EntityId = entity.id,
+        //             Name = entity.name,
+        //             OnSelected = SelectEntity
+        //         };
 
-                Entities.Add(entityVm);
-            }
+        //         Entities.Add(entityVm);
+        //     }
 
-            //Bind to messages
-            Membrane.MessageHandler.bindToMessage<Membrane.Engine_OnEntityCreated>(OnEntityCreated);
-            Membrane.MessageHandler.bindToMessage<Membrane.Engine_OnEntityDeleted>(OnEntityDeleted);
+        //     //Bind to messages
+        //     Membrane.MessageHandler.bindToMessage<Membrane.Engine_OnEntityCreated>(OnEntityCreated);
+        //     Membrane.MessageHandler.bindToMessage<Membrane.Engine_OnEntityDeleted>(OnEntityDeleted);
 
             //Set up commands
-            CreateEntityCommand = new RelayCommand(() => Membrane.MessageHandler.sendMessage(new Membrane.Editor_CreateEntity()));
-            DeleteEntityCommand = new RelayCommand<uint>((id) => Membrane.MessageHandler.sendMessage(new Membrane.Editor_DeleteEntity() { entity = id }));
+            CreateEntityCommand = new RelayCommand(CreateEntity);
+            DeleteEntityCommand = new RelayCommand<uint>(DeleteEntity);
         }
 
-        private void OnEntityCreated(Membrane.Engine_OnEntityCreated message) {
-            var entityVm = new EntityViewModel {
-                EntityId = message.entity,
-                Name = message.name,
+        private void CreateEntity() {
+            uint entityId = Membrane.EntityComponentSystem.CreateEntity();
+
+            Entities.Add(new EntityViewModel {
+                EntityId = entityId,
+                Name = "New Entity",
                 OnSelected = SelectEntity
-            };
-
-            Entities.Add(entityVm);
+            });
         }
 
-        private void OnEntityDeleted(Membrane.Engine_OnEntityDeleted message) {
-            foreach (EntityViewModel entity in Entities) {
-                if (entity.EntityId == message.entity) {
+        private void DeleteEntity(uint entityId) {
+            Membrane.EntityComponentSystem.DeleteEntity(entityId);
+            
+            foreach(EntityViewModel entity in Entities) {
+                if(entity.EntityId == entityId) {
                     Entities.Remove(entity);
                     break;
                 }
             }
 
-            if (SelectedEntity?.EntityId == message.entity) {
+            if(SelectedEntity?.EntityId == entityId) {
                 SelectedEntity = null;
             }
         }
@@ -87,12 +88,12 @@ namespace Bulb {
             SelectedEntity = entity;
         }
 
-        private void OnSubSystemToggled(SubSystemViewModel viewModel, bool value) {
-            if (value) {
-                Membrane.MessageHandler.sendMessage(new Membrane.Editor_AddSubSystem() { name = viewModel.TypeName });
-            } else {
-                Membrane.MessageHandler.sendMessage(new Membrane.Editor_RemoveSubSystem() { name = viewModel.TypeName });
-            }
-        }
+        // private void OnSubSystemToggled(SubSystemViewModel viewModel, bool value) {
+        //     if (value) {
+        //         Membrane.MessageHandler.sendMessage(new Membrane.Editor_AddSubSystem() { name = viewModel.TypeName });
+        //     } else {
+        //         Membrane.MessageHandler.sendMessage(new Membrane.Editor_RemoveSubSystem() { name = viewModel.TypeName });
+        //     }
+        // }
     }
 }

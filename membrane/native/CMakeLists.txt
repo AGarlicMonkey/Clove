@@ -14,6 +14,10 @@ add_library(
         ${INCLUDE}/EditorVFS.inl
         ${SOURCE}/EditorVFS.cpp
 
+
+        ${INCLUDE}/EntityComponentSystem.hpp
+        ${SOURCE}/EntityComponentSystem.cpp
+
         ${INCLUDE}/Export.hpp
 
         ${INCLUDE}/FileSystem.hpp

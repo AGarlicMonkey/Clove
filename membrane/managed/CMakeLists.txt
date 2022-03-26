@@ -5,6 +5,7 @@ add_library(
     MembraneManaged SHARED
 
     ${SOURCE}/Application.cs
+    ${SOURCE}/EntityComponentSystem.cs
     ${SOURCE}/FileSystem.cs
     ${SOURCE}/Log.cs
     ${SOURCE}/Reflection.cs
