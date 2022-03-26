@@ -9,7 +9,7 @@ namespace Membrane {
         public static extern bool IsRunning();
         [DllImport("MembraneNative.dll", EntryPoint = "tick")]
         public static extern void Tick();
-        [DllImport("MembraneNative.dll", EntryPoint = "shutdown")]
+        [DllImport("MembraneNative.dll", EntryPoint = "shutDown")]
         public static extern void Shutdown();
 
         [DllImport("MembraneNative.dll", EntryPoint = "startSession")]
@@ -20,7 +20,5 @@ namespace Membrane {
 
         [DllImport("MembraneNative.dll", EntryPoint = "loadGameDll")]
         public static extern void LoadGameDll();
-
-        
     }
 }
