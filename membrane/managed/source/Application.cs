@@ -2,7 +2,7 @@ using System;
 using System.Runtime.InteropServices;
 
 namespace Membrane {
-    public class Application {
+    public static class Application {
         [DllImport("MembraneNative.dll", EntryPoint = "initialise")]
         public static extern void Initialise();
         [DllImport("MembraneNative.dll", EntryPoint = "isRunning")]

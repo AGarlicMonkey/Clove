@@ -10,7 +10,7 @@ namespace Membrane {
         Critical,
     };
 
-    public class Log {
+    public static class Log {
         public delegate void LogSink([MarshalAs(UnmanagedType.BStr)] string message);
 
         [DllImport("MembraneNative.dll", EntryPoint = "write", CharSet = CharSet.Unicode)]

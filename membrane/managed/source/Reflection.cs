@@ -10,7 +10,7 @@ namespace Membrane {
         public string displayName;
     }
 
-    public class Reflection {
+    public static class Reflection {
         public static List<TypeInfo> GetEditorVisibleComponents() {
             uint numInfos = 0;
             getEditorVisibleComponents(null, ref numInfos);
