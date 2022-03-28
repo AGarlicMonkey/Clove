@@ -7,40 +7,27 @@
 #include <string>
 #include <wtypes.h>
 
-/*
-    public enum class EditorTypeType{
-        Value,
-        Parent,
-        Dropdown,
-    };
+struct AvailableEditorTypeInfo {
+    BSTR typeName{ nullptr };
+    BSTR displayName{ nullptr };
+};
 
-    public ref class EditorTypeDropdown {
-        //VARIABLES
-    public:
-        System::Int32 currentSelection{};
-        System::Collections::Generic::List<System::String ^> ^ dropdownItems { nullptr };
+enum class TypeInfoType {
+    Value,
+    Dropdown,
+    Parent,
+};
 
-        System::Collections::Generic::List<ref class EditorTypeInfo ^> ^ dropdownTypeInfos { nullptr };
-    };
-
-    public ref class EditorTypeInfo {
-        //VARIABLES
-    public:
-        System::String ^typeName { nullptr };
-        System::String ^displayName { nullptr };
-
-        System::UInt32 offset{ 0 };
-
-        EditorTypeType type{};
-        System::Object ^typeData{}; //Data dependant on the type. If it is a value then it is a string, if it is a parent then it is an array of members etc.
-
-        bool dragDropOnly{ false };
-    };
-    */
+struct EditorMemberInfo {
+    BSTR name{ nullptr };
+    uint32_t typeId;
+};
 
 struct EditorTypeInfo {
-    BSTR typeName{};
-    BSTR displayName{};
+    BSTR typeName{ nullptr };
+    BSTR displayName{ nullptr };
+
+    EditorMemberInfo *members{ nullptr };
 };
 
 /**
@@ -51,7 +38,7 @@ struct EditorTypeInfo {
  * @param numInfos Will either return the amount of visible components or decide how many to return (See brief).
  * @return 
  */
-MEMBRANE_EXPORT void getEditorVisibleComponents(EditorTypeInfo outInfos[], uint32_t &numInfos);
+MEMBRANE_EXPORT void getEditorVisibleComponents(AvailableEditorTypeInfo outInfos[], uint32_t &numInfos);
 /**
  * @brief This function has two ways to be called. If outInfos is nullptr then it will populate
  * numInfos with how many components are visible. If outInfos is not nullptr then it will
@@ -60,16 +47,10 @@ MEMBRANE_EXPORT void getEditorVisibleComponents(EditorTypeInfo outInfos[], uint3
  * @param numInfos Will either return the amount of visible subsystems or decide how many to return (See brief).
  * @return 
  */
-MEMBRANE_EXPORT void getEditorVisibleSubSystems(EditorTypeInfo outInfos[], uint32_t &numInfos);
+MEMBRANE_EXPORT void getEditorVisibleSubSystems(AvailableEditorTypeInfo outInfos[], uint32_t &numInfos);
+
+MEMBRANE_EXPORT int32_t getMemberCountForType(wchar_t const *typeName);
 
 namespace membrane {
-    /*
-    System::Collections::Generic::List<EditorTypeInfo ^> ^ constructMembers(std::vector<clove::reflection::MemberInfo> const &members, void const *const memory, size_t offsetIntoParent);
-    EditorTypeInfo ^ constructComponentEditorTypeInfo(clove::reflection::TypeInfo const *typeInfo, void const *const memory);
-
-    void modifyComponentMember(uint8_t *const memory, clove::reflection::TypeInfo const *typeInfo, std::string_view value, size_t const requiredOffset, size_t currentOffset);
-
-    clove::serialiser::Node serialiseComponent(clove::reflection::TypeInfo const *const componentTypeInfo, uint8_t const *const componentMemory, size_t currentOffset = 0);
-    void deserialiseComponent(clove::reflection::TypeInfo const *const componentTypeInfo, uint8_t *const componentMemory, clove::serialiser::Node const &componentNode, size_t currentOffset = 0);
-    */
+    void constructComponentEditorTypeInfo(clove::reflection::TypeInfo const *componentTypeInfo, void const *const componentMemory, EditorTypeInfo &outEditorComponentTypeInfo);
 }

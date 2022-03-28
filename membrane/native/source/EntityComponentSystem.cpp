@@ -2,10 +2,10 @@
 
 #include <Clove/Application.hpp>
 #include <Clove/ECS/EntityManager.hpp>
-#include <codecvt>
-#include <Clove/Reflection/Reflection.hpp>
 #include <Clove/Log/Log.hpp>
+#include <Clove/Reflection/Reflection.hpp>
 #include <Clove/ReflectionAttributes.hpp>
+#include <codecvt>
 
 CLOVE_DECLARE_LOG_CATEGORY(MembraneECS)
 
@@ -19,17 +19,25 @@ void deleteEntity(clove::Entity entity) {
     Application::get().getEntityManager()->destroy(entity);
 }
 
-void addComponent(clove::Entity entity, wchar_t const *componentTypeName) {
+bool addComponent(clove::Entity entity, wchar_t const *componentTypeName, EditorTypeInfo &outTypeInfo) {
     std::string const narrowComponentName{ std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>>{}.to_bytes(componentTypeName) };
+    reflection::TypeInfo const *const componentTypeInfo{ reflection::getTypeInfo(narrowComponentName) };
 
-    reflection::TypeInfo const *componentTypeInfo{ reflection::getTypeInfo(narrowComponentName) };
     if(componentTypeInfo == nullptr) {
         CLOVE_LOG(MembraneECS, LogLevel::Error, "Component with name {0} does not exist. Adding component has failed.");
-        return;
+        return false;
     }
 
-    auto editorAttribute{ componentTypeInfo->attributes.get<EditorVisibleComponent>().value() };
-    editorAttribute.onEditorCreateComponent(entity, *Application::get().getEntityManager());
+    auto const editorAttribute{ componentTypeInfo->attributes.get<EditorVisibleComponent>().value() };
+    uint8_t const *const componentMemory{ editorAttribute.onEditorCreateComponent(entity, *Application::get().getEntityManager()) };
 
-    //TODO: return type info
+    try {
+        membrane::constructComponentEditorTypeInfo(componentTypeInfo, componentMemory, outTypeInfo);
+        return true;
+    } catch(std::exception e) {
+        CLOVE_LOG(MembraneECS, LogLevel::Error, "Failed to construct editor type info for component {0}:", componentTypeInfo->name);
+        CLOVE_LOG(MembraneECS, LogLevel::Error, "\t{0}", e.what());
+        CLOVE_LOG(MembraneECS, LogLevel::Error, "Component has been added to entity but will display incorrectly in editor.");
+        return false;
+    }
 }

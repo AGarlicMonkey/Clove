@@ -43,7 +43,13 @@ namespace Bulb {
         // }
 
         private void AddComponent(string typeName) {
-            EntityComponentSystem.AddComponent(EntityId, typeName);
+            TypeInfo componentTypeInfo = EntityComponentSystem.AddComponent(EntityId, typeName);
+
+            var vm = new ComponentViewModel(componentTypeInfo);
+            vm.OnModified = ModifyComponent;
+            vm.OnRemoved = RemoveComponent;
+
+            Components.Add(vm);
         }
 
         private void ModifyComponent(string componentName, uint offset, string value) {
@@ -83,21 +89,13 @@ namespace Bulb {
 
             ComponentMenuItems.Clear();
 
-            List<TypeInfo> types = Reflection.GetEditorVisibleComponents();
+            List<AvailableTypeInfo> types = Reflection.GetEditorVisibleComponents();
 
-            foreach (TypeInfo type in types) {
+            foreach (AvailableTypeInfo type in types) {
                 if (!entitiesComponents.Contains(type.displayName)) {
                     ComponentMenuItems.Add(new ComponentMenuItemViewModel(type.displayName, new RelayCommand(() => AddComponent(type.typeName))));
                 }
             }
         }
-
-        // private ComponentViewModel CreateComponentViewModel(Membrane.EditorTypeInfo componentTypeInfo) {
-        //     var vm = new ComponentViewModel(componentTypeInfo);
-        //     vm.OnModified = ModifyComponent;
-        //     vm.OnRemoved = RemoveComponent;
-
-        //     return vm;
-        // }
     }
 }

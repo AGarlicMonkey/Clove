@@ -1,10 +1,6 @@
 using System.Windows.Input;
 using System.Collections.ObjectModel;
-using System.Collections.Generic;
-
-using Membrane = membrane;
-using System;
-using System.Diagnostics;
+using Membrane;
 
 namespace Bulb {
     /// <summary>
@@ -14,7 +10,7 @@ namespace Bulb {
         public string Name { get; }
         public string TypeName { get; }
 
-        public ObservableCollection<TypeViewModel> Members { get; }
+        public ObservableCollection<TypeViewModel> Members { get; } = new ObservableCollection<TypeViewModel>();
 
         public ICommand RemoveComponentCommand { get; }
 
@@ -24,71 +20,77 @@ namespace Bulb {
         public delegate void RemoveComponentHandler(string typeName);
         public RemoveComponentHandler OnRemoved;
 
-        private readonly Membrane.EditorTypeInfo componentTypeInfo;
+        private readonly TypeInfo componentTypeInfo;
 
-        public ComponentViewModel(Membrane.EditorTypeInfo componentTypeInfo) {
+        public ComponentViewModel(TypeInfo componentTypeInfo) {
             Name = componentTypeInfo.displayName;
             TypeName = componentTypeInfo.typeName;
             this.componentTypeInfo = componentTypeInfo;
 
-            Debug.Assert(componentTypeInfo.type == Membrane.EditorTypeType.Parent);
-            var members = (List<Membrane.EditorTypeInfo>)componentTypeInfo.typeData;
-
-            Members = new ObservableCollection<TypeViewModel>();
-            foreach (var memberInfo in members) {
-                Members.Add(BuildTypeViewModel(memberInfo));
+            if(componentTypeInfo.members != null) {
+                foreach(var member in componentTypeInfo.members) {
+                    Members.Add(new TypeViewModel(/*member.name*/ "UNKNOWN", 0, "TEST", false));
+                }
             }
 
-            RemoveComponentCommand = new RelayCommand(() => { OnRemoved?.Invoke(TypeName); });
+            // Debug.Assert(componentTypeInfo.type == Membrane.EditorTypeType.Parent);
+            // var members = (List<Membrane.EditorTypeInfo>)componentTypeInfo.typeData;
+
+            // Members = new ObservableCollection<TypeViewModel>();
+            // foreach (var memberInfo in members) {
+            //     Members.Add(BuildTypeViewModel(memberInfo));
+            // }
+
+            // RemoveComponentCommand = new RelayCommand(() => { OnRemoved?.Invoke(TypeName); });
         }
 
-        private TypeViewModel BuildTypeViewModel(Membrane.EditorTypeInfo typeInfo) {
-            TypeViewModel vm;
-            switch (typeInfo.type) {
-                case Membrane.EditorTypeType.Value:
-                    vm = new TypeViewModel(typeInfo.displayName, typeInfo.offset, (string)typeInfo.typeData, typeInfo.dragDropOnly);
-                    vm.OnValueChanged += OnValueChanged;
-                    break;
+        // private TypeViewModel BuildTypeViewModel(Membrane.EditorTypeInfo typeInfo) {
+        //     TypeViewModel vm;
+        //     switch (typeInfo.type) {
+        //         case Membrane.EditorTypeType.Value:
+        //             vm = new TypeViewModel(typeInfo.displayName, typeInfo.offset, (string)typeInfo.typeData, typeInfo.dragDropOnly);
+        //             vm.OnValueChanged += OnValueChanged;
+        //             break;
 
-                case Membrane.EditorTypeType.Parent: {
-                    var typeMembers = (List<Membrane.EditorTypeInfo>)typeInfo.typeData;
-                    List<TypeViewModel> viewModelMembers = new List<TypeViewModel>();
+        //         case Membrane.EditorTypeType.Parent: {
+        //             var typeMembers = (List<Membrane.EditorTypeInfo>)typeInfo.typeData;
+        //             List<TypeViewModel> viewModelMembers = new List<TypeViewModel>();
 
-                    foreach (Membrane.EditorTypeInfo memberInfo in typeMembers) {
-                        viewModelMembers.Add(BuildTypeViewModel(memberInfo));
-                    }
-                    vm = new TypeViewModel(typeInfo.displayName, viewModelMembers);
-                }
-                break;
+        //             foreach (Membrane.EditorTypeInfo memberInfo in typeMembers) {
+        //                 viewModelMembers.Add(BuildTypeViewModel(memberInfo));
+        //             }
+        //             vm = new TypeViewModel(typeInfo.displayName, viewModelMembers);
+        //         }
+        //         break;
 
-                case Membrane.EditorTypeType.Dropdown: {
-                    var dropdownData = (Membrane.EditorTypeDropdown)typeInfo.typeData;
-                    List<TypeViewModel> dropdownMembers = null;
+        //         case Membrane.EditorTypeType.Dropdown: {
+        //             var dropdownData = (Membrane.EditorTypeDropdown)typeInfo.typeData;
+        //             List<TypeViewModel> dropdownMembers = null;
 
-                    if(dropdownData.dropdownTypeInfos != null) {
-                        dropdownMembers = new List<TypeViewModel>();
+        //             if(dropdownData.dropdownTypeInfos != null) {
+        //                 dropdownMembers = new List<TypeViewModel>();
 
-                        foreach (Membrane.EditorTypeInfo memberInfo in dropdownData.dropdownTypeInfos) {
-                            dropdownMembers.Add(BuildTypeViewModel(memberInfo));
-                        }
-                    }
+        //                 foreach (Membrane.EditorTypeInfo memberInfo in dropdownData.dropdownTypeInfos) {
+        //                     dropdownMembers.Add(BuildTypeViewModel(memberInfo));
+        //                 }
+        //             }
 
-                    vm = new TypeViewModel(typeInfo.displayName, typeInfo.offset, dropdownData.dropdownItems, dropdownData.currentSelection, dropdownMembers);
-                    vm.OnValueChanged += OnValueChanged;
-                }
-                break;
+        //             vm = new TypeViewModel(typeInfo.displayName, typeInfo.offset, dropdownData.dropdownItems, dropdownData.currentSelection, dropdownMembers);
+        //             vm.OnValueChanged += OnValueChanged;
+        //         }
+        //         break;
 
-                default:
-                    Debug.Assert(false, "EditorTypeType not handled");
-                    vm = new TypeViewModel("Unknown", 0, "", false);
-                    break;
-            }
+        //         default:
+        //             Debug.Assert(false, "EditorTypeType not handled");
+        //             vm = new TypeViewModel("Unknown", 0, "", false);
+        //             break;
+        //     }
 
-            return vm;
-        }
+        //     return vm;
+        // }
 
         private void OnValueChanged(uint offset, string value) {
-            OnModified?.Invoke(componentTypeInfo.typeName, offset, value);
+            //OnModified?.Invoke(componentTypeInfo.typeName, offset, value);
         }
     }
 }
