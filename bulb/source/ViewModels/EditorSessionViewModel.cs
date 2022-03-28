@@ -1,6 +1,5 @@
 using System.Windows.Input;
-
-using Membrane = membrane;
+using Membrane;
 
 namespace Bulb {
     /// <summary>
@@ -57,42 +56,42 @@ namespace Bulb {
         public CompileDelegate OnCompileGame;
 
         public EditorSessionViewModel(string rootFilePath) {
-            //Bind to messages
-            Membrane.MessageHandler.bindToMessage<Membrane.Engine_OnSceneLoaded>(OnSceneLoaded);
+        //     //Bind to messages
+        //     Membrane.MessageHandler.bindToMessage<Membrane.Engine_OnSceneLoaded>(OnSceneLoaded);
 
-            //Set up commands
-            LoadSceneCommand = new RelayCommand(() => {
-                Membrane.MessageHandler.sendMessage(new Membrane.Editor_LoadScene());
-            });
-            SaveSceneCommand = new RelayCommand(() => {
-                Membrane.MessageHandler.sendMessage(new Membrane.Editor_SaveScene());
-            });
-            PlayCommand = new RelayCommand(Play);
-            StopCommand = new RelayCommand(Stop);
+        //     //Set up commands
+        //     LoadSceneCommand = new RelayCommand(() => {
+        //         Membrane.MessageHandler.sendMessage(new Membrane.Editor_LoadScene());
+        //     });
+        //     SaveSceneCommand = new RelayCommand(() => {
+        //         Membrane.MessageHandler.sendMessage(new Membrane.Editor_SaveScene());
+        //     });
+        //     PlayCommand = new RelayCommand(Play);
+        //     StopCommand = new RelayCommand(Stop);
 
-            CompileCommand = new RelayCommand(() => OnCompileGame?.Invoke());
+        //     CompileCommand = new RelayCommand(() => OnCompileGame?.Invoke());
 
-            //TEMP: See below
-            //FileExplorer = new FileExplorerViewModel(rootFilePath);
+        //     //TEMP: See below
+        //     //FileExplorer = new FileExplorerViewModel(rootFilePath);
 
-            WindowTitle = $"Clove - {Membrane.Application.getProjectVersion()}";
+        //     WindowTitle = $"Clove - {Membrane.Application.getProjectVersion()}";
         }
 
         //TEMP: Just to make sure functions don't get called before opening a window.
         public void Start(string rootFilePath) => FileExplorer = new FileExplorerViewModel(rootFilePath);
 
-        private void OnSceneLoaded(Membrane.Engine_OnSceneLoaded message) => Scene = new SceneViewModel(message.enabledSubSystems, message.entities);
+        //private void OnSceneLoaded(Membrane.Engine_OnSceneLoaded message) => Scene = new SceneViewModel(message.enabledSubSystems, message.entities);
 
         private void Play() {
             IsPlayButtonEnabled = false;
             IsStopButtonEnabled = true;
-            Membrane.MessageHandler.sendMessage(new Membrane.Editor_Play());
+            //Membrane.MessageHandler.sendMessage(new Membrane.Editor_Play());
         }
 
         private void Stop() {
             IsPlayButtonEnabled = true;
             IsStopButtonEnabled = false;
-            Membrane.MessageHandler.sendMessage(new Membrane.Editor_Stop());
+            //Membrane.MessageHandler.sendMessage(new Membrane.Editor_Stop());
         }
     }
 }
