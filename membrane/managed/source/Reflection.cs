@@ -14,27 +14,42 @@ namespace Membrane {
         public string displayName;
     }
 
+    public enum DataType {
+        Value,
+        Dropdown,
+        Parent,
+    }
+
+    public class DropdownData {
+        public int currentSelection;
+        public List<string> items;
+        public List<TypeData> itemTypeData;
+    }
+
     /// <summary>
-    /// Infomation about a type's member.
+    /// Contains data for a type currently loaded into memory
     /// </summary>
+    public class TypeData {
+        public string typeName;
+        public string displayName;
+
+        public DataType dataType;
+        public object data;
+    }
+
     [StructLayout(LayoutKind.Sequential)]
-    public struct MemberInfo {
+    internal struct MemberInfo {
         [MarshalAs(UnmanagedType.BStr)]
         public string name;
         public ulong typeId; //TODO: use nuint
     }
 
-    /// <summary>
-    /// Contains type info for an instatiated type.
-    /// </summary>
     [StructLayout(LayoutKind.Sequential)]
-    public struct TypeInfo {
+    internal struct TypeInfo {
         [MarshalAs(UnmanagedType.BStr)]
         public string typeName;
         [MarshalAs(UnmanagedType.BStr)]
         public string displayName;
-
-        public MemberInfo[] members;
     }
 
     public static class Reflection {
@@ -57,21 +72,52 @@ namespace Membrane {
         }
 
         /// <summary>
-        /// Helper function to allocate a TypeInfo before sending it off to unmanaged code.
+        /// Helper function to allocate a MemberInfo array before sending it off to managed code.
         /// </summary>
-        internal static TypeInfo AllocateTypeInfo(string typeName) {
-            var typeInfo = new TypeInfo();
-            
+        internal static MemberInfo[] AllocateMemberArray(string typeName) {
             int memberCount = getMemberCountForType(typeName);
-            if(memberCount > 0) {
-                typeInfo.members = new MemberInfo[memberCount];
-                for (int i = 0; i < memberCount; i++) {
-                    typeInfo.members[i] = new MemberInfo();
-                    typeInfo.members[i].typeId = 3;
+            if (memberCount > 0) {
+                return new MemberInfo[memberCount];
+            } else {
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// Helper function to convert type info recieved from unmanaged code into an easily consumable managed type.
+        /// </summary>
+        /// <param name="typeInfo"></param>
+        /// <param name="typeMembers"></param>
+        /// <returns></returns>
+        internal static TypeData ConstructTypeData(TypeInfo typeInfo, MemberInfo[] typeMembers) {
+            TypeData typeData = new TypeData();
+
+            typeData.typeName = typeInfo.typeName;
+            typeData.displayName = typeInfo.displayName;
+
+            if (typeMembers != null) {
+                typeData.dataType = DataType.Parent;
+
+                List<TypeData> memberInfos = new List<TypeData>();
+                foreach (var member in typeMembers) {
+                    TypeData memberInfo = new TypeData();
+
+                    memberInfo.typeName = member.name;
+                    memberInfo.displayName = memberInfo.typeName;
+                    memberInfo.dataType = DataType.Value; //TODO
+                    memberInfo.data = null;//TODO
+
+                    memberInfos.Add(memberInfo);
                 }
+
+                typeData.data = memberInfos;
+            } else {
+                //TODO
+                typeData.dataType = DataType.Value;
+                typeData.data = null;
             }
 
-            return typeInfo;
+            return typeData;
         }
 
         [DllImport("MembraneNative.dll", CharSet = CharSet.Unicode)]

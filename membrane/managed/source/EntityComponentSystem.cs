@@ -7,17 +7,18 @@ namespace Membrane {
         [DllImport("MembraneNative.dll", EntryPoint = "deleteEntity")]
         public static extern void DeleteEntity(uint entityId);
 
-        public static TypeInfo AddComponent(uint entityId, string componentName) {
-            TypeInfo componentTypeInfo = Reflection.AllocateTypeInfo(componentName);
+        public static TypeData AddComponent(uint entityId, string componentName) {
+            TypeInfo componentTypeInfo = new TypeInfo();
+            MemberInfo[] componentMembers = Reflection.AllocateMemberArray(componentName);
 
-            if (!addComponent(entityId, componentName, ref componentTypeInfo)) {
+            if (!addComponent(entityId, componentName, ref componentTypeInfo, componentMembers)) {
                 //TODO: Error
-            } 
+            }
 
-            return componentTypeInfo;
+            return Reflection.ConstructTypeData(componentTypeInfo, componentMembers);
         }
 
         [DllImport("MembraneNative.dll", CharSet = CharSet.Unicode)]
-        private static extern bool addComponent(uint entityId, string componentTypeName, [In, Out] ref TypeInfo outTypeInfo);
+        private static extern bool addComponent(uint entityId, string componentTypeName, [In, Out] ref TypeInfo outTypeInfo, [MarshalAs(UnmanagedType.LPArray), Out] MemberInfo[] outTypeMemberInfo);
     }
 }

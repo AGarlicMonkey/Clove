@@ -15,8 +15,8 @@ namespace {
 
         std::vector<reflection::MemberInfo> const &typeMembers{ typeInfo->members };
         for(size_t i{ 0 }; i < typeMembers.size(); ++i) {
-            //outMembers[i].name   = SysAllocString(stringConverter.from_bytes(typeMembers[i].name).c_str());
-            outMembers[i].typeId = typeMembers[i].id;
+            outMembers[i].name   = SysAllocString(stringConverter.from_bytes(typeMembers[i].name).c_str());
+            //outMembers[i].typeId = typeMembers[i].id;
         }
     }
 
@@ -60,12 +60,12 @@ int32_t getMemberCountForType(wchar_t const *typeName) {
 }
 
 namespace membrane {
-    void constructComponentEditorTypeInfo(reflection::TypeInfo const *componentTypeInfo, void const *const componentMemory, EditorTypeInfo &outEditorComponentTypeInfo) {
+    void constructComponentEditorTypeInfo(reflection::TypeInfo const *componentTypeInfo, void const *const componentMemory, EditorTypeInfo &outEditorComponentTypeInfo, EditorMemberInfo outComponentMembers[]) {
         EditorVisibleComponent const attribute{ componentTypeInfo->attributes.get<EditorVisibleComponent>().value() };
         std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> stringConverter{};
 
         outEditorComponentTypeInfo.typeName    = SysAllocString(stringConverter.from_bytes(componentTypeInfo->name).c_str());
         outEditorComponentTypeInfo.displayName = SysAllocString(stringConverter.from_bytes(attribute.name.value_or(componentTypeInfo->name)).c_str());
-        //constructMembers(componentTypeInfo, componentMemory, outEditorComponentTypeInfo.members);
+        constructMembers(componentTypeInfo, componentMemory, outComponentMembers);
     }
 }

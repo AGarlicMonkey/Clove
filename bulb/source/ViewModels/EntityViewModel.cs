@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Windows.Input;
@@ -13,10 +14,7 @@ namespace Bulb {
                 name = value;
                 OnPropertyChanged(nameof(Name));
 
-                // Membrane.MessageHandler.sendMessage(new Membrane.Editor_UpdateName {
-                //     entity = EntityId,
-                //     name = name
-                // });
+                //TODO: Send name change down to engine
             }
         }
         private string name = "NO NAME";
@@ -35,15 +33,13 @@ namespace Bulb {
             RefreshAvailableComponents();
         }
 
-        // public EntityViewModel(List<Membrane.EditorTypeInfo> components) : this() {
-        //     foreach (var component in components) {
-        //         Components.Add(CreateComponentViewModel(component));
-        //     }
-        //     RefreshAvailableComponents();
-        // }
+        public EntityViewModel(List<TypeData> components) : this() {
+            //TODO
+            throw new NotImplementedException();
+        }
 
         private void AddComponent(string typeName) {
-            TypeInfo componentTypeInfo = EntityComponentSystem.AddComponent(EntityId, typeName);
+            TypeData componentTypeInfo = EntityComponentSystem.AddComponent(EntityId, typeName);
 
             var vm = new ComponentViewModel(componentTypeInfo);
             vm.OnModified = ModifyComponent;
@@ -53,33 +49,14 @@ namespace Bulb {
         }
 
         private void ModifyComponent(string componentName, uint offset, string value) {
-            // Membrane.MessageHandler.sendMessage(new Membrane.Editor_ModifyComponent {
-            //     entity = EntityId,
-            //     componentName = componentName,
-            //     offset = offset,
-            //     value = value
-            // });
+            //TODO
+            throw new NotImplementedException();
         }
 
         private void RemoveComponent(string typeName) {
-            // Membrane.MessageHandler.sendMessage(new Membrane.Editor_RemoveComponent {
-            //     entity = EntityId,
-            //     componentName = typeName
-            // });
+            //TODO
+            throw new NotImplementedException();
         }
-
-        // private void OnComponentRemoved(Membrane.Engine_OnComponentRemoved message) {
-        //     if (EntityId == message.entity) {
-        //         foreach (ComponentViewModel component in Components) {
-        //             if (component.TypeName == message.componentName) {
-        //                 Components.Remove(component);
-        //                 break;
-        //             }
-        //         }
-
-        //         RefreshAvailableComponents();
-        //     }
-        // }
 
         private void RefreshAvailableComponents() {
             List<string> entitiesComponents = new List<string>();

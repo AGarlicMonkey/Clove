@@ -19,7 +19,7 @@ void deleteEntity(clove::Entity entity) {
     Application::get().getEntityManager()->destroy(entity);
 }
 
-bool addComponent(clove::Entity entity, wchar_t const *componentTypeName, EditorTypeInfo &outTypeInfo) {
+bool addComponent(clove::Entity entity, wchar_t const *componentTypeName, EditorTypeInfo &outTypeInfo, EditorMemberInfo outMembers[]) {
     std::string const narrowComponentName{ std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>>{}.to_bytes(componentTypeName) };
     reflection::TypeInfo const *const componentTypeInfo{ reflection::getTypeInfo(narrowComponentName) };
 
@@ -32,12 +32,11 @@ bool addComponent(clove::Entity entity, wchar_t const *componentTypeName, Editor
     uint8_t const *const componentMemory{ editorAttribute.onEditorCreateComponent(entity, *Application::get().getEntityManager()) };
 
     try {
-        membrane::constructComponentEditorTypeInfo(componentTypeInfo, componentMemory, outTypeInfo);
+        membrane::constructComponentEditorTypeInfo(componentTypeInfo, componentMemory, outTypeInfo, outMembers);
         return true;
     } catch(std::exception e) {
         CLOVE_LOG(MembraneECS, LogLevel::Error, "Failed to construct editor type info for component {0}:", componentTypeInfo->name);
         CLOVE_LOG(MembraneECS, LogLevel::Error, "\t{0}", e.what());
-        CLOVE_LOG(MembraneECS, LogLevel::Error, "Component has been added to entity but will display incorrectly in editor.");
         return false;
     }
 }

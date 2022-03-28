@@ -26,8 +26,6 @@ struct EditorMemberInfo {
 struct EditorTypeInfo {
     BSTR typeName{ nullptr };
     BSTR displayName{ nullptr };
-
-    EditorMemberInfo *members{ nullptr };
 };
 
 /**
@@ -52,5 +50,5 @@ MEMBRANE_EXPORT void getEditorVisibleSubSystems(AvailableEditorTypeInfo outInfos
 MEMBRANE_EXPORT int32_t getMemberCountForType(wchar_t const *typeName);
 
 namespace membrane {
-    void constructComponentEditorTypeInfo(clove::reflection::TypeInfo const *componentTypeInfo, void const *const componentMemory, EditorTypeInfo &outEditorComponentTypeInfo);
+    void constructComponentEditorTypeInfo(clove::reflection::TypeInfo const *componentTypeInfo, void const *const componentMemory, EditorTypeInfo &outEditorComponentTypeInfo, EditorMemberInfo outComponentMembers[]);
 }
