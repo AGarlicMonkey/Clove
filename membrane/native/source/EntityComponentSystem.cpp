@@ -28,15 +28,10 @@ bool addComponent(clove::Entity entity, wchar_t const *componentTypeName, Editor
         return false;
     }
 
-    auto const editorAttribute{ componentTypeInfo->attributes.get<EditorVisibleComponent>().value() };
-    uint8_t const *const componentMemory{ editorAttribute.onEditorCreateComponent(entity, *Application::get().getEntityManager()) };
+    membrane::constructComponentEditorTypeInfo(componentTypeInfo, outTypeInfo, outMembers);
 
-    try {
-        membrane::constructComponentEditorTypeInfo(componentTypeInfo, componentMemory, outTypeInfo, outMembers);
-        return true;
-    } catch(std::exception e) {
-        CLOVE_LOG(MembraneECS, LogLevel::Error, "Failed to construct editor type info for component {0}:", componentTypeInfo->name);
-        CLOVE_LOG(MembraneECS, LogLevel::Error, "\t{0}", e.what());
-        return false;
-    }
+    auto const editorAttribute{ componentTypeInfo->attributes.get<EditorVisibleComponent>().value() };
+    outTypeInfo.typeMemory = editorAttribute.onEditorCreateComponent(entity, *Application::get().getEntityManager());
+
+    return true;
 }

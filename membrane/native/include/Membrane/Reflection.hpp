@@ -20,12 +20,18 @@ enum class TypeInfoType {
 
 struct EditorMemberInfo {
     BSTR name{ nullptr };
-    uint32_t typeId;
+
+    uint64_t offset;//TODO: Use size_t - need 64 to make sure it's the same size as managed
+    uint64_t size;  //TODO: Use size_t - need 64 to make sure it's the same size as managed
+    uint64_t typeId;//TODO: Use size_t - need 64 to make sure it's the same size as managed
 };
 
 struct EditorTypeInfo {
     BSTR typeName{ nullptr };
     BSTR displayName{ nullptr };
+
+    uint64_t size;//TODO: Use size_t - need 64 to make sure it's the same size as managed
+    uint8_t *typeMemory{ nullptr };
 };
 
 /**
@@ -50,5 +56,5 @@ MEMBRANE_EXPORT void getEditorVisibleSubSystems(AvailableEditorTypeInfo outInfos
 MEMBRANE_EXPORT int32_t getMemberCountForType(wchar_t const *typeName);
 
 namespace membrane {
-    void constructComponentEditorTypeInfo(clove::reflection::TypeInfo const *componentTypeInfo, void const *const componentMemory, EditorTypeInfo &outEditorComponentTypeInfo, EditorMemberInfo outComponentMembers[]);
+    void constructComponentEditorTypeInfo(clove::reflection::TypeInfo const *componentTypeInfo, EditorTypeInfo &outEditorComponentTypeInfo, EditorMemberInfo outComponentMembers[]);
 }

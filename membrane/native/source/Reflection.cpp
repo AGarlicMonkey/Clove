@@ -10,16 +10,6 @@ CLOVE_DECLARE_LOG_CATEGORY(MembraneReflection)
 using namespace clove;
 
 namespace {
-    void constructMembers(reflection::TypeInfo const *typeInfo, void const *const memory, EditorMemberInfo outMembers[]) {
-        std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> stringConverter{};
-
-        std::vector<reflection::MemberInfo> const &typeMembers{ typeInfo->members };
-        for(size_t i{ 0 }; i < typeMembers.size(); ++i) {
-            outMembers[i].name   = SysAllocString(stringConverter.from_bytes(typeMembers[i].name).c_str());
-            //outMembers[i].typeId = typeMembers[i].id;
-        }
-    }
-
     template<typename AttributeType>
     void getEditorVisibileTypeForAttribute(AvailableEditorTypeInfo outInfos[], uint32_t &numInfos) {
         std::vector<reflection::TypeInfo const *> visibleComponents{ reflection::getTypesWithAttribute<AttributeType>() };
@@ -60,12 +50,20 @@ int32_t getMemberCountForType(wchar_t const *typeName) {
 }
 
 namespace membrane {
-    void constructComponentEditorTypeInfo(reflection::TypeInfo const *componentTypeInfo, void const *const componentMemory, EditorTypeInfo &outEditorComponentTypeInfo, EditorMemberInfo outComponentMembers[]) {
+    void constructComponentEditorTypeInfo(reflection::TypeInfo const *const componentTypeInfo, EditorTypeInfo &outEditorComponentTypeInfo, EditorMemberInfo outComponentMembers[]) {
         EditorVisibleComponent const attribute{ componentTypeInfo->attributes.get<EditorVisibleComponent>().value() };
+        std::vector<reflection::MemberInfo> const &typeMembers{ componentTypeInfo->members };
         std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> stringConverter{};
 
         outEditorComponentTypeInfo.typeName    = SysAllocString(stringConverter.from_bytes(componentTypeInfo->name).c_str());
         outEditorComponentTypeInfo.displayName = SysAllocString(stringConverter.from_bytes(attribute.name.value_or(componentTypeInfo->name)).c_str());
-        constructMembers(componentTypeInfo, componentMemory, outComponentMembers);
+        outEditorComponentTypeInfo.size        = componentTypeInfo->size;
+
+        for(size_t i{ 0 }; i < typeMembers.size(); ++i) {
+            outComponentMembers[i].name   = SysAllocString(stringConverter.from_bytes(typeMembers[i].name).c_str());
+            outComponentMembers[i].offset = typeMembers[i].offset;
+            outComponentMembers[i].size   = typeMembers[i].size;
+            //outComponentMembers[i].typeId = typeMembers[i].id;
+        }
     }
 }

@@ -41,6 +41,9 @@ namespace Membrane {
     internal struct MemberInfo {
         [MarshalAs(UnmanagedType.BStr)]
         public string name;
+
+        public ulong offset;
+        public ulong size;
         public ulong typeId; //TODO: use nuint
     }
 
@@ -50,6 +53,9 @@ namespace Membrane {
         public string typeName;
         [MarshalAs(UnmanagedType.BStr)]
         public string displayName;
+
+        public ulong size;
+        public IntPtr typeMemory;
     }
 
     public static class Reflection {
@@ -88,26 +94,37 @@ namespace Membrane {
         /// </summary>
         /// <param name="typeInfo"></param>
         /// <param name="typeMembers"></param>
+        /// <param name="typeMemory">Memory from managed code for this type.</param>
         /// <returns></returns>
-        internal static TypeData ConstructTypeData(TypeInfo typeInfo, MemberInfo[] typeMembers) {
-            TypeData typeData = new TypeData();
-
-            typeData.typeName = typeInfo.typeName;
-            typeData.displayName = typeInfo.displayName;
+        unsafe internal static TypeData ConstructTypeData(TypeInfo typeInfo, MemberInfo[] typeMembers) {
+            TypeData typeData = new TypeData {
+                typeName = typeInfo.typeName,
+                displayName = typeInfo.displayName
+            };
 
             if (typeMembers != null) {
                 typeData.dataType = DataType.Parent;
 
                 List<TypeData> memberInfos = new List<TypeData>();
                 foreach (var member in typeMembers) {
-                    TypeData memberInfo = new TypeData();
+                    var memberData = new TypeData {
+                        typeName = member.name,
+                        displayName = member.name,
+                        dataType = DataType.Value,
+                        data = null,
+                    };
 
-                    memberInfo.typeName = member.name;
-                    memberInfo.displayName = memberInfo.typeName;
-                    memberInfo.dataType = DataType.Value; //TODO
-                    memberInfo.data = null;//TODO
+                    //TODO: This might have to be called down into unmanaged code - see EditorEditableMember::onEditorGetValue
+                    //TEMP: If the size of the member is different to the size of a float - do nothing for now. It is not a value data type
+                    if (member.size == sizeof(float)) {
+                        byte* mem = (byte*)typeInfo.typeMemory.ToPointer();
 
-                    memberInfos.Add(memberInfo);
+                        float memberValue;
+                        Buffer.MemoryCopy(mem + member.offset, &memberValue, sizeof(float), member.size);
+                        memberData.data = memberValue.ToString();
+                    }
+
+                    memberInfos.Add(memberData);
                 }
 
                 typeData.data = memberInfos;

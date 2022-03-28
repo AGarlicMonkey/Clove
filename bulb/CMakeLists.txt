@@ -132,5 +132,3 @@ set_property(SOURCE ${RESOURCES} PROPERTY VS_TOOL_OVERRIDE "Resource")
 set_target_properties(Bulb PROPERTIES
         VS_DOTNET_REFERENCES "Microsoft.CSharp;PresentationCore;PresentationFramework;System;System.Core;System.Data;System.Xaml;System.Xml;WindowsBase"
 )
-
-target_compile_options(Bulb PUBLIC "/unsafe")

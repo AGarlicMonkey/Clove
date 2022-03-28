@@ -12,13 +12,13 @@ namespace Membrane {
             MemberInfo[] componentMembers = Reflection.AllocateMemberArray(componentName);
 
             if (!addComponent(entityId, componentName, ref componentTypeInfo, componentMembers)) {
-                //TODO: Error
+                return null;
             }
 
             return Reflection.ConstructTypeData(componentTypeInfo, componentMembers);
         }
 
         [DllImport("MembraneNative.dll", CharSet = CharSet.Unicode)]
-        private static extern bool addComponent(uint entityId, string componentTypeName, [In, Out] ref TypeInfo outTypeInfo, [MarshalAs(UnmanagedType.LPArray), Out] MemberInfo[] outTypeMemberInfo);
+        private static extern bool addComponent(uint entityId, string componentTypeName, ref TypeInfo outTypeInfo, [MarshalAs(UnmanagedType.LPArray), Out] MemberInfo[] outTypeMemberInfo);
     }
 }

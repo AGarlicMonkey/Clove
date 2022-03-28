@@ -23,3 +23,5 @@ target_link_libraries(
 set_target_properties(MembraneManaged PROPERTIES
         VS_DOTNET_REFERENCES "Microsoft.CSharp;System;System.Core;System.Data"
 )
+
+target_compile_options(MembraneManaged PUBLIC "/unsafe")

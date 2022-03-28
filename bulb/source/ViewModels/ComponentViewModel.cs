@@ -29,11 +29,15 @@ namespace Bulb {
             TypeName = componentTypeInfo.typeName;
             this.componentTypeInfo = componentTypeInfo;
 
-            if(componentTypeInfo.dataType == DataType.Parent) {
+            if (componentTypeInfo.dataType == DataType.Parent) {
                 var members = (List<TypeData>)componentTypeInfo.data;
 
-                foreach(var member in members) {
-                    Members.Add(new TypeViewModel(member.displayName, 0, "TEST", false));
+                foreach (var member in members) {
+                    if (member.dataType == DataType.Value && member.data != null) {
+                        Members.Add(new TypeViewModel(member.displayName, 0, (string)member.data, false));
+                    } else {
+                        Members.Add(new TypeViewModel(member.displayName, 0, "UNKNOWN", false));
+                    }
                 }
             }
         }
