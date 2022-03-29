@@ -28,6 +28,9 @@ namespace clove {
     // mat<4, 4, T> constexpr createPerspectiveMatrix(T fovy, T aspect, T zNear, T zFar);
 
     // template<typename T>
+    // mat<4, 4, T> lookAt(vec<3, T> const &eye, vec<3, T> const &center, vec<3, T> const &worldUp);
+
+    // template<typename T>
     // vec<3, T> matrixToEuler(mat<4, 4, T> const &mat);
 
     // template<typename T>
@@ -62,6 +65,9 @@ namespace clove {
     // quat<T> decomposeRotation(mat<4, 4, T> matrix);
     // template<typename T>
     // vec<3, T> decomposeScale(mat<4, 4, T> const &matrix);
+
+    template<typename T>
+    constexpr bool areFloatsEqual(T a, T b) requires std::is_floating_point_v<T>;
 }
 
 #include "MathsHelpers.inl"

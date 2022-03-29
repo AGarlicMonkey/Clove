@@ -1,3 +1,5 @@
+#include "Clove/Maths/MathsHelpers.hpp"
+
 #include <cmath>
 
 namespace clove {
@@ -81,7 +83,7 @@ namespace clove {
 
     template<number T>
     constexpr bool operator==(quat<T> const &lhs, quat<T> const &rhs) {
-        return lhs.x == rhs.x && lhs.y == rhs.y && lhs.z == rhs.z && lhs.w == rhs.w;
+        return areFloatsEqual(lhs.x, rhs.x) && areFloatsEqual(lhs.y, rhs.y) && areFloatsEqual(lhs.z, rhs.z) && areFloatsEqual(lhs.w, rhs.w);
     }
 
     template<number T>

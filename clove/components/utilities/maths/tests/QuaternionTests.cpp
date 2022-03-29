@@ -13,15 +13,13 @@ TEST(QuaternionTests, CanDefaultConstructAQuaternion) {
 }
 
 TEST(QuaternionTests, CanCompareTwoQuaternions) {
-    quatf a{ 4, 1, 1, 0 };
-    quatf b{ 4, 1, 1, 0 };
-    quatf c{ 9, 2, 5, 8 };
+    quatf a{ 4.234, 1.001, 1.902, 0.771 };
+    quatf b{ 4.234, 1.001, 1.902, 0.771 };
+    quatf c{ 9.876, 2.123, 5.765, 8.828 };
 
-    EXPECT_TRUE(a == b);
-    EXPECT_TRUE(b != c);
-
-    EXPECT_FALSE(a == c);
-    EXPECT_FALSE(a != b);
+    EXPECT_EQ(a, b);
+    EXPECT_NE(a, c);
+    EXPECT_NE(b, c);
 }
 
 TEST(QuaternionTests, CanAddTwoQuaternions) {
