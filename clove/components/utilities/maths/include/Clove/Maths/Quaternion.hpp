@@ -24,6 +24,10 @@ namespace clove {
         constexpr quat<T> &operator*=(T scalar);
 
         template<number U>
+        friend constexpr quat<U> operator*(quat<U> const &a, quat<U> const &b);
+        constexpr quat<T> &operator*=(quat<T> const &other);
+
+        template<number U>
         friend constexpr quat<U> operator/(quat<U> const &a, U scalar);
         constexpr quat<T> &operator/=(T scalar);
 

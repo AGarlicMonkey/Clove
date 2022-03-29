@@ -71,6 +71,30 @@ TEST(QuaternionTests, CanMultiplyQuaternionByNumber) {
     EXPECT_EQ(b.w * multiplier, c.w);
 }
 
+TEST(QuaternionTests, CanMultiplyTwoQuaternions) {
+    quatf a{ 1, 0, 2, 3 };
+    quatf b{ 0, 3, 2, 1 };
+    quatf c{ b };
+
+    quatf mul1{ a * b };
+    EXPECT_EQ(mul1.x, -5);
+    EXPECT_EQ(mul1.y, 7);
+    EXPECT_EQ(mul1.z, 11);
+    EXPECT_EQ(mul1.w, -1);
+
+    quatf mul2{ b * a };
+    EXPECT_EQ(mul2.x, 7);
+    EXPECT_EQ(mul2.y, 11);
+    EXPECT_EQ(mul2.z, 5);
+    EXPECT_EQ(mul2.w, -1);
+
+    EXPECT_NE(mul1, mul2);
+
+    c *= a;
+    EXPECT_EQ(c, b * a);
+    EXPECT_NE(c, a * b);
+}
+
 TEST(QuaternionTests, CanDivideQuaternionByNumber) {
     float constexpr divisor{ 3.0f };
 
