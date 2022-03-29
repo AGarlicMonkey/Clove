@@ -3,6 +3,7 @@ using System.Windows.Input;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using Membrane;
+using System.Diagnostics;
 
 namespace Bulb {
     /// <summary>
@@ -31,15 +32,39 @@ namespace Bulb {
 
             if (componentTypeInfo.dataType == DataType.Parent) {
                 var members = (List<TypeData>)componentTypeInfo.data;
-
                 foreach (var member in members) {
-                    if (member.dataType == DataType.Value && member.data != null) {
-                        Members.Add(new TypeViewModel(member.displayName, 0, (string)member.data, false));
-                    } else {
-                        Members.Add(new TypeViewModel(member.displayName, 0, "UNKNOWN", false));
-                    }
+                    Members.Add(BuildTypeViewModel(member));
                 }
             }
+        }
+
+        private TypeViewModel BuildTypeViewModel(TypeData typeData) {
+            TypeViewModel vm;
+
+            switch (typeData.dataType) {
+                case DataType.Value:
+                    vm = new TypeViewModel(typeData.displayName, 0, (string)typeData.data, false);
+                    break;
+                case DataType.Dropdown:
+                    //TODO
+                    vm = new TypeViewModel(typeData.displayName, 0, "DROP_DOWN", false);
+                    break;
+                case DataType.Parent: {
+                        var members = (List<TypeData>)typeData.data;
+                        List<TypeViewModel> vmMembers = new List<TypeViewModel>();
+
+                        foreach (var member in members) {
+                            vmMembers.Add(BuildTypeViewModel(member));
+                        }
+
+                        vm = new TypeViewModel(typeData.displayName, vmMembers);
+                    }
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(typeData.dataType));
+            }
+
+            return vm;
         }
 
         private void OnValueChanged(uint offset, string value) {

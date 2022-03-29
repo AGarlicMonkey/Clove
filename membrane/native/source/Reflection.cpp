@@ -42,11 +42,38 @@ void getEditorVisibleSubSystems(AvailableEditorTypeInfo outInfos[], uint32_t &nu
     return getEditorVisibileTypeForAttribute<EditorVisibleSubSystem>(outInfos, numInfos);
 }
 
-int32_t getMemberCountForType(wchar_t const *typeName) {
+bool isTypeIdReflected(uint64_t typeId) {
+    return reflection::getTypeInfo(typeId) != nullptr;
+}
+
+int32_t getMemberCountWithTypeName(wchar_t const *typeName) {
     std::string const narrowTypeName{ std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>>{}.to_bytes(typeName) };
     reflection::TypeInfo const *const typeInfo{ reflection::getTypeInfo(narrowTypeName) };
 
     return typeInfo != nullptr ? typeInfo->members.size() : 0;
+}
+
+int32_t getMemberCountWithTypeId(uint64_t typeId) {
+    reflection::TypeInfo const *const typeInfo{ reflection::getTypeInfo(typeId) };
+
+    return typeInfo != nullptr ? typeInfo->members.size() : 0;
+}
+
+void getTypeInfoFromTypeId(uint64_t typeId, EditorTypeInfo &outTypeInfo, EditorMemberInfo outMembers[]) {
+    reflection::TypeInfo const *const typeInfo{ reflection::getTypeInfo(typeId) };
+    std::vector<reflection::MemberInfo> const &typeMembers{ typeInfo->members };
+    std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> stringConverter{};
+
+    outTypeInfo.typeName    = SysAllocString(stringConverter.from_bytes(typeInfo->name).c_str());
+    outTypeInfo.displayName = outTypeInfo.typeName;
+    outTypeInfo.size        = typeInfo->size;
+
+    for(size_t i{ 0 }; i < typeMembers.size(); ++i) {
+        outMembers[i].name   = SysAllocString(stringConverter.from_bytes(typeMembers[i].name).c_str());
+        outMembers[i].offset = typeMembers[i].offset;
+        outMembers[i].size   = typeMembers[i].size;
+        outMembers[i].typeId = typeMembers[i].id;
+    }
 }
 
 namespace membrane {
@@ -63,7 +90,7 @@ namespace membrane {
             outComponentMembers[i].name   = SysAllocString(stringConverter.from_bytes(typeMembers[i].name).c_str());
             outComponentMembers[i].offset = typeMembers[i].offset;
             outComponentMembers[i].size   = typeMembers[i].size;
-            //outComponentMembers[i].typeId = typeMembers[i].id;
+            outComponentMembers[i].typeId = typeMembers[i].id;
         }
     }
 }

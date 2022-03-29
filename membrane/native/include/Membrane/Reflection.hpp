@@ -53,7 +53,12 @@ MEMBRANE_EXPORT void getEditorVisibleComponents(AvailableEditorTypeInfo outInfos
  */
 MEMBRANE_EXPORT void getEditorVisibleSubSystems(AvailableEditorTypeInfo outInfos[], uint32_t &numInfos);
 
-MEMBRANE_EXPORT int32_t getMemberCountForType(wchar_t const *typeName);
+MEMBRANE_EXPORT bool isTypeIdReflected(uint64_t typeId);
+
+MEMBRANE_EXPORT int32_t getMemberCountWithTypeName(wchar_t const *typeName);
+MEMBRANE_EXPORT int32_t getMemberCountWithTypeId(uint64_t typeId);
+
+MEMBRANE_EXPORT void getTypeInfoFromTypeId(uint64_t typeId, EditorTypeInfo &outTypeInfo, EditorMemberInfo outMembers[]);
 
 namespace membrane {
     void constructComponentEditorTypeInfo(clove::reflection::TypeInfo const *componentTypeInfo, EditorTypeInfo &outEditorComponentTypeInfo, EditorMemberInfo outComponentMembers[]);
