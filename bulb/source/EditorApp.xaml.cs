@@ -22,7 +22,7 @@ namespace Bulb {
             engineApp.loadGameDll();
             engineApp.startSession();
 
-            sessionViewModel.Start(Membrane.FileSystemHelpers.getContentPath()); //TEMP: Remove with multiple window support
+            sessionViewModel.Start(Membrane.Application.getContentPath()); //TEMP: Remove with multiple window support
 
             return href;
         }
@@ -53,8 +53,6 @@ namespace Bulb {
 
             CompositionTarget.Rendering += RunEngineApplication;
         }
-
-        public string ResolveVfsPath(string path) => engineApp.resolveVfsPath(path);
 
         private void ShutdownEngine(object sender, EventArgs e) => engineApp.shutdown();
 

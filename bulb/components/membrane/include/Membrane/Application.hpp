@@ -21,10 +21,10 @@ public ref class Application {
 
         bool isInEditorMode{ true };
 
-        System::String ^projectFile{};
-        System::String ^gameName{}; /**< The name of the game module's cmake target */
-        System::String ^gameSourceDir{};
-        System::String ^gameContentDir{};
+        static System::String ^projectFile{};
+        static System::String ^ gameName {}; /**< The name of the game module's cmake target */
+        static System::String ^ gameSourceDir {};
+        static System::String ^ gameContentDir {};
 
         HINSTANCE gameLibrary{ nullptr };
 
@@ -41,7 +41,7 @@ public ref class Application {
         void tick();
         void shutdown();
 
-        System::String ^resolveVfsPath(System::String ^path);
+        static System::String ^getContentPath();
 
         static System::String ^getProjectVersion();
 

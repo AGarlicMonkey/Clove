@@ -10,7 +10,6 @@ namespace membrane {
     public ref class FileSystemHelpers{
         //FUNCTIONS
     public:
-        static System::String ^getContentPath();
         static System::String ^getAssetExtension();
 
         /**
