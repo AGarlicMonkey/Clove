@@ -84,18 +84,11 @@ namespace membrane {
 
         std::filesystem::remove(dllPath);
 
-        CLOVE_LOG(Membrane, clove::LogLevel::Debug, "Configuring and compiling {0}", nativeName);
+        CLOVE_LOG(Membrane, clove::LogLevel::Debug, "Compiling {0}", nativeName);
 
         {
-            std::stringstream configureStream{};
-            configureStream << "cmake -G \"Visual Studio 16 2019\" " << ROOT_DIR;
-            std::system(configureStream.str().c_str());
-        }
-
-        {
-            //NOTE: The build path here is a bit of a hack as we know on windows we are in the bin/<CONFIG> dir
             std::stringstream buildStream{};
-            buildStream << "cmake --build ../.." << " --target " << nativeName << " --config Debug";
+            buildStream << "cmake --build " << ROOT_DIR"/build" << " --target " << nativeName << " --config Debug";
             std::system(buildStream.str().c_str());
         }
 
