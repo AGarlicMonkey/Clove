@@ -29,8 +29,9 @@ typedef void (*LinkReflectionFn)(clove::reflection::internal::Registry *reg);
 using namespace clove;
 
 namespace membrane {
-    Application::Application(System::String ^projectFile) 
-        : projectFile{ projectFile } {
+    Application::Application(System::String ^projectFile) {
+        this->projectFile = projectFile;
+
         std::filesystem::path const projectFilePath{ msclr::interop::marshal_as<std::string>(projectFile) };
 
         if(!std::filesystem::exists(projectFilePath)) {
@@ -143,13 +144,11 @@ namespace membrane {
         fileStream << emittYaml(projectNode);
     }
 
-    System::String ^ Application::resolveVfsPath(System::String ^ path) {
-        System::String ^ managedPath { path };
-        std::string unManagedPath{ msclr::interop::marshal_as<std::string>(managedPath) };
-        return gcnew System::String(app->getFileSystem()->resolve(unManagedPath).c_str());
+    System::String ^Application::getContentPath() {
+        return gameContentDir;
     }
 
-    System::String ^ Application::getProjectVersion() {
+    System::String ^Application::getProjectVersion() {
         return gcnew System::String{ CLOVE_VERSION };
     }
 

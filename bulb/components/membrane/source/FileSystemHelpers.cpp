@@ -1,6 +1,7 @@
 #include "Membrane/FileSystemHelpers.hpp"
 
 #include "Membrane/MembraneLog.hpp"
+#include "Membrane/Application.hpp"
 
 #include <Clove/Application.hpp>
 #include <Clove/FileSystem/AssetManager.hpp>
@@ -11,10 +12,6 @@
 #include <msclr/marshal_cppstd.h>
 #include <Clove/Application.hpp>
 #include <Clove/FileSystem/AssetManager.hpp>
-
-#ifndef GAME_DIR
-    #define GAME_DIR
-#endif
 
 namespace {
     int32_t convertFileTypeToInt(membrane::FileType type) {
@@ -55,10 +52,6 @@ namespace {
 }
 
 namespace membrane {
-    System::String ^ FileSystemHelpers::getContentPath() {
-        return gcnew System::String{ GAME_DIR "/content" };
-    }
-
     System::String ^ FileSystemHelpers::getAssetExtension() {
         return gcnew System::String{ ".clvasset" };
     }
@@ -125,6 +118,8 @@ namespace membrane {
     }
 
     void FileSystemHelpers::moveAssetFile(System::String ^sourceFileName, System::String ^destFileName) {
+        std::string const contentDir{ msclr::interop::marshal_as<std::string>(membrane::Application::getContentPath()) };
+
         std::filesystem::path const source{ msclr::interop::marshal_as<std::string>(sourceFileName) };
         std::filesystem::path const dest{ msclr::interop::marshal_as<std::string>(destFileName) };
 
@@ -140,8 +135,8 @@ namespace membrane {
         }
 
         //Convert these into the proper vfs paths (folder/model.obj etc.) as the editor will always deal with absolute paths.
-        clove::VirtualFileSystem::Path const sourceVfs{ std::filesystem::relative(source, GAME_DIR "/content").replace_extension(assetPath.extension()) };
-        clove::VirtualFileSystem::Path const destVfs{ std::filesystem::relative(dest, GAME_DIR "/content").replace_extension(assetPath.extension()) };
+        clove::VirtualFileSystem::Path const sourceVfs{ std::filesystem::relative(source, contentDir).replace_extension(assetPath.extension()) };
+        clove::VirtualFileSystem::Path const destVfs{ std::filesystem::relative(dest, contentDir).replace_extension(assetPath.extension()) };
 
         //Notify the asset manager of the move
         switch(getFileType(destFileName)) {
