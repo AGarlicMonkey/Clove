@@ -8,9 +8,9 @@ namespace clove {
      * @brief A TransformComponent holds the position, rotation and scale of an Entity.
      */
     struct TransformComponent {
-        vec3f position{ 0.0f, 0.0f, 0.0f };          /**< The local position of this transform. */
-        quatf rotation{ vec3f{ 0.0f, 0.0f, 0.0f } }; /**< The local rotation of this transform. */
-        vec3f scale{ 1.0f, 1.0f, 1.0f };             /**< The local scale of this transform. */
+        vec3f position{ 0.0f, 0.0f, 0.0f }; /**< The local position of this transform. */
+        vec3f rotation{ 0.0f, 0.0f, 0.0f }; /**< The local rotation of this transform. Note: This is done in degrees for editor usability. */
+        vec3f scale{ 1.0f, 1.0f, 1.0f };    /**< The local scale of this transform. */
 
         /**
          * @brief Contains the world matrix which this transforms local matrix multiplied 

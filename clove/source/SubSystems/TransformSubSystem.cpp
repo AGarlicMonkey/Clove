@@ -13,9 +13,9 @@ namespace clove {
         mat4f calculateWorldMatrix(EntityManager *entityManager, TransformComponent &transform, Entity parent) {
             if(entityManager->hasComponent<TransformComponent>(parent)) {
                 auto &parentTransform{ entityManager->getComponent<TransformComponent>(parent) };
-                
+
                 Entity parentsParent{ NullEntity };
-                if(entityManager->hasComponent<ParentComponent>(parent)){
+                if(entityManager->hasComponent<ParentComponent>(parent)) {
                     parentsParent = entityManager->getComponent<ParentComponent>(parent).parent;
                 }
 
@@ -46,8 +46,10 @@ namespace clove {
 
         //Calculate the world matrix of every single transform
         entityManager->forEach([](TransformComponent &transform) {
+            vec3f const radRot{ asRadians(transform.rotation) };
+
             mat4f const translationMatrix{ translate(mat4f{ 1.0f }, transform.position) };
-            mat4f const rotationMatrix{ quaternionToMatrix4(transform.rotation) };
+            mat4f const rotationMatrix{ quaternionToMatrix4(quatf{ radRot }) };
             mat4f const scaleMatrix{ scale(mat4f{ 1.0f }, transform.scale) };
 
             transform.worldMatrix = translationMatrix * rotationMatrix * scaleMatrix;
