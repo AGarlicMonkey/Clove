@@ -11,15 +11,14 @@ namespace clove {
         CLOVE_ASSERT_MSG(subSystemToIndex.find(subSystemIndex) == subSystemToIndex.end(), "Only one subsystem can be active at a time.");
 
         auto subSystem{ std::make_unique<SubSystemType>(std::forward<Args>(args)...) };
-
-        CLOVE_LOG(CloveApplication, LogLevel::Trace, "Attached sub system: {0}", subSystem->getName());
+        auto *subSystemPtr{ subSystem.get() };
 
         SubSystem::Group const group{ subSystem->getGroup() };
-
-        subSystem->onAttach();
         subSystems[group].push_back(std::move(subSystem));
-
         subSystemToIndex[subSystemIndex] = std::make_pair(group, subSystems[group].size() - 1);
+
+        subSystemPtr->onAttach();
+        CLOVE_LOG(CloveApplication, LogLevel::Trace, "Attached sub system: {0}", subSystemPtr->getName());
     }
 
     template<typename SubSystemType>
@@ -43,15 +42,13 @@ namespace clove {
     void Application::popSubSystem() {
         std::type_index const subSystemIndex{ typeid(SubSystemType) };
 
-        if(!hasSubSystem<SubSystemType>()) {
-            return;
-        }
+        CLOVE_ASSERT_MSG(subSystemToIndex.find(subSystemIndex) != subSystemToIndex.end(), "No subsystem of provided type is attached.");
 
         auto node{ subSystemToIndex.extract(subSystemIndex) };
         auto [group, index] = node.mapped();
         auto &subSystemGroup{ subSystems[group] };
 
-        subSystemGroup[index]->onDetach();
+        auto subSystem{ std::move(subSystemGroup[index]) };
         if(index < subSystemGroup.size() - 1) {
             subSystemGroup[index] = std::move(subSystemGroup.back());
 
@@ -59,6 +56,9 @@ namespace clove {
             subSystemToIndex.at(movedSubSystemIndex).second = index;
         }
         subSystemGroup.pop_back();
+
+        subSystem->onDetach();
+        CLOVE_LOG(CloveApplication, LogLevel::Trace, "Detached sub system: {0}", subSystem->getName());
     }
 
     Application::State Application::getState() const {
