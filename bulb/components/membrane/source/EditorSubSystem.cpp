@@ -241,8 +241,8 @@ namespace membrane {
         rot.y = clove::asRadians(mouseLookYaw);
 
         auto &camTrans{ entityManager->getComponent<clove::TransformComponent>(editorCamera) };
-        camTrans.rotation = rot;
-        camTrans.position += camTrans.rotation * pos * 10.0f * deltaTime.getDeltaSeconds();
+        camTrans.rotation = vec3f{ clove::asDegrees(rot) };
+        camTrans.position += quatf{ rot } * pos * 10.0f * deltaTime.getDeltaSeconds();
     }
 
     void EditorSubSystem::onDetach() {

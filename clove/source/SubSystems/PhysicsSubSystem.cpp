@@ -14,6 +14,7 @@
 #include <Clove/Event/EventDispatcher.hpp>
 #include <Clove/ReflectionAttributes.hpp>
 #include <btBulletDynamicsCommon.h>
+#include <Clove/Maths/MathsHelpers.hpp>
 
 namespace clove {
     namespace {
@@ -114,7 +115,8 @@ namespace clove {
             if(!entityManager->hasComponent<CollisionShapeComponent>(entity) || !entityManager->hasComponent<RigidBodyComponent>(entity)) {
                 proxiesToRemove.push_back(entity);
             }
-        }, Exclude<ShapeOnlyComponent, BodyOnlyComponent>{});
+        },
+                               Exclude<ShapeOnlyComponent, BodyOnlyComponent>{});
 
         //Remove them outside of the loops their found in.
         for(auto entity : proxiesToRemove) {
@@ -203,7 +205,7 @@ namespace clove {
         //Notify Bullet of the location of the colliders
         entityManager->forEach([&](TransformComponent const &transform, PhysicsProxyComponent const &proxy) {
             auto const &pos{ transform.position };
-            auto const &rot{ transform.rotation };
+            quatf const rot{ asRadians(transform.rotation) };
             auto const &scale{ transform.scale };
 
             btTransform btTrans{ proxy.collisionObject->getWorldTransform() };
@@ -226,7 +228,7 @@ namespace clove {
             btQuaternion const &rot{ btTrans.getRotation() };
 
             transform.position = vec3f{ pos.x(), pos.y(), pos.z() };
-            transform.rotation = quatf{ rot.getW(), rot.getX(), rot.getY(), rot.getZ() };
+            transform.rotation = asDegrees(quaternionToEuler(quatf{ rot.getW(), rot.getX(), rot.getY(), rot.getZ() }));
         });
         entityManager->forEach([](RigidBodyComponent &body, PhysicsProxyComponent const &proxy) {
             auto *btBody{ static_cast<btRigidBody *>(proxy.collisionObject.get()) };//NOLINT
