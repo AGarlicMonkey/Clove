@@ -28,7 +28,8 @@ namespace membrane {
 
     void RuntimeSubSystem::onAttach() {
         auto loadResult{ loadYaml(clove::Application::get().getFileSystem()->resolve("./scene.clvscene")) };
-        serialiser::Node rootNode{ loadResult.getValue() };
+        serialiser::Node fileNode{ std::move(loadResult.getValue()) };
+        serialiser::Node &rootNode{ fileNode["scene"] };
 
         //Load sub systems
         for(auto const &subSystemNode : rootNode["subSystems"]) {
