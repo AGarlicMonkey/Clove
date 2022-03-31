@@ -92,7 +92,7 @@ jobs:
         run: mkdir build
       - name: Prime conan packages
         working-directory: ${{ github.workspace }}/build
-        run: conan install .. --build=missing -s build_type=$BUILD_TYPE -s compiler='clang' -s compiler.version=10 -e CC=clang-10 -e CXX=clang++-10
+        run: conan install .. --build=missing -s build_type=$BUILD_TYPE -s compiler='clang' -s compiler.version=10 -s compiler.libcxx=libstdc++11 -e CC=clang-10 -e CXX=clang++-10
       - name: Configure CMake
         working-directory: ${{ github.workspace }}/build
         run: cmake $CMAKE_FLAGS -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DCMAKE_C_COMPILER=clang-10 -DCMAKE_CXX_COMPILER=clang++-10 -G "Unix Makefiles" ..
