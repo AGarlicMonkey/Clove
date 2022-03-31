@@ -57,6 +57,16 @@ namespace clove::serialiser {
         return nodes.size();
     }
 
+    bool Node::has(std::string_view nodeName) const {
+        for(auto const &node : nodes) {
+            if(node.scalar == nodeName) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     Node::VectorType::iterator Node::begin() {
         return nodes.begin();
     }

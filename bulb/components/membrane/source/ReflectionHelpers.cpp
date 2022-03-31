@@ -176,6 +176,10 @@ namespace membrane {
 
     void deserialiseComponent(reflection::TypeInfo const *const componentTypeInfo, uint8_t *const componentMemory, serialiser::Node const &componentNode, size_t currentOffset) {
         for(auto const &member : componentTypeInfo->members) {
+            if(!componentNode.has(member.name)) {
+                continue;
+            }
+
             size_t const totalMemberOffset{ currentOffset + member.offset };
 
             if(reflection::TypeInfo const *memberType{ reflection::getTypeInfo(member.id) }) {
