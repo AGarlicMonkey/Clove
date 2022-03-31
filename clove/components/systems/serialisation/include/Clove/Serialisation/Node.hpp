@@ -59,6 +59,7 @@ namespace clove::serialiser {
         inline Type getType() const;
         inline std::string getKey() const;
         inline size_t numChildren() const;
+        inline bool has(std::string_view nodeName) const;
 
         inline VectorType::iterator begin();
         inline VectorType::iterator end();

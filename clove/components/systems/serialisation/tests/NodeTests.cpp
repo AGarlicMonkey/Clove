@@ -39,6 +39,14 @@ TEST(NodeTests, CanAddNamedChildOntoNode) {
     EXPECT_EQ(node.numChildren(), 1);
 }
 
+TEST(NodeTests, CanCheckIfANodeHasAChild) {
+    Node node{};
+    node["child"] = 3;
+
+    EXPECT_TRUE(node.has("child"));
+    EXPECT_FALSE(node.has("other"));
+}
+
 TEST(NodeTests, CanAddPushBackChildOntoNode) {
     Node node{};
 
