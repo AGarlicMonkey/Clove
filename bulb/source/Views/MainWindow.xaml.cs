@@ -8,6 +8,8 @@ namespace Bulb {
     /// Interaction logic for MainWindow.xaml
     /// </summary>
     public partial class MainWindow : Window {
+        private EditorSessionViewModel ViewModel => DataContext as EditorSessionViewModel;
+
         public MainWindow() {
             InitializeComponent();
 
@@ -55,6 +57,12 @@ namespace Bulb {
             textBox.Visibility = Visibility.Collapsed;
             textBox.LostFocus -= EditTextBoxLostFocus;
             e.Handled = true;
+        }
+
+        private void Window_KeyDown(object sender, KeyEventArgs e) {
+            if(e.Key == Key.Escape) {
+                ViewModel.Stop();
+            }
         }
     }
 }

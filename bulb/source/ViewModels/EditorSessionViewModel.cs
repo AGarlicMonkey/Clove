@@ -7,6 +7,11 @@ namespace Bulb {
     /// The View Model for the entire editor's session. Used to manage the viewmodels that make up the editor itself.
     /// </summary>
     public class EditorSessionViewModel : ViewModel {
+        private enum PlayMode {
+            Playing,
+            Stopped,
+        }
+
         public ICommand LoadSceneCommand { get; }
         public ICommand SaveSceneCommand { get; }
         public ICommand PlayCommand { get; }
@@ -53,6 +58,8 @@ namespace Bulb {
         }
         private bool isStopButtonEnabled = false;
 
+        private PlayMode playMode;
+
         public delegate void CompileDelegate();
         public CompileDelegate OnCompileGame;
 
@@ -76,23 +83,36 @@ namespace Bulb {
             //FileExplorer = new FileExplorerViewModel(rootFilePath);
 
             WindowTitle = $"Clove - {Membrane.Application.getProjectVersion()}";
+
+            //Assuming we are initialised as stopped
+            playMode = PlayMode.Stopped;
         }
 
         //TEMP: Just to make sure functions don't get called before opening a window.
         public void Start(string rootFilePath) => FileExplorer = new FileExplorerViewModel(rootFilePath);
 
-        private void OnSceneLoaded(Membrane.Engine_OnSceneLoaded message) => Scene = new SceneViewModel(message.enabledSubSystems, message.entities);
+        public void Play() {
+            if(playMode == PlayMode.Playing) {
+                return;
+            }
+            playMode = PlayMode.Playing;
 
-        private void Play() {
             IsPlayButtonEnabled = false;
             IsStopButtonEnabled = true;
             Membrane.MessageHandler.sendMessage(new Membrane.Editor_Play());
         }
 
-        private void Stop() {
+        public void Stop() {
+            if(playMode == PlayMode.Stopped) {
+                return;
+            }
+            playMode = PlayMode.Stopped;
+
             IsPlayButtonEnabled = true;
             IsStopButtonEnabled = false;
             Membrane.MessageHandler.sendMessage(new Membrane.Editor_Stop());
         }
+
+        private void OnSceneLoaded(Membrane.Engine_OnSceneLoaded message) => Scene = new SceneViewModel(message.enabledSubSystems, message.entities);
     }
 }
