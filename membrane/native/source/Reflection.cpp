@@ -66,6 +66,7 @@ void getTypeInfoFromTypeId(uint64_t typeId, EditorTypeInfo &outTypeInfo, EditorM
 
     outTypeInfo.typeName    = SysAllocString(stringConverter.from_bytes(typeInfo->name).c_str());
     outTypeInfo.displayName = outTypeInfo.typeName;
+    outTypeInfo.typeId      = typeInfo->id;
     outTypeInfo.size        = typeInfo->size;
 
     for(size_t i{ 0 }; i < typeMembers.size(); ++i) {
@@ -76,6 +77,25 @@ void getTypeInfoFromTypeId(uint64_t typeId, EditorTypeInfo &outTypeInfo, EditorM
     }
 }
 
+BSTR retrieveMemberValue(void *memberMemory, uint64_t const memberParentTypeId, uint64_t const totalOffsetIntoMemory, uint64_t const memberOffsetFromParentType, uint64_t const memberSize) {
+    reflection::TypeInfo const *const typeInfo{ reflection::getTypeInfo(memberParentTypeId) };
+    std::vector<reflection::MemberInfo> const &typeMembers{ typeInfo->members };
+    std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> stringConverter{};
+
+    for(auto const &member : typeMembers) {
+        if(member.offset == memberOffsetFromParentType) {
+            if(std::optional<EditorEditableMember> attr{ member.attributes.get<EditorEditableMember>() }) {
+                std::string const value{ attr->onEditorGetValue(reinterpret_cast<uint8_t *>(memberMemory), totalOffsetIntoMemory, memberSize) };
+
+                return SysAllocString(stringConverter.from_bytes(value.c_str()).c_str());
+            }
+        }
+    }
+
+    CLOVE_LOG(MembraneReflection, LogLevel::Error, "Could not find a member with offset {0} inside {1}", memberOffsetFromParentType, typeInfo->name);
+    return SysAllocString(L"UNKNOWN");
+}
+
 namespace membrane {
     void constructComponentEditorTypeInfo(reflection::TypeInfo const *const componentTypeInfo, EditorTypeInfo &outEditorComponentTypeInfo, EditorMemberInfo outComponentMembers[]) {
         EditorVisibleComponent const attribute{ componentTypeInfo->attributes.get<EditorVisibleComponent>().value() };
@@ -84,6 +104,7 @@ namespace membrane {
 
         outEditorComponentTypeInfo.typeName    = SysAllocString(stringConverter.from_bytes(componentTypeInfo->name).c_str());
         outEditorComponentTypeInfo.displayName = SysAllocString(stringConverter.from_bytes(attribute.name.value_or(componentTypeInfo->name)).c_str());
+        outEditorComponentTypeInfo.typeId      = componentTypeInfo->id;
         outEditorComponentTypeInfo.size        = componentTypeInfo->size;
 
         for(size_t i{ 0 }; i < typeMembers.size(); ++i) {

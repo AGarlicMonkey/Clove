@@ -56,6 +56,7 @@ namespace Membrane {
         [MarshalAs(UnmanagedType.BStr)]
         public string displayName;
 
+        public ulong typeId;
         public ulong size;
         public IntPtr typeMemory;
     }
@@ -122,6 +123,7 @@ namespace Membrane {
                     List<TypeData> memberInfos = new List<TypeData>();
                     foreach (var member in members) {
                         TypeData memberData;
+                        ulong totalOffset = offsetIntoParent + member.offset;
 
                         if (isTypeIdReflected(member.typeId)) {
                             TypeInfo memberTypeInfo = new TypeInfo();
@@ -132,29 +134,18 @@ namespace Membrane {
                             Debug.Assert(memberTypeInfo.typeMemory == IntPtr.Zero);
                             memberTypeInfo.typeMemory = info.typeMemory;
 
-                            memberData = DoConstruction(memberTypeInfo, memberMembers, member.offset);
+                            memberData = DoConstruction(memberTypeInfo, memberMembers, totalOffset);
                             memberData.displayName = member.name; //Make sure the display name is the name of the acutal member
 
                         } else {
-                            //TODO: This might have to be called down into unmanaged code - see EditorEditableMember::onEditorGetValue
-                            //TEMP: If the size of the member is different to the size of a float - do nothing for now. It is not a value data type
-
-                            Debug.Assert(member.size == sizeof(float));
+                            //TEMP: Ignoring dropdowns for now
 
                             memberData = new TypeData {
                                 typeName = null,
                                 displayName = member.name,
                                 dataType = DataType.Value,
+                                data = retrieveMemberValue(info.typeMemory, info.typeId, totalOffset, member.offset, member.size),
                             };
-
-                            unsafe {
-                                byte* mem = (byte*)info.typeMemory.ToPointer();
-                                ulong totalOffset = offsetIntoParent + member.offset;
-
-                                float memberValue;
-                                Buffer.MemoryCopy(mem + totalOffset, &memberValue, sizeof(float), member.size);
-                                memberData.data = memberValue.ToString();
-                            }
                         }
 
                         Debug.Assert(memberData != null);
@@ -185,5 +176,9 @@ namespace Membrane {
 
         [DllImport("MembraneNative.dll")]
         private static extern void getTypeInfoFromTypeId(ulong typeId, ref TypeInfo outTypeInfo, [MarshalAs(UnmanagedType.LPArray), Out] MemberInfo[] outTypeMemberInfo);
+
+        [DllImport("MembraneNative.dll")]
+        [return: MarshalAs(UnmanagedType.BStr)]
+        private static extern string retrieveMemberValue(IntPtr memberMemory, ulong memberParentTypeId, ulong totalOffsetIntoMemory, ulong memberOffsetFromParentType, ulong memberSize);
     }
 }

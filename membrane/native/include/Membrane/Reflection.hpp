@@ -30,6 +30,7 @@ struct EditorTypeInfo {
     BSTR typeName{ nullptr };
     BSTR displayName{ nullptr };
 
+    uint64_t typeId;//TODO: Use size_t - need 64 to make sure it's the same size as managed
     uint64_t size;//TODO: Use size_t - need 64 to make sure it's the same size as managed
     uint8_t *typeMemory{ nullptr };
 };
@@ -59,6 +60,8 @@ MEMBRANE_EXPORT int32_t getMemberCountWithTypeName(wchar_t const *typeName);
 MEMBRANE_EXPORT int32_t getMemberCountWithTypeId(uint64_t typeId);
 
 MEMBRANE_EXPORT void getTypeInfoFromTypeId(uint64_t typeId, EditorTypeInfo &outTypeInfo, EditorMemberInfo outMembers[]);
+
+MEMBRANE_EXPORT BSTR retrieveMemberValue(void *memberMemory, uint64_t const memberParentTypeId, uint64_t const totalOffsetIntoMemory, uint64_t const memberOffsetFromParentType, uint64_t const memberSize);
 
 namespace membrane {
     void constructComponentEditorTypeInfo(clove::reflection::TypeInfo const *componentTypeInfo, EditorTypeInfo &outEditorComponentTypeInfo, EditorMemberInfo outComponentMembers[]);
