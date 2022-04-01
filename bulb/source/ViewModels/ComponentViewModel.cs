@@ -43,11 +43,21 @@ namespace Bulb {
 
             switch (typeData.dataType) {
                 case DataType.Value:
-                    vm = new TypeViewModel(typeData.displayName, 0, (string)typeData.data, false);
+                    vm = new TypeViewModel(typeData.displayName, offset: 0, (string)typeData.data, isDragDropOnly: false);
                     break;
                 case DataType.Dropdown:
-                    //TODO
-                    vm = new TypeViewModel(typeData.displayName, 0, "DROP_DOWN", false);
+                    var dropdownData = (DropdownData)typeData.data;
+                    List<TypeViewModel> itemViewModels = null;
+
+                    if(dropdownData.itemTypeData != null){
+                        itemViewModels = new List<TypeViewModel>();
+
+                        foreach(var itemTypeData in dropdownData.itemTypeData) {
+                            itemViewModels.Add(BuildTypeViewModel(itemTypeData));
+                        }
+                    }
+
+                    vm = new TypeViewModel(typeData.displayName, offset: 0, dropdownData.items, dropdownData.currentSelection, itemViewModels);
                     break;
                 case DataType.Parent: {
                         var members = (List<TypeData>)typeData.data;

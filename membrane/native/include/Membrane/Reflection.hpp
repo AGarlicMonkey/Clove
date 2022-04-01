@@ -54,7 +54,8 @@ MEMBRANE_EXPORT void getEditorVisibleComponents(AvailableEditorTypeInfo outInfos
  */
 MEMBRANE_EXPORT void getEditorVisibleSubSystems(AvailableEditorTypeInfo outInfos[], uint32_t &numInfos);
 
-MEMBRANE_EXPORT bool isTypeIdReflected(uint64_t typeId);
+MEMBRANE_EXPORT bool isTypeIdReflected(uint64_t const typeId);
+MEMBRANE_EXPORT bool isMemberADropdown(uint64_t const parentTypeId, uint64_t const memberOffset);
 
 MEMBRANE_EXPORT int32_t getMemberCountWithTypeName(wchar_t const *typeName);
 MEMBRANE_EXPORT int32_t getMemberCountWithTypeId(uint64_t typeId);

@@ -137,9 +137,20 @@ namespace Membrane {
                             memberData = DoConstruction(memberTypeInfo, memberMembers, totalOffset);
                             memberData.displayName = member.name; //Make sure the display name is the name of the acutal member
 
-                        } else {
-                            //TEMP: Ignoring dropdowns for now
+                        } else if (isMemberADropdown(info.typeId, member.offset)) {
+                            //TODO: Get values
+                            var dropdownData = new DropdownData {
+                                currentSelection = 0,
+                                items = new List<string> { "test1", "test2", "test3" },
+                            };
 
+                            memberData = new TypeData {
+                                typeName = null,
+                                displayName = member.name,
+                                dataType = DataType.Dropdown,
+                                data = dropdownData
+                            };
+                        } else {
                             memberData = new TypeData {
                                 typeName = null,
                                 displayName = member.name,
@@ -168,6 +179,8 @@ namespace Membrane {
 
         [DllImport("MembraneNative.dll")]
         private extern static bool isTypeIdReflected(ulong typeId);
+        [DllImport("MembraneNative.dll")]
+        private extern static bool isMemberADropdown(ulong parentTypeId, ulong memberOffset);
 
         [DllImport("MembraneNative.dll", CharSet = CharSet.Unicode)]
         private extern static int getMemberCountWithTypeName(string typeName);

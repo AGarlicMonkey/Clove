@@ -42,8 +42,21 @@ void getEditorVisibleSubSystems(AvailableEditorTypeInfo outInfos[], uint32_t &nu
     return getEditorVisibileTypeForAttribute<EditorVisibleSubSystem>(outInfos, numInfos);
 }
 
-bool isTypeIdReflected(uint64_t typeId) {
+bool isTypeIdReflected(uint64_t const typeId) {
     return reflection::getTypeInfo(typeId) != nullptr;
+}
+
+bool isMemberADropdown(uint64_t const parentTypeId, uint64_t const memberOffset) {
+    reflection::TypeInfo const *const typeInfo{ reflection::getTypeInfo(parentTypeId) };
+    std::vector<reflection::MemberInfo> const &typeMembers{ typeInfo->members };
+
+    for(auto const &member : typeMembers) {
+        if(member.offset == memberOffset) {
+            return member.attributes.contains<EditorEditableDropdown>();
+        }
+    }
+
+    return false;
 }
 
 int32_t getMemberCountWithTypeName(wchar_t const *typeName) {
